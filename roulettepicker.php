@@ -79,7 +79,7 @@ if(isset($_POST['submit'])) {
 	}
 	
 	if ($myurl != $_SESSION['Submitted']){
-		$mysqliExam = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette");
+		$mysqliExam = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette"); # create conflict
 		if ($mysqliExam->connect_errno) {
 			echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliExam->connect_error;
 		}
