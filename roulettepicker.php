@@ -93,7 +93,7 @@ if(isset($_POST['submit'])) {
 	}
 	
 	if ($myurl != $_SESSION['Submitted']){
-		$mysqliExam = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase);
+		$mysqliExam = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase); # resolved conflict
 		if ($mysqliExam->connect_errno) {
 			echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliExam->connect_error;
 		}
