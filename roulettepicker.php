@@ -6,6 +6,12 @@
 <html>
 <head>
 <?php
+//Set login parameters for phpMyAdmin
+$phpMyAdminHost = 'localhost';
+$phpMyAdminUser = 'root';
+$phpMyAdminPassword = 'password';
+$phpMyAdminDatabase = 'problemroulette';
+
 //Start session
 session_start();
 
@@ -31,7 +37,12 @@ if ($pos !== false){
 if(isset($_POST['submit'])) {
 	$exam = $_POST['exam'];
 	$examPretend = $_POST['examPretend'];
-	$uniquename = $_SERVER['REMOTE_USER'];
+	if(isset($_SERVER['REMOTE_USER'])){
+		$uniquename = $_SERVER['REMOTE_USER'];
+	}
+	else{
+		$uniquename = 'anonymous';
+	}
     $studentAnswer = $_POST['studentAnswer'];
 	$Name = $_POST['Name'];
 	$myurl = $_POST['problemURL'];
@@ -77,9 +88,12 @@ if(isset($_POST['submit'])) {
 	if ($myurl == $_SESSION['Submitted']){
 		$duplicate = 1;
 	}
+	else{
+		$duplicate = 0;
+	}
 	
 	if ($myurl != $_SESSION['Submitted']){
-		$mysqliExam = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette"); # create conflict
+		$mysqliExam = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase); # resolved conflict
 		if ($mysqliExam->connect_errno) {
 			echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliExam->connect_error;
 		}
@@ -110,7 +124,7 @@ if(isset($_POST['submit'])) {
 			}
 		}
 		
-		$mysqliMaster = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette");
+		$mysqliMaster = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase);
 		if ($mysqliMaster->connect_errno) {
 			echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliMaster->connect_error;
 		}
@@ -138,7 +152,7 @@ if(isset($_POST['submit'])) {
 			
 		$MasterQueryResult = $mysqliMaster->query($insertMasterQuery) or die($mysqliMaster->error.__LINE__);
 		
-		$mysqliStudent = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette");
+		$mysqliStudent = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase);
 		if ($mysqliStudent->connect_errno) {
 			echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliStudent->connect_error;
 		}
@@ -230,7 +244,7 @@ if (count($SessionHistoryArray) > 1){
 	}
 }
 
-	$mysqli = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette");
+	$mysqli = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase);
 	if ($mysqli->connect_errno) {
 		echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqli->connect_error;
 	}
@@ -341,8 +355,14 @@ else{
 		<input type='button' value='Show/Hide Problem URL' onClick='showURL()'>
 		<label id='labelURL' style='visibility:hidden'><a href=".$myurl." target='_blank'>".$myurl."</a></label><br/>
 		<input type='button' name='Next' value=' Next ' onClick='window.location=&quot;redirect.php?exam=$exam&quot;'>
-		<input type='button' value=' Show My Stats ' onClick='javascript:window.open(&quot;stats.php&quot;)'>
-		<input type='button' value=' View History ' onClick='javascript:window.open(&quot;history.php&quot;)'><br/>
+		";
+		if(isset($_SERVER['REMOTE_USER'])){
+			echo "
+			<input type='button' value=' Show My Stats ' onClick='javascript:window.open(&quot;stats.php&quot;)'>
+			<input type='button' value=' View History ' onClick='javascript:window.open(&quot;history.php&quot;)'>
+			";
+			}
+		echo "<br/>
 		You've already submitted an answer. You can only submit once."
 		;
 	}
@@ -356,8 +376,14 @@ else{
 		<input type='button' value='Show/Hide Problem URL' onClick='showURL()'>
 		<label id='labelURL' style='visibility:hidden'><a href=".$myurl." target='_blank'>".$myurl."</a></label><br/>
 		<input type='button' name='Next' value=' Next ' onClick='window.location=&quot;redirect.php?exam=$exam&quot;'>
-		<input type='button' value=' Show My Stats ' onClick='javascript:window.open(&quot;stats.php&quot;)'>
-		<input type='button' value=' View History ' onClick='javascript:window.open(&quot;history.php&quot;)'><br/>
+		";
+		if(isset($_SERVER['REMOTE_USER'])){
+			echo "
+			<input type='button' value=' Show My Stats ' onClick='javascript:window.open(&quot;stats.php&quot;)'>
+			<input type='button' value=' View History ' onClick='javascript:window.open(&quot;history.php&quot;)'>
+			";
+			}
+		echo "<br/>
 		Your Time: ".$StudentTime."&nbsp;seconds&nbsp;&nbsp;&nbsp;Average Time: ".$AverageTimeFromDatabase."&nbsp;seconds<br/>
 		Your Answer: ".$studentAnswer."&nbsp;&nbsp;&nbsp;Correct Answer: ".$correctAnswer."<br/>
 		<img src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$AFraction.",".$BFraction.",".$CFraction.",".$DFraction.",".$EFraction.",".$GiveUpFraction."&chs=300x150&chbh=30,12,20&chxt=x,y&chxl=0:|A|B|C|D|E|Gave%20Up&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Total%20Responses'></img>

@@ -15,6 +15,11 @@ if(!document.referrer){
 </script>
 <font size="7"><U>
 <?php 
+$phpMyAdminHost = 'localhost';
+$phpMyAdminUser = 'root';
+$phpMyAdminPassword = 'password';
+$phpMyAdminDatabase = 'problemroulette';
+
 $uniquename = $_SERVER['REMOTE_USER'];
 echo $uniquename;
 ?>
@@ -23,7 +28,7 @@ echo $uniquename;
 </head>
 <body>
 <?php
-$mysqliStudent = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette");
+$mysqliStudent = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase);
 if ($mysqliStudent->connect_errno) {
 	echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliStudent->connect_error;
 }

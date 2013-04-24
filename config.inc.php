@@ -1,0 +1,1 @@
+<?php $adminpw = 'asdf'; ?>
