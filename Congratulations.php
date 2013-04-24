@@ -8,6 +8,7 @@ problems in a given session are skipped automatically-->
 
 <html>
 <head>
+<script src="trackingcode.js"></script> <!--tracking code for Google Analytics-->
 <title>
 Physics Problem Roulette
 </title>

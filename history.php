@@ -10,6 +10,11 @@ if(document.referrer.indexOf('picker') < 0){
 </script>
 <font size="5">
 <?php 
+$phpMyAdminHost = 'localhost';
+$phpMyAdminUser = 'root';
+$phpMyAdminPassword = 'password';
+$phpMyAdminDatabase = 'problemroulette';
+
 $uniquename = $_SERVER['REMOTE_USER'];
 echo $uniquename;
 ?>
@@ -98,7 +103,7 @@ var examSelected = document.getElementById('f');
 
 <body>
 <?php
-$mysqliMaster = new mysqli("webapps-db.web.itd", "problemroulette", "GilbertWhitaker", "problemroulette");
+$mysqliMaster = new mysqli($phpMyAdminHost, $phpMyAdminUser, $phpMyAdminPassword, $phpMyAdminDatabase);
 if ($mysqliMaster->connect_errno) {
 	echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliMaster->connect_error;
 }
