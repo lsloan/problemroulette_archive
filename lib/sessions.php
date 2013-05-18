@@ -22,6 +22,8 @@ data_value longtext,
 PRIMARY KEY ( id ) ,
 INDEX ( last_update )
 )
+//
+// Example Use Case:  $_SESSION[$this->m_PERSISTNAME][$this->m_STEPS[$args["src"]]] = $args;
 */
 //------------------------------------------------------------------------------
 //
@@ -74,7 +76,7 @@ class CSessMgr
 	{
 		// HACK ALERT since php 5 I guess the objects are destroyed before the session
 		// stuff is finished.  So thus we must create a new object here to finish session work!
-		$tmpDbmgr = new CDbMgr( $GLOBALS["SQL_SERVER"], "roadmap", "r05dm5p", "roadmaps2" );
+        $tmpDbmgr = new CDbMgr( $GLOBALS["SQL_SERVER"], "pr_user", "pr_user", "prexpansion" );
 		$aVal = $tmpDbmgr->db_addslashes( $aVal );
 		$tmpDbmgr->db_query(
 			"UPDATE ". $this->m_table . " SET data_value = '$aVal', last_update =
