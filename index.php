@@ -2,7 +2,7 @@
 // paths
 require_once("./paths.inc.php");
 // application objects
-require_once($GLOBALS["DIR_LIB"]."modelviewcontrol.inc.php");
+require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."pageorg.inc.php");
 require_once( $DIR_LIB."usrmgr.inc.php" );
 // utilities
