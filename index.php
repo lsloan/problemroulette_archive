@@ -6,7 +6,7 @@ require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 require_once( $DIR_LIB."usrmgr.inc.php" );
 // utilities
-require_once($GLOBALS["DIR_LIB"]."utilities.inc.php");
+require_once($GLOBALS["DIR_LIB"]."utilities.php");
 // database
 require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
 //$GLOBALS["dbmgr"] = new CDbMgr( "host", "user", "password", "database" );
