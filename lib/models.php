@@ -48,6 +48,9 @@ class MProblem
 		#get url
 		#get doc name
 		#check to see if it's published
+		
+		#$file = $service->files->get($fileId);
+		#print "Title: " . $file->getTitle();
 	}
 		
 	function Create_new_GD()
