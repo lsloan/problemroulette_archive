@@ -74,8 +74,25 @@ class VProblemEditReview
 	{
 		$str = '';
 		$str.="
-			<form name = 'myForm' onsubmit='return validateForm()' method='POST' action='.'>
+			<form name = 'myForm' onsubmit='return validateForm()' method='POST' action='url'>
 			<table border='1'>
+			  <TR>
+				<TD>Problem Name</TD>
+				<TD>Problem Name Goes Here</TD>
+			  </TR>
+			  <TR>
+				<TD>Problem URL</TD>
+				<TD>Problem URL Goes Here</TD>
+			  </TR>
+			  <TR>
+				<TD>Class Name</TD>
+				<TD>Class Name Goes Here</TD>
+			  </TR>
+			  <TR>
+				<TD>Topic Name</TD>
+				<TD>Topic Name Goes Here</TD>
+			  </TR>
+			  <TR>
 			  <TR>
 				<TD>Number of answer choices</TD>
 				<TD>
@@ -89,7 +106,6 @@ class VProblemEditReview
 			</table>
 			<p><input type='submit' id='submit' value='Submit' name='submit'></p>
 			</form>
-
 			<script language='javascript'>
 			function validateForm()
 			{

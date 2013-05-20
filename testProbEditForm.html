@@ -1,19 +1,36 @@
 <html>
 <body>
-<form name = "myForm" onsubmit="return validateForm()" method="POST" action="url">
-<table border="1">
+<form name = 'myForm' onsubmit='return validateForm()' method='POST' action='url'>
+<table border='1'>
+  <TR>
+    <TD>Problem Name</TD>
+    <TD>Problem Name Goes Here</TD>
+  </TR>
+  <TR>
+    <TD>Problem URL</TD>
+    <TD>Problem URL Goes Here</TD>
+  </TR>
+  <TR>
+    <TD>Class Name</TD>
+    <TD>Class Name Goes Here</TD>
+  </TR>
+  <TR>
+    <TD>Topic Name</TD>
+    <TD>Topic Name Goes Here</TD>
+  </TR>
+  <TR>
   <TR>
     <TD>Number of answer choices</TD>
     <TD>
-      <input id="ans_count" type="text" name="ans_count" size="1">
+      <input id='ans_count' type='text' name='ans_count' size='1'>
     </TD>
   </TR>
   <TR>
     <TD>Correct answer choice (1,2,3,...)</TD>
-    <TD><input id="correct" type="text" name="correct" size="1"></TD>
+    <TD><input id='correct' type='text' name='correct' size='1'></TD>
   </TR>
 </table>
-<p><input type="submit" id="submit" value="Submit" name="submit"></p>
+<p><input type='submit' id='submit' value='Submit' name='submit'></p>
 </form>
 
 <script language="javascript">
