@@ -13,7 +13,7 @@ require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
 $GLOBALS["dbmgr"] = new CDbMgr( "localhost", "pr_user", "pr_user", "prexpansion" );
 // session
 require_once( $DIR_LIB."sessions.php" );
-$GLOBALS["sessionmgr"] = new CSessMgr( "session_table", 3600);
+//$GLOBALS["sessionmgr"] = new CSessMgr( "session_table", 3600);
 // url arguments
 $args = GrabAllArgs();
 
@@ -41,6 +41,7 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 
 # business logic
 $model = new MProblem();
+$model->create('hi', 'url-somewhere', 'chemistry', 'topic', 5, 2);
 
 //$pageid = isset($args["pageid"])?$args["pageid"]:null;
 

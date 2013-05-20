@@ -18,28 +18,28 @@ class MProblem
 	
 	function create($prob_name, $prob_url, $prob_class_id, $prob_topic, $prob_ans_count, $prob_correct)
 	{	
-		$mysqliCreate = new mysqli("localhost", "root", "", "prexpansion");
-		if ($mysqliCreate->connect_errno) {
-			echo "Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliCreate->connect_error;
-		}
-	
-		$insertquery = "INSERT INTO problems 
-			(class_id,
+        global $dbmgr; 
+		$insertquery = "
+        INSERT INTO problems(
+            class_id,
 			topic,
 			name,
 			url,
 			correct,
-			ans_count)
-		VALUES 
-		($prob_class_id,
-		$prob_topic,
-		$prob_name,
-		$prob_url,
-		$prob_correct,
-		$prob_ans_count
-		)";
-	
-		$CreateQueryResult = $mysqliCreate->query($insertquery) or die($mysqliCreate->error.__LINE__);
+			ans_count
+        )VALUES(
+            '".$prob_class_id."',
+            '".$prob_topic."',
+            '".$prob_name."',
+            '".$prob_url."',
+            '".$prob_correct."',
+            '".$prob_ans_count."'
+        )";
+        $res = $dbmgr->exec_query($insertquery);
+        $query = "select * from problems;";
+        $res = $dbmgr->fetch_assoc($query);
+        $res = $dbmgr->fetch_num($query);
+        print_r($res);
 	}
 	
 	function Get_GD_info()

@@ -26,51 +26,53 @@ class CDbMgr
 		$this->m_link = false;
 
 		//	Connect to the database
-		if( !$lnk = mysql_connect( $this->m_host, $this->m_user, $this->m_pswd ) )
-		{
-			trigger_error( 'dbmgr: Failed to connect to MySql - '. mysql_error(),
-				E_USER_ERROR );
+		$lnk =   new mysqli( $this->m_host, $this->m_user, $this->m_pswd, $this->m_db );
+		if ($lnk->connect_errno) 
+        {
+			trigger_error("Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliCreate->connect_error);
 			return false;
 		}
-		if( !mysql_select_db( $this->m_db, $lnk ) )
+		if( !mysqli_select_db( $lnk, $this->m_db ) )
 		{
-			trigger_error( 'dbmgr: Unable to select database $aDatabase - '. mysql_error(),
+			trigger_error( 'dbmgr: Unable to select database $aDatabase - '. mysqli_error(),
 				E_USER_ERROR );
 			return false;
 		}
 		$this->m_link = $lnk;
 	}
 
-
-
 	//	Primitives
-	function db_query( $x )
+	function exec_query( $x )
 	{
-		$result = mysql_query( $x, $this->m_link );
+		$result = $this->m_link->query($x);
 		if ( !$result )
 		{
-			$str = "<br/>DB query error: <br/>Query string: " . $x . "<br/>Returned message: " . mysql_error() . "<br/>";
+			$str = "<br/>DB query error: <br/>Query string: " . $x . "<br/>Returned message: " . mysqli_error() . "<br/>";
 			// make sure all the tables are unlocked
 			$this->Unlock();
 			die ( $str );
 		}
 		return $result;
 	}
-	function db_errno() { return mysql_errno( $this->m_link ); }
-	function db_error() { return mysql_error( $this->m_link ); }
-	function db_fetch_array( $x, $y ) { return mysql_fetch_array( $x, $y ); }
-	function db_num_rows( $x ) { return mysql_num_rows( $x ); }
-	function db_insert_id() { return mysql_insert_id( $this->m_link ); }
+    function fetch_num( $query )
+    {
+		$res = $this->m_link->query($query);
+        return $res->fetch_all(MYSQL_NUM);
+    }
+    function fetch_assoc( $query )
+    {
+		$res = $this->m_link->query($query);
+        return $res->fetch_all(MYSQL_ASSOC);
+    }
+	function db_num_rows( $x ) { return mysqli_stmt_num_rows( $x ); }
 	function db_addslashes( $x ) { return addslashes( $x ); }
 	function db_stripslashes( $x ) { return stripslashes( $x ); }
-	function db_free_result( $x ) { return mysql_free_result( $x ); }
-	function db_affected_rows() { return mysql_affected_rows( $this->m_link ); }
 
 	//	Functions
-	function Close() { mysql_close( $this->m_link ); }
-	function StartTransaction() { return $this->db_query( "START TRANSACTION" ); }
-	function Commit() { return $this->db_query( "COMMIT" ); }
-	function Rollback() { return $this->db_query( "ROLLBACK" ); }
+	function Close() { mysqli_close( $this->m_link ); }
+	function StartTransaction() { return $this->exec_query( "START TRANSACTION" ); }
+	function Commit() { return $this->exec_query( "COMMIT" ); }
+	function Rollback() { return $this->exec_query( "ROLLBACK" ); }
 	function Lock( $tbls )
 	{
 		$sql = "LOCK TABLES ";
@@ -83,10 +85,10 @@ class CDbMgr
 				// all but the last
 				$sql .= ", ";
 		}
-		return $this->db_query( $sql );
+		return $this->exec_query( $sql );
 	}
-	function Unlock() { return $this->db_query( "UNLOCK TABLES" ); }
-	function GetServerHost() { return mysql_get_server_info( $this->m_link ); }
+	function Unlock() { return $this->exec_query( "UNLOCK TABLES" ); }
+	function GetServerHost() { return mysqli_get_server_info( $this->m_link ); }
 
 	//	Accessors
 	function GetHost() { return $this->m_host; }

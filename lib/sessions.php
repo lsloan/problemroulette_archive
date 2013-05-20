@@ -56,16 +56,16 @@ class CSessMgr
 	{
 		global $dbmgr;
 
-		$res = $dbmgr->db_query( "SELECT data_value FROM " . $this->m_table . "
+		$res = $dbmgr->exec_query( "SELECT data_value FROM " . $this->m_table . "
 		WHERE id='$aKey'" );
 		if( $dbmgr->db_num_rows( $res ) == 1 )
 		{
-			$r = $dbmgr->db_fetch_array( $res, MYSQL_ASSOC );
+			$r = $dbmgr->fetch_assoc($res);
 			return $r['data_value'];
 		}
 		else
 		{
-			$dbmgr->db_query(
+			$dbmgr->exec_query(
 				"INSERT INTO " . $this->m_table . "
 				(id, last_update, data_value) VALUES ('$aKey', NOW(), '')" );
 			return "";
@@ -78,7 +78,7 @@ class CSessMgr
 		// stuff is finished.  So thus we must create a new object here to finish session work!
         $tmpDbmgr = new CDbMgr( $GLOBALS["SQL_SERVER"], "pr_user", "pr_user", "prexpansion" );
 		$aVal = $tmpDbmgr->db_addslashes( $aVal );
-		$tmpDbmgr->db_query(
+		$tmpDbmgr->exec_query(
 			"UPDATE ". $this->m_table . " SET data_value = '$aVal', last_update =
 			NOW() WHERE id = '$aKey'" );
 		unset($tmpDbmgr); // complete the hack :(
@@ -89,7 +89,7 @@ class CSessMgr
 	{
 		global $dbmgr;
 
-		$dbmgr->db_query( "DELETE FROM " . $this->m_table . " WHERE id = '$aKey'" );
+		$dbmgr->exec_query( "DELETE FROM " . $this->m_table . " WHERE id = '$aKey'" );
 		return true;
 	}
 	//	Garbage collect session data
@@ -97,7 +97,7 @@ class CSessMgr
 	{
 		global $dbmgr;
 
-		$dbmgr->db_query(
+		$dbmgr->exec_query(
 			"DELETE FROM " . $this->m_table . " WHERE (UNIX_TIMESTAMP(NOW()) -
 			UNIX_TIMESTAMP(last_update)) > $aLife" );
 		return true;
