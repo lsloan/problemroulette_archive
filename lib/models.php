@@ -76,4 +76,25 @@ class MProblem
 	
 }
 
+Class MCourse
+{
+    var $id;
+    var $name;
+    var $m_topics = Array(); // Courses have an array of topics
+
+
+}
+
+Class MTopic
+{
+    var $id;
+    var $names;
+    var $questions; // Topics have an array of questions
+}
+
+class MNav
+{
+    var $m_Courses = Array(); // array of Course objects
+}
+
 ?>

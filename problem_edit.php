@@ -58,6 +58,7 @@ $head = new CHeadCSSJavascript("Problem Roulette",
 
 $body = new VProblemEditReview($model);
 $page = new CPageBasic($head, $body);
+//$page = new CPageBasic($head, $nav, $body);
 
 # delivery the html
 echo $page->Deliver();
