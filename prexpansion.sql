@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 29, 2013 at 06:48 PM
+-- Generation Time: May 29, 2013 at 06:56 PM
 -- Server version: 5.5.24-log
 -- PHP Version: 5.4.3
 
@@ -140,6 +140,19 @@ CREATE TABLE IF NOT EXISTS `stats` (
   `tot_tries` int(11) NOT NULL,
   `tot_correct` int(11) NOT NULL,
   `tot_time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `topic`
+--
+
+DROP TABLE IF EXISTS `topic`;
+CREATE TABLE IF NOT EXISTS `topic` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
