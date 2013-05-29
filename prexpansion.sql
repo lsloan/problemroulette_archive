@@ -85,7 +85,6 @@ CREATE TABLE IF NOT EXISTS `class` (
 DROP TABLE IF EXISTS `problems`;
 CREATE TABLE IF NOT EXISTS `problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `topic_id` int(11) NOT NULL,
   `name` varchar(200) NOT NULL,
   `url` varchar(300) NOT NULL,
   `correct` int(11) NOT NULL,
@@ -100,14 +99,14 @@ CREATE TABLE IF NOT EXISTS `problems` (
 -- Dumping data for table `problems`
 --
 
-INSERT INTO `problems` (`id`, `topic_id`, `name`, `url`, `correct`, `ans_count`, `tot_tries`, `tot_correct`, `tot_time`) VALUES
-(1, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(2, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(3, 0, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
-(4, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(5, 0, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
-(6, 0, 'hi', 'url-somewhere', 2, 5, 0, 0, 0),
-(7, 0, 'hi', 'url-somewhere', 2, 5, 0, 0, 0);
+INSERT INTO `problems` (`id`, `name`, `url`, `correct`, `ans_count`, `tot_tries`, `tot_correct`, `tot_time`) VALUES
+(1, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(2, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(3, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
+(4, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(5, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
+(6, 'hi', 'url-somewhere', 2, 5, 0, 0, 0),
+(7, 'hi', 'url-somewhere', 2, 5, 0, 0, 0);
 
 -- --------------------------------------------------------
 
