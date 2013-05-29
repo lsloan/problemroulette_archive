@@ -128,22 +128,6 @@ CREATE TABLE IF NOT EXISTS `responses` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `stats`
---
-
-DROP TABLE IF EXISTS `stats`;
-CREATE TABLE IF NOT EXISTS `stats` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `tot_tries` int(11) NOT NULL,
-  `tot_correct` int(11) NOT NULL,
-  `tot_time` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `topic`
 --
 
