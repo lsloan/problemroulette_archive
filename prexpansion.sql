@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 29, 2013 at 06:56 PM
+-- Generation Time: May 29, 2013 at 07:15 PM
 -- Server version: 5.5.24-log
 -- PHP Version: 5.4.3
 
@@ -30,7 +30,7 @@ DROP TABLE IF EXISTS `12m_class_topic`;
 CREATE TABLE IF NOT EXISTS `12m_class_topic` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `class_id` int(11) NOT NULL,
-  `topic` varchar(100) NOT NULL,
+  `topic_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -85,8 +85,7 @@ CREATE TABLE IF NOT EXISTS `class` (
 DROP TABLE IF EXISTS `problems`;
 CREATE TABLE IF NOT EXISTS `problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `class_id` int(11) NOT NULL,
-  `topic` varchar(100) NOT NULL,
+  `topic_id` int(11) NOT NULL,
   `name` varchar(200) NOT NULL,
   `url` varchar(300) NOT NULL,
   `correct` int(11) NOT NULL,
@@ -101,14 +100,14 @@ CREATE TABLE IF NOT EXISTS `problems` (
 -- Dumping data for table `problems`
 --
 
-INSERT INTO `problems` (`id`, `class_id`, `topic`, `name`, `url`, `correct`, `ans_count`, `tot_tries`, `tot_correct`, `tot_time`) VALUES
-(1, 2, 'Midterm 2', 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(2, 2, 'Midterm 2', 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(3, 1, 'Midterm 1', 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
-(4, 2, 'Midterm 2', 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(5, 1, 'Midterm 1', 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
-(6, 0, 'topic', 'hi', 'url-somewhere', 2, 5, 0, 0, 0),
-(7, 0, 'topic', 'hi', 'url-somewhere', 2, 5, 0, 0, 0);
+INSERT INTO `problems` (`id`, `topic_id`, `name`, `url`, `correct`, `ans_count`, `tot_tries`, `tot_correct`, `tot_time`) VALUES
+(1, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(2, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(3, 0, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
+(4, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(5, 0, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
+(6, 0, 'hi', 'url-somewhere', 2, 5, 0, 0, 0),
+(7, 0, 'hi', 'url-somewhere', 2, 5, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -166,6 +165,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(20) NOT NULL,
+  `staff` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
