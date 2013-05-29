@@ -37,11 +37,11 @@ CREATE TABLE IF NOT EXISTS `12m_class_topic` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `12m_prob_ans`
+-- Table structure for table `12m_prob_ans_stats`
 --
 
-DROP TABLE IF EXISTS `12m_prob_ans`;
-CREATE TABLE IF NOT EXISTS `12m_prob_ans` (
+DROP TABLE IF EXISTS `12m_prob_ans_stats`;
+CREATE TABLE IF NOT EXISTS `12m_prob_ans_stats` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `prob_id` int(11) NOT NULL,
   `ans_num` tinyint(4) NOT NULL,
