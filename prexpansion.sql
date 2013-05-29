@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 29, 2013 at 04:47 PM
+-- Generation Time: May 29, 2013 at 06:48 PM
 -- Server version: 5.5.24-log
 -- PHP Version: 5.4.3
 
@@ -26,6 +26,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `12m_class_topic`
 --
 
+DROP TABLE IF EXISTS `12m_class_topic`;
 CREATE TABLE IF NOT EXISTS `12m_class_topic` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `class_id` int(11) NOT NULL,
@@ -39,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `12m_class_topic` (
 -- Table structure for table `12m_prob_ans`
 --
 
+DROP TABLE IF EXISTS `12m_prob_ans`;
 CREATE TABLE IF NOT EXISTS `12m_prob_ans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `prob_id` int(11) NOT NULL,
@@ -53,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `12m_prob_ans` (
 -- Table structure for table `12m_topic_prob`
 --
 
+DROP TABLE IF EXISTS `12m_topic_prob`;
 CREATE TABLE IF NOT EXISTS `12m_topic_prob` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `topic_id` int(11) NOT NULL,
@@ -66,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `12m_topic_prob` (
 -- Table structure for table `class`
 --
 
+DROP TABLE IF EXISTS `class`;
 CREATE TABLE IF NOT EXISTS `class` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -78,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `class` (
 -- Table structure for table `problems`
 --
 
+DROP TABLE IF EXISTS `problems`;
 CREATE TABLE IF NOT EXISTS `problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `class_id` int(11) NOT NULL,
@@ -111,6 +116,7 @@ INSERT INTO `problems` (`id`, `class_id`, `topic`, `name`, `url`, `correct`, `an
 -- Table structure for table `responses`
 --
 
+DROP TABLE IF EXISTS `responses`;
 CREATE TABLE IF NOT EXISTS `responses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -127,6 +133,7 @@ CREATE TABLE IF NOT EXISTS `responses` (
 -- Table structure for table `stats`
 --
 
+DROP TABLE IF EXISTS `stats`;
 CREATE TABLE IF NOT EXISTS `stats` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -142,6 +149,7 @@ CREATE TABLE IF NOT EXISTS `stats` (
 -- Table structure for table `user`
 --
 
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(20) NOT NULL,
