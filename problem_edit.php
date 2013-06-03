@@ -40,7 +40,7 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 //business logic
 
 # business logic
-$model = new MProblem();
+$model = new MProblem(1);
 
 #TEST: add problem
 #$model->create('hi', 'url-somewhere', 1, 5, 2);
@@ -48,10 +48,13 @@ $model = new MProblem();
 #$course = new MCourse();
 
 #TEST: see all courses
-MCourse::get_all_courses();
+#MCourse::get_all_courses();
 
 #TEST: get all topics in course ($course_id)
-MTopic::get_all_topics_in_course(3);
+#MTopic::get_all_topics_in_course(3);
+
+#TEST: get all problems in topic ($topic_id)
+#MProblem::get_all_problems_in_topic(1);
 
 #TEST: add course
 #$course->create('Chemistry 456');
