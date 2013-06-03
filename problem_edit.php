@@ -32,6 +32,25 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
     $loginout = new CLogout();
 }
 */
+# business logic
+$model = new MProblem(1);
+
+#TEST: add problem
+#$model->create('hi', 'url-somewhere', 1, 5, 2);
+
+#$course = new MCourse();
+
+#TEST: see all courses
+#MCourse::get_all_courses();
+
+#TEST: get all topics in course ($course_id)
+#MTopic::get_all_topics_in_course(3);
+
+#TEST: get all problems in topic ($topic_id)
+#MProblem::get_all_problems_in_topic(1);
+
+#TEST: add course
+#$course->create('Chemistry 456');
 
 // business logic
 
