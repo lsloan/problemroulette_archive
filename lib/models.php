@@ -97,4 +97,22 @@ class MNav
     var $m_Courses = Array(); // array of Course objects
 }
 
+class MTabNav
+{
+    var $m_selected = 'Home';
+
+	function __construct($selected)
+    {
+        $this->m_selected = $selected;
+
+        $this->m_pages = array(
+        'Home' => $GLOBALS["DOMAIN"] . 'home.php', 
+        'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
+        'Statistics' => $GLOBALS["DOMAIN"] . 'statistics.php', 
+        'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
+        );
+    }
+}
+
+
 ?>

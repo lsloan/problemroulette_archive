@@ -33,7 +33,7 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 }
 */
 
-// business logic 
+//business logic
 
 // page construction
 $head = new CHeadCSSJavascript("Problem Roulette",
@@ -47,8 +47,8 @@ $head = new CHeadCSSJavascript("Problem Roulette",
     )
 );
 
-$vnav = new VTabNav(new MTabNav('Home'));
-$content = new VHome();
+$vnav = new VTabNav(new MTabNav('Staff Access'));
+$content = new VStaff();
 $page = new VPageTabs($head, $vnav, $content);
 
 # delivery the html

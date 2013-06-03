@@ -90,9 +90,9 @@ class VPageTabs{
             .$this->m_nav->Deliver().
         "</div>
         <div class='tabscontent'>
-            <div class='tabpage'>
-            This is where content will go
-            </div>
+            <div class='tabpage'>"
+            .$this->m_content->Deliver().
+            "</div>
         </div> 
     </div>
 </div>
@@ -104,7 +104,30 @@ class VPageTabs{
     //" . $this->m_body->Deliver() . "
 }
 
-class VTabMenu
+class VTabNav
+{	
+	function __construct($nav)
+	{
+        $this->m_nav = $nav;
+	}
+	
+	function Deliver()
+	{
+        $selected = 'Problems';
+        $str = "<ul>";
+		foreach($this->m_nav->m_pages as $tab=>$url)
+        {
+            $tabStyle = '';
+            if($this->m_nav->m_selected == $tab)
+                $tabStyle = 'tabActiveHeader';
+            $str .= "<li class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+        }
+        $str .= "</ul>";
+        return $str;
+    }
+}
+
+class VStaff
 {
 	#m_model
 	
@@ -114,29 +137,35 @@ class VTabMenu
 	
 	function Deliver()
 	{
-        $nav = array(
-            'Home' => $GLOBALS["DOMAIN"] . 'home.php', 
-            'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
-            'Statistics' => $GLOBALS["DOMAIN"] . 'statistics.php', 
-            'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
-        );
+        return "hi, this is the staff page... this well soon be more then one page";
+    }
+}
 
-        $selected = 'Problems';
-        $str = "<ul>";
-		foreach($nav as $tab=>$url)
-        {
-            $tabStyle = '';
-            if($selected == $tab)
-                $tabStyle = 'tabActiveHeader';
-            $str .= "<li class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
-            #$str .= "<li class='".$tabStyle."'>".$tab."</li>";
-        }
-        $str .= "</ul>";
+class VStatistics
+{
+	#m_model
+	
+	function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        return "hi, this is the statistics page"; 
+    }
+}
 
-        #<li id='tabHeader_2' class='tabActiveHeader'>Problems</li>
-        #<li id='tabHeader_3' class='tabActiveHeader'>Statistics</li>
-        #<li id='tabHeader_4' class='tabActiveHeader'>Staff Access</li>
-        return $str;
+class VProblems
+{
+	#m_model
+	
+	function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        return "hi, this is the problems page"; 
     }
 }
 

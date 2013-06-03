@@ -38,6 +38,7 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 // page construction
 $head = new CHeadCSSJavascript("Problem Roulette",
     array(
+        $GLOBALS["DOMAIN_CSS"]."tabs.css",
         #$GLOBALS["DOMAIN_CSS"]."test.css",
     ),
 
@@ -46,9 +47,9 @@ $head = new CHeadCSSJavascript("Problem Roulette",
     )
 );
 
-$body = new VProblemEditReview($model);
-$page = new CPageBasic($head, $body);
-//$page = new CPageBasic($head, $nav, $body);
+$vnav = new VTabNav(new MTabNav('Statistics'));
+$content = new VStatistics();
+$page = new VPageTabs($head, $vnav, $content);
 
 # delivery the html
 echo $page->Deliver();
