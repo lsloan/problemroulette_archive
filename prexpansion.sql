@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 29, 2013 at 07:15 PM
+-- Generation Time: Jun 03, 2013 at 11:15 PM
 -- Server version: 5.5.24-log
 -- PHP Version: 5.4.3
 
@@ -32,16 +32,33 @@ CREATE TABLE IF NOT EXISTS `12m_class_topic` (
   `class_id` int(11) NOT NULL,
   `topic_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+
+--
+-- Dumping data for table `12m_class_topic`
+--
+
+INSERT INTO `12m_class_topic` (`id`, `class_id`, `topic_id`) VALUES
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 1, 4),
+(5, 2, 5),
+(6, 2, 6),
+(7, 2, 7),
+(8, 2, 8),
+(9, 3, 9),
+(10, 3, 10),
+(11, 3, 11);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `12m_prob_ans_stats`
+-- Table structure for table `12m_prob_ans`
 --
 
-DROP TABLE IF EXISTS `12m_prob_ans_stats`;
-CREATE TABLE IF NOT EXISTS `12m_prob_ans_stats` (
+DROP TABLE IF EXISTS `12m_prob_ans`;
+CREATE TABLE IF NOT EXISTS `12m_prob_ans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `prob_id` int(11) NOT NULL,
   `ans_num` tinyint(4) NOT NULL,
@@ -61,7 +78,22 @@ CREATE TABLE IF NOT EXISTS `12m_topic_prob` (
   `topic_id` int(11) NOT NULL,
   `problem_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+--
+-- Dumping data for table `12m_topic_prob`
+--
+
+INSERT INTO `12m_topic_prob` (`id`, `topic_id`, `problem_id`) VALUES
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 2, 4),
+(5, 3, 5),
+(6, 3, 6),
+(7, 3, 7),
+(8, 3, 8),
+(9, 3, 8);
 
 -- --------------------------------------------------------
 
@@ -74,7 +106,16 @@ CREATE TABLE IF NOT EXISTS `class` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `class`
+--
+
+INSERT INTO `class` (`id`, `name`) VALUES
+(1, 'Physics 999'),
+(2, 'Physics 123'),
+(3, 'Chemistry 456');
 
 -- --------------------------------------------------------
 
@@ -85,6 +126,7 @@ CREATE TABLE IF NOT EXISTS `class` (
 DROP TABLE IF EXISTS `problems`;
 CREATE TABLE IF NOT EXISTS `problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `topic_id` int(11) NOT NULL,
   `name` varchar(200) NOT NULL,
   `url` varchar(300) NOT NULL,
   `correct` int(11) NOT NULL,
@@ -93,20 +135,21 @@ CREATE TABLE IF NOT EXISTS `problems` (
   `tot_correct` int(11) NOT NULL,
   `tot_time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
 
 --
 -- Dumping data for table `problems`
 --
 
-INSERT INTO `problems` (`id`, `name`, `url`, `correct`, `ans_count`, `tot_tries`, `tot_correct`, `tot_time`) VALUES
-(1, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(2, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(3, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
-(4, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
-(5, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
-(6, 'hi', 'url-somewhere', 2, 5, 0, 0, 0),
-(7, 'hi', 'url-somewhere', 2, 5, 0, 0, 0);
+INSERT INTO `problems` (`id`, `topic_id`, `name`, `url`, `correct`, `ans_count`, `tot_tries`, `tot_correct`, `tot_time`) VALUES
+(1, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(2, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(3, 0, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
+(4, 0, 'UM PHYSICS 482 Midterm 2 Fall 2012 Problem 04', 'http://google.com', 4, 5, 0, 0, 0),
+(5, 0, 'UM PHYSICS 481 Midterm 1 Fall 2011 Problem 03', 'http://bing.com', 3, 4, 0, 0, 0),
+(6, 0, 'hi', 'url-somewhere', 2, 5, 0, 0, 0),
+(7, 0, 'hi', 'url-somewhere', 2, 5, 0, 0, 0),
+(8, 1, 'hi', 'url-somewhere', 2, 5, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -128,6 +171,22 @@ CREATE TABLE IF NOT EXISTS `responses` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `stats`
+--
+
+DROP TABLE IF EXISTS `stats`;
+CREATE TABLE IF NOT EXISTS `stats` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `tot_tries` int(11) NOT NULL,
+  `tot_correct` int(11) NOT NULL,
+  `tot_time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `topic`
 --
 
@@ -136,7 +195,24 @@ CREATE TABLE IF NOT EXISTS `topic` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+
+--
+-- Dumping data for table `topic`
+--
+
+INSERT INTO `topic` (`id`, `name`) VALUES
+(1, 'Midterm 1'),
+(2, 'Midterm 2'),
+(3, 'Midterm 3'),
+(4, 'Final Exam'),
+(5, 'Midterm 1'),
+(6, 'Midterm 2'),
+(7, 'Midterm 3'),
+(8, 'Final Exam'),
+(9, 'Midterm 1'),
+(10, 'Midterm 2'),
+(11, 'Final Exam');
 
 -- --------------------------------------------------------
 
