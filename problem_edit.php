@@ -41,7 +41,20 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 
 # business logic
 $model = new MProblem();
-$model->create('hi', 'url-somewhere', 'chemistry', 'topic', 5, 2);
+
+#TEST: add problem
+#$model->create('hi', 'url-somewhere', 1, 5, 2);
+
+#$course = new MCourse();
+
+#TEST: see all courses
+MCourse::get_all_courses();
+
+#TEST: get all topics in course ($course_id)
+MTopic::get_all_topics_in_course(3);
+
+#TEST: add course
+#$course->create('Chemistry 456');
 
 //$pageid = isset($args["pageid"])?$args["pageid"]:null;
 
