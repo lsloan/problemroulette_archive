@@ -38,17 +38,21 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 // page construction
 $head = new CHeadCSSJavascript("Problem Roulette",
     array(
+        $GLOBALS["DOMAIN_CSS"]."tabs.css",
         #$GLOBALS["DOMAIN_CSS"]."test.css",
     ),
 
     array(
+        #$GLOBALS["DOMAIN_JS"]."tabs.js",
         #$GLOBALS["DOMAIN_JS"]."test.js.php",
     )
 );
 
-$body = new VProblemEditReview($model);
-$page = new CPageBasic($head, $body);
-//$page = new CPageBasic($head, $nav, $body);
+//$body = new VProblemEditReview($model);
+//$page = new CPageBasic($head, $body);
+$content = new VHome();
+$nav = new VTabMenu();
+$page = new VPageTabs($head, $nav, $content);
 
 # delivery the html
 echo $page->Deliver();

@@ -52,13 +52,106 @@ class CPageBasic{
 <!--close head-->
 <!--open body-->
 	<body>
-        " . $this->m_body->DumpProblemEditForm() . "
+        " . $this->m_body->Deliver() . "
 	</body>
 	<!--close body-->
 <html>";
 		return $str;
 	}
     //" . $this->m_body->Deliver() . "
+}
+
+class VPageTabs{
+	// properties
+	var $m_head;
+	var $m_body;
+
+	// constructor
+	function VPageTabs($head, $nav, $content){
+		$this->m_head = $head;
+		$this->m_nav = $nav;
+		$this->m_content = $content;
+	}
+
+	function Deliver(){
+		$str 	= "
+<html>
+<!--open head-->
+	<head>
+    "
+	.$this->m_head->Deliver().
+	"</head>
+<!--close head-->
+<!--open body-->
+	<body>
+<div id='wrapper'>
+    <div id='tabContainer'>
+        <div class='tabs'>"
+            .$this->m_nav->Deliver().
+        "</div>
+        <div class='tabscontent'>
+            <div class='tabpage'>
+            This is where content will go
+            </div>
+        </div> 
+    </div>
+</div>
+	</body>
+	<!--close body-->
+<html>";
+		return $str;
+	}
+    //" . $this->m_body->Deliver() . "
+}
+
+class VTabMenu
+{
+	#m_model
+	
+	function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        $nav = array(
+            'Home' => $GLOBALS["DOMAIN"] . 'home.php', 
+            'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
+            'Statistics' => $GLOBALS["DOMAIN"] . 'statistics.php', 
+            'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
+        );
+
+        $selected = 'Problems';
+        $str = "<ul>";
+		foreach($nav as $tab=>$url)
+        {
+            $tabStyle = '';
+            if($selected == $tab)
+                $tabStyle = 'tabActiveHeader';
+            $str .= "<li class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+            #$str .= "<li class='".$tabStyle."'>".$tab."</li>";
+        }
+        $str .= "</ul>";
+
+        #<li id='tabHeader_2' class='tabActiveHeader'>Problems</li>
+        #<li id='tabHeader_3' class='tabActiveHeader'>Statistics</li>
+        #<li id='tabHeader_4' class='tabActiveHeader'>Staff Access</li>
+        return $str;
+    }
+}
+
+class VHome
+{
+	#m_model
+	
+	function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        return "hi, this is the home page"; 
+    }
 }
 
 class VProblemEditReview
@@ -70,7 +163,7 @@ class VProblemEditReview
 		$this->m_model = $model;
 	}
 	
-	function DumpProblemEditForm()
+	function Deliver()
 	{
 		$str = '';
 		$str.="
@@ -121,6 +214,5 @@ class VProblemEditReview
 		";
 		return $str;
 	}
-	
 }
 ?>

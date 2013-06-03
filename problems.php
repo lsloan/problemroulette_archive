@@ -33,7 +33,7 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 }
 */
 
-// business logic
+//business logic
 
 // page construction
 $head = new CHeadCSSJavascript("Problem Roulette",
