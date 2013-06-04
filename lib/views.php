@@ -16,49 +16,18 @@ class CHeadCSSJavascript{
 		$str   = "\n<title>".$this->m_title."</title>";
         if($this->m_cssfile != NULL)
 		foreach((array)$this->m_cssfile as $css){
-			$str .= "\n<link rel=\"stylesheet\" href=\"".$css."\" type=\"text/css\" ></link>";
+			$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
 		}
         if($this->m_javafile != NULL)
 		foreach((array)$this->m_javafile as $java){
-			$str .= "\n<script type=\"text/JavaScript\" src=\"".$java."\"></script>";
+			$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
 		}
     $str .= "
-      <meta
-      name=\"problemroulette\"
-      content=\"practice, problems, physics\"/>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link href='css/bootstrap.min.css' rel='stylesheet' media='screen'>
     ";
 		return $str;
 	}
-}
-
-class CPageBasic{
-	// properties
-	var $m_head;
-	var $m_body;
-
-	// constructor
-	function CPageBasic($head, $body){
-		$this->m_head = $head;
-		$this->m_body = $body;
-	}
-
-	function Deliver(){
-		$str 	= "
-<html>
-<!--open head-->
-	<head>"
-	.$this->m_head->Deliver().
-	"</head>
-<!--close head-->
-<!--open body-->
-	<body>
-        " . $this->m_body->Deliver() . "
-	</body>
-	<!--close body-->
-<html>";
-		return $str;
-	}
-    //" . $this->m_body->Deliver() . "
 }
 
 class VPageTabs{
@@ -78,7 +47,7 @@ class VPageTabs{
 
 	function Deliver(){
 		$str 	= "
-<html>
+<html lang='en'>
 <!--open head-->
 	<head>
     "
