@@ -64,12 +64,15 @@ class CPageBasic{
 class VPageTabs{
 	// properties
 	var $m_head;
-	var $m_body;
+    var $m_nav;
+    var $m_nav2;
+    var $m_content;
 
 	// constructor
-	function VPageTabs($head, $nav, $content){
+	function __construct($head, $nav, $nav2, $content){
 		$this->m_head = $head;
 		$this->m_nav = $nav;
+		$this->m_nav2 = $nav2;
 		$this->m_content = $content;
 	}
 
@@ -88,6 +91,9 @@ class VPageTabs{
     <div id='tabContainer'>
         <div class='tabs'>"
             .$this->m_nav->Deliver().
+        "</div>
+        <div class='course_topic_nav'>"
+            .$this->m_nav2->Deliver(). 
         "</div>
         <div class='tabscontent'>
             <div class='tabpage'>"
@@ -126,6 +132,62 @@ class VTabNav
         return $str;
     }
 }
+
+class VCourseTopicNav
+{	
+	function __construct($nav)
+	{
+        $this->m_nav = $nav;
+	}
+	
+	function Deliver()
+	{
+        $str = "";
+        $str .= "
+        <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css' />
+        <script src='http://code.jquery.com/jquery-1.9.1.js'></script>
+        <script src='http://code.jquery.com/ui/1.10.3/jquery-ui.js'></script>
+        <script>
+            $(function() {
+                $( '#accordion' ).accordion({
+                collapsible: true
+                });
+            });
+        </script>
+        <div id='accordion'>
+        ";
+
+        foreach($this->m_nav->m_courses as $cc)
+        {
+            $str .= "<h3>". $cc->m_name ."</h3><div>";
+            foreach($cc->m_topics as $tt) 
+            {
+                $str .= "<input type='checkbox' name='".$tt->m_id."' value='".$tt->m_id."'>".$tt->m_name."<br>";
+            }
+            $str .= "</div>";
+        }
+        $str .= "</div>";
+        return $str;
+    }
+}
+/*
+            <h3>Section 2</h3>
+                <div>
+                content
+                </div>
+            <h3>Section 3</h3>
+                <div>
+                content
+                <ul>
+                <li>List item one</li>
+                <li>List item two</li>
+                <li>List item three</li>
+                </ul>
+                </div>
+            <h3>Section 4</h3>
+                <div>
+                </div>
+*/
 
 class VStaff
 {

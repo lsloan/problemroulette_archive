@@ -47,9 +47,10 @@ $head = new CHeadCSSJavascript("Problem Roulette",
     )
 );
 
-$vnav = new VTabNav(new MTabNav('Problems'));
+$topic_nav =  new VCourseTopicNav(new MCourseTopicNav());
+$tab_nav = new VTabNav(new MTabNav('Problems'));
 $content = new VProblems();
-$page = new VPageTabs($head, $vnav, $content);
+$page = new VPageTabs($head, $tab_nav, $topic_nav, $content);
 
 # delivery the html
 echo $page->Deliver();

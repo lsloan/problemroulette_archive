@@ -140,8 +140,8 @@ class MProblem
 
 Class MCourse
 {
-    var $id;
-    var $name;
+    var $m_id;
+    var $m_name;
     var $m_topics = Array(); // Courses have an array of topics
 
 	function __construct($id,$name)
@@ -182,13 +182,31 @@ Class MCourse
 		}
 		return $all_courses;
 	}
+
+	public static function get_all_courses_with_topics()
+	{
+		global $dbmgr;
+		$selectquery = "SELECT * FROM class";
+		$res = $dbmgr->exec_query($selectquery);
+		$res = $dbmgr->fetch_assoc($selectquery);
+		$numrows = count($res);
+		$all_courses = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+            $course = new MCourse($res[$i]['id'],$res[$i]['name']);
+            $course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
+			array_push($all_courses, $course);
+		}
+		return $all_courses;
+	}
 }
 
 Class MTopic
 {
-    var $id;
-    var $names;
-    var $questions; // Topics have an array of questions
+    var $m_id;
+    var $m_name;
+    var $m_course;
+    var $m_questions; // Topics have an array of questions
 	
 	function __construct($id,$name)
 	{
@@ -259,11 +277,6 @@ Class MTopic
 	}
 }
 
-class MNav
-{
-    var $m_Courses = Array(); // array of Course objects
-}
-
 class MTabNav
 {
     var $m_selected = 'Home';
@@ -281,5 +294,14 @@ class MTabNav
     }
 }
 
+class MCourseTopicNav
+{
+    var $m_courses;
+
+	function __construct()
+    { 
+        $this->m_courses = MCourse::get_all_courses_with_topics();
+    }
+}
 
 ?>
