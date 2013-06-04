@@ -38,12 +38,12 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 // page construction
 $head = new CHeadCSSJavascript("Problem Roulette",
     array(
-        $GLOBALS["DOMAIN_CSS"]."tabs.css",
-        #$GLOBALS["DOMAIN_CSS"]."test.css",
+        $GLOBALS["DOMAIN_CSS"]."css/bootstrap.css",
     ),
 
     array(
-        #$GLOBALS["DOMAIN_JS"]."test.js.php",
+        $GLOBALS["DOMAIN_JS"]."js/bootstrap.js",
+        $GLOBALS["DOMAIN_JS"]."js/jquery-1.10.1.js",
     )
 );
 
