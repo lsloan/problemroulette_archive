@@ -50,7 +50,6 @@ class MProblem
         $res = $dbmgr->exec_query($insertquery);
         $query = "select * from problems;";
         $res = $dbmgr->fetch_assoc($query);
-        $res = $dbmgr->fetch_num($query);
         print_r($res);
 	}
 	
@@ -164,7 +163,6 @@ Class MCourse
 		$res = $dbmgr->exec_query($insertquery);
         $query = "select * from class;";
         $res = $dbmgr->fetch_assoc($query);
-        $res = $dbmgr->fetch_num($query);
         print_r($res);
 	}
 	
