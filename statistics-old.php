@@ -1,8 +1,6 @@
 <?php
 // paths
-
 require_once("./paths.inc.php");
-
 // application objects
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
@@ -50,8 +48,8 @@ $head = new CHeadCSSJavascript("Problem Roulette",
 );
 
 $topic_nav =  new VCourseTopicNav(new MCourseTopicNav());
-$tab_nav = new VTabNav(new MTabNav('Problems'));
-$content = new VProblems();
+$tab_nav = new VTabNav(new MTabNav('Statistics'));
+$content = new VStatistics();
 $page = new VPageTabs($head, $tab_nav, $topic_nav, $content);
 
 # delivery the html

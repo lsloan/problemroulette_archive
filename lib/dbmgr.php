@@ -57,12 +57,22 @@ class CDbMgr
     function fetch_num( $query )
     {
 		$res = $this->m_link->query($query);
-        return $res->fetch_all(MYSQL_NUM);
+        # return $res->fetch_all(MYSQL_NUM);
+        $results = array();
+        foreach ($res as $value) {
+        	array_push($results, $value);
+        }
+		return $results;
     }
     function fetch_assoc( $query )
     {
 		$res = $this->m_link->query($query);
-        return $res->fetch_all(MYSQL_ASSOC);
+        # return $res->fetch_all(MYSQL_ASSOC);
+        $results = array();
+        foreach ($res as $value) {
+        	array_push($results, $value);
+        }
+		return $results;
     }
 	function db_num_rows( $x ) { return mysqli_stmt_num_rows( $x ); }
 	function db_addslashes( $x ) { return addslashes( $x ); }
