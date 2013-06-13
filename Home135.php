@@ -11,7 +11,7 @@
 		<li><input type="checkbox"/><a href="roulette.php?exam=135f">Physics 135 Final Exam</a></li>
 	</ul>
 
-    <a href="/" class="btn btn-courses"><i class="icon-arrow-left"></i>Select Different Course</a>
+    <a href="index.php" class="btn btn-courses"><i class="icon-arrow-left"></i>Select Different Course</a>
 	<a href="/" id="use-selected" class="btn btn-primary disabled">Use Selected Topics</a>
 
 

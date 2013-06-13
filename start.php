@@ -4,11 +4,11 @@
     <title>Problem Roulette</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
-    <link href="/css/bootstrap.css" rel="stylesheet" media="screen">
-    <link href="/css/bootstrap-responsive.css" rel="stylesheet" media="screen">
-    <link href="/css/styles.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet" media="screen">
+    <link href="css/styles.css" rel="stylesheet" media="screen">
     <script src="trackingcode.js"></script>
-    <script src="/js/jquery-1.10.1.js"></script>
+    <script src="js/jquery-1.10.1.js"></script>
      <script type="text/javascript">
         $(document).ready(function() {
           $(".topic-selector input:checkbox").click(function() {
@@ -52,7 +52,7 @@
   <body>
     <div id="wrap">
       <div class="container">
-        <h1>Problem Roulette</h1>
+        <img class="logo" src="img/PR.jpg" width="200px"></img>
         <ul class="nav nav-tabs">
           <li class="active"><a href="#problems" data-toggle="tab">Problems</a></li>
           <li><a id="statistics-tab" href="#statistics" data-toggle="tab">Statistics</a></li>
