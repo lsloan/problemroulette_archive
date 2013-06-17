@@ -1,7 +1,7 @@
 <?php
 
 // MODEL OBJECTS
-class MProblem
+Class MProblem
 {
 	var $m_prob_id;			#ID of problem
 	var $m_prob_name;		#Name of problem
@@ -275,7 +275,8 @@ Class MTopic
 	}
 }
 
-class MTabNav
+/*
+Class MTabNav
 {
     var $m_selected = 'Home';
 
@@ -291,8 +292,7 @@ class MTabNav
         );
     }
 }
-
-class MCourseTopicNav
+Class MCourseTopicNav
 {
     var $m_courses;
 
@@ -301,5 +301,5 @@ class MCourseTopicNav
         $this->m_courses = MCourse::get_all_courses_with_topics();
     }
 }
-
+*/
 ?>

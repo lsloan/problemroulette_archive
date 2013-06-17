@@ -18,21 +18,20 @@ require_once( $DIR_LIB."sessions.php" );
 $args = GrabAllArgs();
 
 // permission
-/*
 $GLOBALS["usrmgr"] = new CUserManager($args);
 if(!$GLOBALS["usrmgr"]->GetAccess()){
+    // rediret to login
 	echo "no access roadmap page";
-	 direct to the login page :)
 	$pageid = "";
 	if(isset($args["pageid"]))
 		$pageid = "?pageid=".$args["pageid"];
 	$url = "Location:".$GLOBALS["DOMAIN"]."login.php".$pageid;
 	header($url);
 }else{
-    $loginout = new CLogout();
+    // redirect to logout
 }
-*/
-# business logic
+
+// business logic
 $model = new MProblem(1);
 
 #TEST: add problem
@@ -51,8 +50,6 @@ $model = new MProblem(1);
 
 #TEST: add course
 #$course->create('Chemistry 456');
-
-// business logic
 
 // page construction
 $head = new CHeadCSSJavascript("Problem Roulette",
