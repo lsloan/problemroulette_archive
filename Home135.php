@@ -1,6 +1,7 @@
 <?php include 'start.php'; ?>
 
 <p>The links below serve randomly-chosen questions, one at a time, from banks of multiple-choice problems derived from past exams.</p>
+<img class="logo" src="img/PR.jpg" width="200px"></img>
 <p>Please select an exam to begin.  For each problem, you have the option to  submit your answer or skip to the next one.</p>
 
 

@@ -3,6 +3,8 @@
   Welcome! This site serves random problems from past exams given in introductory courses of the University of Michigan Department of Physics.
 </p>
 
+<img class="logo" src="img/PR.jpg" width="200px"></img>
+
 <p><strong>Please select your class to begin:</strong></p>
 <div class="button-container">
   <a class="btn" href="Home140.php">Physics 140</a><br/>

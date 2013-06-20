@@ -52,7 +52,6 @@
   <body>
     <div id="wrap">
       <div class="container">
-        <img class="logo" src="img/PR.jpg" width="200px"></img>
         <ul class="nav nav-tabs">
           <li class="active"><a href="#problems" data-toggle="tab">Problems</a></li>
           <li><a id="statistics-tab" href="#statistics" data-toggle="tab">Statistics</a></li>
