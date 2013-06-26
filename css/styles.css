@@ -9,6 +9,7 @@ h1 {
 .logo{
 border-radius: 4px;
 margin: 0 10px 10px 10px;
+width: 200px;
 }
 
 .container {
@@ -29,16 +30,28 @@ margin: 0 10px 10px 10px;
 }
 
 .nav-tabs li a{
-        background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+		background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+		background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+		background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+		background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+		background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
 }
 
 .nav-tabs li.active a{
-        background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+		background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
+		background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
+		background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+		background-image: -o-linear-gradient(top, #0088cc, #0044cc);
+		background-image: linear-gradient(to bottom, #0088cc, #0044cc);
         color: #ffffff;
 }
 
+.nav-tabs li.active a:focus{
+    color: #ffffff;
+}
+
 .nav-tabs li.active a:hover{
-        color: #dddddd;
+    color: #dddddd;
 }
 
 .tab-pane.active{
@@ -99,6 +112,10 @@ min-height: 100%;
 height: 100%;
 color: #ffffff;
 background-color: #111111;
+background-image: -moz-linear-gradient(top, #333333, #111111);
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#333333), to(#111111));
+background-image: -webkit-linear-gradient(top, #333333, #111111);
+background-image: -o-linear-gradient(top, #333333, #111111);
 background-image: linear-gradient(to bottom, #333333, #111111);
 background-repeat: no-repeat;
 /* The html and body elements cannot have any padding or margin. */
