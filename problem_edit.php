@@ -18,18 +18,7 @@ require_once( $DIR_LIB."sessions.php" );
 $args = GrabAllArgs();
 
 // permission
-$GLOBALS["usrmgr"] = new CUserManager($args);
-if(!$GLOBALS["usrmgr"]->GetAccess()){
-    // rediret to login
-	echo "no access roadmap page";
-	$pageid = "";
-	if(isset($args["pageid"]))
-		$pageid = "?pageid=".$args["pageid"];
-	$url = "Location:".$GLOBALS["DOMAIN"]."login.php".$pageid;
-	header($url);
-}else{
-    // redirect to logout
-}
+$GLOBALS["usrmgr"] = new UserManager();
 
 // business logic
 $model = new MProblem(1);
