@@ -15,7 +15,7 @@ class UserManager{
 	function Login()
     {
         // check if the user just logged in through cosign
-        if(isset($_SERVER['REMOTE_USER'])){
+        if(isset($_SERVER['REMOTE_USER']))
 		{
         	$this->user_id = $_SERVER["REMOTE_USER"];
 		}

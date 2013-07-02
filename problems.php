@@ -6,7 +6,7 @@ require_once("./paths.inc.php");
 // application objects
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
-require_once( $DIR_LIB."usrmgr.php" );
+//require_once( $DIR_LIB."usrmgr.php" );
 // utilities
 require_once($GLOBALS["DIR_LIB"]."utilities.php");
 // database

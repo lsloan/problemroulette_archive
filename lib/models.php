@@ -274,8 +274,6 @@ Class MTopic
 		return $all_topics_in_course;
 	}
 }
-
-/*
 Class MTabNav
 {
     var $m_selected = 'Home';
@@ -301,5 +299,4 @@ Class MCourseTopicNav
         $this->m_courses = MCourse::get_all_courses_with_topics();
     }
 }
-*/
 ?>
