@@ -209,9 +209,10 @@ class VProblems
 	
 	function Deliver()
 	{
+        global $usrmgr;
         $str = "
             <p>
-            This is the problems page!
+            This is the problems page! " .$usrmgr->user_id. "
             </p>
         ";
         return $str;

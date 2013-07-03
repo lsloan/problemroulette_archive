@@ -6,7 +6,7 @@ class UserManager{
 
     function __construct(){
         $this->Login();
-        $this->ReadPrefs();
+        #$this->ReadPrefs();
     }
 
     function GetAccess(){ return isset($this->user_id); }
@@ -14,25 +14,14 @@ class UserManager{
 
 	function Login()
     {
+        $this->user_id = 'None';
         // check if the user just logged in through cosign
         if(isset($_SERVER['REMOTE_USER']))
 		{
         	$this->user_id = $_SERVER["REMOTE_USER"];
 		}
-        // else redirect... but cosign may be (undesireably?) configured to disallow getting here...
-        else
-        { 
-            // rediret to login
-            $url = "Location:".$GLOBALS["DOMAIN"]."login.php";
-            header($url);
-        }
 	}
     
-    function Fake_Login($user_id)
-    {   // FAKE LOGIN IN DEVELOPMENT MODE AND RETURN
-        $this->user_id = $user_id;
-    }
-
     function ReadPrefs()
     {   // read all prefs from user table
        
