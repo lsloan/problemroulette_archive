@@ -45,11 +45,9 @@ class VPageTabs{
     var $m_content;
 
 	// constructor
-	#function __construct($head, $nav, $nav2, $content){
 	function __construct($head, $nav, $content){
 		$this->m_head = $head;
 		$this->m_nav = $nav;
-		#$this->m_nav2 = $nav2;
 		$this->m_content = $content;
 	}
 
@@ -71,9 +69,11 @@ class VPageTabs{
         .$this->m_nav->Deliver().
         "
         <div class='tab-content'>
-        " 
-        .$this->m_content->Deliver().
-        "
+            <div class='tab-pane active' id='problems'>
+            " 
+            .$this->m_content->Deliver().
+            "
+            </div>
         </div>
     </div>
     <div id='push'>
@@ -175,24 +175,14 @@ class VStaff
 	function Deliver()
 	{
         $str = "
-        <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css' />
-        <script src='http://code.jquery.com/jquery-1.9.1.js'></script>
-        <script src='http://code.jquery.com/ui/1.10.3/jquery-ui.js'></script>
-        <script>
-            $(function() {
-                $( '#accordion' ).accordion({
-                collapsible: true
-                });
-            });
-        </script>
-        ";
-        
-        $str .= "hi, this is the staff page... this well soon be more then one page";
+        <p>
+            hi, this is the staff page... this well soon be more then one page
+        </p>";
         return $str;
     }
 }
 
-class VStatistics
+class VStats
 {
 	#m_model
 	
@@ -202,7 +192,12 @@ class VStatistics
 	
 	function Deliver()
 	{
-        return "hi, this is the statistics page"; 
+        $str = "
+        <p>
+            hi, this is the statistics page
+        <p>
+        ";
+        return $str;
     }
 }
 
@@ -215,11 +210,9 @@ class VProblems
 	function Deliver()
 	{
         $str = "
-        <div class='tab-pane active' id='problems'>
             <p>
             This is the problems page!
             </p>
-        </div>
         ";
         return $str;
     }

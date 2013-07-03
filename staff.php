@@ -36,21 +36,10 @@ if(!$GLOBALS["usrmgr"]->GetAccess()){
 //business logic
 
 // page construction
-$head = new CHeadCSSJavascript("Problem Roulette",
-    array(
-        $GLOBALS["DOMAIN_CSS"]."tabs.css",
-        #$GLOBALS["DOMAIN_CSS"]."test.css",
-    ),
-
-    array(
-        #$GLOBALS["DOMAIN_JS"]."test.js.php",
-    )
-);
-
-$topic_nav =  new VCourseTopicNav(new MCourseTopicNav());
+$head = new CHeadCSSJavascript("Problems", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Staff Access'));
 $content = new VStaff();
-$page = new VPageTabs($head, $tab_nav, $topic_nav, $content);
+$page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html
 echo $page->Deliver();
