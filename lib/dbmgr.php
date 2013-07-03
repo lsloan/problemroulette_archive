@@ -43,7 +43,7 @@ class CDbMgr
         $result = $this->m_link->query($query);
 		if (!$result)
 		{
-            echo "query failed: (" . $this->m_link->errno . ") " . $this->m_link->error;
+            echo "query failed: " .$query. "(" . $this->m_link->errno . ") " . $this->m_link->error;
 		}
 		return $result;
 	}

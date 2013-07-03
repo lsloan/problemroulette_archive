@@ -46,10 +46,7 @@ Class MProblem
             '".$prob_correct."',
             '".$prob_ans_count."'
         )";
-        $res = $dbmgr->exec_query($insertquery);
-        $query = "select * from problems;";
-        $res = $dbmgr->fetch_assoc($query);
-        print_r($res);
+        $dbmgr->exec_query($insertquery);
 	}
 	
 	function Get_GD_info()
@@ -156,11 +153,7 @@ Class MCourse
 			'".$name."'
 		)
 		";
-		
-		$res = $dbmgr->exec_query($insertquery);
-        $query = "select * from class;";
-        $res = $dbmgr->fetch_assoc($query);
-        print_r($res);
+		$dbmgr->exec_query($insertquery);
 	}
 	
 	public static function get_all_courses()

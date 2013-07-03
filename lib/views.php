@@ -212,7 +212,7 @@ class VProblems
         global $usrmgr;
         $str = "
             <p>
-            This is the problems page! " .$usrmgr->user_id. "
+            This is the problems page! " .$usrmgr->GetUserId(). "
             </p>
         ";
         return $str;
