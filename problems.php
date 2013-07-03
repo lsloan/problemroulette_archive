@@ -1,27 +1,29 @@
 <?php
 // paths
-
 require_once("./paths.inc.php");
-
-// application objects
-require_once($GLOBALS["DIR_LIB"]."models.php");
-require_once($GLOBALS["DIR_LIB"]."views.php");
-//require_once( $DIR_LIB."usrmgr.php" );
-// utilities
-require_once($GLOBALS["DIR_LIB"]."utilities.php");
 // database
 require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
 $GLOBALS["dbmgr"] = new CDbMgr( "localhost", "pr_user", "pr_user", "prexpansion" );
-// session
-//require_once( $DIR_LIB."sessions.php" );
-//$GLOBALS["sessionmgr"] = new CSessMgr( "session_table", 3600);
-
-// url arguments
-$args = GrabAllArgs();
-
+// user manager
 require_once( $DIR_LIB."usrmgr.php" );
 $GLOBALS["usrmgr"] = new UserManager();
-//business logic
+// utilities
+require_once($GLOBALS["DIR_LIB"]."utilities.php");
+$args = GrabAllArgs();
+// application objects
+require_once($GLOBALS["DIR_LIB"]."models.php");
+require_once($GLOBALS["DIR_LIB"]."views.php");
+
+// populate and use models for business logic on page
+
+// example of how to use the pref manager -- this just increments a count...
+global $usrmgr;
+$ploads = $usrmgr->m_user->GetPref('page_loads');
+if (is_null($ploads))
+    $ploads = 1;
+else
+    $ploads += 1;
+$usrmgr->m_user->SetPref('page_loads', $ploads);
 
 // page construction
 $head = new CHeadCSSJavascript("Problems", array(), array());

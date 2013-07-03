@@ -19,47 +19,51 @@ class MUser
     function create()
     {
 		global $dbmgr;
-        $query = "INSERT INTO user(username,staff) VALUES('".$this->username."', ".$this->staff.")";
+        $query = "INSERT INTO user(username, staff, prefs) VALUES('".$this->username."', ".$this->staff.", '" .$this->package(Array()). "')";
 		$dbmgr->exec_query($query);
     }
-   
+  
+    function package($input)
+    {
+        return addslashes(serialize($input));
+    }
+
+    function unpackage($input)
+    {
+        return unserialize(stripslashes($input));
+    }
+ 
     function read()
     {
         global $dbmgr; 
 
-        //$query = "SELECT username, staff, prefs FROM user";
-        $query = "SELECT username, staff FROM user";
+        $query = "SELECT staff, prefs FROM user where username='".$this->username."'";
         $res = $dbmgr->fetch_assoc($query);
         // populate user (if found)
         if(count($res) == 1)
         {
-            $this->staff = $res['staff'];
-            //$this->prefs = $this->ReadPrefs($res['prefs']);
+            $this->staff = $res[0]['staff'];
+            $this->prefs = $this->unpackage($res[0]['prefs']);
             return True;
         }
         return False;
 
     }
  
-    function ReadPrefs()
-    {   // read all prefs from user table
-        global $dbmgr; 
-         
-        // unserialize the dict of prefs
-        $this->prefs = array(); 
-    }
-
     function WritePrefs()
     {   // write all prefs back to user table
-        // serialize the dict of prefs
-
-        // persist to user table
+        global $dbmgr;
+        $query = "UPDATE user set prefs='".$this->package($this->prefs). "' where username='".$this->username."'";
+		$dbmgr->exec_query($query);
     }
 
     function GetPref($key)
     {
         // return specific requested pref
-        return $this->prefs[$key];
+        if (array_key_exists($key, $this->prefs))
+            return $this->prefs[$key];
+        else
+            return Null;
     }
 
     function SetPref($key, $val)
