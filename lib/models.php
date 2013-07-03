@@ -20,7 +20,6 @@ Class MProblem
 		$selectquery = "SELECT * 
 		FROM problems
 		WHERE id = ".$prob_id;
-		$res = $dbmgr->exec_query($selectquery);
         $res = $dbmgr->fetch_assoc($selectquery);
 		$this->m_prob_id = $prob_id;
 		$this->m_prob_name = $res[0]['name'];
@@ -91,7 +90,6 @@ Class MProblem
 		$selectquery = "SELECT * 
 		FROM 12m_topic_prob
 		WHERE topic_id = ".$topic_id."";
-		$res = $dbmgr->exec_query($selectquery);
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		#$all_prob_ids_in_topic = array();
@@ -115,7 +113,6 @@ Class MProblem
 		$selectquery = "SELECT * 
 		FROM problems
 		".$whereclause;
-		$res = $dbmgr->exec_query($selectquery);
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		$all_problems_in_topic = array();
@@ -170,7 +167,6 @@ Class MCourse
 	{
 		global $dbmgr;
 		$selectquery = "SELECT * FROM class";
-		$res = $dbmgr->exec_query($selectquery);
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		$all_courses = array();
@@ -185,7 +181,6 @@ Class MCourse
 	{
 		global $dbmgr;
 		$selectquery = "SELECT * FROM class";
-		$res = $dbmgr->exec_query($selectquery);
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		$all_courses = array();
@@ -216,7 +211,6 @@ Class MTopic
 	{
 		global $dbmgr;
 		$selectquery = "SELECT * FROM topic";
-		$res = $dbmgr->exec_query($selectquery);
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		$all_topics = array();
@@ -233,7 +227,6 @@ Class MTopic
 		$selectquery = "SELECT * 
 		FROM 12m_class_topic
 		WHERE class_id = ".$course_id."";
-		$res = $dbmgr->exec_query($selectquery);
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		$all_topic_ids_in_course = array();
@@ -255,7 +248,6 @@ Class MTopic
 		$selectquery = "SELECT * 
 		FROM topic
 		".$whereclause;
-		$res = $dbmgr->exec_query($selectquery);
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		$all_topics_in_course = array();

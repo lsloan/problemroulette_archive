@@ -26,60 +26,52 @@ class CDbMgr
 		$this->m_link = false;
 
 		//	Connect to the database
-		$lnk =   new mysqli( $this->m_host, $this->m_user, $this->m_pswd, $this->m_db );
-		if ($lnk->connect_errno) 
+        $lnk = new mysqli( $this->m_host, $this->m_user, $this->m_pswd, $this->m_db );
+        if ($lnk->connect_errno) {
+            echo "Failed to connect to MySQL: (" . $lnk->connect_errno . ") " . $lnk->connect_error;
+        }
+        else
         {
-			trigger_error("Failed to connect to MySQL: (' . $mysqli->connect_errno . ') " . $mysqliCreate->connect_error);
-			return false;
-		}
-		if( !mysqli_select_db( $lnk, $this->m_db ) )
-		{
-			trigger_error( 'dbmgr: Unable to select database $aDatabase - '. mysqli_error(),
-				E_USER_ERROR );
-			return false;
-		}
-		$this->m_link = $lnk;
+            $this->m_link = $lnk;
+            #echo $lnk->host_info . "\n";
+        }
 	}
 
 	//	Primitives
-	function exec_query( $x )
+	function exec_query( $query )
 	{
-		$result = $this->m_link->query($x);
-		if ( !$result )
+        $result = $this->m_link->query($query);
+		if (!$result)
 		{
-			$str = "<br/>DB query error: <br/>Query string: " . $x . "<br/>Returned message: " . mysqli_error() . "<br/>";
-			// make sure all the tables are unlocked
-			$this->Unlock();
-			die ( $str );
+            echo "query failed: (" . $this->m_link->errno . ") " . $this->m_link->error;
 		}
 		return $result;
 	}
     function fetch_num( $query )
     {
-		$res = $this->m_link->query($query);
-        return $res->fetch_all(MYSQL_NUM);
-        # $results = array();
-        # foreach ($res as $value) {
-        # 	array_push($results, $value);
-        # }
-		# return $results;
+        $res = $this->exec_query($query);
+        $results = array();
+        while($value = $res->fetch_row())
+        {
+            array_push($results, $value);
+        }
+        return $results;
     }
     function fetch_assoc( $query )
     {
-		$res = $this->m_link->query($query);
-        return $res->fetch_all(MYSQL_ASSOC);
-        # $results = array();
-        # foreach ($res as $value) {
-        #	array_push($results, $value);
-        # }
-		# return $results;
+        $res = $this->exec_query($query);
+        $results = array();
+        while($value = $res->fetch_assoc())
+        {
+            array_push($results, $value);
+        }
+        return $results;
     }
-	function db_num_rows( $x ) { return mysqli_stmt_num_rows( $x ); }
 	function db_addslashes( $x ) { return addslashes( $x ); }
 	function db_stripslashes( $x ) { return stripslashes( $x ); }
 
 	//	Functions
-	function Close() { mysqli_close( $this->m_link ); }
+	function Close() { $this->m_link->close(); }
 	function StartTransaction() { return $this->exec_query( "START TRANSACTION" ); }
 	function Commit() { return $this->exec_query( "COMMIT" ); }
 	function Rollback() { return $this->exec_query( "ROLLBACK" ); }
@@ -98,7 +90,6 @@ class CDbMgr
 		return $this->exec_query( $sql );
 	}
 	function Unlock() { return $this->exec_query( "UNLOCK TABLES" ); }
-	function GetServerHost() { return mysqli_get_server_info( $this->m_link ); }
 
 	//	Accessors
 	function GetHost() { return $this->m_host; }
