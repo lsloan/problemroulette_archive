@@ -275,9 +275,9 @@ Class MTabNav
         $this->m_selected = $selected;
 
         $this->m_pages = array(
-        'Home' => $GLOBALS["DOMAIN"] . 'home.php', 
+        'Selections' => $GLOBALS["DOMAIN"] . 'selections.php', 
         'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
-        'Statistics' => $GLOBALS["DOMAIN"] . 'statistics.php', 
+        'Statistics' => $GLOBALS["DOMAIN"] . 'stats.php', 
         'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
         );
     }

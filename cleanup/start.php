@@ -37,8 +37,6 @@
           });
 
         });
-
-
         /*
         $('a#statistics-tab').on('shown', function (e) {
           e.target // activated tab
@@ -46,7 +44,6 @@
           alert("stats tab!");
         });
         */
-
      </script>
   </head>
   <body>

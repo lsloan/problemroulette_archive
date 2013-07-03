@@ -13,7 +13,15 @@ class CHeadCSSJavascript{
 	}
 
 	function Deliver(){
-		$str   = "\n<title>".$this->m_title."</title>";
+		$str   = "\n<title>".$this->m_title." - Problem Roulette</title>";
+        $str .= " 
+        <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
+        <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
+        <link href='css/styles.css' rel='stylesheet' media='screen'>
+        <script src='trackingcode.js'></script>
+        <script src='js/jquery-1.10.1.js'></script>
+        <script src='js/bootstrap.js'></script>
+        ";
         if($this->m_cssfile != NULL)
 		foreach((array)$this->m_cssfile as $css){
 			$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
@@ -22,9 +30,9 @@ class CHeadCSSJavascript{
 		foreach((array)$this->m_javafile as $java){
 			$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
 		}
-    $str .= "
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    ";
+        $str .= "
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        ";
 		return $str;
 	}
 }
@@ -37,10 +45,11 @@ class VPageTabs{
     var $m_content;
 
 	// constructor
-	function __construct($head, $nav, $nav2, $content){
+	#function __construct($head, $nav, $nav2, $content){
+	function __construct($head, $nav, $content){
 		$this->m_head = $head;
 		$this->m_nav = $nav;
-		$this->m_nav2 = $nav2;
+		#$this->m_nav2 = $nav2;
 		$this->m_content = $content;
 	}
 
@@ -54,28 +63,40 @@ class VPageTabs{
 	"</head>
 <!--close head-->
 <!--open body-->
-	<body>
-<div id='wrapper'>
-    <div id='tabContainer'>
-        <div class='tabs'>"
-            .$this->m_nav->Deliver().
-        "</div>
-        <div class='course_topic_nav'>"
-            .$this->m_nav2->Deliver(). 
-        "</div>
-        <div class='tabscontent'>
-            <div class='tabpage'>"
-            .$this->m_content->Deliver().
-            "</div>
-        </div> 
+<body>
+
+<div id='wrap'>
+    <div class='container'>
+        "
+        .$this->m_nav->Deliver().
+        "
+        <div class='tab-content'>
+        " 
+        .$this->m_content->Deliver().
+        "
+        </div>
+    </div>
+    <div id='push'>
     </div>
 </div>
-	</body>
-	<!--close body-->
+
+<div id='footer'>
+    <div class='container'>
+    <p class='muted credit'>
+      Development of this site was sponsored by the <a href='http://www.provost.umich.edu' target='_blank'>UM Office of the Provost</a> through the Gilbert Whitaker Fund for the Improvement of Teaching.
+    </p>
+    <p class='muted credit'>
+      Please send any feedback to <a href='mailto:physics.sso@umich.edu'>physics.sso@umich.edu</a><br/>
+      For issues with the content of the problems, see your instructor first.
+    </p>
+    </div>
+</div>
+
+</body>
+<!--close body-->
 <html>";
 		return $str;
 	}
-    //" . $this->m_body->Deliver() . "
 }
 
 class VTabNav
@@ -88,12 +109,12 @@ class VTabNav
 	function Deliver()
 	{
         $selected = 'Problems';
-        $str = "<ul>";
+        $str = "<ul class='nav nav-tabs'>";
 		foreach($this->m_nav->m_pages as $tab=>$url)
         {
             $tabStyle = '';
             if($this->m_nav->m_selected == $tab)
-                $tabStyle = 'tabActiveHeader';
+                $tabStyle = 'active';
             $str .= "<li class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
         }
         $str .= "</ul>";
@@ -187,6 +208,26 @@ class VStatistics
 
 class VProblems
 {
+	function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        $str = "
+        <div class='tab-pane active' id='problems'>
+            <p>
+            This is the problems page!
+            </p>
+        </div>
+        ";
+        return $str;
+    }
+}
+
+
+class VCourse_Selections
+{
 	#m_model
 	
 	function __construct()
@@ -195,7 +236,29 @@ class VProblems
 	
 	function Deliver()
 	{
-        return "hi, this is the problems page"; 
+        $str = "
+        <div class='tab-pane active' id='problems'>
+
+        <p>
+        Welcome! This site serves random problems from past exams given in introductory courses of the University of Michigan Department of Physics.
+        </p>
+
+        <img class='logo' src='img/PR.jpg'></img>
+
+        <p><strong>Please select your class to begin:</strong></p>
+            <div class='button-container'>
+            <a class='btn' href='Home140.php'>Physics 140</a><br/>
+            <a class='btn' href='Home240.php'>Physics 240</a><br/>
+            <a class='btn' href='Home135.php'>Physics 135</a><br/>
+            <a class='btn' href='Home235.php'>Physics 235</a><br/>
+            </div>
+
+        </div>
+        <div class='tab-pane' id='statistics'>
+        statistics!
+        </div>
+        ";
+        return $str;
     }
 }
 
