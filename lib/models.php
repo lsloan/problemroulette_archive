@@ -284,4 +284,77 @@ Class MCourseTopicNav
         $this->m_courses = MCourse::get_all_courses_with_topics();
     }
 }
+
+//model containing the course and topic selection information
+Class MCTSelect
+{
+	var $m_selected_course;//get from preferences
+	var $m_selected_topics_list;//one or more topics, get from preferences
+	
+	//read in preferences data to set vars
+	function __construct()
+	{
+		global $usrmgr;
+		//$this->m_selected_course = result from query;
+		//$this->m_selected_topics_list = result from query;
+	}
+}
+
+/*model that will determine the correct information in selections.php
+<LOGIC>
+
+if (preferences is blank--you've never selected a course/topic)
+	display course selector
+
+if (you've selected a course/done a problem in a course in the past (???-----30 days-----???))
+	display topic selector for given course
+	???-----check boxes for selected topics-----??? (mode of usage-going in and clicking a topic)(if you click the topic name instead of checking the box and selecting, defaulting to a checked box may not be intuitive)
+	
+</LOGIC>
+*/
+Class MDirector
+{
+	var $m_selected_course;//get from MCTSelect
+	var $m_selected_topics_list;//get from MCTSelect
+	var $m_course_or_topic;//bool--0 for course selector, 1 for topic selector
+	
+	function __construct()
+	{
+		$CTprefs = new MCTSelect();
+		$this->m_selected_course = $CTprefs->m_selected_course;
+		$this->m_selected_topics_list = $CTprefs->m_selected_topics_list;
+		
+		$this->m_course_or_topic = 0;
+		//execute logic
+		//if (logic calls for it)
+		//{$this->m_course_or_topic = 1;}
+	}
+}
+
+//read in preferences and pick a problem to output based on course and topic selection and omitted problems
+Class MPpicker
+{
+	var $m_selected_course;//get from preferences (???-----don't need this-----???)
+	var $m_selected_topics_list;//one or more topics (by topic_id), get from preferences
+	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
+	var $m_picked_problem;//output, problem picked by Ppicker
+	
+	function __construct()
+	{
+		global $usrmgr;
+		//$this->m_selected_course = result from query;
+		//$this->m_selected_topics_list = result from query;
+		//$this->omitted_problems_list = result from query;
+	}
+	
+	function pick_problem()
+	{
+		//pick random topic from list
+		
+		//write clause to exclude the IDs of omitted problems
+		
+		//pick random problem from picked topic excluding omitted problems
+	}
+}
+
 ?>
