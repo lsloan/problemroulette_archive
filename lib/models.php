@@ -115,7 +115,6 @@ Class MProblem
 		$all_problems_in_topic = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			#HEY! NO CONSTRUCTOR! HOW ARE YOU CALLING NEW MProblem LIKE THAT?
 			#$all_problems_in_topic[$i] = new MProblem($res[$i]['id'],$res[$i]['name']);
 			#TEST ECHO:::::
 			$all_problems_in_topic[$i] = $res[$i]['name'];
@@ -286,17 +285,20 @@ Class MCourseTopicNav
 }
 
 //model containing the course and topic selection information
-Class MCTSelect
+//this model doesn't do anything, just stores the variables
+Class MCTSelect//WORKING
 {
 	var $m_selected_course;//get from preferences
 	var $m_selected_topics_list;//one or more topics, get from preferences
+	var $m_last_activity;//get from preferences
 	
 	//read in preferences data to set vars
 	function __construct()
 	{
 		global $usrmgr;
-		//$this->m_selected_course = result from query;
-		//$this->m_selected_topics_list = result from query;
+		$this->m_selected_course = $usrmgr->m_user->GetPref('selected_course');
+		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
+		$this->m_last_activity = $usrmgr->m_user->GetPref('last_activity');
 	}
 }
 
@@ -312,29 +314,32 @@ else
 
 </LOGIC>
 */
-Class MDirector
+
+//$this->m_course_or_topic will be 0 for course selector or 1 for topic selector;
+//use this variable (along with selected course from MCTSelect if topic selector) to display the right page;
+Class MDirector//WORKING
 {
-	var $m_selected_course;//get from MCTSelect
-	var $m_selected_topics_list;//get from MCTSelect
+	var $m_expiration_time = 5184000; //60 days in seconds
+	var $m_last_activity = 0;//get from MCTSelect
+	var $m_current_time;//current timestamp
 	var $m_course_or_topic = 0;//bool--0 for course selector, 1 for topic selector
 	
 	function __construct()
 	{
 		$CTprefs = new MCTSelect();
-		$this->m_selected_course = $CTprefs->m_selected_course;
-		$this->m_selected_topics_list = $CTprefs->m_selected_topics_list;
+		$this->m_last_activity = $CTprefs->m_last_activity;
+		$this->m_current_time = time();
 		//vvvvvvv course_or_topic vvvvvvv
-		//execute logic
-		//if (logic calls for it)
-		//{$this->m_course_or_topic = 1;
-		//select correct course;}
+		if (($this->m_current_time - $this->m_last_activity) <= $this->m_expiration_time)
+		{
+			$this->m_course_or_topic = 1;
+		}
 	}
 }
 
 //read in preferences and pick a problem to output based on course and topic selection and omitted problems
-Class MPpicker
+Class MPpicker//NOT WORKING
 {
-	var $m_selected_course;//get from preferences (???-----don't need this-----???)
 	var $m_selected_topics_list;//one or more topics (by topic_id), get from preferences
 	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
 	var $m_picked_problem;//output, problem picked by Ppicker
