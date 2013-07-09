@@ -300,34 +300,34 @@ Class MCTSelect
 	}
 }
 
-/*model that will determine the correct information in selections.php
+/*
+*****model that will determine the correct information in selections.php (course_or_topic)
 <LOGIC>
 
-if (preferences is blank--you've never selected a course/topic)
+if (you've selected a course/done a problem in a course in the past 60 days)
+	display topic selector for given course
+	
+else
 	display course selector
 
-if (you've selected a course/done a problem in a course in the past (???-----30 days-----???))
-	display topic selector for given course
-	???-----check boxes for selected topics-----??? (mode of usage-going in and clicking a topic)(if you click the topic name instead of checking the box and selecting, defaulting to a checked box may not be intuitive)
-	
 </LOGIC>
 */
 Class MDirector
 {
 	var $m_selected_course;//get from MCTSelect
 	var $m_selected_topics_list;//get from MCTSelect
-	var $m_course_or_topic;//bool--0 for course selector, 1 for topic selector
+	var $m_course_or_topic = 0;//bool--0 for course selector, 1 for topic selector
 	
 	function __construct()
 	{
 		$CTprefs = new MCTSelect();
 		$this->m_selected_course = $CTprefs->m_selected_course;
 		$this->m_selected_topics_list = $CTprefs->m_selected_topics_list;
-		
-		$this->m_course_or_topic = 0;
+		//vvvvvvv course_or_topic vvvvvvv
 		//execute logic
 		//if (logic calls for it)
-		//{$this->m_course_or_topic = 1;}
+		//{$this->m_course_or_topic = 1;
+		//select correct course;}
 	}
 }
 
