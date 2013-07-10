@@ -46,10 +46,17 @@ $usrmgr->m_user->SetPref('selected_topics_list',[2,5,7]);
 $CToptions = new MCTSelect();
 
 $course_or_topic = new MDirector();
-echo $course_or_topic->m_course_or_topic;
+//echo $course_or_topic->m_course_or_topic;
 if ($course_or_topic->m_course_or_topic == 1)
 {
-	echo "<br/>".$CToptions->m_selected_course;
+	//echo "<br/>".$CToptions->m_selected_course;
 }
+//$length = count($usrmgr->m_user->GetPref('selected_topics_list'));
+//echo mt_rand(0,$length-1);
 //echo $usrmgr->m_user->GetPref('selected_course');
+
+$testPpicker = new MPpicker();
+$testPpicker->pick_problem();
+echo $testPpicker->m_picked_topic;
+echo $testPpicker->m_picked_problem->m_prob_id;
 ?>

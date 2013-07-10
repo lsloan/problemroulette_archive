@@ -6,7 +6,7 @@ Class MProblem
 	var $m_prob_id;			#ID of problem
 	var $m_prob_name;		#Name of problem
 	var $m_prob_url;		#URL of problem
-	var $m_prob_topic_id;	#topic of problem
+	//var $m_prob_topic_id;	#topic of problem
 	var $m_prob_ans_count;	#Number of answers for problem
 	var $m_prob_correct;	#Correct answer choice for problem
 	
@@ -24,7 +24,7 @@ Class MProblem
 		$this->m_prob_id = $prob_id;
 		$this->m_prob_name = $res[0]['name'];
 		$this->m_prob_url = $res[0]['url'];
-		$this->m_prob_topic_id = $res[0]['topic_id'];
+		//$this->m_prob_topic_id = $res[0]['topic_id'];
 		$this->m_prob_ans_count = $res[0]['ans_count'];
 		$this->m_prob_correct = $res[0]['correct'];
 	}
@@ -342,23 +342,38 @@ Class MPpicker//NOT WORKING
 {
 	var $m_selected_topics_list;//one or more topics (by topic_id), get from preferences
 	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
-	var $m_picked_problem;//output, problem picked by Ppicker
+	var $m_picked_topic;//topic (by topic ID) picked by Ppicker
+	var $m_picked_problem;//problem (as MProblem model) picked by Ppicker
 	
 	function __construct()
 	{
 		global $usrmgr;
-		//$this->m_selected_course = result from query;
-		//$this->m_selected_topics_list = result from query;
-		//$this->omitted_problems_list = result from query;
+		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
+		$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
 	}
 	
+	//picks a topic (by ID) and a problem in that topic (by ID)
 	function pick_problem()
 	{
-		//pick random topic from list
+		//pick random topic from list ///////////	WORKS
+		$picked_topic_index = 0;
+		$length = count($this->m_selected_topics_list);
+		if ($length > 1)
+		{
+			$picked_topic_index = mt_rand(0,$length - 1);
+		}
+		$this->m_picked_topic = $this->m_selected_topics_list[$picked_topic_index];
 		
-		//write clause to exclude the IDs of omitted problems
-		
-		//pick random problem from picked topic excluding omitted problems
+		//pick random problem from topic without exclusion ///////////////	WORKS
+		$picked_problem_index = 0;
+		$all_problems = MProblem::get_all_problems_in_topic($this->m_picked_topic);
+		$num_problems = count($all_problems);
+		if ($num_problems > 1)
+		{
+			$picked_problem_index = mt_rand(0,$num_problems - 1);
+		}
+		echo $picked_problem_index;
+		$this->m_picked_problem = $all_problems[$picked_problem_index];
 	}
 }
 
