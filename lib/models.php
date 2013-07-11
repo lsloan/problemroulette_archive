@@ -81,12 +81,12 @@ Class MProblem
 		#push data to database
 	}
 	
-	public static function get_all_problems_in_topic($topic_id)
+	/*public static function get_all_problems_in_topic($topic_id)
 	{
 		global $dbmgr;
 		$selectquery = "SELECT * 
 		FROM 12m_topic_prob
-		WHERE topic_id = ".$topic_id."";
+		WHERE topic_id = ".$topic_id;
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		#$all_prob_ids_in_topic = array();
@@ -96,7 +96,7 @@ Class MProblem
 			#$all_prob_ids_in_topic[$i] = $res[$i]['problem_id'];
 			$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
 		}
-		
+		*/
 		/*$whereclause = "WHERE ";
 		for ($i=0; $i<$numrows; $i++)
 		{
@@ -126,6 +126,35 @@ Class MProblem
 			echo $all_problems_in_topic[$i]->m_prob_name;
 		}
 		*/
+		/*return $all_problems_in_topic;
+	}*/
+	
+	public static function get_all_problems_in_topic_with_exclusion($topic_id,$omitted_problems_list = Null)
+	{
+		global $dbmgr;
+		$selectquery = "SELECT * 
+		FROM 12m_topic_prob
+		WHERE topic_id = ".$topic_id;
+		if ($omitted_problems_list != Null)
+		{
+			$selectquery .= " AND ";
+			$omitted_length = count($omitted_problems_list);
+			for ($i=0; $i<$omitted_length; $i++)
+		{
+			$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
+			if ($i < ($omitted_length - 1))
+			{
+				$selectquery .= " AND ";
+			}
+		}
+		}
+		$res = $dbmgr->fetch_assoc($selectquery);
+		$numrows = count($res);
+		$all_problems_in_topic = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
+		}
 		return $all_problems_in_topic;
 	}	
 }
@@ -286,7 +315,7 @@ Class MCourseTopicNav
 
 //model containing the course and topic selection information
 //this model doesn't do anything, just stores the variables
-Class MCTSelect//WORKING
+Class MCTSelect
 {
 	var $m_selected_course;//get from preferences
 	var $m_selected_topics_list;//one or more topics, get from preferences
@@ -317,7 +346,7 @@ else
 
 //$this->m_course_or_topic will be 0 for course selector or 1 for topic selector;
 //use this variable (along with selected course from MCTSelect if topic selector) to display the right page;
-Class MDirector//WORKING
+Class MDirector
 {
 	var $m_expiration_time = 5184000; //60 days in seconds
 	var $m_last_activity = 0;//get from MCTSelect
@@ -338,12 +367,12 @@ Class MDirector//WORKING
 }
 
 //read in preferences and pick a problem to output based on course and topic selection and omitted problems
-Class MPpicker//NOT WORKING
+Class MPpicker
 {
 	var $m_selected_topics_list;//one or more topics (by topic_id), get from preferences
 	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
 	var $m_picked_topic;//topic (by topic ID) picked by Ppicker
-	var $m_picked_problem;//problem (as MProblem model) picked by Ppicker
+	var $m_picked_problem;//problem (as MProblem object) picked by Ppicker
 	
 	function __construct()
 	{
@@ -352,10 +381,10 @@ Class MPpicker//NOT WORKING
 		$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
 	}
 	
-	//picks a topic (by ID) and a problem in that topic (by ID)
+	//picks a topic (by ID) and a problem in that topic (as an MProblem object)
 	function pick_problem()
 	{
-		//pick random topic from list ///////////	WORKS
+		//pick random topic from list
 		$picked_topic_index = 0;
 		$length = count($this->m_selected_topics_list);
 		if ($length > 1)
@@ -364,9 +393,9 @@ Class MPpicker//NOT WORKING
 		}
 		$this->m_picked_topic = $this->m_selected_topics_list[$picked_topic_index];
 		
-		//pick random problem from topic without exclusion ///////////////	WORKS
+		//pick random problem from topic with exclusion
 		$picked_problem_index = 0;
-		$all_problems = MProblem::get_all_problems_in_topic($this->m_picked_topic);
+		$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($this->m_picked_topic,$this->m_omitted_problems_list);
 		$num_problems = count($all_problems);
 		if ($num_problems > 1)
 		{

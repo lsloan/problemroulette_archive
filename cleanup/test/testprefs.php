@@ -41,6 +41,7 @@ $timestamp = time();
 
 $usrmgr->m_user->SetPref('selected_course',4);
 $usrmgr->m_user->SetPref('selected_topics_list',[2,5,7]);
+$usrmgr->m_user->SetPref('omitted_problems_list',[1,6,4]);
 //$usrmgr->m_user->SetPref('last_activity',$timestamp);
 
 $CToptions = new MCTSelect();
