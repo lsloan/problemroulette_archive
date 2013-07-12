@@ -238,6 +238,17 @@ Class MTopic
 		$this->m_name = $name;
 	}
 	
+	public static function get_topic_by_id($id)
+	{
+		global $dbmgr;
+		$selectquery = "SELECT * FROM topic WHERE id = ".$id;
+		$res = $dbmgr->fetch_assoc($selectquery);
+		$topic = new MTopic($res[0]['id'],$res[0]['name']);
+		$topic->m_questions = MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id);
+		return $topic;
+	}
+
+	
 	public static function get_all_topics()
 	{
 		global $dbmgr;
@@ -359,6 +370,7 @@ else
 Class MDirector
 {
 	var $m_expiration_time = 5184000; //60 days in seconds
+	var $m_selected_course;//get from MCTSelect
 	var $m_last_activity = 0;//get from MCTSelect
 	var $m_current_time;//current timestamp
 	var $m_course_or_topic = 0;//bool--0 for course selector, 1 for topic selector
@@ -366,10 +378,11 @@ Class MDirector
 	function __construct()
 	{
 		$CTprefs = new MCTSelect();
+		$this->m_selected_course = $CTprefs->m_selected_course;
 		$this->m_last_activity = $CTprefs->m_last_activity;
 		$this->m_current_time = time();
 		//vvvvvvv course_or_topic vvvvvvv
-		if (($this->m_current_time - $this->m_last_activity) <= $this->m_expiration_time)
+		if (($this->m_current_time - $this->m_last_activity) <= $this->m_expiration_time && $this->m_selected_course != Null)
 		{
 			$this->m_course_or_topic = 1;
 		}

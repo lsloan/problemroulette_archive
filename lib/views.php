@@ -261,7 +261,9 @@ class VTopic_Selections
 		</form>
 		
 		<form action='' method='post'>
-	    <button type='submit' class='btn btn-courses'><i class='icon-arrow-left'></i>Select Different Course</button>
+	    <button type='submit' class='btn btn-courses' name='select_different_course' value='1'>
+		<i class='icon-arrow-left'></i>
+		Select Different Course</button>
 		<a href='javascript:document.topic_selector.submit();' id='use-selected' class='btn btn-primary disabled'>Use Selected Topics</a>
 		</form>
 		";
