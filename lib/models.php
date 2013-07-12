@@ -244,7 +244,7 @@ Class MTopic
 		$selectquery = "SELECT * FROM topic WHERE id = ".$id;
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$topic = new MTopic($res[0]['id'],$res[0]['name']);
-		$topic->m_questions = MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id);
+		//$topic->m_questions = MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id);
 		return $topic;
 	}
 
@@ -424,7 +424,7 @@ Class MPpicker
 		{
 			$picked_problem_index = mt_rand(0,$num_problems - 1);
 		}
-		echo $picked_problem_index;
+		//echo $picked_problem_index;
 		$this->m_picked_problem = $all_problems[$picked_problem_index];
 	}
 }

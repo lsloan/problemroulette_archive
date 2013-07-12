@@ -202,10 +202,40 @@ class VStats
     }
 }
 
-class VProblems
+class VProblems_no_topics
 {
 	function __construct()
 	{
+	}
+	
+	function Deliver()
+	{
+        $str = "
+            <p>
+            Sorry! You haven't selected which problems you would like to do
+            </p>
+			<p>
+			<strong>Please return to selections tab to complete your selection</strong>
+			</p>
+        ";
+        return $str;
+    }
+}
+
+class VProblems
+{
+	var $v_picked_problem;
+	var $v_selected_topics_list;
+	var $v_selected_topics_list_name;
+
+	function __construct($picked_problem, $selected_topics_list)
+	{
+		$this->v_picked_problem = $picked_problem;
+		$this->v_selected_topics_list = $selected_topics_list;
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
+		{
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
+		}
 	}
 	
 	function Deliver()
@@ -215,6 +245,19 @@ class VProblems
             <p>
             This is the problems page! " .$usrmgr->GetUserId(). "
             </p>
+			<p>
+			Your selected topics: <strong>".
+			implode(', ',$this->v_selected_topics_list_name)
+			." </strong>
+			</p>
+			<p>
+			Your problem is: 
+			<strong>
+			".
+			$this->v_picked_problem->m_prob_name
+			."
+			</strong>
+			</p>
         ";
         return $str;
     }
@@ -249,7 +292,7 @@ class VTopic_Selections
 				
 				<button class='link'
 				type='submit'
-				name='topic_link_submission[]'
+				name='topic_link_submission'
 				value='".$this->v_selected_course->m_topics[$i]->m_id."'>
 				".$this->v_selected_course->m_topics[$i]->m_name."
 				</button>
@@ -264,7 +307,7 @@ class VTopic_Selections
 	    <button type='submit' class='btn btn-courses' name='select_different_course' value='1'>
 		<i class='icon-arrow-left'></i>
 		Select Different Course</button>
-		<a href='javascript:document.topic_selector.submit();' id='use-selected' class='btn btn-primary disabled'>Use Selected Topics</a>
+		<a href='javascript:void(0);' id='use-selected' class='btn btn-primary disabled'>Use Selected Topics</a>
 		</form>
 		";
 

@@ -17,6 +17,8 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 //course_or_topic logic (0 for course selection, 1 for topic selection)
 $course_or_topic = 0;
+//whether or not to pre-fill in the topics (only if returning from another tab)
+$pre_fill_topics = 0;
 
 //checks to see if user is coming from different tab
 //CURRENTLY ONLY CHECKS FOR PROBLEMS TAB
@@ -26,6 +28,7 @@ if (isset($_SERVER['HTTP_REFERER']))
 	if (strpos($ref,'problems.php') !== false)
 	{
 		$course_or_topic = 1;
+		$pre_fill_topics = 1;
 	}
 }
 

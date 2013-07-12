@@ -13,8 +13,11 @@
             })
             if (count > 0) {
                 $('#use-selected').removeClass('disabled');
+				$('#use-selected').attr('href','javascript:document.topic_selector.submit();');
             } else {
                 $('#use-selected').addClass('disabled');
+				$('#use-selected').attr('href','javascript:void(0);');
+
             }
           });
 
