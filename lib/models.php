@@ -184,6 +184,16 @@ Class MCourse
 		$dbmgr->exec_query($insertquery);
 	}
 	
+	public static function get_course_by_id($id)
+	{
+		global $dbmgr;
+		$selectquery = "SELECT * FROM class WHERE id = ".$id;
+		$res = $dbmgr->fetch_assoc($selectquery);
+		$course = new MCourse($res[0]['id'],$res[0]['name']);
+		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
+		return $course;
+	}
+	
 	public static function get_all_courses()
 	{
 		global $dbmgr;
@@ -247,7 +257,7 @@ Class MTopic
 		global $dbmgr;
 		$selectquery = "SELECT * 
 		FROM 12m_class_topic
-		WHERE class_id = ".$course_id."";
+		WHERE class_id = ".$course_id;
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
 		$all_topic_ids_in_course = array();

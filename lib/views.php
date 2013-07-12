@@ -21,6 +21,7 @@ class CHeadCSSJavascript{
         <script src='trackingcode.js'></script>
         <script src='js/jquery-1.10.1.js'></script>
         <script src='js/bootstrap.js'></script>
+		<script src='js/checkboxes.js'></script>
         ";
         if($this->m_cssfile != NULL)
 		foreach((array)$this->m_cssfile as $css){
@@ -219,17 +220,68 @@ class VProblems
     }
 }
 
-
-class VCourse_Selections
+class VTopic_Selections
 {
-	#m_model
+	var $v_selected_course;
 	
-	function __construct()
+	function __construct($selected_course)
 	{
+		$this->v_selected_course = $selected_course;
 	}
 	
 	function Deliver()
 	{
+		$str = "<p>The links below serve randomly-chosen questions, one at a time, from banks of multiple-choice problems derived from past exams.</p>
+		<img class='logo' src='img/PR.jpg' width='200px'></img>
+		<p><strong><font size='5'>".$this->v_selected_course->m_name."</font></strong></p>
+		<p><strong>Please select a topic to begin:</strong></p>
+		
+		<form action='problems.php' method='post' name='topic_selector'>
+		<ul class='topic-selector'>
+			";
+			$num_topics_in_course = count($this->v_selected_course->m_topics);
+			for ($i=0; $i<$num_topics_in_course; $i++)
+			{
+				$str .= "<li>
+				<input type='checkbox' 
+				name='topic_checkbox_submission[]'
+				value='".$this->v_selected_course->m_topics[$i]->m_id."'/>
+				
+				<button class='link'
+				type='submit'
+				name='topic_link_submission[]'
+				value='".$this->v_selected_course->m_topics[$i]->m_id."'>
+				".$this->v_selected_course->m_topics[$i]->m_name."
+				</button>
+				
+				</li>";
+			}
+			$str .= "
+		</ul>
+		</form>
+		
+		<form action='' method='post'>
+	    <button type='submit' class='btn btn-courses'><i class='icon-arrow-left'></i>Select Different Course</button>
+		<a href='javascript:document.topic_selector.submit();' id='use-selected' class='btn btn-primary disabled'>Use Selected Topics</a>
+		</form>
+		";
+
+		return $str;
+	}
+}
+
+class VCourse_Selections
+{
+	#m_model
+	var $v_all_courses_with_topics;
+	
+	function __construct($all_courses_with_topics)
+	{
+		$this->v_all_courses_with_topics = $all_courses_with_topics;
+	}
+	
+	function Deliver()
+	{		
         $str = "
         <div class='tab-pane active' id='problems'>
 
@@ -239,12 +291,27 @@ class VCourse_Selections
 
         <img class='logo' src='img/PR.jpg'></img>
 
-        <p><strong>Please select your class to begin:</strong></p>
+        <p><strong>Please select your class:</strong></p>
             <div class='button-container'>
-            <a class='btn' href='Home140.php'>Physics 140</a><br/>
+			<form action='' method='post'>";
+				$num_courses = count($this->v_all_courses_with_topics);
+				for ($i=0; $i<$num_courses; $i++)
+				{
+					$str .= "<button 
+					class='btn' 
+					type='submit' 
+					name='course_submission' 
+					value='".$this->v_all_courses_with_topics[$i]->m_id."'>
+					".$this->v_all_courses_with_topics[$i]->m_name."
+					</button><br/>";
+				}
+				//<button class='btn' type='submit' name='course_submission' value='course1'>Course 1</button><br/>
+				//<button class='btn' type='submit' name='course_submission' value='course2'>Course 2</button><br/>
+			$str .= "</form>
+            <!--<a class='btn' href='Home140.php'>Physics 140</a><br/>
             <a class='btn' href='Home240.php'>Physics 240</a><br/>
             <a class='btn' href='Home135.php'>Physics 135</a><br/>
-            <a class='btn' href='Home235.php'>Physics 235</a><br/>
+            <a class='btn' href='Home235.php'>Physics 235</a><br/>-->
             </div>
 
         </div>
