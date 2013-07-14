@@ -319,7 +319,7 @@ Class MTabNav
         $this->m_pages = array(
         'Selections' => $GLOBALS["DOMAIN"] . 'selections.php', 
         'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
-        'Statistics' => $GLOBALS["DOMAIN"] . 'stats.php', 
+        'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php', 
         'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
         );
     }
@@ -395,7 +395,7 @@ Class MPpicker
 	var $m_selected_topics_list;//one or more topics (by topic_id), get from preferences
 	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
 	var $m_picked_topic;//topic (by topic ID) picked by Ppicker
-	var $m_picked_problem;//problem (as MProblem object) picked by Ppicker
+	var $m_picked_problem = Null;//problem (as MProblem object) picked by Ppicker
 	
 	function __construct()
 	{
@@ -420,12 +420,14 @@ Class MPpicker
 		$picked_problem_index = 0;
 		$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($this->m_picked_topic,$this->m_omitted_problems_list);
 		$num_problems = count($all_problems);
-		if ($num_problems > 1)
+		if ($num_problems >= 1)
 		{
 			$picked_problem_index = mt_rand(0,$num_problems - 1);
+			$this->m_picked_problem = $all_problems[$picked_problem_index];
+
 		}
 		//echo $picked_problem_index;
-		$this->m_picked_problem = $all_problems[$picked_problem_index];
+		//$this->m_picked_problem = $all_problems[$picked_problem_index];
 	}
 }
 

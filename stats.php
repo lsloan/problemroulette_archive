@@ -21,8 +21,8 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 
 // page construction
-$head = new CHeadCSSJavascript("Problems", array(), array());
-$tab_nav = new VTabNav(new MTabNav('Statistics'));
+$head = new CHeadCSSJavascript("My Summary", array(), array());
+$tab_nav = new VTabNav(new MTabNav('My Summary'));
 $content = new VStats();
 $page = new VPageTabs($head, $tab_nav, $content);
 

@@ -67,7 +67,7 @@ $course_or_topic = $Director->m_course_or_topic;
 
 
 // page construction
-$head = new CHeadCSSJavascript("Problems", array(), array());
+$head = new CHeadCSSJavascript("Selections", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Selections'));
 
 //get course and topic selection options and time of last activity

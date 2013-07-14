@@ -32,15 +32,18 @@ $selected_topics_list_id = Null;
 if (isset($_POST['topic_checkbox_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
+	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 }
 
 //get from link if available and put into preferences
 if (isset($_POST['topic_link_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_link_submission'];
+	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 }
 
-$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+//$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+$selected_topics_list_id = $usrmgr->m_user->GetPref('selected_topics_list');
 $num_topics = count($selected_topics_list_id);
 
 for ($i=0; $i<$num_topics; $i++)
@@ -67,6 +70,12 @@ else
 {
 	$content = new VProblems_no_topics();
 }
+
+if ($picked_problem == Null)
+{
+	$content = new Vproblems_no_problems();
+}
+
 $page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html

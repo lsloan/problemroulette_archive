@@ -69,10 +69,6 @@ h1 {
 	margin: 0px 0px 10px 20px;
 }
 
-.tab-pane.active button{
-	margin: 0px 0px 10px 20px;
-}
-
 .tab-pane.active p{
 	margin: 0 0 10px 10px;
 }
@@ -95,26 +91,15 @@ h1 {
 }
 
 .topic-selector li button.link{
-	margin: 0 0 0px 20px;
 	background: transparent;
-	color: #0088cc;
+	color: #0000ff;
 	text-decoration: none;
 	cursor: pointer;
 	border: none;
 }
 
-.topic-selector li button.link:hover{
-	text-decoration: underline;
-	color: #004488
-}
-
 .btn-courses i {
-    margin-right: 10px;
-}
-
-.label-big{
-	font-size: 20px;
-	line-height: 24px;
+        margin-right: 10px;
 }
 
 li.checked {
@@ -123,16 +108,11 @@ li.checked {
 }
 
 iframe {
-	margin: 0;
-	padding: 0;
-	border: none;
-	width: 100%;
-	height: 900px;
-}
-
-.half-line{
-	line-height: 10px;
-	margin-bottom: 0 !important;
+        margin: 0;
+        padding: 0;
+        border: none;
+        width: 100%;
+        height: 900px;
 }
 
 

@@ -95,7 +95,7 @@ class VPageTabs{
 
 </body>
 <!--close body-->
-<html>";
+</html>";
 		return $str;
 	}
 }
@@ -222,6 +222,26 @@ class VProblems_no_topics
     }
 }
 
+class VProblems_no_problems
+{
+	function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        $str = "
+            <p>
+            Sorry! There are no remaining problems with your topic selection
+            </p>
+			<p>
+			<strong>Please return to selections tab</strong>
+			</p>
+        ";
+        return $str;
+    }
+}
+
 class VProblems
 {
 	var $v_picked_problem;
@@ -242,22 +262,21 @@ class VProblems
 	{
         global $usrmgr;
         $str = "
-            <p>
-            This is the problems page! " .$usrmgr->GetUserId(). "
-            </p>
+            <p class='half-line'>&nbsp;</p>
 			<p>
-			Your selected topics: <strong>".
-			implode(', ',$this->v_selected_topics_list_name)
-			." </strong>
+			Your selected topics: ";
+			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
+			{
+				$str .= "<span class='label label-inverse'>
+				".$this->v_selected_topics_list[$i]->m_name."
+				</span>&nbsp;";
+			}
+			$str .= "
 			</p>
-			<p>
-			Your problem is: 
-			<strong>
+			<iframe id='problemIframe' src='
 			".
-			$this->v_picked_problem->m_prob_name
-			."
-			</strong>
-			</p>
+			$this->v_picked_problem->m_prob_url
+			."'></iframe>
         ";
         return $str;
     }
@@ -274,9 +293,10 @@ class VTopic_Selections
 	
 	function Deliver()
 	{
-		$str = "<p>The links below serve randomly-chosen questions, one at a time, from banks of multiple-choice problems derived from past exams.</p>
+		$str = "<p class='half-line'>&nbsp;</p>
+		<p>The links below serve randomly-chosen questions, one at a time, from banks of multiple-choice problems derived from past exams.</p>
 		<img class='logo' src='img/PR.jpg' width='200px'></img>
-		<p><strong><font size='5'>".$this->v_selected_course->m_name."</font></strong></p>
+		<p><span class='label label-inverse label-big'>".$this->v_selected_course->m_name."</span></p>
 		<p><strong>Please select a topic to begin:</strong></p>
 		
 		<form action='problems.php' method='post' name='topic_selector'>
@@ -329,7 +349,7 @@ class VCourse_Selections
 	{		
         $str = "
         <div class='tab-pane active' id='problems'>
-
+		<p class='half-line'>&nbsp;</p>
         <p>
         Welcome! This site serves random problems from past exams given in introductory courses of the University of Michigan Department of Physics.
         </p>
