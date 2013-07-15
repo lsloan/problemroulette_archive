@@ -314,6 +314,54 @@ class VProblems
     }
 }
 
+class VProblems_submitted
+{
+	var $v_picked_problem;
+	var $v_selected_topics_list;
+	var $v_selected_topics_list_name;
+
+	function __construct($picked_problem, $selected_topics_list)
+	{
+		$this->v_picked_problem = $picked_problem;
+		$this->v_selected_topics_list = $selected_topics_list;
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
+		{
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
+		}
+	}
+	
+	function Deliver()
+	{
+        global $usrmgr;
+        $str = "
+            <p class='half-line'>&nbsp;</p>
+			<p>
+			Selected Topics: ";
+			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
+			{
+				$str .= "<span class='label'>
+				".$this->v_selected_topics_list[$i]->m_name."
+				</span>&nbsp;";
+			}
+			$str .= "
+			</p>
+			<p>
+			Congratulations! You've submitted a problem!
+			</p>
+			<form action='' method='post'>
+			<button class='btn' type='submit' name='next' value='1'>
+			Next
+			</button>
+			</form>
+			<iframe id='problemIframe' src='
+			".
+			$this->v_picked_problem->m_prob_url
+			."'></iframe>
+        ";
+        return $str;
+    }
+}
+
 class VTopic_Selections
 {
 	var $v_selected_course;

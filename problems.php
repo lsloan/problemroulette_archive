@@ -60,6 +60,20 @@ if (isset($_POST['skip']))
 	header('Location:problems.php');
 }
 
+//check to see if user submitted an answer
+if (isset($_POST['submit_answer']))
+{
+	$usrmgr->m_user->SetPref('problem_submitted',1);
+	header('Location:problems.php');
+}
+
+if (isset($_POST['next']))
+{
+	$usrmgr->m_user->SetPref('current_problem',Null);
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
+	header('Location:problems.php');
+}
+
 //$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 $selected_topics_list_id = $usrmgr->m_user->GetPref('selected_topics_list');
 $num_topics = count($selected_topics_list_id);
@@ -92,7 +106,13 @@ $usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
 // page construction
 $head = new CHeadCSSJavascript("Problems", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problems'));
-if ($num_topics >= 1)
+
+if ($usrmgr->m_user->GetPref('problem_submitted') == 1)
+{
+	$content = new VProblems_submitted($picked_problem, $selected_topics_list);
+}
+
+elseif ($num_topics >= 1)
 {
 	$content = new VProblems($picked_problem, $selected_topics_list);
 }
