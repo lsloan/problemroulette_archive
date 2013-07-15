@@ -333,12 +333,16 @@ class VTopic_Selections
 		
 		<form action='problems.php' method='post' name='topic_selector'>
 		<ul class='topic-selector'>
-			";
+			<li>
+			<input type='checkbox' id='all' onClick='toggle(this)' />
+			<span class='select-all'>Select All</span>
+			</li>";
 			$num_topics_in_course = count($this->v_selected_course->m_topics);
 			for ($i=0; $i<$num_topics_in_course; $i++)
 			{
 				$str .= "<li>
 				<input type='checkbox' 
+				class = 'group' 
 				name='topic_checkbox_submission[]'
 				value='".$this->v_selected_course->m_topics[$i]->m_id."'/>
 				

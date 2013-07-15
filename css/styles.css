@@ -164,6 +164,10 @@ input.ans-choice{
 	width: auto;
 }
 
+.select-all{
+	margin-left: 20px;
+	color: #777;
+}
 
 
 /* Sticky footer styles
