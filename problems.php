@@ -14,6 +14,7 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
+
 // populate and use models for business logic on page
 
 // example of how to use the pref manager -- this just increments a count...
@@ -27,19 +28,36 @@ $usrmgr->m_user->SetPref('page_loads', $ploads);
 
 //Get selected_topics_list and put into preferences
 $selected_topics_list_id = Null;
+$histogram_view = Null;
 
+//check to see if new topic was selected
 //get from checkboxes if available and put into preferences
 if (isset($_POST['topic_checkbox_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+	$usrmgr->m_user->SetPref('current_problem',Null);
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
+	header('Location:problems.php');
 }
 
+//check to see if new topic was selected
 //get from link if available and put into preferences
 if (isset($_POST['topic_link_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_link_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+	$usrmgr->m_user->SetPref('current_problem',Null);
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
+	header('Location:problems.php');
+}
+
+//check to see if user hit "skip" button
+if (isset($_POST['skip']))
+{
+	$usrmgr->m_user->SetPref('current_problem',Null);
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
+	header('Location:problems.php');
 }
 
 //$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
@@ -57,7 +75,19 @@ for ($i=0; $i<$num_topics; $i++)
 $Picker = new MPpicker();
 $Picker->pick_problem();
 
-$picked_problem = $Picker->m_picked_problem;
+//pick either current problem a student is working on OR pick new problem
+if ($usrmgr->m_user->GetPref('current_problem') != Null)
+{
+	$picked_problem_id = $usrmgr->m_user->GetPref('current_problem');
+	$picked_problem = new MProblem($picked_problem_id);
+}
+else
+{
+	$picked_problem = $Picker->m_picked_problem;
+	$picked_problem_id = $picked_problem->m_prob_id;
+}
+
+$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
 
 // page construction
 $head = new CHeadCSSJavascript("Problems", array(), array());

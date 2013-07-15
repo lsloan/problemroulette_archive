@@ -260,19 +260,51 @@ class VProblems
 	
 	function Deliver()
 	{
+		$alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+		$num_answers = $this->v_picked_problem->m_prob_ans_count;
         global $usrmgr;
         $str = "
             <p class='half-line'>&nbsp;</p>
 			<p>
-			Your selected topics: ";
+			Selected Topics: ";
 			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 			{
-				$str .= "<span class='label label-inverse'>
+				$str .= "<span class='label'>
 				".$this->v_selected_topics_list[$i]->m_name."
 				</span>&nbsp;";
 			}
 			$str .= "
 			</p>
+			<form class='ans-form' action='' method='POST'>
+			<p>";
+			for ($i=0; $i<$num_answers; $i++)
+			{
+				$str .= "<input type='radio' 
+				class='ans-choice' 
+				name='student_answer' 
+				value='".($i+1)."' 
+				onClick='javascript:document.getElementById(&quot;submit_answer&quot;).disabled=false'></input> 
+				<font size='4'>".$alphabet[$i]."</font>
+				";
+			}
+			$str .= "
+			</p>
+			<button type='submit' 
+			class='btn btn-submit' 
+			name='submit_answer' 
+			value='1' 
+			id='submit_answer' 
+			disabled='true'>
+				Submit
+			</button>
+			or
+			<button type='submit'
+			class='btn'
+			name='skip'
+			value='1'>
+				Skip
+			</button>
+			</form>
 			<iframe id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
@@ -379,9 +411,6 @@ class VCourse_Selections
             <a class='btn' href='Home235.php'>Physics 235</a><br/>-->
             </div>
 
-        </div>
-        <div class='tab-pane' id='statistics'>
-        statistics!
         </div>
         ";
         return $str;
