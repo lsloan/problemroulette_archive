@@ -332,7 +332,20 @@ class VProblems_submitted
 	
 	function Deliver()
 	{
-        global $usrmgr;
+	    global $usrmgr;
+		$alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+		$correct_answer = $this->v_picked_problem->m_prob_correct;
+		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
+		
+		if ($correct_answer == $student_answer)
+		{
+			$label_class = 'label-success';
+		}
+		else
+		{
+			$label_class = 'label-important';
+		}
+		
         $str = "
             <p class='half-line'>&nbsp;</p>
 			<p>
@@ -346,7 +359,12 @@ class VProblems_submitted
 			$str .= "
 			</p>
 			<p>
-			Congratulations! You've submitted a problem!
+			<span class='label ".$label_class." student-answer'>
+			Your answer:&nbsp;
+			".$alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1]."
+			</span>
+			Correct answer: 
+			".$alphabet[$correct_answer-1]."
 			</p>
 			<form action='' method='post'>
 			<button class='btn' type='submit' name='next' value='1'>

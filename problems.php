@@ -63,8 +63,11 @@ if (isset($_POST['skip']))
 //check to see if user submitted an answer
 if (isset($_POST['submit_answer']))
 {
-	$usrmgr->m_user->SetPref('problem_submitted',1);
-	header('Location:problems.php');
+	if (isset($_POST['student_answer']))
+	{
+		$usrmgr->m_user->SetPref('problem_submitted',$_POST['student_answer']);
+		header('Location:problems.php');
+	}
 }
 
 if (isset($_POST['next']))
@@ -107,7 +110,7 @@ $usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
 $head = new CHeadCSSJavascript("Problems", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problems'));
 
-if ($usrmgr->m_user->GetPref('problem_submitted') == 1)
+if ($usrmgr->m_user->GetPref('problem_submitted') != Null)
 {
 	$content = new VProblems_submitted($picked_problem, $selected_topics_list);
 }

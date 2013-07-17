@@ -169,6 +169,17 @@ input.ans-choice{
 	color: #777;
 }
 
+.student-answer{
+	margin-right: 20px;
+}
+
+.label-success{
+	background-color: #62c462;
+}
+
+.label-important{
+	background-color: #da4f49;
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */
