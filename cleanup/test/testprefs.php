@@ -37,27 +37,50 @@ echo $test_user->GetPref('last_activity');
 
 global $usrmgr;
 
-$timestamp = time();
+//$timestamp = time();
 
-$usrmgr->m_user->SetPref('selected_course',4);
-$usrmgr->m_user->SetPref('selected_topics_list',[2,5,7]);
-$usrmgr->m_user->SetPref('omitted_problems_list',[1,6,4]);
+//$usrmgr->m_user->SetPref('selected_course',4);
+//$usrmgr->m_user->SetPref('selected_topics_list',[2,5,7]);
+//$usrmgr->m_user->SetPref('omitted_problems_list',[1,6,4]);
 //$usrmgr->m_user->SetPref('last_activity',$timestamp);
 
-$CToptions = new MCTSelect();
+//$CToptions = new MCTSelect();
 
-$course_or_topic = new MDirector();
+//$course_or_topic = new MDirector();
 //echo $course_or_topic->m_course_or_topic;
-if ($course_or_topic->m_course_or_topic == 1)
-{
+//if ($course_or_topic->m_course_or_topic == 1)
+//{
 	//echo "<br/>".$CToptions->m_selected_course;
-}
+//}
 //$length = count($usrmgr->m_user->GetPref('selected_topics_list'));
 //echo mt_rand(0,$length-1);
 //echo $usrmgr->m_user->GetPref('selected_course');
 
-$testPpicker = new MPpicker();
-$testPpicker->pick_problem();
-echo $testPpicker->m_picked_topic;
-echo $testPpicker->m_picked_problem->m_prob_id;
+//$testPpicker = new MPpicker();
+//$testPpicker->pick_problem();
+//echo $testPpicker->m_picked_topic;
+//echo $testPpicker->m_picked_problem->m_prob_id;
+
+/*$usrmgr->m_user->SetPref('omitted_problems_list',Null);
+
+$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
+if ($current_omitted_problems_list == Null)
+{
+	$current_omitted_problems_list = array();
+}
+array_push($current_omitted_problems_list,1,2,3,4,5,6);
+$usrmgr->m_user->SetPref('omitted_problems_list',$current_omitted_problems_list);
+$new_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
+echo implode(', ',$new_omitted_problems_list);*/
+
+$usrmgr->m_user->SetPref('omitted_problems_list[2]',Null);
+$usrmgr->m_user->SetPref('omitted_problems_list[5]',6);
+$usrmgr->m_user->SetPref('omitted_problems_list[7]',[3,5]);
+
+echo $usrmgr->m_user->GetPref('omitted_problems_list[2]');
+echo "<br/>";
+echo $usrmgr->m_user->GetPref('omitted_problems_list[5]');
+echo "<br/>";
+echo implode($usrmgr->m_user->GetPref('omitted_problems_list[7]'));
+	
 ?>

@@ -66,6 +66,8 @@ if (isset($_POST['submit_answer']))
 	if (isset($_POST['student_answer']))
 	{
 		$usrmgr->m_user->SetPref('problem_submitted',$_POST['student_answer']);
+		$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
+		$current_problem = new MProblem($current_problem_id);
 		header('Location:problems.php');
 	}
 }
@@ -92,6 +94,9 @@ for ($i=0; $i<$num_topics; $i++)
 $Picker = new MPpicker();
 $Picker->pick_problem();
 
+$remaining_problems_in_topic_list = $Picker->m_remaining_problems_in_topic_list;
+$total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
+
 //pick either current problem a student is working on OR pick new problem
 if ($usrmgr->m_user->GetPref('current_problem') != Null)
 {
@@ -101,23 +106,32 @@ if ($usrmgr->m_user->GetPref('current_problem') != Null)
 else
 {
 	$picked_problem = $Picker->m_picked_problem;
-	$picked_problem_id = $picked_problem->m_prob_id;
+	$picked_problem_id = Null;
+	if ($picked_problem != Null)
+	{
+		$picked_problem_id = $picked_problem->m_prob_id;
+	}
 }
 
-$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+if ($picked_problem_id != Null)
+{
+	$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+}
 
+///////////////////////////////////////////////////////////////////////////
 // page construction
+///////////////////////////////////////////////////////////////////////////
 $head = new CHeadCSSJavascript("Problems", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problems'));
 
 if ($usrmgr->m_user->GetPref('problem_submitted') != Null)
 {
-	$content = new VProblems_submitted($picked_problem, $selected_topics_list);
+	$content = new VProblems_submitted($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
 }
 
 elseif ($num_topics >= 1)
 {
-	$content = new VProblems($picked_problem, $selected_topics_list);
+	$content = new VProblems($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
 }
 else
 {

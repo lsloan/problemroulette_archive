@@ -129,8 +129,19 @@ Class MProblem
 		/*return $all_problems_in_topic;
 	}*/
 	
-	public static function get_all_problems_in_topic_with_exclusion($topic_id,$omitted_problems_list = Null)
+	
+	//for second variable, input 0 or nothing for no exclusion; input 1 or true for exclusion
+	public static function get_all_problems_in_topic_with_exclusion($topic_id,$exclusion = Null)
 	{
+		global $usrmgr;
+		$omitted_problems_list = Null;
+		if ($exclusion == true || $exclusion == 1)
+		{
+			if ($usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']') != Null)
+			{
+				$omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
+			}
+		}
 		global $dbmgr;
 		$selectquery = "SELECT * 
 		FROM 12m_topic_prob
@@ -139,14 +150,23 @@ Class MProblem
 		{
 			$selectquery .= " AND ";
 			$omitted_length = count($omitted_problems_list);
-			for ($i=0; $i<$omitted_length; $i++)
-		{
-			$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
-			if ($i < ($omitted_length - 1))
+			
+			if ($omitted_length > 1)
 			{
-				$selectquery .= " AND ";
+				for ($i=0; $i<$omitted_length; $i++)
+				{
+					$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
+					if ($i < ($omitted_length - 1))
+					{
+						$selectquery .= " AND ";
+					}
+				}
 			}
-		}
+			
+			else
+			{
+				$selectquery .= "problem_id <> ".$omitted_problems_list;
+			}
 		}
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$numrows = count($res);
@@ -339,7 +359,11 @@ Class MCourseTopicNav
 Class MCTSelect
 {
 	var $m_selected_course;//get from preferences
-	var $m_selected_topics_list;//one or more topics, get from preferences
+	var $m_selected_topics_list;//one or more topics (By ID), get from preferences
+	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
+								//^^^^^Associative array (omitted_problems_list[topic_id] = array of omitted problems in topic)
+	var $m_remaining_problems_in_topic_list;//how many problems are left in a given topic after leaving out omitted problems
+	var $m_total_problems_in_topic_list;//how many problems are in topic before omitting problems
 	var $m_last_activity;//get from preferences
 	
 	//read in preferences data to set vars
@@ -348,7 +372,23 @@ Class MCTSelect
 		global $usrmgr;
 		$this->m_selected_course = $usrmgr->m_user->GetPref('selected_course');
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
+		$num_selected_topics = count($this->m_selected_topics_list);
+		for ($i=0; $i<$num_selected_topics; $i++)
+		{
+			$topic_id = $this->m_selected_topics_list[$i];
+			$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
+		}
+		//^^^taken care of above^^^//$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
 		$this->m_last_activity = $usrmgr->m_user->GetPref('last_activity');
+		
+		for ($i=0;$i<count($this->m_selected_topics_list);$i++)
+		{
+			$topic_id = $this->m_selected_topics_list[$i];
+			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
+			$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
+			$this->m_remaining_problems_in_topic_list[$i] = count($remaining_problems);
+			$this->m_total_problems_in_topic_list[$i] = count($total_problems);
+		}
 	}
 }
 
@@ -394,6 +434,10 @@ Class MPpicker
 {
 	var $m_selected_topics_list;//one or more topics (by topic_id), get from preferences
 	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
+								//^^^^^Associative array (omitted_problems_list[topic_id] = array of omitted problems in topic)
+	var $m_remaining_problems_in_topic_list;//how many problems are left in a given topic after leaving out omitted problems
+	var $m_total_problems_in_topic_list;//how many problems are in topic before omitting problems
+	var $m_remaining_selected_topics_list = array();//selected_topics_list after removing topics with zero problems left
 	var $m_picked_topic;//topic (by topic ID) picked by Ppicker
 	var $m_picked_problem = Null;//problem (as MProblem object) picked by Ppicker
 	
@@ -401,7 +445,26 @@ Class MPpicker
 	{
 		global $usrmgr;
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
-		$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
+		$num_selected_topics = count($this->m_selected_topics_list);
+		for ($i=0; $i<$num_selected_topics; $i++)
+		{
+			$topic_id = $this->m_selected_topics_list[$i];
+			$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
+		}
+		
+		for ($i=0;$i<count($this->m_selected_topics_list);$i++)
+		{
+			$topic_id = $this->m_selected_topics_list[$i];
+			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
+			$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
+			$this->m_remaining_problems_in_topic_list[$i] = count($remaining_problems);
+			$this->m_total_problems_in_topic_list[$i] = count($total_problems);
+			
+			if ($this->m_remaining_problems_in_topic_list[$i] > 0)
+			{
+				array_push($this->m_remaining_selected_topics_list, $topic_id);
+			}
+		}
 	}
 	
 	//picks a topic (by ID) and a problem in that topic (as an MProblem object)
@@ -409,16 +472,17 @@ Class MPpicker
 	{
 		//pick random topic from list
 		$picked_topic_index = 0;
-		$length = count($this->m_selected_topics_list);
+		$length = count($this->m_remaining_selected_topics_list);
 		if ($length > 1)
 		{
 			$picked_topic_index = mt_rand(0,$length - 1);
 		}
-		$this->m_picked_topic = $this->m_selected_topics_list[$picked_topic_index];
+		$this->m_picked_topic = $this->m_remaining_selected_topics_list[$picked_topic_index];
 		
 		//pick random problem from topic with exclusion
 		$picked_problem_index = 0;
-		$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($this->m_picked_topic,$this->m_omitted_problems_list);
+		$topic_id = $this->m_picked_topic;
+		$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
 		$num_problems = count($all_problems);
 		if ($num_problems >= 1)
 		{

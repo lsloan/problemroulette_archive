@@ -15,6 +15,19 @@ require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
 
+//checks to see if user reset topics
+if (isset($_POST['topic_checkbox_submission']))
+{
+	global $usrmgr;
+	$reset_topics_list_id = $_POST['topic_checkbox_submission'];
+	$length = count($reset_topics_list_id);
+	for ($i=0; $i<$length; $i++)
+	{
+		$topic_id = $reset_topics_list_id[$i];
+		$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);
+	}
+}
+
 //course_or_topic logic (0 for course selection, 1 for topic selection)
 $course_or_topic = 0;
 //whether or not to pre-fill in the topics (only if returning from another tab)
@@ -88,7 +101,7 @@ if ($CTprefs->m_selected_topics_list != Null)
 
 if ($course_or_topic == 1)
 {
-	$content = new VTopic_Selections($selected_course);
+	$content = new VTopic_Selections($CTprefs);
 }
 else
 {

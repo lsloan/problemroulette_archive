@@ -244,18 +244,27 @@ class VProblems_no_problems
 
 class VProblems
 {
-	var $v_picked_problem;
-	var $v_selected_topics_list;
-	var $v_selected_topics_list_name;
+	var $v_picked_problem;//picked problem
+	var $v_selected_topics_list;//selected topic list by ID
+	var $v_selected_topics_list_name;//Selected topic list by NAME
+	var $v_remaining_problems_in_topic_list;
+	var $v_total_problems_in_topic_list;
 
-	function __construct($picked_problem, $selected_topics_list)
+	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list)
 	{
 		$this->v_picked_problem = $picked_problem;
-		$this->v_selected_topics_list = $selected_topics_list;
+		$selected_topics_list_id = $this->v_selected_topics_list;
+		$num_topics = count($selected_topics_list_id);
+		for ($i=0; $i<$num_topics; $i++)
+		{
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
+		}
 		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 		{
 			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
+		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
+		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
 	}
 	
 	function Deliver()
@@ -266,11 +275,14 @@ class VProblems
         $str = "
             <p class='half-line'>&nbsp;</p>
 			<p>
-			Selected Topics: ";
+			Selected Topics/Remaining Problems: ";
 			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 			{
 				$str .= "<span class='label'>
-				".$this->v_selected_topics_list[$i]->m_name."
+				".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
+				".$this->v_remaining_problems_in_topic_list[$i]."
+				/
+				".$this->v_total_problems_in_topic_list[$i]."
 				</span>&nbsp;";
 			}
 			$str .= "
@@ -305,7 +317,7 @@ class VProblems
 				Skip
 			</button>
 			</form>
-			<iframe id='problemIframe' src='
+			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
 			."'></iframe>
@@ -319,15 +331,24 @@ class VProblems_submitted
 	var $v_picked_problem;
 	var $v_selected_topics_list;
 	var $v_selected_topics_list_name;
+	var $v_remaining_problems_in_topic_list;
+	var $v_total_problems_in_topic_list;
 
-	function __construct($picked_problem, $selected_topics_list)
+	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list)
 	{
 		$this->v_picked_problem = $picked_problem;
-		$this->v_selected_topics_list = $selected_topics_list;
+		$selected_topics_list_id = $selected_topics_list;
+		$num_topics = count($selected_topics_list_id);
+		for ($i=0; $i<$num_topics; $i++)
+		{
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
+		}
 		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 		{
 			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
+		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
+		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
 	}
 	
 	function Deliver()
@@ -349,11 +370,14 @@ class VProblems_submitted
         $str = "
             <p class='half-line'>&nbsp;</p>
 			<p>
-			Selected Topics: ";
+			Selected Topics/Remaining Problems: ";
 			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 			{
 				$str .= "<span class='label'>
-				".$this->v_selected_topics_list[$i]->m_name."
+				".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
+				".$this->v_remaining_problems_in_topic_list[$i]."
+				/
+				".$this->v_total_problems_in_topic_list[$i]."
 				</span>&nbsp;";
 			}
 			$str .= "
@@ -371,7 +395,7 @@ class VProblems_submitted
 			Next
 			</button>
 			</form>
-			<iframe id='problemIframe' src='
+			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
 			."'></iframe>
@@ -382,10 +406,17 @@ class VProblems_submitted
 
 class VTopic_Selections
 {
+	var $v_CTprefs;
 	var $v_selected_course;
 	
-	function __construct($selected_course)
+	function __construct($CTprefs)
 	{
+		$this->v_CTprefs = $CTprefs;
+		if ($this->v_CTprefs->m_selected_course != Null)
+		{
+			$selected_course_id = $this->v_CTprefs->m_selected_course;
+			$selected_course = MCourse::get_course_by_id($selected_course_id);
+		}
 		$this->v_selected_course = $selected_course;
 	}
 	
@@ -398,37 +429,43 @@ class VTopic_Selections
 		<p><strong>Please select a topic to begin:</strong></p>
 		
 		<form action='problems.php' method='post' name='topic_selector'>
-		<ul class='topic-selector'>
-			<li>
-			<input type='checkbox' id='all' onClick='toggle(this)' />
-			<span class='select-all'>Select All</span>
-			</li>";
+		<table class='topic-selector table'>
+			<tr>
+			<td class='cell-checkbox'><input class='checkbox' type='checkbox' id='all' onClick='toggle(this)' /></td>
+			<td class='cell-topic'><span class='select-all'>Select All</span></td>
+			<td class='cell-remaining'><span class='remaining-problems'>Remaining Problems</span></td>
+			</tr>";
 			$num_topics_in_course = count($this->v_selected_course->m_topics);
 			for ($i=0; $i<$num_topics_in_course; $i++)
 			{
-				$str .= "<li>
-				<input type='checkbox' 
-				class = 'group' 
+				$topic = $this->v_selected_course->m_topics[$i];
+				$str .= "<tr>
+				<td class='cell-checkbox'><input type='checkbox' 
+				class = 'group checkbox' 
 				name='topic_checkbox_submission[]'
-				value='".$this->v_selected_course->m_topics[$i]->m_id."'/>
+				value='".$topic->m_id."'/></td>
 				
-				<button class='link'
+				<td class='cell-topic'><button class='link'
 				type='submit'
 				name='topic_link_submission'
-				value='".$this->v_selected_course->m_topics[$i]->m_id."'>
-				".$this->v_selected_course->m_topics[$i]->m_name."
-				</button>
+				value='".$topic->m_id."'>
+				".$topic->m_name."
+				</button></td>
 				
-				</li>";
+				<td class='cell-remaining'><span class='remaining-problems-topic'>
+				".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id,1))."/".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id))."
+				</span></td>
+				</tr>";
 			}
 			$str .= "
-		</ul>
+		</table>
 		</form>
 		
 		<form action='' method='post'>
 	    <button type='submit' class='btn btn-courses' name='select_different_course' value='1'>
 		<i class='icon-arrow-left'></i>
 		Select Different Course</button>
+		<a href='javascript:void(0);' id='reset-topics' class='btn btn-primary disabled'>Reset Selected Topics</a>
 		<a href='javascript:void(0);' id='use-selected' class='btn btn-primary disabled'>Use Selected Topics</a>
 		</form>
 		";

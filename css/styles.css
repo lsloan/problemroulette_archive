@@ -89,25 +89,23 @@ h1 {
 	margin: 0 0 10px 10px;
 }
 
-.topic-selector {
-	list-style-type: none;
-}
-
-.topic-selector li {
+.topic-selector tr {
 	border-top: 1px solid #e5e5e5;
 	padding: 4px 0;
 }
 
-.topic-selector li:last-child {
+.topic-selector tr:last-child {
 	border-bottom: 1px solid #e5e5e5;
 }
 
-.topic-selector li input {
+.topic-selector tr input {
 	margin: 0 10px;
 }
 
-.topic-selector li button.link{
+.topic-selector tr button.link{
 	margin: 0 0 0px 20px;
+	line-height: 20px;
+	font-size: 16px;
 	background: transparent;
 	color: #0088cc;
 	text-decoration: none;
@@ -115,9 +113,20 @@ h1 {
 	border: none;
 }
 
-.topic-selector li button.link:hover{
+.topic-selector tr button.link:hover{
 	text-decoration: underline;
 	color: #004488
+}
+
+.topic-selector td.cell-checkbox{
+	width: 50px;
+}
+
+.topic-selector td.cell-topic{
+	width: 200px;
+}
+
+.topic-selector td.cell-remaining{
 }
 
 .btn-courses i {
@@ -129,7 +138,7 @@ h1 {
 	line-height: 24px;
 }
 
-li.checked {
+tr.checked {
         /*background-color: #fcf8e3;*/
         background-color: #ffc;
 }
@@ -169,6 +178,16 @@ input.ans-choice{
 	color: #777;
 }
 
+.remaining-problems{
+	margin-left: 10px;
+	color: #777;
+}
+
+.remaining-problems-topic{
+	margin-left: 10px;
+	color: #048;
+}
+
 .student-answer{
 	margin-right: 20px;
 }
@@ -180,6 +199,8 @@ input.ans-choice{
 .label-important{
 	background-color: #da4f49;
 }
+
+
 
 /* Sticky footer styles
 -------------------------------------------------- */
