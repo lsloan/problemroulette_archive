@@ -269,7 +269,7 @@ class VProblems
 	
 	function Deliver()
 	{
-		$alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$num_answers = $this->v_picked_problem->m_prob_ans_count;
         global $usrmgr;
         $str = "
@@ -354,7 +354,7 @@ class VProblems_submitted
 	function Deliver()
 	{
 	    global $usrmgr;
-		$alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
