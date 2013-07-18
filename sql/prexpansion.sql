@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 17, 2013 at 03:21 PM
+-- Generation Time: Jul 18, 2013 at 02:20 PM
 -- Server version: 5.5.24-log
 -- PHP Version: 5.4.3
 
@@ -209,12 +209,12 @@ CREATE TABLE IF NOT EXISTS `topic` (
 
 INSERT INTO `topic` (`id`, `name`) VALUES
 (1, 'Topic 1'),
-(2, 'Topic 2'),
+(2, 'Midterm 2'),
 (3, 'Topic 3'),
 (4, 'Topic 4'),
-(5, 'Topic 5'),
+(5, 'Chapter 12'),
 (6, 'Topic 6'),
-(7, 'Topic 7');
+(7, 'Final Exam');
 
 -- --------------------------------------------------------
 
@@ -236,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 
 INSERT INTO `user` (`id`, `username`, `staff`, `prefs`) VALUES
-(1, 'test_user', 0, 'a:7:{s:10:"page_loads";i:516;s:15:"selected_course";s:1:"1";s:20:"selected_topics_list";s:1:"2";s:13:"last_activity";i:1373863410;s:21:"omitted_problems_list";N;s:15:"current_problem";s:1:"7";s:17:"problem_submitted";N;}'),
+(1, 'test_user', 0, 'a:11:{s:10:"page_loads";i:807;s:15:"selected_course";s:1:"1";s:20:"selected_topics_list";a:3:{i:0;s:1:"2";i:1;s:1:"5";i:2;s:1:"7";}s:13:"last_activity";i:1374076206;s:21:"omitted_problems_list";a:6:{i:0;i:1;i:1;i:2;i:2;i:3;i:3;i:4;i:4;i:5;i:5;i:6;}s:15:"current_problem";s:1:"7";s:17:"problem_submitted";s:1:"2";s:24:"omitted_problems_list[2]";N;s:24:"omitted_problems_list[5]";N;s:24:"omitted_problems_list[7]";N;s:23:"omitted_problem_list[5]";i:8;}'),
 (2, 'testprefs', 0, 'a:3:{s:15:"selected_course";i:2;s:20:"selected_topics_list";a:2:{i:0;i:1;i:1;i:2;}s:13:"last_activity";i:1373403912;}');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
