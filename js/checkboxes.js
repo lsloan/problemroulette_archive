@@ -66,3 +66,7 @@ function toggle(source) {
 	//checkboxes[i].parents('tr').addClass('checked');
   }
 }
+
+function reset_topic(topic_id){
+	$.post('selections.php',{topic_link_submission: topic_id});
+}

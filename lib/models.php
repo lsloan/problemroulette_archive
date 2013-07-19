@@ -151,21 +151,13 @@ Class MProblem
 			$selectquery .= " AND ";
 			$omitted_length = count($omitted_problems_list);
 			
-			if ($omitted_length > 1)
+			for ($i=0; $i<$omitted_length; $i++)
 			{
-				for ($i=0; $i<$omitted_length; $i++)
+				$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
+				if ($i < ($omitted_length - 1))
 				{
-					$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
-					if ($i < ($omitted_length - 1))
-					{
-						$selectquery .= " AND ";
-					}
+					$selectquery .= " AND ";
 				}
-			}
-			
-			else
-			{
-				$selectquery .= "problem_id <> ".$omitted_problems_list;
 			}
 		}
 		$res = $dbmgr->fetch_assoc($selectquery);
@@ -473,25 +465,28 @@ Class MPpicker
 		//pick random topic from list
 		$picked_topic_index = 0;
 		$length = count($this->m_remaining_selected_topics_list);
-		if ($length > 1)
+		if ($length > 0)
 		{
-			$picked_topic_index = mt_rand(0,$length - 1);
-		}
-		$this->m_picked_topic = $this->m_remaining_selected_topics_list[$picked_topic_index];
-		
-		//pick random problem from topic with exclusion
-		$picked_problem_index = 0;
-		$topic_id = $this->m_picked_topic;
-		$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
-		$num_problems = count($all_problems);
-		if ($num_problems >= 1)
-		{
-			$picked_problem_index = mt_rand(0,$num_problems - 1);
-			$this->m_picked_problem = $all_problems[$picked_problem_index];
+			if ($length > 1)
+			{
+				$picked_topic_index = mt_rand(0,$length - 1);
+			}
+			$this->m_picked_topic = $this->m_remaining_selected_topics_list[$picked_topic_index];
+			
+			//pick random problem from topic with exclusion
+			$picked_problem_index = 0;
+			$topic_id = $this->m_picked_topic;
+			$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
+			$num_problems = count($all_problems);
+			if ($num_problems >= 1)
+			{
+				$picked_problem_index = mt_rand(0,$num_problems - 1);
+				$this->m_picked_problem = $all_problems[$picked_problem_index];
 
+			}
+			//echo $picked_problem_index;
+			//$this->m_picked_problem = $all_problems[$picked_problem_index];
 		}
-		//echo $picked_problem_index;
-		//$this->m_picked_problem = $all_problems[$picked_problem_index];
 	}
 }
 

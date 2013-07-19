@@ -61,13 +61,28 @@ if (isset($_POST['skip']))
 }
 
 //check to see if user submitted an answer
+//if so, 	{set pref 'problem_submitted' to something other than null to display submitted problem view
+//			 if they get the problem right, exclude problem in future}
 if (isset($_POST['submit_answer']))
 {
 	if (isset($_POST['student_answer']))
 	{
-		$usrmgr->m_user->SetPref('problem_submitted',$_POST['student_answer']);
+		$student_answer = $_POST['student_answer'];
+		$usrmgr->m_user->SetPref('problem_submitted',$student_answer);
 		$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
 		$current_problem = new MProblem($current_problem_id);
+		$current_problem_answer = $current_problem->m_prob_correct;
+		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+		$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
+		if ($current_problem_answer == $student_answer)
+		{
+			if ($current_omitted_problems_list == Null)
+			{
+				$current_omitted_problems_list = Array();
+			}
+			array_push($current_omitted_problems_list,$current_problem_id);
+			$usrmgr->m_user->SetPref('omitted_problems_list['.$current_topic_id.']',$current_omitted_problems_list);
+		}
 		header('Location:problems.php');
 	}
 }
@@ -105,6 +120,7 @@ if ($usrmgr->m_user->GetPref('current_problem') != Null)
 }
 else
 {
+	$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
 	$picked_problem = $Picker->m_picked_problem;
 	$picked_problem_id = Null;
 	if ($picked_problem != Null)

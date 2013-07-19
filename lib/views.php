@@ -253,7 +253,7 @@ class VProblems
 	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list)
 	{
 		$this->v_picked_problem = $picked_problem;
-		$selected_topics_list_id = $this->v_selected_topics_list;
+		$selected_topics_list_id = $selected_topics_list;
 		$num_topics = count($selected_topics_list_id);
 		for ($i=0; $i<$num_topics; $i++)
 		{
@@ -446,6 +446,7 @@ class VTopic_Selections
 				value='".$topic->m_id."'/></td>
 				
 				<td class='cell-topic'><button class='link'
+				id='".$topic->m_id."'
 				type='submit'
 				name='topic_link_submission'
 				value='".$topic->m_id."'>
@@ -454,6 +455,11 @@ class VTopic_Selections
 				
 				<td class='cell-remaining'><span class='remaining-problems-topic'>
 				".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id,1))."/".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id))."
+				<a class='link link-reset'
+				href=''
+				onClick='reset_topic(&quot;".$topic->m_id."&quot;);'>
+				Reset
+				</a>
 				</span></td>
 				</tr>";
 			}

@@ -113,6 +113,11 @@ h1 {
 	border: none;
 }
 
+.topic-selector tr a.link-reset{
+	line-height: 18px;
+	font-size: 14px;
+}
+
 .topic-selector tr button.link:hover{
 	text-decoration: underline;
 	color: #004488

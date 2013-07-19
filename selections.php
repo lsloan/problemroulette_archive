@@ -14,11 +14,10 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
-
+global $usrmgr;
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))
 {
-	global $usrmgr;
 	$reset_topics_list_id = $_POST['topic_checkbox_submission'];
 	$length = count($reset_topics_list_id);
 	for ($i=0; $i<$length; $i++)
@@ -26,6 +25,14 @@ if (isset($_POST['topic_checkbox_submission']))
 		$topic_id = $reset_topics_list_id[$i];
 		$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);
 	}
+}
+
+///////////////////////////////////////
+if (isset($_POST['topic_link_submission']))
+{
+	$topic_id = $_POST['topic_link_submission'];
+	$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);
+	header('Location:selections.php');
 }
 
 //course_or_topic logic (0 for course selection, 1 for topic selection)
