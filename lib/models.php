@@ -29,18 +29,16 @@ Class MProblem
 		$this->m_prob_correct = $res[0]['correct'];
 	}
 	
-	function create($prob_name, $prob_url, $prob_topic_id, $prob_ans_count, $prob_correct)
+	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct)
 	{	
         global $dbmgr; 
 		$insertquery = "
         INSERT INTO problems(
-			topic_id,
 			name,
 			url,
 			correct,
 			ans_count
         )VALUES(
-            '".$prob_topic_id."',
             '".$prob_name."',
             '".$prob_url."',
             '".$prob_correct."',
@@ -489,5 +487,118 @@ Class MPpicker
 		}
 	}
 }
+
+//class to handle the updating of the database when a student submits an answer
+Class MResponse
+{
+	var $m_maximum_recorded_time = 1800;//responses with solve times above this value will not be recorded in 'stats' and 'problems', but will be recorded in 'responses' and '12m_prob_ans' (the responses will be recorded, but this submission will not contribute to total time/total problems for a student's aggregate or a problem's aggregate (to prevent large average times)
+	var $m_start_time;//timestamp of when student began problem
+	var $m_end_time;//timestamp of when student submitted answer
+	var $m_user_id;//integer (unique) user id
+	var $m_problem_id;//integer (unique) problem id
+	var $m_student_answer;//integer (1=A, 2=B, 3,4,...) student answer value
+	
+	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer)
+	{
+		$this->m_start_time = $start_time;
+		$this->m_end_time = $end_time;
+		$this->m_user_id = $user_id;
+		$this->m_problem_id = $problem_id;
+		$this->m_student_answer = $student_answer;
+	}
+	
+	function update_responses()
+	{
+        global $dbmgr; 
+		$insertquery = "
+        INSERT INTO responses(
+			start_time,
+			end_time,
+			user_id,
+			prob_id,
+			answer
+        )VALUES(
+            '".date('Y-m-d H:i:s',$this->m_start_time)."',
+            '".date('Y-m-d H:i:s',$this->m_end_time)."',
+            '".$this->m_user_id."',
+            '".$this->m_problem_id."',
+            '".$this->m_student_answer."'
+        )";
+        $dbmgr->exec_query($insertquery);
+	}
+	
+	function update_stats()
+	{
+		global $dbmgr;
+		
+		$solve_time = $this->m_end_time - $this->m_start_time;
+		
+		//determine if student answer is correct
+		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem_answer = $current_problem->m_prob_correct;
+		$student_answered_correctly = 0;
+		if ($current_problem_answer == $this->m_student_answer)
+		{
+			$student_answered_correctly = 1;
+		}
+		
+		//update stats table
+		if ($solve_time <= $this->m_maximum_recorded_time)
+		{
+			$updatequery = "
+			UPDATE stats 
+			SET 
+				tot_tries=tot_tries+1,
+				tot_correct=tot_correct+".$student_answered_correctly.", 
+				tot_time=tot_time+".$solve_time."
+			WHERE user_id=".$this->m_user_id;
+			$dbmgr->exec_query($updatequery);
+		}
+	}
+
+	function update_problems()
+	{
+		global $dbmgr;
+		
+		$solve_time = $this->m_end_time - $this->m_start_time;
+		
+		//determine if student answer is correct
+		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem_answer = $current_problem->m_prob_correct;
+		$student_answered_correctly = 0;
+		if ($current_problem_answer == $this->m_student_answer)
+		{
+			$student_answered_correctly = 1;
+		}
+		
+		//update stats table
+		if ($solve_time <= $this->m_maximum_recorded_time)
+		{
+			$updatequery = "
+			UPDATE problems 
+			SET 
+				tot_tries=tot_tries+1,
+				tot_correct=tot_correct+".$student_answered_correctly.", 
+				tot_time=tot_time+".$solve_time."
+			WHERE id=".$this->m_problem_id;
+			$dbmgr->exec_query($updatequery);
+		}
+	}
+	
+	function update_12m_prob_ans()
+	{
+		global $dbmgr;
+		
+		$updatequery = "
+		UPDATE 12m_prob_ans 
+		SET count=count+1
+		WHERE prob_id=".$this->m_problem_id."
+		AND ans_num=".$this->m_student_answer;
+		
+		$dbmgr->exec_query($updatequery);
+	}
+	
+}
+
 
 ?>

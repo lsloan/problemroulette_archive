@@ -33,6 +33,21 @@ class MUser
         return unserialize(stripslashes($input));
     }
  
+	function get_id()
+	{
+		global $dbmgr;
+		
+		$query = "SELECT id FROM user WHERE username='".$this->username."'";
+		$res = $dbmgr->fetch_assoc($query);
+		// populate user (if found)
+        if(count($res) == 1)
+        {
+            $this->id = $res[0]['id'];
+            return True;
+        }
+        return False;
+		}
+ 
     function read()
     {
         global $dbmgr; 
