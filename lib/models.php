@@ -47,6 +47,23 @@ Class MProblem
         $dbmgr->exec_query($insertquery);
 	}
 	
+	function get_ans_submit_count($ans_num)
+	{
+		if ($this->m_prob_id != Null)
+		{
+			global $dbmgr;
+			$selectquery = "
+			SELECT count 
+			FROM 12m_prob_ans 
+			WHERE prob_id = ".$this->m_prob_id." 
+			AND ans_num = ".$ans_num;
+			
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$count = $res[0]['count'];
+			return $count;
+		}
+	}
+	
 	function Get_GD_info()
 	{
 	#call GD API

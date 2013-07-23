@@ -69,6 +69,7 @@ if (isset($_POST['submit_answer']))
 	{
 		//get end time and compare to start time to get total time
 		$end_time = time();
+		$usrmgr->m_user->SetPref('end_time',$end_time);
 		$start_time = $usrmgr->m_user->GetPref('start_time');
 		
 		//get student answer

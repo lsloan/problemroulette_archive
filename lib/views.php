@@ -367,6 +367,31 @@ class VProblems_submitted
 			$label_class = 'label-important';
 		}
 		
+		$ans_submit_count_sum = 0;
+		for ($i=1;$i<($this->v_picked_problem->m_prob_ans_count+1);$i++)
+		{
+			$ans_submit_count_sum += $this->v_picked_problem->get_ans_submit_count($i);
+		}
+		
+		$ans_submit_frac_count_string = "";
+		$histogram_ans_string = "|";
+		for ($i=1;$i<($this->v_picked_problem->m_prob_ans_count+1);$i++)
+		{
+			if ($i == $this->v_picked_problem->m_prob_ans_count)
+			{
+				$ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+			}
+			else
+			{
+				$ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+			}
+			$histogram_ans_string .= $alphabet[($i-1)]."|";
+		}
+		
+		$start_time = $usrmgr->m_user->GetPref('start_time');
+		$end_time = $usrmgr->m_user->GetPref('end_time');
+		$solve_time = $end_time - $start_time;
+		
         $str = "
             <p class='half-line'>&nbsp;</p>
 			<p>
@@ -382,6 +407,18 @@ class VProblems_submitted
 			}
 			$str .= "
 			</p>
+			<form action='' method='post'>
+			<button class='btn' type='submit' name='next' value='1'>
+			Next
+			</button>
+			</form>
+			<p>
+			<span class='label'>
+			Your time:&nbsp;
+			".$solve_time."
+			 seconds
+			</span>
+			</p>
 			<p>
 			<span class='label ".$label_class." student-answer'>
 			Your answer:&nbsp;
@@ -390,11 +427,9 @@ class VProblems_submitted
 			Correct answer: 
 			".$alphabet[$correct_answer-1]."
 			</p>
-			<form action='' method='post'>
-			<button class='btn' type='submit' name='next' value='1'>
-			Next
-			</button>
-			</form>
+			<img class='histogram'
+			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=300x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Total%20Responses%20(N=".$ans_submit_count_sum.")'>
+			</img>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
