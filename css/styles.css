@@ -215,8 +215,22 @@ input.ans-choice{
 }
 
 .form-next{
-	margin-bottom: 5px;
+	margin-bottom: 0px;
 }
+
+.btn-next{
+	width: 150px;
+}
+
+.summary-header{
+	margin: 0px 20px 10px;
+}
+
+.history{
+	color: #555;
+	width: 98%;
+	display: block;
+	margin: 0 auto;}
 
 
 /* Sticky footer styles

@@ -22,6 +22,9 @@ class CHeadCSSJavascript{
         <script src='js/jquery-1.10.1.js'></script>
         <script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
+		<script type='text/javascript' src='js/jquery-latest.js'></script> 
+		<script type='text/javascript' src='js/jquery.tablesorter.js'></script> 
+		<script type='text/javascript' src='js/mytable.js'></script> 
         ";
         if($this->m_cssfile != NULL)
 		foreach((array)$this->m_cssfile as $css){
@@ -193,10 +196,55 @@ class VStats
 	
 	function Deliver()
 	{
+		$summary = new MUserSummary();
+		
+		$num_responses = count($summary->m_problem_list);
+		
+		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		
+		global $usrmgr;
         $str = "
-        <p>
-            hi, this is the statistics page
-        <p>
+        <p class='half-line'>&nbsp;</p>
+        <h4 class='summary-header'>
+            ".$usrmgr->m_user->username."'s Summary
+        </h4>
+		<p>ADD CLASS/TOPIC SELECTORS HERE</p>
+		<p>
+		You have attempted <b>".$summary->m_tot_tries."</b> problems and you got <b>".$summary->m_tot_correct."</b> right.</br>
+		Your accuracy is <b>".round(100*$summary->m_tot_correct/$summary->m_tot_tries,1)."</b>%.</br>
+		Your average time per problem is <b>".round($summary->m_tot_time/$summary->m_tot_tries,1)."</b> seconds.
+		</p>
+		<p>ADD NUM_ROWS/CORRECT_OR_NOT SELECTORS HERE</p>
+		
+		<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Date</th>
+					<th>Your Answer</th>
+					<th>Correct Answer</th>
+					<th>Time</th>
+				</tr>
+			</thead>
+			<tbody>
+				";
+				//<history table body>
+				for ($i=0; $i<$num_responses; $i++)
+				{
+					$str .= "
+						<tr>
+							<td><a href='".$summary->m_problem_list[$i]->m_prob_url."'>".$summary->m_problem_list[$i]->m_prob_name."</a></td>
+							<td>".$summary->m_end_time_list[$i]."</td>
+							<td>".$alphabet[$summary->m_student_answer_list[$i]-1]."</td>
+							<td>".$alphabet[$summary->m_problem_list[$i]->m_prob_correct-1]."</td>
+							<td>".$summary->m_solve_time_list[$i]." s</td>
+						</tr>
+					";
+				}
+				//</history table body>
+				$str .= "
+			</tbody>
+		</table>
         ";
         return $str;
     }
@@ -211,7 +259,8 @@ class VProblems_no_topics
 	function Deliver()
 	{
         $str = "
-            <p>
+            <p class='half-line'>&nbsp;</p>
+			<p>
             Sorry! You haven't selected which problems you would like to do
             </p>
 			<p>
@@ -231,11 +280,12 @@ class VProblems_no_problems
 	function Deliver()
 	{
         $str = "
-            <p>
-            Sorry! There are no remaining problems with your topic selection
+            <p class='half-line'>&nbsp;</p>
+			<p>
+            Congratulations! You have correctly answered all of the problems for your selected topic(s)
             </p>
 			<p>
-			<strong>Please return to selections tab</strong>
+			<strong>Please return to selections tab to reset your topic(s)</strong>
 			</p>
         ";
         return $str;
@@ -278,7 +328,12 @@ class VProblems
 			Selected Topics/Remaining Problems: ";
 			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 			{
-				$str .= "<span class='label'>
+				$topic_depleted_label = " label-inverse";
+				if ($this->v_remaining_problems_in_topic_list[$i] == 0)
+				{
+					$topic_depleted_label = "";
+				}
+				$str .= "<span class='label".$topic_depleted_label."'>
 				".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
 				".$this->v_remaining_problems_in_topic_list[$i]."
 				/
@@ -411,7 +466,12 @@ class VProblems_submitted
 			Selected Topics/Remaining Problems: ";
 			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 			{
-				$str .= "<span class='label'>
+				$topic_depleted_label = " label-inverse";
+				if ($this->v_remaining_problems_in_topic_list[$i] == 0)
+				{
+					$topic_depleted_label = "";
+				}
+				$str .= "<span class='label".$topic_depleted_label."'>
 				".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
 				".$this->v_remaining_problems_in_topic_list[$i]."
 				/
@@ -421,7 +481,7 @@ class VProblems_submitted
 			$str .= "
 			</p>
 			<form class='form-next' action='' method='post'>
-			<button class='btn' type='submit' name='next' value='1'>
+			<button class='btn btn-next' type='submit' name='next' value='1'>
 			Next
 			</button>
 			</form>
