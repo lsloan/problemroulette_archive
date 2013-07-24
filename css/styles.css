@@ -116,6 +116,7 @@ h1 {
 .topic-selector tr a.link-reset{
 	line-height: 18px;
 	font-size: 14px;
+	cursor: pointer;
 }
 
 .topic-selector tr button.link:hover{
@@ -205,8 +206,16 @@ input.ans-choice{
 	background-color: #da4f49;
 }
 
+.label-warning{
+	background-color: #eacc11
+}
+
 .histogram{
 	margin: 0px 20px 10px;
+}
+
+.form-next{
+	margin-bottom: 5px;
 }
 
 

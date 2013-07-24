@@ -68,5 +68,7 @@ function toggle(source) {
 }
 
 function reset_topic(topic_id){
-	$.post('selections.php',{topic_link_submission: topic_id});
+	$.post('selections.php',{topic_link_submission: topic_id},function(response){
+		window.location = '';
+	});
 }

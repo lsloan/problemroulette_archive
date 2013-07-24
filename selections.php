@@ -31,8 +31,7 @@ if (isset($_POST['topic_checkbox_submission']))
 if (isset($_POST['topic_link_submission']))
 {
 	$topic_id = $_POST['topic_link_submission'];
-	$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);
-	header('Location:selections.php');
+	$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);	
 }
 
 //course_or_topic logic (0 for course selection, 1 for topic selection)

@@ -64,6 +64,26 @@ Class MProblem
 		}
 	}
 	
+	function get_avg_time()
+	{
+		if ($this->m_prob_id != Null)
+		{
+			global $dbmgr;
+			$selectquery = "
+			SELECT tot_tries, tot_time 
+			FROM problems
+			WHERE id = ".$this->m_prob_id;
+			
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$tot_tries = $res[0]['tot_tries'];
+			$tot_time = $res[0]['tot_time'];
+			
+			$avg_time = $tot_time/$tot_tries;
+			
+			return round($avg_time,1);
+		}
+	}
+	
 	function Get_GD_info()
 	{
 	#call GD API

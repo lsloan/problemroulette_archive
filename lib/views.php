@@ -358,6 +358,10 @@ class VProblems_submitted
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
+		$start_time = $usrmgr->m_user->GetPref('start_time');
+		$end_time = $usrmgr->m_user->GetPref('end_time');
+		$solve_time = $end_time - $start_time;
+		
 		if ($correct_answer == $student_answer)
 		{
 			$label_class = 'label-success';
@@ -365,6 +369,19 @@ class VProblems_submitted
 		else
 		{
 			$label_class = 'label-important';
+		}
+		
+		if ($solve_time <= $this->v_picked_problem->get_avg_time())
+		{
+			$time_label_class = "label-success";
+		}
+		elseif ($solve_time <= 1.3*$this->v_picked_problem->get_avg_time())
+		{
+			$time_label_class = "label-warning";
+		}
+		else
+		{
+			$time_label_class = "label-important";
 		}
 		
 		$ans_submit_count_sum = 0;
@@ -388,10 +405,6 @@ class VProblems_submitted
 			$histogram_ans_string .= $alphabet[($i-1)]."|";
 		}
 		
-		$start_time = $usrmgr->m_user->GetPref('start_time');
-		$end_time = $usrmgr->m_user->GetPref('end_time');
-		$solve_time = $end_time - $start_time;
-		
         $str = "
             <p class='half-line'>&nbsp;</p>
 			<p>
@@ -407,17 +420,19 @@ class VProblems_submitted
 			}
 			$str .= "
 			</p>
-			<form action='' method='post'>
+			<form class='form-next' action='' method='post'>
 			<button class='btn' type='submit' name='next' value='1'>
 			Next
 			</button>
 			</form>
 			<p>
-			<span class='label'>
+			<span class='label student-answer ".$time_label_class."'>
 			Your time:&nbsp;
 			".$solve_time."
 			 seconds
 			</span>
+			Average time: 
+			".$this->v_picked_problem->get_avg_time()." seconds
 			</p>
 			<p>
 			<span class='label ".$label_class." student-answer'>
@@ -491,7 +506,6 @@ class VTopic_Selections
 				<td class='cell-remaining'><span class='remaining-problems-topic'>
 				".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id,1))."/".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id))."
 				<a class='link link-reset'
-				href=''
 				onClick='reset_topic(&quot;".$topic->m_id."&quot;);'>
 				Reset
 				</a>
