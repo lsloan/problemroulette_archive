@@ -215,6 +215,15 @@ class VStats
 		Your average time per problem is <b>".round($summary->m_tot_time/$summary->m_tot_tries,1)."</b> seconds.
 		</p>
 		<p>ADD NUM_ROWS/CORRECT_OR_NOT SELECTORS HERE</p>
+		<p class='p-num-rows'>
+		Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
+			<option value='10' id='10'>10</option>
+			<option value='25' id='25'>25</option>
+			<option value='50' id='50'>50</option>
+			<option value='All' id='AllRows' selected='selected'>All</option>
+		</select> rows
+
+		</p>
 		
 		<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
 			<thead>
@@ -223,7 +232,7 @@ class VStats
 					<th>Date</th>
 					<th>Your Answer</th>
 					<th>Correct Answer</th>
-					<th>Time</th>
+					<th>Time (seconds)</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -232,12 +241,12 @@ class VStats
 				for ($i=0; $i<$num_responses; $i++)
 				{
 					$str .= "
-						<tr>
-							<td><a href='".$summary->m_problem_list[$i]->m_prob_url."'>".$summary->m_problem_list[$i]->m_prob_name."</a></td>
+						<tr id='hidethis".$i."'>
+							<td><a class='link-history' href='".$summary->m_problem_list[$i]->m_prob_url."'>".$summary->m_problem_list[$i]->m_prob_name."</a></td>
 							<td>".$summary->m_end_time_list[$i]."</td>
 							<td>".$alphabet[$summary->m_student_answer_list[$i]-1]."</td>
 							<td>".$alphabet[$summary->m_problem_list[$i]->m_prob_correct-1]."</td>
-							<td>".$summary->m_solve_time_list[$i]." s</td>
+							<td>".$summary->m_solve_time_list[$i]."</td>
 						</tr>
 					";
 				}

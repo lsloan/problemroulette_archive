@@ -232,6 +232,60 @@ input.ans-choice{
 	display: block;
 	margin: 0 auto;}
 
+th.header{
+	background-color: #eef;
+	background-image: url(../img/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-left-color: #ccf;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-right-color: #ccf;
+}
+
+th.headerSortUp{
+	background-color: #ddf;
+	background-image: url(../img/asc.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-left-color: #ccf;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-right-color: #ccf;
+}
+
+th.headerSortDown{
+	background-color: #ddf;
+	background-image: url(../img/desc.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-left-color: #ccf;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-right-color: #ccf;
+}
+
+.link-history{
+	line-height: 20px;
+	font-size: 14px;
+}
+
+.dropdown-num-rows{
+	width: auto;
+	min-width: 60px;
+}
+
+.p-num-rows{
+	vertical-align: middle;
+}
+
+
 
 /* Sticky footer styles
 -------------------------------------------------- */
