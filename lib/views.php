@@ -22,7 +22,6 @@ class CHeadCSSJavascript{
         <script src='js/jquery-1.10.1.js'></script>
         <script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
-		<script type='text/javascript' src='js/jquery-latest.js'></script> 
 		<script type='text/javascript' src='js/jquery.tablesorter.js'></script> 
 		<script type='text/javascript' src='js/mytable.js'></script> 
         ";
@@ -216,12 +215,17 @@ class VStats
 		</p>
 		<p>ADD NUM_ROWS/CORRECT_OR_NOT SELECTORS HERE</p>
 		<p class='p-num-rows'>
-		Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
+		<!--Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
 			<option value='10' id='10'>10</option>
 			<option value='25' id='25'>25</option>
 			<option value='50' id='50'>50</option>
 			<option value='All' id='AllRows' selected='selected'>All</option>
-		</select> rows
+		</select> rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+		Show: <select class='dropdown-correct'>
+			<option value='all'>All</option>
+			<option value='correct'>Only Correct</option>
+			<option value='incorrect'>Only Incorrect</option>
+		</select>
 
 		</p>
 		
@@ -241,11 +245,11 @@ class VStats
 				for ($i=0; $i<$num_responses; $i++)
 				{
 					$str .= "
-						<tr id='hidethis".$i."'>
+						<tr>
 							<td><a class='link-history' href='".$summary->m_problem_list[$i]->m_prob_url."'>".$summary->m_problem_list[$i]->m_prob_name."</a></td>
 							<td>".$summary->m_end_time_list[$i]."</td>
-							<td>".$alphabet[$summary->m_student_answer_list[$i]-1]."</td>
-							<td>".$alphabet[$summary->m_problem_list[$i]->m_prob_correct-1]."</td>
+							<td class='cell-student-answer'>".$alphabet[$summary->m_student_answer_list[$i]-1]."</td>
+							<td class='cell-correct-answer'>".$alphabet[$summary->m_problem_list[$i]->m_prob_correct-1]."</td>
 							<td>".$summary->m_solve_time_list[$i]."</td>
 						</tr>
 					";
@@ -500,7 +504,7 @@ class VProblems_submitted
 			".$solve_time."
 			 seconds
 			</span>
-			Average time: 
+			Average user time: 
 			".$this->v_picked_problem->get_avg_time()." seconds
 			</p>
 			<p>
@@ -550,7 +554,7 @@ class VTopic_Selections
 		<form action='problems.php' method='post' name='topic_selector'>
 		<table class='topic-selector table'>
 			<tr>
-			<td class='cell-checkbox'><input class='checkbox' type='checkbox' id='all' onClick='toggle(this)' /></td>
+			<td class='cell-checkbox'><input class='checkbox' type='checkbox' id='select_all_checkboxes' onClick='toggle(this)' /></td>
 			<td class='cell-topic'><span class='select-all'>Select All</span></td>
 			<td class='cell-remaining'><span class='remaining-problems'>Remaining Problems</span></td>
 			</tr>";

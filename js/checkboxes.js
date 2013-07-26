@@ -31,7 +31,7 @@ $(document).ready(function() {
   })});
   
 $(document).ready(function(){
-    $('#all').click(function(){
+    $('#select_all_checkboxes').click(function(){
         if($(this).prop('checked')){
             $('.group').parents('tr').addClass('checked');
         }

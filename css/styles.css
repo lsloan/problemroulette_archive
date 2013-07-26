@@ -285,6 +285,10 @@ th.headerSortDown{
 	vertical-align: middle;
 }
 
+.dropdown-correct{
+	width: auto;
+}
+
 
 
 /* Sticky footer styles
