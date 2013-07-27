@@ -640,27 +640,17 @@ Class MResponse
 Class MUserSummary
 {
 	//<OVERALL STATISTICS>
-	//<FROM STATS TABLE>
 	var $m_tot_tries = 0;
 	var $m_tot_correct = 0;
 	var $m_tot_time = 0;
-	//</FROM STATS TABLE>
 	//</OVERALL STATSISTICS>
 	
 	//<HISTORY>
-		//<FROM RESPONSES TABLE>
-	var $m_problem_list = Array();
-	var $m_student_answer_list = Array();
-	var $m_start_time_list = Array();
-	var $m_end_time_list = Array();
-	var $m_solve_time_list = Array();
-		//<FROM RESPONSES TABLE>
-	
-		//<FROM PROBLEMS TABLE>
-	//var $m_prob_name_list = Array();
-	//var $m_prob_answer_list = Array();
-	//var $m_prob_url = Array();
-		//</FROM PROBLEMS TABLE>
+	var $m_problem_list = Array(); //NOTE: array of MProblem class (you get [correct answer/name/URL] from this)
+	var $m_student_answer_list = Array(); //numeric format (1,2,...)
+	var $m_start_time_list = Array(); //datetime format
+	var $m_end_time_list = Array(); //datetime format
+	var $m_solve_time_list = Array(); //solve time (in seconds)
 	//</HISTORY>
 	
 	function __construct()
@@ -669,19 +659,6 @@ Class MUserSummary
 		global $dbmgr;
 		
 		$user_id = $usrmgr->m_user->get_id();
-		
-		
-		//<GET AGGREGATE STATISTICS>
-		$selectquery = "
-		SELECT tot_tries, tot_correct, tot_time 
-		FROM stats 
-		WHERE user_id=".$user_id;
-		
-		$res = $dbmgr->fetch_assoc($selectquery);
-		$this->m_tot_tries = $res[0]['tot_tries'];
-		$this->m_tot_correct = $res[0]['tot_correct'];
-		$this->m_tot_time = $res[0]['tot_time'];
-		//</GET AGGREGATE STATISTICS>
 		
 		//<GET RESPONSES>
 		$selectquery = "
@@ -700,8 +677,14 @@ Class MUserSummary
 			$this->m_end_time_list[$i] = $res[$i]['end_time'];
 			
 			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
-		}
-		
+			
+			$this->m_tot_tries += 1;
+			$this->m_tot_time += $this->m_solve_time_list[$i];
+			if ($this->m_student_answer_list[$i] == $this->m_problem_list[$i]->m_prob_correct)
+			{
+				$this->m_tot_correct += 1;
+			}
+		}	
 		//</GET RESPONSES>
 	}
 	

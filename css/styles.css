@@ -289,6 +289,18 @@ th.headerSortDown{
 	width: auto;
 }
 
+.dropdown-course{
+	width: auto;
+}
+
+.dropdown-topic{
+	width: auto;
+}
+
+.invis{
+	display: none;
+}
+
 
 
 /* Sticky footer styles

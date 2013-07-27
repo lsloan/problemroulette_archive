@@ -56,6 +56,7 @@ class VPageTabs{
 
 	function Deliver(){
 		$str 	= "
+<!doctype html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
 <html lang='en'>
 <!--open head-->
 	<head>
@@ -199,6 +200,9 @@ class VStats
 		
 		$num_responses = count($summary->m_problem_list);
 		
+		$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+		$num_courses = count($all_courses_with_topics);
+		
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		
 		global $usrmgr;
@@ -207,20 +211,81 @@ class VStats
         <h4 class='summary-header'>
             ".$usrmgr->m_user->username."'s Summary
         </h4>
-		<p>ADD CLASS/TOPIC SELECTORS HERE</p>
+		<p>
+		Filter by Course: 
+		<select class='dropdown-course'>
+		<option value='all' selected='selected'>All Courses</option>";
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics_in_course = Array();
+			$all_topics_in_course_id = Array();
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$topic_count = count($all_topics_in_course);
+			for($j=0; $j<$topic_count; $j++)
+			{
+				$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+			}
+			
+			$str .= "<option 
+			value='".$all_courses_with_topics[$i]->m_id."'>
+			".$all_courses_with_topics[$i]->m_name."
+			</option>
+			";
+		}
+		$str .= "</select>";
+		
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics_in_course = Array();
+			$all_topics_in_course_id = Array();
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$topic_count = count($all_topics_in_course);
+			for($j=0; $j<$topic_count; $j++)
+			{
+				$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+			}
+			
+			$str .= "
+			<input type='hidden'
+			id='".$all_courses_with_topics[$i]->m_id."'
+			value='".implode(',',$all_topics_in_course_id)."'/>
+			";
+		}
+		
+		$str .= "
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		Filter by Topic: 
+		<select disabled='disabled' class='dropdown-topic'>
+		<option value='all' selected='selected'>All Topics</option>";
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics_in_course = Array();
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$num_topics = count($all_topics_in_course);
+			for ($j=0; $j<$num_topics; $j++)
+			{
+				$str .= "<option 
+				value='".$all_topics_in_course[$j]->m_id."'>
+				".$all_topics_in_course[$j]->m_name."
+				</option>";
+			}
+		}
+		$str .= "
+		</select>
+		
+		</p>
 		<p>
 		You have attempted <b>".$summary->m_tot_tries."</b> problems and you got <b>".$summary->m_tot_correct."</b> right.</br>
 		Your accuracy is <b>".round(100*$summary->m_tot_correct/$summary->m_tot_tries,1)."</b>%.</br>
 		Your average time per problem is <b>".round($summary->m_tot_time/$summary->m_tot_tries,1)."</b> seconds.
 		</p>
-		<p>ADD NUM_ROWS/CORRECT_OR_NOT SELECTORS HERE</p>
 		<p class='p-num-rows'>
-		<!--Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
-			<option value='10' id='10'>10</option>
-			<option value='25' id='25'>25</option>
-			<option value='50' id='50'>50</option>
-			<option value='All' id='AllRows' selected='selected'>All</option>
-		</select> rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+		Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
+			<option value='10'>10</option>
+			<option value='25'>25</option>
+			<option value='50'>50</option>
+			<option value='All' selected='selected'>All</option>
+		</select> rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		Show: <select class='dropdown-correct'>
 			<option value='all'>All</option>
 			<option value='correct'>Only Correct</option>
@@ -234,9 +299,9 @@ class VStats
 				<tr>
 					<th>Name</th>
 					<th>Date</th>
-					<th>Your Answer</th>
-					<th>Correct Answer</th>
-					<th>Time (seconds)</th>
+					<th>Your Answer&nbsp;&nbsp;&nbsp;</th>
+					<th>Correct Answer&nbsp;&nbsp;&nbsp;</th>
+					<th>Time (seconds)&nbsp;&nbsp;&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
