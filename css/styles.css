@@ -229,8 +229,8 @@ input.ans-choice{
 .history{
 	color: #555;
 	width: 98%;
-	display: block;
-	margin: 0 auto;}
+	margin: 0 auto;
+}
 
 th.header{
 	background-color: #eef;
@@ -243,6 +243,7 @@ th.header{
 	border-right-style: solid;
 	border-right-width: 1px;
 	border-right-color: #ccf;
+	width: auto;
 }
 
 th.headerSortUp{
@@ -297,9 +298,6 @@ th.headerSortDown{
 	width: auto;
 }
 
-.invis{
-	display: none;
-}
 
 
 

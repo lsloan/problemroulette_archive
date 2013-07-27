@@ -653,21 +653,46 @@ Class MUserSummary
 	var $m_solve_time_list = Array(); //solve time (in seconds)
 	//</HISTORY>
 	
-	function __construct()
+	var $m_problems_list_id;//array of problem IDs (only use these IDs)
+	
+	function __construct($problems_list_id = Null)
 	{
 		global $usrmgr;
 		global $dbmgr;
 		
+		$this->m_problems_list_id = $problems_list_id;
+		$num_problems_in_selection = count($this->m_problems_list_id);
+		
 		$user_id = $usrmgr->m_user->get_id();
 		
 		//<GET RESPONSES>
-		$selectquery = "
-		SELECT prob_id, answer, start_time, end_time 
-		FROM responses 
-		WHERE user_id=".$user_id;
+		if ($this->m_problems_list_id == 'blank')
+		{
+			$num_responses = 0;
+		}
+		else
+		{
+			$selectquery = "
+			SELECT prob_id, answer, start_time, end_time 
+			FROM responses 
+			WHERE user_id=".$user_id;
+			
+			if ($this->m_problems_list_id != Null)
+			{
+				$selectquery .= " AND (";
+				for ($i=0; $i<$num_problems_in_selection; $i++)
+				{
+					$selectquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
+					if ($i == ($num_problems_in_selection-1))
+					{
+						$selectquery .= "prob_id=".$this->m_problems_list_id[$i].")";
+					}
+				}
+			}
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$num_responses = count($res);			
+		}
 		
-		$res = $dbmgr->fetch_assoc($selectquery);
-		$num_responses = count($res);
 		
 		for ($i=0;$i<$num_responses;$i++)
 		{

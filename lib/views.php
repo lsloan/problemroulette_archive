@@ -189,16 +189,18 @@ class VStaff
 class VStats
 {
 	#m_model
+	var $v_summary;
 	
-	function __construct()
+	function __construct($summary)
 	{
+		$this->v_summary = $summary;
 	}
 	
 	function Deliver()
 	{
-		$summary = new MUserSummary();
+		//$summary = new MUserSummary();
 		
-		$num_responses = count($summary->m_problem_list);
+		$num_responses = count($this->v_summary->m_problem_list);
 		
 		$all_courses_with_topics = MCourse::get_all_courses_with_topics();
 		$num_courses = count($all_courses_with_topics);
@@ -213,7 +215,8 @@ class VStats
         </h4>
 		<p>
 		Filter by Course: 
-		<select class='dropdown-course'>
+		<form name='dropdown_course_form' action='' method='POST'>
+		<select class='dropdown-course' name='dropdown_course'>
 		<option value='all' selected='selected'>All Courses</option>";
 		for ($i=0; $i<$num_courses; $i++)
 		{
@@ -227,12 +230,17 @@ class VStats
 			}
 			
 			$str .= "<option 
-			value='".$all_courses_with_topics[$i]->m_id."'>
+			value='".$all_courses_with_topics[$i]->m_id."'";
+			if ($usrmgr->m_user->GetPref('dropdown_history_course') == $all_courses_with_topics[$i]->m_id)
+			{
+				$str .= " selected='selected'";
+			}
+			$str .= ">
 			".$all_courses_with_topics[$i]->m_name."
 			</option>
 			";
 		}
-		$str .= "</select>";
+		$str .= "</select></form>";
 		
 		for ($i=0; $i<$num_courses; $i++)
 		{
@@ -275,17 +283,23 @@ class VStats
 		
 		</p>
 		<p>
-		You have attempted <b>".$summary->m_tot_tries."</b> problems and you got <b>".$summary->m_tot_correct."</b> right.</br>
-		Your accuracy is <b>".round(100*$summary->m_tot_correct/$summary->m_tot_tries,1)."</b>%.</br>
-		Your average time per problem is <b>".round($summary->m_tot_time/$summary->m_tot_tries,1)."</b> seconds.
+		You have attempted <b>".$this->v_summary->m_tot_tries."</b> problems and you got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
+		
+		if ($this->v_summary->m_tot_tries > 0)
+		{
+			$str .= "Your accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
+			Your average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
+		}
+		
+		$str .= "
 		</p>
 		<p class='p-num-rows'>
-		Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
+		<!--Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
 			<option value='10'>10</option>
 			<option value='25'>25</option>
 			<option value='50'>50</option>
 			<option value='All' selected='selected'>All</option>
-		</select> rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</select> rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
 		Show: <select class='dropdown-correct'>
 			<option value='all'>All</option>
 			<option value='correct'>Only Correct</option>
@@ -311,11 +325,11 @@ class VStats
 				{
 					$str .= "
 						<tr>
-							<td><a class='link-history' href='".$summary->m_problem_list[$i]->m_prob_url."'>".$summary->m_problem_list[$i]->m_prob_name."</a></td>
-							<td>".$summary->m_end_time_list[$i]."</td>
-							<td class='cell-student-answer'>".$alphabet[$summary->m_student_answer_list[$i]-1]."</td>
-							<td class='cell-correct-answer'>".$alphabet[$summary->m_problem_list[$i]->m_prob_correct-1]."</td>
-							<td>".$summary->m_solve_time_list[$i]."</td>
+							<td><a class='link-history' href='".$this->v_summary->m_problem_list[$i]->m_prob_url."'>".$this->v_summary->m_problem_list[$i]->m_prob_name."</a></td>
+							<td>".$this->v_summary->m_end_time_list[$i]."</td>
+							<td class='cell-student-answer'>".$alphabet[$this->v_summary->m_student_answer_list[$i]-1]."</td>
+							<td class='cell-correct-answer'>".$alphabet[$this->v_summary->m_problem_list[$i]->m_prob_correct-1]."</td>
+							<td>".$this->v_summary->m_solve_time_list[$i]."</td>
 						</tr>
 					";
 				}
