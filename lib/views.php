@@ -213,9 +213,9 @@ class VStats
         <h4 class='summary-header'>
             ".$usrmgr->m_user->username."'s Summary
         </h4>
-		<p>
+		<div class='div-history-dropdown-course-topic'>
 		Filter by Course: 
-		<form name='dropdown_course_form' action='' method='POST'>
+		<form name='dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
 		<select class='dropdown-course' name='dropdown_course'>
 		<option value='all' selected='selected'>All Courses</option>";
 		for ($i=0; $i<$num_courses; $i++)
@@ -263,7 +263,8 @@ class VStats
 		$str .= "
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		Filter by Topic: 
-		<select disabled='disabled' class='dropdown-topic'>
+		<form name='dropdown_topic_form' action='' method='POST' class='dropdown-course-topic-form'>
+		<select disabled='disabled' class='dropdown-topic' name='dropdown_topic'>
 		<option value='all' selected='selected'>All Topics</option>";
 		for ($i=0; $i<$num_courses; $i++)
 		{
@@ -273,15 +274,21 @@ class VStats
 			for ($j=0; $j<$num_topics; $j++)
 			{
 				$str .= "<option 
-				value='".$all_topics_in_course[$j]->m_id."'>
+				value='".$all_topics_in_course[$j]->m_id."'";
+				if ($usrmgr->m_user->GetPref('dropdown_history_topic') == $all_topics_in_course[$j]->m_id)
+				{
+					$str .= " selected='selected'";
+				}
+				$str .= ">
 				".$all_topics_in_course[$j]->m_name."
 				</option>";
 			}
 		}
 		$str .= "
 		</select>
+		</form>
 		
-		</p>
+		</div>
 		<p>
 		You have attempted <b>".$this->v_summary->m_tot_tries."</b> problems and you got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
 		
@@ -319,6 +326,11 @@ class VStats
 				</tr>
 			</thead>
 			<tbody>
+			<td class='invis'></td>
+			<td class='invis'></td>
+			<td class='invis'></td>
+			<td class='invis'></td>
+			<td class='invis'></td>
 				";
 				//<history table body>
 				for ($i=0; $i<$num_responses; $i++)

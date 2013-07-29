@@ -88,65 +88,18 @@ $(document).ready(function()
 	var elem_init = $("select.dropdown-topic option");
 	var num_all_topics = elem_init.length;
 	
-	//allow topic filtering after course has been selected
+	//when user chooses course, re-submit form with new course selection
 	$('select.dropdown-course').change(function(){		
-		var dropdown_history_course = $("select.dropdown-course").val();
-		
-		//$.post('stats.php',{dropdown_course: dropdown_history_course},function(response){
-			//window.location = '';
-		//});
 		document.dropdown_course_form.submit();
-		
-		if ($('select.dropdown-course').val() == 'all')
-		{
-			$('select.dropdown-topic option[value="all"]').prop('selected','selected');
-			$('select.dropdown-topic').prop('disabled','disabled');
-		}
-		
-		else//if the course selection is anything other than 'all courses'
-		{			
-			//remove all topic selections then add back 'All Topics'
-			$("select.dropdown-topic option").remove();
-			$("select.dropdown-topic").append(elem_init[0]);
-		
-			//get topics in course
-			var course_id = $('select.dropdown-course').val();
-			var topics_in_course_string = $("#"+course_id+"").val();
-			var topics_in_course = topics_in_course_string.split(",");
-			var num_topics = topics_in_course.length;
-			
-			//hide all topics
-			//$("select.dropdown-topic option").css('display','none');------OLD CODE
-			//$("select.dropdown-topic option").hide();------OLD CODE
-			//$("select.dropdown-topic option").addClass('invis');-------OLD CODE
-			
-			//show all topics in course
-			for (var i=0; i<num_topics; i++)
-			{
-				//$("select.dropdown-topic option[value='"+topics_in_course[i]+"']").css('display','block');-------OLD CODE
-				//$("select.dropdown-topic option[value='"+topics_in_course[i]+"']").show();-------OLD CODE
-				for (var j=0; j<num_all_topics; j++)
-				{
-					if (elem_init[j].value == topics_in_course[i])
-					{
-						$('select.dropdown-topic').append(elem_init[j]);
-					}
-				}
-			}
-			
-			//select 'all topics' in case user is switching from another course
-			$("select.dropdown-topic option[value='all']").prop('selected','selected');
-			
-			//remove the 'disabled' attribute from the topic selector
-			$('select.dropdown-topic').removeAttr('disabled');
-		}
+	});
+	
+	//when user chooses topic, re-submit form with new topic selection
+	$('select.dropdown-topic').change(function(){		
+		document.dropdown_topic_form.submit();
 	});
 	
 	
-	
-	
-	
-	
+		//logic to display the appropriate topics for course selection on stats.php
 		var dropdown_history_course = $("select.dropdown-course").val();
 		
 		if ($('select.dropdown-course').val() == 'all')
@@ -179,10 +132,7 @@ $(document).ready(function()
 				}
 			}
 			
-			//select 'all topics' in case user is switching from another course
-			$("select.dropdown-topic option[value='all']").prop('selected','selected');
-			
-			//remove the 'disabled' attribute from the topic selector
+			//remove the 'disabled' attribute from the topic selector if user selects course choice other than 'all courses'
 			$('select.dropdown-topic').removeAttr('disabled');
 		}
 

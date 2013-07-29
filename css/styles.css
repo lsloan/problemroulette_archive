@@ -298,6 +298,18 @@ th.headerSortDown{
 	width: auto;
 }
 
+.invis{
+	display: none;
+}
+
+.dropdown-course-topic-form{
+	display: inline;
+}
+
+.div-history-dropdown-course-topic{
+	margin: 5px 10px;
+}
+
 
 
 
