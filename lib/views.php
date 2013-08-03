@@ -530,17 +530,21 @@ class VProblems_submitted
 			$label_class = 'label-important';
 		}
 		
+		//set color for 'Your Time' label
 		if ($solve_time <= $this->v_picked_problem->get_avg_time())
 		{
-			$time_label_class = "label-success";
+			//$time_label_class = "label-success";//green
+			$time_label_class = "";//gray
 		}
 		elseif ($solve_time <= 1.3*$this->v_picked_problem->get_avg_time())
 		{
-			$time_label_class = "label-warning";
+			//$time_label_class = "label-warning";//yellow
+			$time_label_class = "";//gray
 		}
 		else
 		{
-			$time_label_class = "label-important";
+			//$time_label_class = "label-important";//red
+			$time_label_class = "";//gray
 		}
 		
 		$ans_submit_count_sum = 0;
