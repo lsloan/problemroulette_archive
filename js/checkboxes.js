@@ -15,7 +15,7 @@ $(document).ready(function() {
 		$('#use-selected').removeClass('disabled');
 		$('#reset-topics').removeClass('disabled');
 		$('#use-selected').attr('href','javascript:document.topic_selector.submit();');
-		$('#reset-topics').attr('href','javascript:document.topic_selector.action = "";document.topic_selector.submit();');
+		$('#reset-topics').attr('href',"javascript:reset_topic_checkboxes();");
 	} else {
 		$('#use-selected').addClass('disabled');
 		$('#reset-topics').addClass('disabled');
@@ -49,7 +49,7 @@ $(document).ready(function(){
 			$('#use-selected').removeClass('disabled');
 			$('#reset-topics').removeClass('disabled');
 			$('#use-selected').attr('href','javascript:document.topic_selector.submit();');
-			$('#reset-topics').attr('href','javascript:document.topic_selector.action = "";document.topic_selector.submit();');
+			$('#reset-topics').attr('href',"javascript:reset_topic_checkboxes();");
 		} else {
 			$('#use-selected').addClass('disabled');
 			$('#reset-topics').addClass('disabled');
@@ -67,7 +67,24 @@ function toggle(source) {
   }
 }
 
+function reset_topic_checkboxes(){
+	var are_you_sure_checkboxes=confirm('Resetting a topic will allow all its problems to be randomly selected again. This may result in repeated problems. Would you like to continue?');
+	if (are_you_sure_checkboxes != true)
+	{
+		return false;
+	}
+
+	document.topic_selector.action = "";
+	document.topic_selector.submit();
+}
+
 function reset_topic(topic_id){
+	var are_you_sure=confirm('Resetting a topic will allow all its problems to be randomly selected again. This may result in repeated problems. Would you like to continue?');
+	if (are_you_sure!=true)
+	{
+		return false;
+	}
+
 	$.post('selections.php',{topic_link_submission: topic_id},function(response){
 		window.location = '';
 	});
