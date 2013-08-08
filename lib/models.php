@@ -663,7 +663,8 @@ Class MUserSummary
 		$this->m_problems_list_id = $problems_list_id;
 		$num_problems_in_selection = count($this->m_problems_list_id);
 		
-		$user_id = $usrmgr->m_user->get_id();
+		$usrmgr->m_user->get_id();
+		$user_id = $usrmgr->m_user->id;
 		
 		//<GET RESPONSES>
 		if ($this->m_problems_list_id == 'blank')

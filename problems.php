@@ -97,7 +97,8 @@ if (isset($_POST['submit_answer']))
 		}
 		
 		//get user_id
-		$user_id = $usrmgr->m_user->get_id();
+		$usrmgr->m_user->get_id();
+		$user_id = $usrmgr->m_user->id;
 		
 		//update tables upon response
 		$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,$student_answer);

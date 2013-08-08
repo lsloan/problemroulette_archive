@@ -36,7 +36,6 @@ class MUser
 	function get_id()
 	{
 		global $dbmgr;
-		
 		$query = "SELECT id FROM user WHERE username='".$this->username."'";
 		$res = $dbmgr->fetch_assoc($query);
 		// populate user (if found)
@@ -75,10 +74,17 @@ class MUser
     function GetPref($key)
     {
         // return specific requested pref
-        if (array_key_exists($key, $this->prefs))
-            return $this->prefs[$key];
-        else
-            return Null;
+		if ($this->prefs != Null)
+			{
+			if (array_key_exists($key, $this->prefs))
+				return $this->prefs[$key];
+			else
+				return Null;
+			}
+		else
+		{
+			return Null;
+		}
     }
 
     function SetPref($key, $val)
@@ -100,8 +106,8 @@ class UserManager{
 
 	function Login()
     {
-        // set any default (in deveopement this will be the active user_id)
-        $username = 'test_user';
+        // set any default (in deveopement this will be the active user_id)		
+        $username = 'test_user5';
         // check if the user just logged in through cosign
         if(isset($_SERVER['REMOTE_USER']))
             $username = $_SERVER["REMOTE_USER"];
