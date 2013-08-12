@@ -14,6 +14,8 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
+session_start();
+
 global $usrmgr;
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))

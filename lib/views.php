@@ -69,6 +69,8 @@ class VPageTabs{
 
 <div id='wrap'>
     <div class='container'>
+NOTE: Problem Roulette is currently under renovation. Functionality will be temporarily reduced, but feel free to look around! (Beware of possible errors!)
+
         "
         .$this->m_nav->Deliver().
         "
@@ -550,7 +552,7 @@ class VProblems_submitted
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
-		$start_time = $usrmgr->m_user->GetPref('start_time');
+		$start_time = $_SESSION['start_time'];
 		$end_time = $usrmgr->m_user->GetPref('end_time');
 		$solve_time = $end_time - $start_time;
 		

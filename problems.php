@@ -14,6 +14,7 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
+session_start();
 
 // populate and use models for business logic on page
 
@@ -36,7 +37,7 @@ if (isset($_POST['topic_checkbox_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
-	$usrmgr->m_user->SetPref('current_problem',Null);
+	$_SESSION['current_problem'] = Null;
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -47,7 +48,7 @@ if (isset($_POST['topic_link_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_link_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
-	$usrmgr->m_user->SetPref('current_problem',Null);
+	$_SESSION['current_problem'] = Null;
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -55,7 +56,7 @@ if (isset($_POST['topic_link_submission']))
 //check to see if user hit "skip" button
 if (isset($_POST['skip']))
 {
-	$usrmgr->m_user->SetPref('current_problem',Null);
+	$_SESSION['current_problem'] = Null;
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -70,14 +71,14 @@ if (isset($_POST['submit_answer']))
 		//get end time and compare to start time to get total time
 		$end_time = time();
 		$usrmgr->m_user->SetPref('end_time',$end_time);
-		$start_time = $usrmgr->m_user->GetPref('start_time');
+		$start_time = $_SESSION['start_time'];
 		
 		//get student answer
 		$student_answer = $_POST['student_answer'];
 		$usrmgr->m_user->SetPref('problem_submitted',$student_answer);
 		
 		//get current problem and correct answer
-		$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
+		$current_problem_id = $_SESSION['current_problem'];
 		$current_problem = new MProblem($current_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
@@ -114,7 +115,7 @@ if (isset($_POST['submit_answer']))
 
 if (isset($_POST['next']))
 {
-	$usrmgr->m_user->SetPref('current_problem',Null);
+	$_SESSION['current_problem'] = Null;
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -138,9 +139,9 @@ $remaining_problems_in_topic_list = $Picker->m_remaining_problems_in_topic_list;
 $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 
 //pick either current problem a student is working on OR pick new problem
-if ($usrmgr->m_user->GetPref('current_problem') != Null)
+if ($_SESSION['current_problem'] != Null)
 {
-	$picked_problem_id = $usrmgr->m_user->GetPref('current_problem');
+	$picked_problem_id = $_SESSION['current_problem'];
 	$picked_problem = new MProblem($picked_problem_id);
 }
 else
@@ -154,14 +155,14 @@ else
 		$picked_problem_id = $picked_problem->m_prob_id;
 	}
 	
-	//set start time in preferences
+	//set start time in session variable
 	$start_time = time();
-	$usrmgr->m_user->SetPref('start_time',$start_time);
+	$_SESSION['start_time'] = $start_time;
 }
 
 if ($picked_problem_id != Null)
 {
-	$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+	$_SESSION['current_problem'] = $picked_problem_id;
 }
 
 ///////////////////////////////////////////////////////////////////////////

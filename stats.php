@@ -14,6 +14,8 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
+session_start();
+
 // populate and use models for business logic on page
 
 //logic for course or topic course selector and shown row number selection
