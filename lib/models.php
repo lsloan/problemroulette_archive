@@ -486,21 +486,39 @@ Class MPpicker
 		global $usrmgr;
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
 		$num_selected_topics = count($this->m_selected_topics_list);
-		for ($i=0; $i<$num_selected_topics; $i++)
-		{
-			$topic_id = $this->m_selected_topics_list[$i];
-			$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
-		}
 		
-		for ($i=0;$i<count($this->m_selected_topics_list);$i++)
+		if ($num_selected_topics >= 2)
 		{
-			$topic_id = $this->m_selected_topics_list[$i];
+			for ($i=0; $i<$num_selected_topics; $i++)
+			{
+				$topic_id = $this->m_selected_topics_list[$i];
+				$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
+			}
+			
+			for ($i=0;$i<count($this->m_selected_topics_list);$i++)
+			{
+				$topic_id = $this->m_selected_topics_list[$i];
+				$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
+				$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
+				$this->m_remaining_problems_in_topic_list[$i] = count($remaining_problems);
+				$this->m_total_problems_in_topic_list[$i] = count($total_problems);
+				
+				if ($this->m_remaining_problems_in_topic_list[$i] > 0)
+				{
+					array_push($this->m_remaining_selected_topics_list, $topic_id);
+				}
+			}
+		}
+		else
+		{
+			$topic_id = $this->m_selected_topics_list;
+			$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
 			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
 			$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
-			$this->m_remaining_problems_in_topic_list[$i] = count($remaining_problems);
-			$this->m_total_problems_in_topic_list[$i] = count($total_problems);
-			
-			if ($this->m_remaining_problems_in_topic_list[$i] > 0)
+			$this->m_remaining_problems_in_topic_list = count($remaining_problems);
+			$this->m_total_problems_in_topic_list = count($total_problems);
+		
+			if ($this->m_remaining_problems_in_topic_list > 0)
 			{
 				array_push($this->m_remaining_selected_topics_list, $topic_id);
 			}
