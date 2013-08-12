@@ -61,13 +61,53 @@ if (isset($_POST['skip']))
 }
 
 //check to see if user submitted an answer
+//if so, 	{set pref 'problem_submitted' to something other than null to display submitted problem view
+//			 if they get the problem right, exclude problem in future}
 if (isset($_POST['submit_answer']))
 {
 	if (isset($_POST['student_answer']))
 	{
-		$usrmgr->m_user->SetPref('problem_submitted',$_POST['student_answer']);
+		//get end time and compare to start time to get total time
+		$end_time = time();
+		$usrmgr->m_user->SetPref('end_time',$end_time);
+		$start_time = $usrmgr->m_user->GetPref('start_time');
+		
+		//get student answer
+		$student_answer = $_POST['student_answer'];
+		$usrmgr->m_user->SetPref('problem_submitted',$student_answer);
+		
+		//get current problem and correct answer
 		$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
 		$current_problem = new MProblem($current_problem_id);
+		$current_problem_answer = $current_problem->m_prob_correct;
+		
+		//get current topic_id and omitted problems list for given topic
+		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+		$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
+		
+		//if the student answered correctly, add current problem to omitted problems list for given topic
+		if ($current_problem_answer == $student_answer)
+		{
+			if ($current_omitted_problems_list == Null)
+			{
+				$current_omitted_problems_list = Array();
+			}
+			array_push($current_omitted_problems_list,$current_problem_id);
+			$usrmgr->m_user->SetPref('omitted_problems_list['.$current_topic_id.']',$current_omitted_problems_list);
+		}
+		
+		//get user_id
+		$usrmgr->m_user->get_id();
+		$user_id = $usrmgr->m_user->id;
+		
+		//update tables upon response
+		$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,$student_answer);
+		
+		$response->update_responses();
+		$response->update_stats();
+		$response->update_problems();
+		$response->update_12m_prob_ans();
+		
 		header('Location:problems.php');
 	}
 }
@@ -105,12 +145,18 @@ if ($usrmgr->m_user->GetPref('current_problem') != Null)
 }
 else
 {
+	//set current topic and pick random problem
+	$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
 	$picked_problem = $Picker->m_picked_problem;
 	$picked_problem_id = Null;
 	if ($picked_problem != Null)
 	{
 		$picked_problem_id = $picked_problem->m_prob_id;
 	}
+	
+	//set start time in preferences
+	$start_time = time();
+	$usrmgr->m_user->SetPref('start_time',$start_time);
 }
 
 if ($picked_problem_id != Null)

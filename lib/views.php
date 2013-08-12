@@ -22,6 +22,8 @@ class CHeadCSSJavascript{
         <script src='js/jquery-1.10.1.js'></script>
         <script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
+		<script type='text/javascript' src='js/jquery.tablesorter.js'></script> 
+		<script type='text/javascript' src='js/mytable.js'></script> 
         ";
         if($this->m_cssfile != NULL)
 		foreach((array)$this->m_cssfile as $css){
@@ -54,6 +56,7 @@ class VPageTabs{
 
 	function Deliver(){
 		$str 	= "
+<!doctype html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
 <html lang='en'>
 <!--open head-->
 	<head>
@@ -186,17 +189,166 @@ class VStaff
 class VStats
 {
 	#m_model
+	var $v_summary;
 	
-	function __construct()
+	function __construct($summary)
 	{
+		$this->v_summary = $summary;
 	}
 	
 	function Deliver()
 	{
+		//$summary = new MUserSummary();
+		
+		$num_responses = count($this->v_summary->m_problem_list);
+		
+		$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+		$num_courses = count($all_courses_with_topics);
+		
+		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		
+		global $usrmgr;
         $str = "
-        <p>
-            hi, this is the statistics page
-        <p>
+        <p class='half-line'>&nbsp;</p>
+        <h4 class='summary-header'>
+            ".$usrmgr->m_user->username."'s Summary
+        </h4>
+		<div class='div-history-dropdown-course-topic'>
+		Filter by Course: 
+		<form name='dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
+		<select class='dropdown-course' name='dropdown_course'>
+		<option value='all' selected='selected'>All Courses</option>";
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics_in_course = Array();
+			$all_topics_in_course_id = Array();
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$topic_count = count($all_topics_in_course);
+			for($j=0; $j<$topic_count; $j++)
+			{
+				$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+			}
+			
+			$str .= "<option 
+			value='".$all_courses_with_topics[$i]->m_id."'";
+			if ($usrmgr->m_user->GetPref('dropdown_history_course') == $all_courses_with_topics[$i]->m_id)
+			{
+				$str .= " selected='selected'";
+			}
+			$str .= ">
+			".$all_courses_with_topics[$i]->m_name."
+			</option>
+			";
+		}
+		$str .= "</select></form>";
+		
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics_in_course = Array();
+			$all_topics_in_course_id = Array();
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$topic_count = count($all_topics_in_course);
+			for($j=0; $j<$topic_count; $j++)
+			{
+				$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+			}
+			
+			$str .= "
+			<input type='hidden'
+			id='".$all_courses_with_topics[$i]->m_id."'
+			value='".implode(',',$all_topics_in_course_id)."'/>
+			";
+		}
+		
+		$str .= "
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		Filter by Topic: 
+		<form name='dropdown_topic_form' action='' method='POST' class='dropdown-course-topic-form'>
+		<select disabled='disabled' class='dropdown-topic' name='dropdown_topic'>
+		<option value='all' selected='selected'>All Topics</option>";
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics_in_course = Array();
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$num_topics = count($all_topics_in_course);
+			for ($j=0; $j<$num_topics; $j++)
+			{
+				$str .= "<option 
+				value='".$all_topics_in_course[$j]->m_id."'";
+				if ($usrmgr->m_user->GetPref('dropdown_history_topic') == $all_topics_in_course[$j]->m_id)
+				{
+					$str .= " selected='selected'";
+				}
+				$str .= ">
+				".$all_topics_in_course[$j]->m_name."
+				</option>";
+			}
+		}
+		$str .= "
+		</select>
+		</form>
+		
+		</div>
+		<p>
+		You have attempted <b>".$this->v_summary->m_tot_tries."</b> problems and you got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
+		
+		if ($this->v_summary->m_tot_tries > 0)
+		{
+			$str .= "Your accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
+			Your average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
+		}
+		
+		$str .= "
+		</p>
+		<p class='p-num-rows'>
+		<!--Show <select class='dropdown-num-rows' name='DropDown' id='dropdown_num_rows'>
+			<option value='10'>10</option>
+			<option value='25'>25</option>
+			<option value='50'>50</option>
+			<option value='All' selected='selected'>All</option>
+		</select> rows&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+		Show: <select class='dropdown-correct'>
+			<option value='all'>All</option>
+			<option value='correct'>Only Correct</option>
+			<option value='incorrect'>Only Incorrect</option>
+		</select>
+
+		</p>
+		
+		<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Date</th>
+					<th>Your Answer&nbsp;&nbsp;&nbsp;</th>
+					<th>Correct Answer&nbsp;&nbsp;&nbsp;</th>
+					<th>Time (seconds)&nbsp;&nbsp;&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+			<td class='invis'></td>
+			<td class='invis'></td>
+			<td class='invis'></td>
+			<td class='invis'></td>
+			<td class='invis'></td>
+				";
+				//<history table body>
+				for ($i=0; $i<$num_responses; $i++)
+				{
+					$str .= "
+						<tr>
+							<td><a class='link-history' href='".$this->v_summary->m_problem_list[$i]->m_prob_url."'>".$this->v_summary->m_problem_list[$i]->m_prob_name."</a></td>
+							<td>".$this->v_summary->m_end_time_list[$i]."</td>
+							<td class='cell-student-answer'>".$alphabet[$this->v_summary->m_student_answer_list[$i]-1]."</td>
+							<td class='cell-correct-answer'>".$alphabet[$this->v_summary->m_problem_list[$i]->m_prob_correct-1]."</td>
+							<td>".$this->v_summary->m_solve_time_list[$i]."</td>
+						</tr>
+					";
+				}
+				//</history table body>
+				$str .= "
+			</tbody>
+		</table>
         ";
         return $str;
     }
@@ -211,7 +363,8 @@ class VProblems_no_topics
 	function Deliver()
 	{
         $str = "
-            <p>
+            <p class='half-line'>&nbsp;</p>
+			<p>
             Sorry! You haven't selected which problems you would like to do
             </p>
 			<p>
@@ -231,11 +384,12 @@ class VProblems_no_problems
 	function Deliver()
 	{
         $str = "
-            <p>
-            Sorry! There are no remaining problems with your topic selection
+            <p class='half-line'>&nbsp;</p>
+			<p>
+            Congratulations! You have correctly answered all of the problems for your selected topic(s)
             </p>
 			<p>
-			<strong>Please return to selections tab</strong>
+			<strong>Please return to selections tab to reset your topic(s)</strong>
 			</p>
         ";
         return $str;
@@ -253,7 +407,7 @@ class VProblems
 	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list)
 	{
 		$this->v_picked_problem = $picked_problem;
-		$selected_topics_list_id = $this->v_selected_topics_list;
+		$selected_topics_list_id = $selected_topics_list;
 		$num_topics = count($selected_topics_list_id);
 		for ($i=0; $i<$num_topics; $i++)
 		{
@@ -278,7 +432,12 @@ class VProblems
 			Selected Topics/Remaining Problems: ";
 			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 			{
-				$str .= "<span class='label'>
+				$topic_depleted_label = " label-inverse";
+				if ($this->v_remaining_problems_in_topic_list[$i] == 0)
+				{
+					$topic_depleted_label = "";
+				}
+				$str .= "<span class='label".$topic_depleted_label."'>
 				".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
 				".$this->v_remaining_problems_in_topic_list[$i]."
 				/
@@ -358,6 +517,10 @@ class VProblems_submitted
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
+		$start_time = $usrmgr->m_user->GetPref('start_time');
+		$end_time = $usrmgr->m_user->GetPref('end_time');
+		$solve_time = $end_time - $start_time;
+		
 		if ($correct_answer == $student_answer)
 		{
 			$label_class = 'label-success';
@@ -367,13 +530,56 @@ class VProblems_submitted
 			$label_class = 'label-important';
 		}
 		
+		//set color for 'Your Time' label
+		if ($solve_time <= $this->v_picked_problem->get_avg_time())
+		{
+			//$time_label_class = "label-success";//green
+			$time_label_class = "";//gray
+		}
+		elseif ($solve_time <= 1.3*$this->v_picked_problem->get_avg_time())
+		{
+			//$time_label_class = "label-warning";//yellow
+			$time_label_class = "";//gray
+		}
+		else
+		{
+			//$time_label_class = "label-important";//red
+			$time_label_class = "";//gray
+		}
+		
+		$ans_submit_count_sum = 0;
+		for ($i=1;$i<($this->v_picked_problem->m_prob_ans_count+1);$i++)
+		{
+			$ans_submit_count_sum += $this->v_picked_problem->get_ans_submit_count($i);
+		}
+		
+		$ans_submit_frac_count_string = "";
+		$histogram_ans_string = "|";
+		for ($i=1;$i<($this->v_picked_problem->m_prob_ans_count+1);$i++)
+		{
+			if ($i == $this->v_picked_problem->m_prob_ans_count)
+			{
+				$ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+			}
+			else
+			{
+				$ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+			}
+			$histogram_ans_string .= $alphabet[($i-1)]."|";
+		}
+		
         $str = "
             <p class='half-line'>&nbsp;</p>
 			<p>
 			Selected Topics/Remaining Problems: ";
 			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 			{
-				$str .= "<span class='label'>
+				$topic_depleted_label = " label-inverse";
+				if ($this->v_remaining_problems_in_topic_list[$i] == 0)
+				{
+					$topic_depleted_label = "";
+				}
+				$str .= "<span class='label".$topic_depleted_label."'>
 				".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
 				".$this->v_remaining_problems_in_topic_list[$i]."
 				/
@@ -381,6 +587,20 @@ class VProblems_submitted
 				</span>&nbsp;";
 			}
 			$str .= "
+			</p>
+			<form class='form-next' action='' method='post'>
+			<button class='btn btn-next' type='submit' name='next' value='1'>
+			Next
+			</button>
+			</form>
+			<p>
+			<span class='label student-answer ".$time_label_class."'>
+			Your time:&nbsp;
+			".$solve_time."
+			 seconds
+			</span>
+			Average user time: 
+			".$this->v_picked_problem->get_avg_time()." seconds
 			</p>
 			<p>
 			<span class='label ".$label_class." student-answer'>
@@ -390,11 +610,9 @@ class VProblems_submitted
 			Correct answer: 
 			".$alphabet[$correct_answer-1]."
 			</p>
-			<form action='' method='post'>
-			<button class='btn' type='submit' name='next' value='1'>
-			Next
-			</button>
-			</form>
+			<img class='histogram'
+			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=300x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Total%20Responses%20(N=".$ans_submit_count_sum.")'>
+			</img>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
@@ -431,7 +649,7 @@ class VTopic_Selections
 		<form action='problems.php' method='post' name='topic_selector'>
 		<table class='topic-selector table'>
 			<tr>
-			<td class='cell-checkbox'><input class='checkbox' type='checkbox' id='all' onClick='toggle(this)' /></td>
+			<td class='cell-checkbox'><input class='checkbox' type='checkbox' id='select_all_checkboxes' onClick='toggle(this)' /></td>
 			<td class='cell-topic'><span class='select-all'>Select All</span></td>
 			<td class='cell-remaining'><span class='remaining-problems'>Remaining Problems</span></td>
 			</tr>";
@@ -446,6 +664,7 @@ class VTopic_Selections
 				value='".$topic->m_id."'/></td>
 				
 				<td class='cell-topic'><button class='link'
+				id='".$topic->m_id."'
 				type='submit'
 				name='topic_link_submission'
 				value='".$topic->m_id."'>
@@ -454,6 +673,10 @@ class VTopic_Selections
 				
 				<td class='cell-remaining'><span class='remaining-problems-topic'>
 				".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id,1))."/".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id))."
+				<a class='link link-reset'
+				onClick='reset_topic(&quot;".$topic->m_id."&quot;);'>
+				Reset
+				</a>
 				</span></td>
 				</tr>";
 			}

@@ -17,6 +17,9 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
+
+global $usrmgr;
+global $dbmgr;
 ////////////////////////////////////////////////////////////////////////////////////////
 
 /*$test_user = new MUser('testprefs');
@@ -34,8 +37,6 @@ echo implode(", ",$test_user->GetPref('selected_topics_list'));
 echo "<br/>";
 echo $test_user->GetPref('last_activity');
 */
-
-global $usrmgr;
 
 //$timestamp = time();
 
@@ -73,14 +74,45 @@ $usrmgr->m_user->SetPref('omitted_problems_list',$current_omitted_problems_list)
 $new_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
 echo implode(', ',$new_omitted_problems_list);*/
 
-$usrmgr->m_user->SetPref('omitted_problems_list[2]',Null);
-$usrmgr->m_user->SetPref('omitted_problems_list[5]',6);
-$usrmgr->m_user->SetPref('omitted_problems_list[7]',[3,5]);
+//$usrmgr->m_user->SetPref('omitted_problems_list[2]',Null);
+//$usrmgr->m_user->SetPref('omitted_problems_list[5]',6);
+//$usrmgr->m_user->SetPref('omitted_problems_list[7]',[3,5]);
 
-echo $usrmgr->m_user->GetPref('omitted_problems_list[2]');
-echo "<br/>";
-echo $usrmgr->m_user->GetPref('omitted_problems_list[5]');
-echo "<br/>";
-echo implode($usrmgr->m_user->GetPref('omitted_problems_list[7]'));
+//echo $usrmgr->m_user->GetPref('omitted_problems_list[2]');
+//echo "<br/>";
+//echo $usrmgr->m_user->GetPref('omitted_problems_list[5]');
+//echo "<br/>";
+//echo implode($usrmgr->m_user->GetPref('omitted_problems_list[7]'));
+	
+
+//generate blank values for 12m_prob_ans for the 7 test problems
+/*for ($problem_id=1;$problem_id<8;$problem_id++)
+{
+	$problem = new MProblem($problem_id);
+	
+	for ($i=1;$i<($problem->m_prob_ans_count+1);$i++)
+	{
+		$insertquery = "
+		INSERT INTO 12m_prob_ans(
+			prob_id, 
+			ans_num
+		)
+		VALUES(
+			'".$problem_id."',
+			'".$i."'
+		)";
+		$dbmgr->exec_query($insertquery);
+	}
+}*/
+
+
+
+
+
+
+
+
+
+
 	
 ?>

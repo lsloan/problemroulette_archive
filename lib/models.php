@@ -29,24 +29,59 @@ Class MProblem
 		$this->m_prob_correct = $res[0]['correct'];
 	}
 	
-	function create($prob_name, $prob_url, $prob_topic_id, $prob_ans_count, $prob_correct)
+	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct)
 	{	
         global $dbmgr; 
 		$insertquery = "
         INSERT INTO problems(
-			topic_id,
 			name,
 			url,
 			correct,
 			ans_count
         )VALUES(
-            '".$prob_topic_id."',
             '".$prob_name."',
             '".$prob_url."',
             '".$prob_correct."',
             '".$prob_ans_count."'
         )";
         $dbmgr->exec_query($insertquery);
+	}
+	
+	function get_ans_submit_count($ans_num)
+	{
+		if ($this->m_prob_id != Null)
+		{
+			global $dbmgr;
+			$selectquery = "
+			SELECT count 
+			FROM 12m_prob_ans 
+			WHERE prob_id = ".$this->m_prob_id." 
+			AND ans_num = ".$ans_num;
+			
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$count = $res[0]['count'];
+			return $count;
+		}
+	}
+	
+	function get_avg_time()
+	{
+		if ($this->m_prob_id != Null)
+		{
+			global $dbmgr;
+			$selectquery = "
+			SELECT tot_tries, tot_time 
+			FROM problems
+			WHERE id = ".$this->m_prob_id;
+			
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$tot_tries = $res[0]['tot_tries'];
+			$tot_time = $res[0]['tot_time'];
+			
+			$avg_time = $tot_time/$tot_tries;
+			
+			return round($avg_time,1);
+		}
 	}
 	
 	function Get_GD_info()
@@ -151,21 +186,13 @@ Class MProblem
 			$selectquery .= " AND ";
 			$omitted_length = count($omitted_problems_list);
 			
-			if ($omitted_length > 1)
+			for ($i=0; $i<$omitted_length; $i++)
 			{
-				for ($i=0; $i<$omitted_length; $i++)
+				$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
+				if ($i < ($omitted_length - 1))
 				{
-					$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
-					if ($i < ($omitted_length - 1))
-					{
-						$selectquery .= " AND ";
-					}
+					$selectquery .= " AND ";
 				}
-			}
-			
-			else
-			{
-				$selectquery .= "problem_id <> ".$omitted_problems_list;
 			}
 		}
 		$res = $dbmgr->fetch_assoc($selectquery);
@@ -473,26 +500,220 @@ Class MPpicker
 		//pick random topic from list
 		$picked_topic_index = 0;
 		$length = count($this->m_remaining_selected_topics_list);
-		if ($length > 1)
+		if ($length > 0)
 		{
-			$picked_topic_index = mt_rand(0,$length - 1);
-		}
-		$this->m_picked_topic = $this->m_remaining_selected_topics_list[$picked_topic_index];
-		
-		//pick random problem from topic with exclusion
-		$picked_problem_index = 0;
-		$topic_id = $this->m_picked_topic;
-		$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
-		$num_problems = count($all_problems);
-		if ($num_problems >= 1)
-		{
-			$picked_problem_index = mt_rand(0,$num_problems - 1);
-			$this->m_picked_problem = $all_problems[$picked_problem_index];
+			if ($length > 1)
+			{
+				$picked_topic_index = mt_rand(0,$length - 1);
+			}
+			$this->m_picked_topic = $this->m_remaining_selected_topics_list[$picked_topic_index];
+			
+			//pick random problem from topic with exclusion
+			$picked_problem_index = 0;
+			$topic_id = $this->m_picked_topic;
+			$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
+			$num_problems = count($all_problems);
+			if ($num_problems >= 1)
+			{
+				$picked_problem_index = mt_rand(0,$num_problems - 1);
+				$this->m_picked_problem = $all_problems[$picked_problem_index];
 
+			}
+			//echo $picked_problem_index;
+			//$this->m_picked_problem = $all_problems[$picked_problem_index];
 		}
-		//echo $picked_problem_index;
-		//$this->m_picked_problem = $all_problems[$picked_problem_index];
 	}
+}
+
+//class to handle the updating of the database when a student submits an answer
+Class MResponse
+{
+	var $m_maximum_recorded_time = 1800;//responses with solve times above this value will not be recorded in 'stats' and 'problems', but will be recorded in 'responses' and '12m_prob_ans' (the responses will be recorded, but this submission will not contribute to total time/total problems for a student's aggregate or a problem's aggregate (to prevent large average times)
+	var $m_start_time;//timestamp of when student began problem
+	var $m_end_time;//timestamp of when student submitted answer
+	var $m_user_id;//integer (unique) user id
+	var $m_problem_id;//integer (unique) problem id
+	var $m_student_answer;//integer (1=A, 2=B, 3,4,...) student answer value
+	
+	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer)
+	{
+		$this->m_start_time = $start_time;
+		$this->m_end_time = $end_time;
+		$this->m_user_id = $user_id;
+		$this->m_problem_id = $problem_id;
+		$this->m_student_answer = $student_answer;
+	}
+	
+	function update_responses()
+	{
+        global $dbmgr; 
+		$insertquery = "
+        INSERT INTO responses(
+			start_time,
+			end_time,
+			user_id,
+			prob_id,
+			answer
+        )VALUES(
+            '".date('Y-m-d H:i:s',$this->m_start_time)."',
+            '".date('Y-m-d H:i:s',$this->m_end_time)."',
+            '".$this->m_user_id."',
+            '".$this->m_problem_id."',
+            '".$this->m_student_answer."'
+        )";
+        $dbmgr->exec_query($insertquery);
+	}
+	
+	function update_stats()
+	{
+		global $dbmgr;
+		
+		$solve_time = $this->m_end_time - $this->m_start_time;
+		
+		//determine if student answer is correct
+		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem_answer = $current_problem->m_prob_correct;
+		$student_answered_correctly = 0;
+		if ($current_problem_answer == $this->m_student_answer)
+		{
+			$student_answered_correctly = 1;
+		}
+		
+		//update stats table
+		if ($solve_time <= $this->m_maximum_recorded_time)
+		{
+			$updatequery = "
+			UPDATE stats 
+			SET 
+				tot_tries=tot_tries+1,
+				tot_correct=tot_correct+".$student_answered_correctly.", 
+				tot_time=tot_time+".$solve_time."
+			WHERE user_id=".$this->m_user_id;
+			$dbmgr->exec_query($updatequery);
+		}
+	}
+
+	function update_problems()
+	{
+		global $dbmgr;
+		
+		$solve_time = $this->m_end_time - $this->m_start_time;
+		
+		//determine if student answer is correct
+		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem_answer = $current_problem->m_prob_correct;
+		$student_answered_correctly = 0;
+		if ($current_problem_answer == $this->m_student_answer)
+		{
+			$student_answered_correctly = 1;
+		}
+		
+		//update stats table
+		if ($solve_time <= $this->m_maximum_recorded_time)
+		{
+			$updatequery = "
+			UPDATE problems 
+			SET 
+				tot_tries=tot_tries+1,
+				tot_correct=tot_correct+".$student_answered_correctly.", 
+				tot_time=tot_time+".$solve_time."
+			WHERE id=".$this->m_problem_id;
+			$dbmgr->exec_query($updatequery);
+		}
+	}
+	
+	function update_12m_prob_ans()
+	{
+		global $dbmgr;
+		
+		$updatequery = "
+		UPDATE 12m_prob_ans 
+		SET count=count+1
+		WHERE prob_id=".$this->m_problem_id."
+		AND ans_num=".$this->m_student_answer;
+		
+		$dbmgr->exec_query($updatequery);
+	}
+	
+}
+
+Class MUserSummary
+{
+	//<OVERALL STATISTICS>
+	var $m_tot_tries = 0;
+	var $m_tot_correct = 0;
+	var $m_tot_time = 0;
+	//</OVERALL STATSISTICS>
+	
+	//<HISTORY>
+	var $m_problem_list = Array(); //NOTE: array of MProblem class (you get [correct answer/name/URL] from this)
+	var $m_student_answer_list = Array(); //numeric format (1,2,...)
+	var $m_start_time_list = Array(); //datetime format
+	var $m_end_time_list = Array(); //datetime format
+	var $m_solve_time_list = Array(); //solve time (in seconds)
+	//</HISTORY>
+	
+	var $m_problems_list_id;//array of problem IDs (only use these IDs)
+	
+	function __construct($problems_list_id = Null)
+	{
+		global $usrmgr;
+		global $dbmgr;
+		
+		$this->m_problems_list_id = $problems_list_id;
+		$num_problems_in_selection = count($this->m_problems_list_id);
+		
+		$usrmgr->m_user->get_id();
+		$user_id = $usrmgr->m_user->id;
+		
+		//<GET RESPONSES>
+		if ($this->m_problems_list_id == 'blank')
+		{
+			$num_responses = 0;
+		}
+		else
+		{
+			$selectquery = "
+			SELECT prob_id, answer, start_time, end_time 
+			FROM responses 
+			WHERE user_id=".$user_id;
+			
+			if ($this->m_problems_list_id != Null)
+			{
+				$selectquery .= " AND (";
+				for ($i=0; $i<$num_problems_in_selection; $i++)
+				{
+					$selectquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
+					if ($i == ($num_problems_in_selection-1))
+					{
+						$selectquery .= "prob_id=".$this->m_problems_list_id[$i].")";
+					}
+				}
+			}
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$num_responses = count($res);			
+		}
+		
+		
+		for ($i=0;$i<$num_responses;$i++)
+		{
+			$this->m_problem_list[$i] = new MProblem($res[$i]['prob_id']);
+			$this->m_student_answer_list[$i] = $res[$i]['answer'];
+			$this->m_start_time_list[$i] = $res[$i]['start_time'];
+			$this->m_end_time_list[$i] = $res[$i]['end_time'];
+			
+			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
+			
+			$this->m_tot_tries += 1;
+			$this->m_tot_time += $this->m_solve_time_list[$i];
+			if ($this->m_student_answer_list[$i] == $this->m_problem_list[$i]->m_prob_correct)
+			{
+				$this->m_tot_correct += 1;
+			}
+		}	
+		//</GET RESPONSES>
+	}
+	
 }
 
 ?>
