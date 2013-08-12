@@ -14,11 +14,10 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
-
+global $usrmgr;
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))
 {
-	global $usrmgr;
 	$reset_topics_list_id = $_POST['topic_checkbox_submission'];
 	$length = count($reset_topics_list_id);
 	for ($i=0; $i<$length; $i++)
@@ -54,7 +53,6 @@ if (isset($_POST['course_submission']))
 	//echo $selected_course->m_topics[0]->m_name;
 	//echo count($selected_course->m_topics);
 	
-	global $usrmgr;
 	$timestamp = time();
 	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
 	$usrmgr->m_user->SetPref('last_activity',$timestamp);
@@ -63,7 +61,6 @@ if (isset($_POST['course_submission']))
 //checks to see if user hit the 'Select Different Course' button
 if (isset($_POST['select_different_course']))
 {
-	global $usrmgr;
 	$usrmgr->m_user->SetPref('selected_course',Null);
 	$course_or_topic = 0;
 }
