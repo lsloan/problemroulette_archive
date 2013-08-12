@@ -22,7 +22,7 @@ class CDbMgr
 		$this->m_host = "localhost";
 		$this->m_user = "pr_user";
 		$this->m_pswd = "pr_user";
-		$this->m_db   = "pr_expansion";
+		$this->m_db   = "prexpansion";
 		$this->m_link = false;
 
 		//	Connect to the database
