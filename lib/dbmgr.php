@@ -14,15 +14,15 @@ class CDbMgr
 	var $m_pswd;
 	var $m_db;
 	var $m_link;
-
+	
 	//	Constructor
-    function CDbMgr( $host, $user, $pswd, $db )
+    function CDbMgr()
 	{
 		//	Save the database variables.
-		$this->m_host = $host;
-		$this->m_user = $user;
-		$this->m_pswd = $pswd;
-		$this->m_db   = $db;
+		$this->m_host = "localhost";
+		$this->m_user = "pr_user";
+		$this->m_pswd = "pr_user";
+		$this->m_db   = "pr_expansion";
 		$this->m_link = false;
 
 		//	Connect to the database

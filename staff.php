@@ -3,7 +3,7 @@
 require_once("./paths.inc.php");
 // database
 require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
-$GLOBALS["dbmgr"] = new CDbMgr( "localhost", "pr_user", "pr_user", "prexpansion" );
+$GLOBALS["dbmgr"] = new CDbMgr();
 // user manager
 require_once( $DIR_LIB."usrmgr.php" );
 $GLOBALS["usrmgr"] = new UserManager();
