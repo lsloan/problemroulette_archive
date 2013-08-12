@@ -363,12 +363,25 @@ Class MTabNav
     {
         $this->m_selected = $selected;
 
-        $this->m_pages = array(
-        'Selections' => $GLOBALS["DOMAIN"] . 'selections.php', 
-        'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
-        'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php', 
-        'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
-        );
+		global $usrmgr;
+		
+		if ($usrmgr->m_user->staff == 1)
+		{
+			$this->m_pages = array(
+			'Selections' => $GLOBALS["DOMAIN"] . 'selections.php', 
+			'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
+			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php', 
+			'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
+			);
+		}
+		else
+		{
+			$this->m_pages = array(
+			'Selections' => $GLOBALS["DOMAIN"] . 'selections.php', 
+			'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
+			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php' 
+			);
+		}
     }
 }
 Class MCourseTopicNav
