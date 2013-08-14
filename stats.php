@@ -24,9 +24,7 @@ if (isset($_POST['dropdown_course']))
 {
 	//get selected course from POST and set preference; then, refresh page
 	$selected_course_id = $_POST['dropdown_course'];
-	//$usrmgr->m_user->SetPref('dropdown_history_course',$selected_course_id);
 	$_SESSION['dropdown_history_course'] = $selected_course_id;
-	//$usrmgr->m_user->SetPref('dropdown_history_topic','all');
 	$_SESSION['dropdown_history_topic'] = 'all';
 	
 	header('Location:stats.php');
@@ -36,7 +34,6 @@ elseif (isset($_POST['dropdown_topic']))
 {
 	//get selected topic from POST and set preference; then, refresh page
 	$selected_topic_id = $_POST['dropdown_topic'];
-	//$usrmgr->m_user->SetPref('dropdown_history_topic',$selected_topic_id);
 	$_SESSION['dropdown_history_topic'] = $selected_topic_id;
 	
 	header('Location:stats.php');
@@ -45,7 +42,6 @@ elseif (isset($_POST['dropdown_topic']))
 else//if no $_POST is set
 {
 	//get selected course from preferences
-	//$selected_course_id = $usrmgr->m_user->GetPref('dropdown_history_course');
 	if (isset($_SESSION['dropdown_history_course']))
 	{
 		$selected_course_id = $_SESSION['dropdown_history_course'];
@@ -54,7 +50,6 @@ else//if no $_POST is set
 	{
 		$selected_course_id = Null;
 	}
-	//$selected_topic_id = $usrmgr->m_user->GetPref('dropdown_history_topic');
 	if (isset($_SESSION['dropdown_history_topic']))
 	{
 		$selected_topic_id = $_SESSION['dropdown_history_topic'];

@@ -231,7 +231,6 @@ class VStats
 			
 			$str .= "<option 
 			value='".$all_courses_with_topics[$i]->m_id."'";
-			//if ($usrmgr->m_user->GetPref('dropdown_history_course') == $all_courses_with_topics[$i]->m_id)
 			if (isset($_SESSION['dropdown_history_course']) && $_SESSION['dropdown_history_course'] == $all_courses_with_topics[$i]->m_id)
 			{
 				$str .= " selected='selected'";
@@ -276,7 +275,6 @@ class VStats
 			{
 				$str .= "<option 
 				value='".$all_topics_in_course[$j]->m_id."'";
-				//if ($usrmgr->m_user->GetPref('dropdown_history_topic') == $all_topics_in_course[$j]->m_id)
 				if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
 				{
 					$str .= " selected='selected'";
