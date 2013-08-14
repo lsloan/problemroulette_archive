@@ -69,8 +69,6 @@ class VPageTabs{
 
 <div id='wrap'>
     <div class='container'>
-NOTE: Problem Roulette is currently under renovation. Functionality will be temporarily reduced, but feel free to look around! (Beware of possible errors!)
-
         "
         .$this->m_nav->Deliver().
         "
