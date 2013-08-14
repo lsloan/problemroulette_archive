@@ -777,7 +777,7 @@ class VCourse_Selections
 				for ($i=0; $i<$num_courses; $i++)
 				{
 					$str .= "<button 
-					class='btn' 
+					class='btn btn-primary' 
 					type='submit' 
 					name='course_submission' 
 					value='".$this->v_all_courses_with_topics[$i]->m_id."'>
