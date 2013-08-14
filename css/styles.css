@@ -310,7 +310,27 @@ th.headerSortDown{
 	margin: 5px 10px;
 }
 
+.btn-course{
+	background-color: #363636;
+	background-image: -moz-linear-gradient(top, #888888, #666666);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#888888), to(#666666));
+	background-image: -webkit-linear-gradient(top, #888888, #666666);
+	background-image: -o-linear-gradient(top, #888888, #666666);
+	background-image: linear-gradient(to bottom, #888888, #666666);
+	background-repeat: repeat-x;
+	border-color: #666666 #666666 #444444;
+}
 
+.btn-course:hover{
+	background-color: #555555;
+	background-image: -moz-linear-gradient(top, #777777, #555555);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#777777), to(#555555));
+	background-image: -webkit-linear-gradient(top, #777777, #555555);
+	background-image: -o-linear-gradient(top, #777777, #555555);
+	background-image: linear-gradient(to bottom, #777777, #555555);
+	background-repeat: repeat-x;
+	border-color: #666666 #666666 #444444;
+}
 
 
 /* Sticky footer styles
