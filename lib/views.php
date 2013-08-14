@@ -339,7 +339,7 @@ class VStats
 				{
 					$str .= "
 						<tr>
-							<td><a class='link-history' href='".$this->v_summary->m_problem_list[$i]->m_prob_url."'>".$this->v_summary->m_problem_list[$i]->m_prob_name."</a></td>
+							<td><a target='_blank' class='link-history' href='".$this->v_summary->m_problem_list[$i]->m_prob_url."'>".$this->v_summary->m_problem_list[$i]->m_prob_name."</a></td>
 							<td>".$this->v_summary->m_end_time_list[$i]."</td>
 							<td class='cell-student-answer'>".$alphabet[$this->v_summary->m_student_answer_list[$i]-1]."</td>
 							<td class='cell-correct-answer'>".$alphabet[$this->v_summary->m_problem_list[$i]->m_prob_correct-1]."</td>
