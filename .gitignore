@@ -1,5 +1,6 @@
 *.swp
 
+lib/dbmgr.php
 paths.inc.php
 PRdev/
 csvProbs/

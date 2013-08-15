@@ -19,10 +19,10 @@ class CDbMgr
     function CDbMgr()
 	{
 		//	Save the database variables.
-		$this->m_host = "localhost";
-		$this->m_user = "pr_user";
-		$this->m_pswd = "pr_user";
-		$this->m_db   = "prexpansion";
+		$this->m_host = "webapps-db.web.itd";
+		$this->m_user = "problemroulette";
+		$this->m_pswd = "GilbertWhitaker";
+		$this->m_db   = "problemroulette";
 		$this->m_link = false;
 
 		//	Connect to the database
