@@ -595,6 +595,24 @@ Class MResponse
         $dbmgr->exec_query($insertquery);
 	}
 	
+	function update_skips()
+	{
+        global $dbmgr; 
+		$insertquery = "
+        INSERT INTO skips(
+			start_time,
+			end_time,
+			user_id,
+			prob_id
+        )VALUES(
+            '".date('Y-m-d H:i:s',$this->m_start_time)."',
+            '".date('Y-m-d H:i:s',$this->m_end_time)."',
+            '".$this->m_user_id."',
+            '".$this->m_problem_id."'
+        )";
+        $dbmgr->exec_query($insertquery);
+	}
+	
 	function update_stats()
 	{
 		global $dbmgr;

@@ -113,6 +113,33 @@ if (isset($_POST['submit_answer']))
 	}
 }
 
+if (isset($_POST['skip']))
+{
+	//get end time and compare to start time to get total time
+	$end_time = time();
+	$usrmgr->m_user->SetPref('end_time',$end_time);
+	$start_time = $_SESSION['start_time'];
+	
+	//get current problem
+	$current_problem_id = $_SESSION['current_problem'];
+	$current_problem = new MProblem($current_problem_id);
+	
+	//get current topic_id and omitted problems list for given topic
+	$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+	$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
+		
+	//get user_id
+	$usrmgr->m_user->get_id();
+	$user_id = $usrmgr->m_user->id;
+	
+	//update tables upon response
+	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,$student_answer);
+	
+	$response->update_skips();
+	
+	header('Location:problems.php');
+}
+
 if (isset($_POST['next']))
 {
 	$_SESSION['current_problem'] = Null;
