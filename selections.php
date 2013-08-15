@@ -65,6 +65,7 @@ if (isset($_POST['course_submission']))
 	$timestamp = time();
 	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
 	$usrmgr->m_user->SetPref('last_activity',$timestamp);
+	header('Location:selections.php');
 }
 
 //checks to see if user hit the 'Select Different Course' button
@@ -72,6 +73,7 @@ if (isset($_POST['select_different_course']))
 {
 	$usrmgr->m_user->SetPref('selected_course',Null);
 	$course_or_topic = 0;
+	header('Location:selections.php');
 }
 
 //use Director object to determine whether to display course selector or topic selector
