@@ -23,6 +23,31 @@ $(document).ready(function() {
 		$('#reset-topics').attr('href','javascript:void(0);');
 	}
   });
+  
+  $('.topic-selector input:checkbox.group').each(function() {
+	if ($(this).prop('checked')) {
+	  $(this).parents('tr').addClass('checked');  
+	} else {
+	  $(this).parents('tr').removeClass('checked');
+	}
+	var count = 0;
+	$('.topic-selector input:checkbox').each(function() {
+	  if ($(this).prop('checked')) {
+		count++;
+	  }
+	})
+	if (count > 0) {
+		$('#use-selected').removeClass('disabled');
+		$('#reset-topics').removeClass('disabled');
+		$('#use-selected').attr('href','javascript:document.topic_selector.submit();');
+		$('#reset-topics').attr('href',"javascript:reset_topic_checkboxes();");
+	} else {
+		$('#use-selected').addClass('disabled');
+		$('#reset-topics').addClass('disabled');
+		$('#use-selected').attr('href','javascript:void(0);');
+		$('#reset-topics').attr('href','javascript:void(0);');
+	}
+  });
 
   $('a#statistics-tab').click(function() {
 	 $.get('statistics.php', function(data) {

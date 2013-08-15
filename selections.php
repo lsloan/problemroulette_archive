@@ -46,7 +46,7 @@ $pre_fill_topics = 0;
 if (isset($_SERVER['HTTP_REFERER']))
 {
 	$ref = $_SERVER['HTTP_REFERER'];
-	if (strpos($ref,'problems.php') !== false)
+	if (strpos($ref,'problems.php') !== false || strpos($ref,'stats.php') !== false || strpos($ref,'staff.php') !== false)
 	{
 		$course_or_topic = 1;
 		$pre_fill_topics = 1;
@@ -109,7 +109,7 @@ if ($CTprefs->m_selected_topics_list != Null)
 
 if ($course_or_topic == 1)
 {
-	$content = new VTopic_Selections($CTprefs);
+	$content = new VTopic_Selections($CTprefs,$pre_fill_topics);
 }
 else
 {

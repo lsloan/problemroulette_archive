@@ -674,10 +674,12 @@ class VProblems_submitted
 
 class VTopic_Selections
 {
-	var $v_CTprefs;
-	var $v_selected_course;
+	var $v_CTprefs;//course/topic preferences
+	var $v_selected_course;//selected course (course object)
+	var $v_pre_fill_topics = 0;//0 for DO NOT pre-fill. 1 for DO pre-fill
+	var $v_selected_topics_list_id;//list of topic IDs (ints)
 	
-	function __construct($CTprefs)
+	function __construct($CTprefs,$pre_fill_topics)
 	{
 		$this->v_CTprefs = $CTprefs;
 		if ($this->v_CTprefs->m_selected_course != Null)
@@ -685,7 +687,13 @@ class VTopic_Selections
 			$selected_course_id = $this->v_CTprefs->m_selected_course;
 			$selected_course = MCourse::get_course_by_id($selected_course_id);
 		}
+		if ($this->v_CTprefs->m_selected_topics_list != Null)
+		{
+			$selected_topics_list_id = $this->v_CTprefs->m_selected_topics_list;
+		}
 		$this->v_selected_course = $selected_course;
+		$this->v_selected_topics_list_id = $selected_topics_list_id;
+		$this->v_pre_fill_topics = $pre_fill_topics;
 	}
 	
 	function Deliver()
@@ -711,7 +719,28 @@ class VTopic_Selections
 				<td class='cell-checkbox'><input type='checkbox' 
 				class = 'group checkbox' 
 				name='topic_checkbox_submission[]'
-				value='".$topic->m_id."'/></td>
+				value='".$topic->m_id."'";
+				if ($this->v_pre_fill_topics == 1)
+				{
+					if (is_array($this->v_selected_topics_list_id))
+					{
+						for ($j=0;$j<count($this->v_selected_topics_list_id);$j++)
+						{
+							if ($topic->m_id == $this->v_selected_topics_list_id[$j])
+							{
+								$str .= " checked='checked'";
+							}
+						}
+					}
+					else
+					{
+						if ($topic->m_id == $this->v_selected_topics_list_id)
+						{
+							$str .= " checked='checked'";
+						}
+					}
+				}
+				$str .= "/></td>
 				
 				<td class='cell-topic'><button class='link'
 				id='".$topic->m_id."'

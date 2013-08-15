@@ -178,6 +178,10 @@ Class MProblem
 			}
 		}
 		global $dbmgr;
+		if (is_array($topic_id))
+		{
+			$topic_id = $topic_id[0];
+		}
 		$selectquery = "SELECT * 
 		FROM 12m_topic_prob
 		WHERE topic_id = ".$topic_id;
@@ -288,6 +292,10 @@ Class MTopic
 	public static function get_topic_by_id($id)
 	{
 		global $dbmgr;
+		if (is_array($id))
+		{
+			$id = $id[0];
+		}
 		$selectquery = "SELECT * FROM topic WHERE id = ".$id;
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$topic = new MTopic($res[0]['id'],$res[0]['name']);
@@ -512,8 +520,8 @@ Class MPpicker
 		else
 		{
 			$topic_id = $this->m_selected_topics_list;
-			$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
-			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
+			$this->m_omitted_problems_list[intval($topic_id)] = $usrmgr->m_user->GetPref('omitted_problems_list['.intval($topic_id).']');
+			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[intval($topic_id)]);
 			$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
 			$this->m_remaining_problems_in_topic_list = count($remaining_problems);
 			$this->m_total_problems_in_topic_list = count($total_problems);
@@ -542,7 +550,7 @@ Class MPpicker
 			//pick random problem from topic with exclusion
 			$picked_problem_index = 0;
 			$topic_id = $this->m_picked_topic;
-			$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
+			$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[intval($topic_id)]);
 			$num_problems = count($all_problems);
 			if ($num_problems >= 1)
 			{
