@@ -1,5 +1,5 @@
 <?php
-// paths
+// pathsTESTGIT
 require_once("./paths.inc.php");
 // database
 require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
