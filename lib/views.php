@@ -189,7 +189,7 @@ class VStaff
 class VStats
 {
 	#m_model
-	var $v_summary;
+	var $v_summary;//summary statistics from responses table
 	
 	function __construct($summary)
 	{
@@ -409,7 +409,7 @@ class VProblems
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
 		$num_topics = count($selected_topics_list_id);
-		if ($num_topics > 1)
+		if (is_array($selected_topics_list_id))
 		{
 			for ($i=0; $i<$num_topics; $i++)
 			{
@@ -438,7 +438,7 @@ class VProblems
             <p class='half-line'>&nbsp;</p>
 			<p>
 			Selected Topics/Remaining Problems: ";
-			if (count($this->v_selected_topics_list) > 1)
+			if (is_array($this->v_selected_topics_list))
 			{
 				for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 				{
@@ -523,7 +523,7 @@ class VProblems_submitted
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
 		$num_topics = count($selected_topics_list_id);
-		if ($num_topics > 1)
+		if (is_array($selected_topics_list_id))
 		{
 			for ($i=0; $i<$num_topics; $i++)
 			{
@@ -605,7 +605,7 @@ class VProblems_submitted
             <p class='half-line'>&nbsp;</p>
 			<p>
 			Selected Topics/Remaining Problems: ";
-			if (count($this->v_selected_topics_list) > 1)
+			if (is_array($this->v_selected_topics_list))
 			{
 				for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 				{

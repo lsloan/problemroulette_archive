@@ -116,55 +116,6 @@ Class MProblem
 		#push data to database
 	}
 	
-	/*public static function get_all_problems_in_topic($topic_id)
-	{
-		global $dbmgr;
-		$selectquery = "SELECT * 
-		FROM 12m_topic_prob
-		WHERE topic_id = ".$topic_id;
-		$res = $dbmgr->fetch_assoc($selectquery);
-		$numrows = count($res);
-		#$all_prob_ids_in_topic = array();
-		$all_problems_in_topic = array();
-		for ($i=0; $i<$numrows; $i++)
-		{
-			#$all_prob_ids_in_topic[$i] = $res[$i]['problem_id'];
-			$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
-		}
-		*/
-		/*$whereclause = "WHERE ";
-		for ($i=0; $i<$numrows; $i++)
-		{
-			$whereclause .= "id = ".$all_prob_ids_in_topic[$i];
-			if ($i < ($numrows - 1))
-			{
-				$whereclause .= " OR ";
-			}
-		}
-		
-		$selectquery = "SELECT * 
-		FROM problems
-		".$whereclause;
-		$res = $dbmgr->fetch_assoc($selectquery);
-		$numrows = count($res);
-		$all_problems_in_topic = array();
-		for ($i=0; $i<$numrows; $i++)
-		{
-			#$all_problems_in_topic[$i] = new MProblem($res[$i]['id'],$res[$i]['name']);
-			#TEST ECHO:::::
-			$all_problems_in_topic[$i] = $res[$i]['name'];
-		}
-		*/
-		/*TEST ECHO:::::
-		for ($i=0; $i<$numrows; $i++)
-		{
-			echo $all_problems_in_topic[$i]->m_prob_name;
-		}
-		*/
-		/*return $all_problems_in_topic;
-	}*/
-	
-	
 	//for second variable, input 0 or nothing for no exclusion; input 1 or true for exclusion
 	public static function get_all_problems_in_topic_with_exclusion($topic_id,$exclusion = Null)
 	{
@@ -495,7 +446,7 @@ Class MPpicker
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
 		$num_selected_topics = count($this->m_selected_topics_list);
 		
-		if ($num_selected_topics >= 2)
+		if (is_array($this->m_selected_topics_list))
 		{
 			for ($i=0; $i<$num_selected_topics; $i++)
 			{
@@ -607,16 +558,18 @@ Class MResponse
 	{
         global $dbmgr; 
 		$insertquery = "
-        INSERT INTO skips(
+        INSERT INTO responses(
 			start_time,
 			end_time,
 			user_id,
-			prob_id
+			prob_id,
+			answer
         )VALUES(
             '".date('Y-m-d H:i:s',$this->m_start_time)."',
             '".date('Y-m-d H:i:s',$this->m_end_time)."',
             '".$this->m_user_id."',
-            '".$this->m_problem_id."'
+            '".$this->m_problem_id."',
+			'0'
         )";
         $dbmgr->exec_query($insertquery);
 	}
@@ -733,7 +686,8 @@ Class MUserSummary
 			$selectquery = "
 			SELECT prob_id, answer, start_time, end_time 
 			FROM responses 
-			WHERE user_id=".$user_id;
+			WHERE user_id=".$user_id." AND 
+			answer <> 0";
 			
 			if ($this->m_problems_list_id != Null)
 			{
