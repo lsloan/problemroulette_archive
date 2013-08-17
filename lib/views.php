@@ -126,6 +126,20 @@ class VTabNav
     }
 }
 
+class VNoTabNav
+{	
+	function __construct($nav)
+	{
+        $this->m_nav = $nav;
+	}
+	
+	function Deliver()
+	{
+        $str = "";
+        return $str;
+    }
+}
+
 class VCourseTopicNav
 {	
 	function __construct($nav)
@@ -315,6 +329,7 @@ class VStats
 
 		</p>
 		
+		<form action='problem_info.php' method='POST' target='_blank'>
 		<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
 			<thead>
 				<tr>
@@ -337,7 +352,10 @@ class VStats
 				{
 					$str .= "
 						<tr>
-							<td><a target='_blank' class='link-history' href='".$this->v_summary->m_problem_list[$i]->m_prob_url."'>".$this->v_summary->m_problem_list[$i]->m_prob_name."</a></td>
+							<td>
+							<button class='btn btn-link btn-link-history' type='submit' name='problem_info' value='".$this->v_summary->m_problem_list[$i]->m_prob_id."'>
+							".$this->v_summary->m_problem_list[$i]->m_prob_name."
+							</button></td>
 							<td>".$this->v_summary->m_end_time_list[$i]."</td>
 							<td class='cell-student-answer'>".$alphabet[$this->v_summary->m_student_answer_list[$i]-1]."</td>
 							<td class='cell-correct-answer'>".$alphabet[$this->v_summary->m_problem_list[$i]->m_prob_correct-1]."</td>
@@ -349,6 +367,7 @@ class VStats
 				$str .= "
 			</tbody>
 		</table>
+		</form>
         ";
         return $str;
     }
@@ -550,10 +569,12 @@ class VProblems_submitted
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
+		//calculate solve time
 		$start_time = $_SESSION['start_time'];
 		$end_time = $usrmgr->m_user->GetPref('end_time');
 		$solve_time = $end_time - $start_time;
 		
+		//green label for correct answer; red label for incorrect answer
 		if ($correct_answer == $student_answer)
 		{
 			$label_class = 'label-success';
@@ -580,12 +601,14 @@ class VProblems_submitted
 			$time_label_class = "";//gray
 		}
 		
+		//determine total tries for a problem (N)
 		$ans_submit_count_sum = 0;
 		for ($i=1;$i<($this->v_picked_problem->m_prob_ans_count+1);$i++)
 		{
 			$ans_submit_count_sum += $this->v_picked_problem->get_ans_submit_count($i);
 		}
 		
+		//create some substrings to help generate histogram
 		$ans_submit_frac_count_string = "";
 		$histogram_ans_string = "|";
 		for ($i=1;$i<($this->v_picked_problem->m_prob_ans_count+1);$i++)
@@ -824,6 +847,78 @@ class VCourse_Selections
         ";
         return $str;
     }
+}
+
+class VProblemInfo
+{
+	//vars
+	var $v_problem = Null;//problem to display info about NULL: DISPLAY MESSAGE SAYING YOU NEED PROBLEM
+	
+	//constructor
+	function __construct($problem)
+	{
+		$this->v_problem = $problem;
+	}
+	
+	function Deliver()
+	{
+		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		
+		if ($this->v_problem == Null)
+		{
+			$str = "<p class='half-line'>&nbsp;</p>
+			<p>Sorry! There is no problem selected. I have no data to give.</p>
+			";
+		}
+		else
+		{		
+			$correct_answer = $this->v_problem->m_prob_correct;
+			
+			//determine total tries for a problem (N)
+			$ans_submit_count_sum = 0;
+			for ($i=1;$i<($this->v_problem->m_prob_ans_count+1);$i++)
+			{
+				$ans_submit_count_sum += $this->v_problem->get_ans_submit_count($i);
+			}
+			
+			//create some substrings to help generate histogram
+			$ans_submit_frac_count_string = "";
+			$histogram_ans_string = "|";
+			for ($i=1;$i<($this->v_problem->m_prob_ans_count+1);$i++)
+			{
+				if ($i == $this->v_problem->m_prob_ans_count)
+				{
+					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+				}
+				else
+				{
+					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+				}
+				$histogram_ans_string .= $alphabet[($i-1)]."|";
+			}
+	
+			//problem info and histogram
+			$str = "
+				<p class='half-line'>&nbsp;</p>
+				<p>
+				Average user time: 
+				".$this->v_problem->get_avg_time()." seconds
+				</p>
+				<p>
+				Correct answer: 
+				".$alphabet[$correct_answer-1]."
+				</p>
+				<img class='histogram'
+				src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=300x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Total%20Responses%20(N=".$ans_submit_count_sum.")'>
+				</img>
+				<iframe class='problemIframe' id='problemIframe' src='
+				".
+				$this->v_problem->m_prob_url
+				."'></iframe>
+			";		
+		}
+		return $str;
+	}
 }
 
 class VHome

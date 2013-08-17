@@ -332,6 +332,17 @@ th.headerSortDown{
 	border-color: #666666 #666666 #444444;
 }
 
+.nav.nav-tabs{
+	margin-bottom: 10px;
+}
+
+.tab-pane.active{
+	margin-top: 10px;
+}
+
+.tab-pane.active button.btn-link-history{
+	margin: 0 0 0 0;
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */
