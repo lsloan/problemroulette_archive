@@ -262,7 +262,7 @@ class VStats
 		
 		$str .= "
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		Filter by Topic: 
+		Filter by Topic (must select course): 
 		<form name='dropdown_topic_form' action='' method='POST' class='dropdown-course-topic-form'>
 		<select disabled='disabled' class='dropdown-topic' name='dropdown_topic'>
 		<option value='all' selected='selected'>All Topics</option>";
