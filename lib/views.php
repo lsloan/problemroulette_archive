@@ -18,7 +18,7 @@ class CHeadCSSJavascript{
         <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
         <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
         <link href='css/styles.css' rel='stylesheet' media='screen'>
-        <script src='trackingcode.js'></script>
+        <script src='js/trackingcode.js'></script>
         <script src='js/jquery-1.10.1.js'></script>
         <script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>

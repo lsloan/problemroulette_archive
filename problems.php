@@ -18,15 +18,6 @@ session_start();
 
 // populate and use models for business logic on page
 
-// example of how to use the pref manager -- this just increments a count...
-global $usrmgr;
-$ploads = $usrmgr->m_user->GetPref('page_loads');
-if (is_null($ploads))
-    $ploads = 1;
-else
-    $ploads += 1;
-$usrmgr->m_user->SetPref('page_loads', $ploads);
-
 //Get selected_topics_list and put into preferences
 $selected_topics_list_id = Null;
 $histogram_view = Null;
@@ -90,6 +81,15 @@ if (isset($_POST['submit_answer']))
 {
 	if (isset($_POST['student_answer']))
 	{
+		//increment page_loads
+		global $usrmgr;
+		$ploads = $usrmgr->m_user->GetPref('page_loads');
+		if (is_null($ploads))
+			$ploads = 1;
+		else
+			$ploads += 1;
+		$usrmgr->m_user->SetPref('page_loads', $ploads);
+		
 		//get end time and compare to start time to get total time
 		$end_time = time();
 		$usrmgr->m_user->SetPref('end_time',$end_time);
