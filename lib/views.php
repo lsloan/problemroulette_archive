@@ -200,6 +200,177 @@ class VStaff
     }
 }
 
+class VStudentPerformance
+{
+	var $v_summary;//summary of user statistics
+	
+	function __construct($summary)
+	{
+		$this->v_summary = $summary;
+	}
+	
+	function Deliver()
+	{
+		global $usrmgr;
+		//determine if user has staff permissions
+		$staff = $usrmgr->m_user->staff;
+
+		if ($staff == 1)//if user has staff permissions
+		{
+			$num_responses = count($this->v_summary->m_problem_list);
+			
+			$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+			$num_courses = count($all_courses_with_topics);
+			
+			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+			
+			global $usrmgr;
+			$str = "
+			<p class='half-line'>&nbsp;</p>
+			<h4 class='summary-header'>
+				Student Peformance
+			</h4>
+			<div class='div-history-dropdown-course-topic'>
+			Filter by Course: 
+			<form name='dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
+			<select class='dropdown-course' name='dropdown_course'>
+			<option value='all' selected='selected'>All Courses</option>";
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course_id = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$topic_count = count($all_topics_in_course);
+				for($j=0; $j<$topic_count; $j++)
+				{
+					$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+				}
+				
+				$str .= "<option 
+				value='".$all_courses_with_topics[$i]->m_id."'";
+				if (isset($_SESSION['dropdown_history_course']) && $_SESSION['dropdown_history_course'] == $all_courses_with_topics[$i]->m_id)
+				{
+					$str .= " selected='selected'";
+				}
+				$str .= ">
+				".$all_courses_with_topics[$i]->m_name."
+				</option>
+				";
+			}
+			$str .= "</select></form>";
+			
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course_id = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$topic_count = count($all_topics_in_course);
+				for($j=0; $j<$topic_count; $j++)
+				{
+					$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+				}
+				
+				$str .= "
+				<input type='hidden'
+				id='".$all_courses_with_topics[$i]->m_id."'
+				value='".implode(',',$all_topics_in_course_id)."'/>
+				";
+			}
+			
+			$str .= "
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			Filter by Topic (must select course): 
+			<form name='dropdown_topic_form' action='' method='POST' class='dropdown-course-topic-form'>
+			<select disabled='disabled' class='dropdown-topic' name='dropdown_topic'>
+			<option value='all' selected='selected'>All Topics</option>";
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$num_topics = count($all_topics_in_course);
+				for ($j=0; $j<$num_topics; $j++)
+				{
+					$str .= "<option 
+					value='".$all_topics_in_course[$j]->m_id."'";
+					if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
+					{
+						$str .= " selected='selected'";
+					}
+					$str .= ">
+					".$all_topics_in_course[$j]->m_name."
+					</option>";
+				}
+			}
+			
+			$num_users = count(array_unique($this->v_summary->m_user_id_list));
+			
+			$str .= "
+			</select>
+			</form>
+			
+			</div>
+			<p>";
+			
+			if ($num_users == 1)
+			{
+				$str .= "<b>".$num_users."</b> user has ";
+			}
+			else
+			{
+				$str .= "<b>".$num_users."</b> users have ";
+			}
+			
+			$str .= "attempted <b>".$this->v_summary->m_tot_tries."</b> problems and got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
+			
+			if ($this->v_summary->m_tot_tries > 0)
+			{
+				$str .= "The average accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
+				The average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
+			}
+		}
+		else//if user does not have staff permissions
+		{
+			$str = "<p class='half-line'>&nbsp;</p>
+			<p>
+				Sorry! You do not have access to this page.
+			</p>";
+		}
+		
+        return $str;
+    }
+}
+
+class VProblemLibrary
+{
+	
+	function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+		global $usrmgr;
+		$staff = $usrmgr->m_user->staff;
+
+		if ($staff == 1)
+		{
+			$str = "<p class='half-line'>&nbsp;</p>
+			<p>
+				hi, this is the Problem Library page... this well soon be more then one page
+			</p>";
+		}
+		else
+		{
+			$str = "<p class='half-line'>&nbsp;</p>
+			<p>
+				Sorry! You do not have access to this page.
+			</p>";
+		}
+		
+        return $str;
+    }
+}
+
 class VStats
 {
 	#m_model
@@ -715,7 +886,10 @@ class VTopic_Selections
 			$selected_topics_list_id = $this->v_CTprefs->m_selected_topics_list;
 		}
 		$this->v_selected_course = $selected_course;
-		$this->v_selected_topics_list_id = $selected_topics_list_id;
+		if ($this->v_CTprefs->m_selected_topics_list != Null)
+		{
+			$this->v_selected_topics_list_id = $selected_topics_list_id;
+		}
 		$this->v_pre_fill_topics = $pre_fill_topics;
 	}
 	

@@ -133,31 +133,38 @@ Class MProblem
 		{
 			$topic_id = $topic_id[0];
 		}
-		$selectquery = "SELECT * 
-		FROM 12m_topic_prob
-		WHERE topic_id = ".$topic_id;
-		if ($omitted_problems_list != Null)
+		if (isset($topic_id))
 		{
-			$selectquery .= " AND ";
-			$omitted_length = count($omitted_problems_list);
-			
-			for ($i=0; $i<$omitted_length; $i++)
+			$selectquery = "SELECT * 
+			FROM 12m_topic_prob
+			WHERE topic_id = ".$topic_id;
+			if ($omitted_problems_list != Null)
 			{
-				$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
-				if ($i < ($omitted_length - 1))
+				$selectquery .= " AND ";
+				$omitted_length = count($omitted_problems_list);
+				
+				for ($i=0; $i<$omitted_length; $i++)
 				{
-					$selectquery .= " AND ";
+					$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
+					if ($i < ($omitted_length - 1))
+					{
+						$selectquery .= " AND ";
+					}
 				}
 			}
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$numrows = count($res);
+			$all_problems_in_topic = array();
+			for ($i=0; $i<$numrows; $i++)
+			{
+				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
+			}
+			return $all_problems_in_topic;
 		}
-		$res = $dbmgr->fetch_assoc($selectquery);
-		$numrows = count($res);
-		$all_problems_in_topic = array();
-		for ($i=0; $i<$numrows; $i++)
+		else
 		{
-			$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
+			return Null;
 		}
-		return $all_problems_in_topic;
 	}	
 }
 
@@ -330,7 +337,8 @@ Class MTabNav
 			'Selections' => $GLOBALS["DOMAIN"] . 'selections.php', 
 			'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
 			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php', 
-			'Staff Access' => $GLOBALS["DOMAIN"] . 'staff.php'
+			'Problem Library' => $GLOBALS["DOMAIN"] . 'problem_library.php',
+			'Student Performance' => $GLOBALS["DOMAIN"] . 'student_performance.php'
 			);
 		}
 		else
@@ -661,11 +669,12 @@ Class MUserSummary
 	var $m_start_time_list = Array(); //datetime format
 	var $m_end_time_list = Array(); //datetime format
 	var $m_solve_time_list = Array(); //solve time (in seconds)
+	var $m_user_id_list = Array(); //list of user ids
 	//</HISTORY>
 	
 	var $m_problems_list_id;//array of problem IDs (only use these IDs)
 	
-	function __construct($problems_list_id = Null)
+	function __construct($problems_list_id = Null, $all_users = Null)
 	{
 		global $usrmgr;
 		global $dbmgr;
@@ -683,11 +692,21 @@ Class MUserSummary
 		}
 		else
 		{
-			$selectquery = "
-			SELECT prob_id, answer, start_time, end_time 
-			FROM responses 
-			WHERE user_id=".$user_id." AND 
-			answer <> 0";
+			if ($all_users == 1)
+			{
+				$selectquery = "
+				SELECT * 
+				FROM responses 
+				WHERE answer <> 0";
+			}
+			else
+			{
+				$selectquery = "
+				SELECT * 
+				FROM responses 
+				WHERE user_id=".$user_id." AND 
+				answer <> 0";
+			}
 			
 			if ($this->m_problems_list_id != Null)
 			{
@@ -712,6 +731,7 @@ Class MUserSummary
 			$this->m_student_answer_list[$i] = $res[$i]['answer'];
 			$this->m_start_time_list[$i] = $res[$i]['start_time'];
 			$this->m_end_time_list[$i] = $res[$i]['end_time'];
+			$this->m_user_id_list[$i] = $res[$i]['user_id'];
 			
 			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
 			
