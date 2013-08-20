@@ -692,12 +692,32 @@ Class MUserSummary
 		}
 		else
 		{
-			if ($all_users == 1)
+			if ($all_users == 1 || $all_users == '' || $all_users == ' ')
 			{
 				$selectquery = "
 				SELECT * 
 				FROM responses 
 				WHERE answer <> 0";
+			}
+			elseif ($all_users !== Null)
+			{
+				$search_user_id = 0;
+				$search_username = $all_users;
+				$select_user_id_query = "SELECT id FROM user WHERE username = '".$search_username."'";
+				$res = $dbmgr->fetch_assoc($select_user_id_query);
+				if (count($res) > 0)
+				{
+					$search_user_id = $res[0]['id'];
+					$selectquery = "
+					SELECT * 
+					FROM responses 
+					WHERE user_id=".$search_user_id." AND 
+					answer <> 0";
+				}
+				else
+				{
+					$selectquery = "SELECT * FROM responses WHERE user_id = 1 AND user_id = 2";
+				}
 			}
 			else
 			{
@@ -724,6 +744,12 @@ Class MUserSummary
 			$num_responses = count($res);			
 		}
 		
+		if ($num_responses < 1)
+		{
+			$this->m_tot_tries = 0;
+			$this->m_tot_time = 0;
+			$this->m_tot_correct = 0;
+		}
 		
 		for ($i=0;$i<$num_responses;$i++)
 		{

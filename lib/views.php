@@ -203,10 +203,12 @@ class VStaff
 class VStudentPerformance
 {
 	var $v_summary;//summary of user statistics
+	var $v_display_search;//whether or not to display what staff searched for
 	
-	function __construct($summary)
+	function __construct($summary, $display_search = Null)
 	{
 		$this->v_summary = $summary;
+		$this->v_display_search = $display_search;
 	}
 	
 	function Deliver()
@@ -307,9 +309,23 @@ class VStudentPerformance
 			$str .= "
 			</select>
 			</form>
-			
+			<form name='search_username' action='' method='POST' class='form-search-username'>
+			Search by Username:
+			<input name='input_search_username' class='input-search-username'>
+			</input>
+			<button type='submit' class='btn btn-search-username'>Search</button>
+			</form>
 			</div>
 			<p>";
+			
+			if ($this->v_display_search !== Null && $this->v_display_search != 1 && $this->v_display_search != '')
+			{
+				$str .= "
+				Searching for <b>&quot;".$this->v_display_search."&quot;</b>
+				</p>
+				<p>
+				";
+			}
 			
 			if ($num_users == 1)
 			{

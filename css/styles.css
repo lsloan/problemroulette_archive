@@ -344,6 +344,15 @@ th.headerSortDown{
 	margin: 0 0 0 0;
 }
 
+.tab-pane.active button.btn-search-username{
+	vertical-align: middle;
+	margin: 0 0 0 10px;
+}
+
+.tab-pane.active input.input-search-username{
+	width: 140px;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 

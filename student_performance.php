@@ -16,6 +16,22 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
+
+$search_username = 1;
+$display_search = Null;
+if (isset($_POST['input_search_username']))
+{
+	$search_username = $_POST['input_search_username'];
+	if ($search_username !== Null && $search_username != 1 && $search_username != ' ')
+	{
+		$display_search = $search_username;
+	}
+	else
+	{
+		$display_search = Null;
+	}
+}
+
 // populate and use models for business logic on page
 global $usrmgr;
 if (isset($_POST['dropdown_course']))
@@ -60,7 +76,7 @@ else//if no $_POST is set
 	//get array of all problem IDs within course
 	if ($selected_course_id == 'all' || $selected_course_id == Null)
 	{
-		$summary = new MUserSummary(Null,1);
+		$summary = new MUserSummary(Null,$search_username);
 	}
 	else
 	{
@@ -90,11 +106,11 @@ else//if no $_POST is set
 			
 			if ($num_problems > 0)
 			{
-				$summary = new MUserSummary($problems_list_id,1);
+				$summary = new MUserSummary($problems_list_id,$search_username);
 			}
 			else
 			{
-				$summary = new MUserSummary('blank',1);
+				$summary = new MUserSummary('blank',$search_username);
 			}
 		//</DISPLAY ALL PROBLEMS IN GIVEN COURSE>
 		}
@@ -113,11 +129,11 @@ else//if no $_POST is set
 			
 			if ($num_problems > 0)
 			{
-				$summary = new MUserSummary($problems_list_id,1);
+				$summary = new MUserSummary($problems_list_id,$search_username);
 			}
 			else
 			{
-				$summary = new MUserSummary('blank',1);
+				$summary = new MUserSummary('blank',$search_username);
 			}
 		//</DISPLAY ALL PROBLEMS IN SELECTED TOPIC>
 		}
@@ -127,7 +143,7 @@ else//if no $_POST is set
 // page construction
 $head = new CHeadCSSJavascript("Student Performance", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Student Performance'));
-$content = new VStudentPerformance($summary);
+$content = new VStudentPerformance($summary,$display_search);
 $page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html
