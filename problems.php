@@ -29,6 +29,7 @@ if (isset($_POST['topic_checkbox_submission']))
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -40,6 +41,7 @@ if (isset($_POST['topic_link_submission']))
 	$selected_topics_list_id = $_POST['topic_link_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -70,6 +72,7 @@ if (isset($_POST['skip']))
 	$response->update_skips();
 	
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -102,6 +105,7 @@ if (isset($_POST['submit_answer']))
 		
 		//get current problem and correct answer
 		$current_problem_id = $_SESSION['current_problem'];
+		$usrmgr->m_user->SetPref('current_problem',$current_problem_id);
 		$current_problem = new MProblem($current_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
@@ -139,6 +143,7 @@ if (isset($_POST['submit_answer']))
 if (isset($_POST['next']))
 {
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
@@ -162,32 +167,65 @@ $remaining_problems_in_topic_list = $Picker->m_remaining_problems_in_topic_list;
 $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 
 //pick either current problem a student is working on OR pick new problem
-if ($_SESSION['current_problem'] != Null)
+if (isset($_SESSION['current_problem']))
 {
-	$picked_problem_id = $_SESSION['current_problem'];
-	$picked_problem = new MProblem($picked_problem_id);
+	if ($_SESSION['current_problem'] != Null)
+	{
+		$picked_problem_id = $_SESSION['current_problem'];
+		$picked_problem = new MProblem($picked_problem_id);
+	}
+	else
+	{
+		//set current topic and pick random problem
+		$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
+		$picked_problem = $Picker->m_picked_problem;
+		$picked_problem_id = Null;
+		if ($picked_problem != Null)
+		{
+			$picked_problem_id = $picked_problem->m_prob_id;
+		}
+		
+		//set start time in session variable
+		$start_time = time();
+		$_SESSION['start_time'] = $start_time;
+	}
+	
+	if ($picked_problem_id != Null)
+	{
+		$_SESSION['current_problem'] = $picked_problem_id;
+		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+	}
 }
 else
 {
-	//set current topic and pick random problem
-	$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
-	$picked_problem = $Picker->m_picked_problem;
-	$picked_problem_id = Null;
-	if ($picked_problem != Null)
+	if ($usrmgr->m_user->GetPref('current_problem') != Null)
 	{
-		$picked_problem_id = $picked_problem->m_prob_id;
+		$picked_problem_id = $usrmgr->m_user->GetPref('current_problem');
+		$picked_problem = new MProblem($picked_problem_id);
+	}
+	else
+	{
+		//set current topic and pick random problem
+		$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
+		$picked_problem = $Picker->m_picked_problem;
+		$picked_problem_id = Null;
+		if ($picked_problem != Null)
+		{
+			$picked_problem_id = $picked_problem->m_prob_id;
+		}
+		
+		//set start time in session variable
+		$start_time = time();
+		$_SESSION['start_time'] = $start_time;
 	}
 	
-	//set start time in session variable
-	$start_time = time();
-	$_SESSION['start_time'] = $start_time;
+	if ($picked_problem_id != Null)
+	{
+		$_SESSION['current_problem'] = $picked_problem_id;
+		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+	}
 }
-
-if ($picked_problem_id != Null)
-{
-	$_SESSION['current_problem'] = $picked_problem_id;
-}
-
+	
 ///////////////////////////////////////////////////////////////////////////
 // page construction
 ///////////////////////////////////////////////////////////////////////////
