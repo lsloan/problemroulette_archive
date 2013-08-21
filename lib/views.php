@@ -757,7 +757,7 @@ class VProblems_submitted
 		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
 		//calculate solve time
-		$start_time = $_SESSION['start_time'];
+		$start_time = $usrmgr->m_user->GetPref('start_time');
 		$end_time = $usrmgr->m_user->GetPref('end_time');
 		$solve_time = $end_time - $start_time;
 		

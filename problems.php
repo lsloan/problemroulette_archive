@@ -94,6 +94,7 @@ if (isset($_POST['submit_answer']))
 		$end_time = time();
 		$usrmgr->m_user->SetPref('end_time',$end_time);
 		$start_time = $_SESSION['start_time'];
+		$usrmgr->m_user->SetPref('start_time',$start_time);
 		
 		//get student answer
 		$student_answer = $_POST['student_answer'];
