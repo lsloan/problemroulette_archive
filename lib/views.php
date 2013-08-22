@@ -925,52 +925,55 @@ class VTopic_Selections
 			<td class='cell-remaining'><span class='remaining-problems'>Remaining Problems</span></td>
 			</tr>";
 			$num_topics_in_course = count($this->v_selected_course->m_topics);
-			for ($i=0; $i<$num_topics_in_course; $i++)
+			if ($num_topics_in_course > 0)
 			{
-				$topic = $this->v_selected_course->m_topics[$i];
-				$str .= "<tr>
-				<td class='cell-checkbox'><input type='checkbox' 
-				class = 'group checkbox' 
-				name='topic_checkbox_submission[]'
-				value='".$topic->m_id."'";
-				if ($this->v_pre_fill_topics == 1)
+				for ($i=0; $i<$num_topics_in_course; $i++)
 				{
-					if (is_array($this->v_selected_topics_list_id))
+					$topic = $this->v_selected_course->m_topics[$i];
+					$str .= "<tr>
+					<td class='cell-checkbox'><input type='checkbox' 
+					class = 'group checkbox' 
+					name='topic_checkbox_submission[]'
+					value='".$topic->m_id."'";
+					if ($this->v_pre_fill_topics == 1)
 					{
-						for ($j=0;$j<count($this->v_selected_topics_list_id);$j++)
+						if (is_array($this->v_selected_topics_list_id))
 						{
-							if ($topic->m_id == $this->v_selected_topics_list_id[$j])
+							for ($j=0;$j<count($this->v_selected_topics_list_id);$j++)
+							{
+								if ($topic->m_id == $this->v_selected_topics_list_id[$j])
+								{
+									$str .= " checked='checked'";
+								}
+							}
+						}
+						else
+						{
+							if ($topic->m_id == $this->v_selected_topics_list_id)
 							{
 								$str .= " checked='checked'";
 							}
 						}
 					}
-					else
-					{
-						if ($topic->m_id == $this->v_selected_topics_list_id)
-						{
-							$str .= " checked='checked'";
-						}
-					}
+					$str .= "/></td>
+					
+					<td class='cell-topic'><button class='link'
+					id='".$topic->m_id."'
+					type='submit'
+					name='topic_link_submission'
+					value='".$topic->m_id."'>
+					".$topic->m_name."
+					</button></td>
+					
+					<td class='cell-remaining'><span class='remaining-problems-topic'>
+					".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id,1))."/".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id))."
+					<a class='link link-reset'
+					onClick='reset_topic(&quot;".$topic->m_id."&quot;);'>
+					Reset
+					</a>
+					</span></td>
+					</tr>";
 				}
-				$str .= "/></td>
-				
-				<td class='cell-topic'><button class='link'
-				id='".$topic->m_id."'
-				type='submit'
-				name='topic_link_submission'
-				value='".$topic->m_id."'>
-				".$topic->m_name."
-				</button></td>
-				
-				<td class='cell-remaining'><span class='remaining-problems-topic'>
-				".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id,1))."/".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id))."
-				<a class='link link-reset'
-				onClick='reset_topic(&quot;".$topic->m_id."&quot;);'>
-				Reset
-				</a>
-				</span></td>
-				</tr>";
 			}
 			$str .= "
 		</table>
