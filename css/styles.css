@@ -111,6 +111,7 @@ h1 {
 	text-decoration: none;
 	cursor: pointer;
 	border: none;
+	text-align: left;
 }
 
 .topic-selector tr a.link-reset{
@@ -129,7 +130,7 @@ h1 {
 }
 
 .topic-selector td.cell-topic{
-	width: 200px;
+	width: 300px;
 }
 
 .topic-selector td.cell-remaining{
