@@ -290,6 +290,8 @@ Class MTopic
 			$all_topic_ids_in_course[$i] = $res[$i]['topic_id'];
 		}
 		
+		$whereclause = "WHERE 1=0";
+		
 		if ($numrows > 0)
 		{
 		$whereclause = "WHERE ";
