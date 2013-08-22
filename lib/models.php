@@ -290,13 +290,16 @@ Class MTopic
 			$all_topic_ids_in_course[$i] = $res[$i]['topic_id'];
 		}
 		
+		if ($numrows > 0)
+		{
 		$whereclause = "WHERE ";
 		for ($i=0; $i<$numrows; $i++)
-		{
-			$whereclause .= "id = ".$all_topic_ids_in_course[$i];
-			if ($i < ($numrows - 1))
 			{
-				$whereclause .= " OR ";
+				$whereclause .= "id = ".$all_topic_ids_in_course[$i];
+				if ($i < ($numrows - 1))
+				{
+					$whereclause .= " OR ";
+				}
 			}
 		}
 		
