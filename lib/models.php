@@ -697,7 +697,7 @@ Class MUserSummary
 		}
 		else
 		{
-			if ($all_users == 1 || $all_users == '' || $all_users == ' ')
+			if ($all_users == 1 || $all_users == ' ')
 			{
 				$selectquery = "
 				SELECT * 
