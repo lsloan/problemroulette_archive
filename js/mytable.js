@@ -104,8 +104,12 @@ $(document).ready(function()
 	//logic to display the appropriate topics for course selection on stats.php
 	var dropdown_history_course = $("select.dropdown-course").val();
 	
-	if ($('select.dropdown-course').val() == 'all')
+	if ($('select.dropdown-course').val() == 'all')//if 'all courses is selected'
 	{
+		//remove all topic selections then add back 'All Topics'
+		$("select.dropdown-topic option").remove();
+		$("select.dropdown-topic").append(elem_init[0]);
+		
 		$('select.dropdown-topic option[value="all"]').prop('selected','selected');
 		$('select.dropdown-topic').prop('disabled','disabled');
 	}
