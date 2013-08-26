@@ -1,5 +1,5 @@
 <?php
-
+//test_edit
 class CHeadCSSJavascript{
 	// properties
 	var $m_title;
