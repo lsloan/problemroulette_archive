@@ -679,7 +679,7 @@ Class MUserSummary
 	
 	var $m_problems_list_id;//array of problem IDs (only use these IDs)
 	
-	function __construct($problems_list_id = Null, $all_users = Null)
+	function __construct($problems_list_id = Null, $all_users = 0)
 	{
 		global $usrmgr;
 		global $dbmgr;
@@ -697,14 +697,14 @@ Class MUserSummary
 		}
 		else
 		{
-			if ($all_users == 1 || $all_users == ' ')
+			if ($all_users == '' || $all_users == Null)
 			{
 				$selectquery = "
 				SELECT * 
 				FROM responses 
 				WHERE answer <> 0";
 			}
-			elseif ($all_users !== Null)
+			elseif ($all_users !== 0)
 			{
 				$search_user_id = 0;
 				$search_username = $all_users;

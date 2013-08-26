@@ -155,4 +155,10 @@ $(document).ready(function()
 	}
 
 	
+	
+	$('#clear_search_username').click(function(){
+		$('#input_search_username').val('');
+		document.search_username.submit();
+	});
+	
 });

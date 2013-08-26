@@ -205,7 +205,7 @@ class VStudentPerformance
 	var $v_summary;//summary of user statistics
 	var $v_display_search;//whether or not to display what staff searched for
 	
-	function __construct($summary, $display_search = Null)
+	function __construct($summary, $display_search = 0)
 	{
 		$this->v_summary = $summary;
 		$this->v_display_search = $display_search;
@@ -259,6 +259,12 @@ class VStudentPerformance
 				</option>
 				";
 			}
+			
+			if ($this->v_display_search !== 0)
+			{
+				$str .= "<input type='hidden' name='hidden_search_username' value='".$this->v_display_search."'/>";
+			}
+			
 			$str .= "</select></form>";
 			
 			for ($i=0; $i<$num_courses; $i++)
@@ -307,18 +313,35 @@ class VStudentPerformance
 			$num_users = count(array_unique($this->v_summary->m_user_id_list));
 			
 			$str .= "
-			</select>
+			</select>";
+			if ($this->v_display_search !== 0)
+			{
+				$str .= "<input type='hidden' name='hidden_search_username' value='".$this->v_display_search."'/>";
+			}
+			
+			$str .= "
 			</form>
+			<p>
 			<form name='search_username' action='' method='POST' class='form-search-username'>
 			Search by Username:
-			<input name='input_search_username' class='input-search-username'>
-			</input>
+			<input id='input_search_username' name='input_search_username' class='input-search-username'";
+			if ($this->v_display_search !== 0)
+			{
+				$str .= "value='".$this->v_display_search."'";
+			}
+			else
+			{
+				$str .= "value=''";
+			}
+			$str .= "/>
 			<button type='submit' class='btn btn-search-username'>Search</button>
 			</form>
+			<button id='clear_search_username' class='btn btn-search-username'>Clear</button>
+			</p>
 			</div>
 			<p>";
 			
-			if ($this->v_display_search !== Null && $this->v_display_search != 1 && $this->v_display_search != '')
+			if ($this->v_display_search !== Null && $this->v_display_search !== 0 && $this->v_display_search !== '')
 			{
 				$str .= "
 				Searching for <b>&quot;".$this->v_display_search."&quot;</b>

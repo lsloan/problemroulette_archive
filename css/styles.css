@@ -307,6 +307,10 @@ th.headerSortDown{
 	display: inline;
 }
 
+.form-search-username{
+	display: inline;
+}
+
 .div-history-dropdown-course-topic{
 	margin: 5px 10px;
 }
