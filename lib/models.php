@@ -709,7 +709,6 @@ Class MUserSummary
 			if ($all_users !== 0)
 			{
 				{
-					echo $all_users;
 					$selectquery = "
 					SELECT * 
 					FROM responses 
