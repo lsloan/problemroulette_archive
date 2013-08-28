@@ -366,6 +366,51 @@ class VStudentPerformance
 				$str .= "The average accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
 				The average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
 			}
+			
+			if ($this->v_display_search !== Null && $this->v_display_search !== 0 && $this->v_display_search !== '')
+			{
+				$str .= "
+				<form action='problem_info.php' method='POST' target='_blank'>
+				<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Date</th>
+							<th>Your Answer&nbsp;&nbsp;&nbsp;</th>
+							<th>Correct Answer&nbsp;&nbsp;&nbsp;</th>
+							<th>Time (seconds)&nbsp;&nbsp;&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+						";
+						//<history table body>
+						for ($i=0; $i<$num_responses; $i++)
+						{
+							$str .= "
+								<tr>
+									<td>
+									<button class='btn btn-link btn-link-history' type='submit' name='problem_info' value='".$this->v_summary->m_problem_list[$i]->m_prob_id."'>
+									".$this->v_summary->m_problem_list[$i]->m_prob_name."
+									</button></td>
+									<td>".$this->v_summary->m_end_time_list[$i]."</td>
+									<td class='cell-student-answer'>".$alphabet[$this->v_summary->m_student_answer_list[$i]-1]."</td>
+									<td class='cell-correct-answer'>".$alphabet[$this->v_summary->m_problem_list[$i]->m_prob_correct-1]."</td>
+									<td>".$this->v_summary->m_solve_time_list[$i]."</td>
+								</tr>
+							";
+						}
+						//</history table body>
+						$str .= "
+					</tbody>
+				</table>
+				</form>
+				";
+			}
 		}
 		else//if user does not have staff permissions
 		{
