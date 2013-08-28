@@ -316,23 +316,23 @@ th.headerSortDown{
 }
 
 .btn-course{
-	background-color: #363636;
-	background-image: -moz-linear-gradient(top, #888888, #666666);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#888888), to(#666666));
-	background-image: -webkit-linear-gradient(top, #888888, #666666);
-	background-image: -o-linear-gradient(top, #888888, #666666);
-	background-image: linear-gradient(to bottom, #888888, #666666);
+	background-color: #0ac;
+	background-image: -moz-linear-gradient(top, #0ac, #06c);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0ac), to(#06c));
+	background-image: -webkit-linear-gradient(top, #0ac, #06c);
+	background-image: -o-linear-gradient(top, #0ac, #06c);
+	background-image: linear-gradient(to bottom, #0ac, #06c);
 	background-repeat: repeat-x;
 	border-color: #666666 #666666 #444444;
 }
 
 .btn-course:hover{
-	background-color: #555555;
-	background-image: -moz-linear-gradient(top, #777777, #555555);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#777777), to(#555555));
-	background-image: -webkit-linear-gradient(top, #777777, #555555);
-	background-image: -o-linear-gradient(top, #777777, #555555);
-	background-image: linear-gradient(to bottom, #777777, #555555);
+	background-color: #05c;
+	background-image: -moz-linear-gradient(top, #09c, #05c);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#09c), to(#05c));
+	background-image: -webkit-linear-gradient(top, #09c, #05c);
+	background-image: -o-linear-gradient(top, #09c, #05c);
+	background-image: linear-gradient(to bottom, #09c, #05c);
 	background-repeat: repeat-x;
 	border-color: #666666 #666666 #444444;
 }
