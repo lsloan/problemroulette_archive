@@ -715,6 +715,14 @@ Class MUserSummary
 					WHERE answer <> 0";
 				}
 			}
+			else
+			{
+				$selectquery = "
+				SELECT * 
+				FROM responses 
+				WHERE user_id=".$user_id." AND 
+				answer <> 0";
+			}
 			elseif ($all_users !== 0)
 			{
 				$search_user_id = 0;
