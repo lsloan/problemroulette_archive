@@ -706,11 +706,15 @@ Class MUserSummary
 		else
 		{
 			if ($all_users == '' || $all_users == Null)
+			if ($all_users !== 0)
 			{
-				$selectquery = "
-				SELECT * 
-				FROM responses 
-				WHERE answer <> 0";
+				{
+					echo $all_users;
+					$selectquery = "
+					SELECT * 
+					FROM responses 
+					WHERE answer <> 0";
+				}
 			}
 			elseif ($all_users !== 0)
 			{
