@@ -1070,8 +1070,16 @@ class VCourse_Selections
 		$this->v_all_courses_with_topics = $all_courses_with_topics;
 	}
 	
+/*	function sort_courses_by_name($a, $b)
+	{
+		//if($a->m_name == $b->m_name){return 0 ;}
+		return strcamp($a->m_name,$b->m_name);
+	}*/
+				
 	function Deliver()
-	{		
+	{
+		usort($this->v_all_courses_with_topics, array('MCourse', 'alphabetize_courses'));
+
         $str = "
         <div class='tab-pane active' id='problems'>
 		<p class='half-line'>&nbsp;</p>

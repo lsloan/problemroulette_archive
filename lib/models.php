@@ -232,6 +232,14 @@ Class MCourse
 		}
 		return $all_courses;
 	}
+	
+	static function alphabetize_courses($a,$b)
+	{
+		$a1 = strtolower($a->m_name);
+		$b1 = strtolower($b->m_name);
+		if ($a1 == $b1){return 0;}
+		return ($a1 > $b1) ? +1 : -1;
+	}
 }
 
 Class MTopic
