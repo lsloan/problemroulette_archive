@@ -1084,7 +1084,7 @@ class VCourse_Selections
         <div class='tab-pane active' id='problems'>
 		<p class='half-line'>&nbsp;</p>
         <p>
-        Welcome! This site serves random problems from past exams given in introductory courses of the University of Michigan Department of Physics.
+        Welcome! This site serves random problems from past exams given in courses at the University of Michigan.
         </p>
 
         <img class='logo' src='img/PR.jpg'></img>
