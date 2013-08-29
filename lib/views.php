@@ -822,7 +822,7 @@ class VProblems_submitted
 	    global $usrmgr;
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
-		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
+		$student_answer = $_SESSION['problem_submitted'];
 		
 		//calculate solve time
 		$start_time = $usrmgr->m_user->GetPref('start_time');
@@ -933,7 +933,7 @@ class VProblems_submitted
 			<p>
 			<span class='label ".$label_class." student-answer'>
 			Your answer:&nbsp;
-			".$alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1]."
+			".$alphabet[$_SESSION['problem_submitted']-1]."
 			</span>
 			Correct answer: 
 			".$alphabet[$correct_answer-1]."
