@@ -196,10 +196,9 @@ Class MCourse
 	public static function get_course_by_id($id)
 	{
 		global $dbmgr;
-		echo $id;
-		$selectquery = "SELECT * FROM class WHERE id = ".$id;//id must not be valid
-		$res = $dbmgr->fetch_assoc($selectquery);//count($res) = 0 bug
-		$course = new MCourse($res[0]['id'],$res[0]['name']);//no courses so course->m_id is null bug
+		$selectquery = "SELECT * FROM class WHERE id = ".$id;
+		$res = $dbmgr->fetch_assoc($selectquery);
+		$course = new MCourse($res[0]['id'],$res[0]['name']);
 		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 		return $course;
 	}
@@ -297,7 +296,7 @@ Class MTopic
 		}
 		else
 		{
-		echo "bad";
+		echo "Error! please contact mcmills@umich.edu.";
 		}
 		$numrows = count($res);
 		$all_topic_ids_in_course = array();
