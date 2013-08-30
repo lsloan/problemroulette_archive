@@ -227,6 +227,8 @@ Class MCourse
 		for ($i=0; $i<$numrows; $i++)
 		{
             $course = new MCourse($res[$i]['id'],$res[$i]['name']);
+			echo $course->m_id;
+			echo "test";
             $course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 			array_push($all_courses, $course);
 		}
