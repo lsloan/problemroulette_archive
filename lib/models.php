@@ -198,6 +198,7 @@ Class MCourse
 		global $dbmgr;
 		$selectquery = "SELECT * FROM class WHERE id = ".$id;
 		$res = $dbmgr->fetch_assoc($selectquery);
+		echo count($res);
 		echo $res[0]['id'];
 		echo $res[0]['name'];
 		$course = new MCourse($res[0]['id'],$res[0]['name']);
