@@ -199,6 +199,8 @@ Class MCourse
 		$selectquery = "SELECT * FROM class WHERE id = ".$id;
 		$res = $dbmgr->fetch_assoc($selectquery);
 		$course = new MCourse($res[0]['id'],$res[0]['name']);
+			if ($course->m_id !== Null)
+			{echo $course->m_id; echo "something";}else{echo "no course->m_id";}
 		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 		return $course;
 	}
@@ -227,8 +229,6 @@ Class MCourse
 		for ($i=0; $i<$numrows; $i++)
 		{
             $course = new MCourse($res[$i]['id'],$res[$i]['name']);
-			if ($course->m_id !== Null)
-			{echo $course->m_id; echo "something";}else{echo "no course->m_id";}
             $course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 			array_push($all_courses, $course);
 		}
