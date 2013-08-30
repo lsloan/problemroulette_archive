@@ -290,7 +290,14 @@ Class MTopic
 		$selectquery = "SELECT * 
 		FROM 12m_class_topic
 		WHERE class_id = ".$course_id;
+		if ($course_id !== Null)
+		{
 		$res = $dbmgr->fetch_assoc($selectquery);
+		}
+		else
+		{
+		echo "bad";
+		}
 		$numrows = count($res);
 		$all_topic_ids_in_course = array();
 		for ($i=0; $i<$numrows; $i++)
