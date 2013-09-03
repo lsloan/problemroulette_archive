@@ -250,9 +250,19 @@ class VStudentPerformance
 				
 				$str .= "<option 
 				value='".$all_courses_with_topics[$i]->m_id."'";
-				if (isset($_SESSION['dropdown_history_course']) && $_SESSION['dropdown_history_course'] == $all_courses_with_topics[$i]->m_id)
+				if (isset($_SESSION['sesstest']))
 				{
-					$str .= " selected='selected'";
+					if (isset($_SESSION['dropdown_history_course']) && $_SESSION['dropdown_history_course'] == $all_courses_with_topics[$i]->m_id)
+					{
+						$str .= " selected='selected'";
+					}
+				}
+				else
+				{
+					if ($usrmgr->m_user->GetPref('dropdown_history_course') !== Null && $usrmgr->m_user->GetPref('dropdown_history_course') == $all_courses_with_topics[$i]->m_id)
+					{
+						$str .= " selected='selected'";
+					}
 				}
 				$str .= ">
 				".$all_courses_with_topics[$i]->m_name."
@@ -300,9 +310,19 @@ class VStudentPerformance
 				{
 					$str .= "<option 
 					value='".$all_topics_in_course[$j]->m_id."'";
-					if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
+					if (isset($_SESSION['sesstest']))
 					{
-						$str .= " selected='selected'";
+						if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
+						{
+							$str .= " selected='selected'";
+						}
+					}
+					else
+					{
+						if ($usrmgr->m_user->GetPref('dropdown_history_topic') !== Null && $usrmgr->m_user->GetPref('dropdown_history_topic') == $all_topics_in_course[$j]->m_id)
+						{
+							$str .= " selected='selected'";
+						}
 					}
 					$str .= ">
 					".$all_topics_in_course[$j]->m_name."
@@ -500,9 +520,19 @@ class VStats
 			
 			$str .= "<option 
 			value='".$all_courses_with_topics[$i]->m_id."'";
-			if (isset($_SESSION['dropdown_history_course']) && $_SESSION['dropdown_history_course'] == $all_courses_with_topics[$i]->m_id)
+			if (isset($_SESSION['sesstest']))
 			{
-				$str .= " selected='selected'";
+				if (isset($_SESSION['dropdown_history_course']) && $_SESSION['dropdown_history_course'] == $all_courses_with_topics[$i]->m_id)
+				{
+					$str .= " selected='selected'";
+				}
+			}
+			else
+			{
+				if ($usrmgr->m_user->GetPref('dropdown_history_course') !== Null && $usrmgr->m_user->GetPref('dropdown_history_course') == $all_courses_with_topics[$i]->m_id)
+				{
+					$str .= " selected='selected'";
+				}
 			}
 			$str .= ">
 			".$all_courses_with_topics[$i]->m_name."
@@ -544,9 +574,19 @@ class VStats
 			{
 				$str .= "<option 
 				value='".$all_topics_in_course[$j]->m_id."'";
-				if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
+				if (isset($_SESSION['sesstest']))
 				{
-					$str .= " selected='selected'";
+					if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
+					{
+						$str .= " selected='selected'";
+					}
+				}
+				else
+				{
+					if ($usrmgr->m_user->GetPref('dropdown_history_topic') !== Null && $usrmgr->m_user->GetPref('dropdown_history_topic') == $all_topics_in_course[$j]->m_id)
+					{
+						$str .= " selected='selected'";
+					}
 				}
 				$str .= ">
 				".$all_topics_in_course[$j]->m_name."
@@ -822,7 +862,14 @@ class VProblems_submitted
 	    global $usrmgr;
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
-		$student_answer = $_SESSION['problem_submitted'];
+		if (isset($_SESSION['sesstest']))
+		{
+			$student_answer = $_SESSION['problem_submitted'];
+		}
+		else
+		{
+			$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
+		}
 		
 		//calculate solve time
 		$start_time = $usrmgr->m_user->GetPref('start_time');
@@ -933,7 +980,18 @@ class VProblems_submitted
 			<p>
 			<span class='label ".$label_class." student-answer'>
 			Your answer:&nbsp;
-			".$alphabet[$_SESSION['problem_submitted']-1]."
+			";
+			
+			if (isset($_SESSION['sesstest']))
+			{
+				$str .= $alphabet[$_SESSION['problem_submitted']-1];
+			}
+			else
+			{
+				$str .= $alphabet[$_SESSION['problem_submitted']-1];
+			}
+			
+			$str .= "
 			</span>
 			Correct answer: 
 			".$alphabet[$correct_answer-1]."

@@ -15,6 +15,7 @@ require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
+$_SESSION['sesstest'] = 1;
 
 //get problem
 if (isset($_POST['problem_info']))

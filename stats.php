@@ -15,6 +15,7 @@ require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
+$_SESSION['sesstest'] = 1;
 
 // populate and use models for business logic on page
 
@@ -25,7 +26,9 @@ if (isset($_POST['dropdown_course']))
 	//get selected course from POST and set preference; then, refresh page
 	$selected_course_id = $_POST['dropdown_course'];
 	$_SESSION['dropdown_history_course'] = $selected_course_id;
+	$usrmgr->m_user->SetPref('dropdown_history_course',$selected_course_id);
 	$_SESSION['dropdown_history_topic'] = 'all';
+	$usrmgr->m_user->SetPref('dropdown_history_topic','all');
 	
 	header('Location:stats.php');
 }
@@ -35,28 +38,59 @@ elseif (isset($_POST['dropdown_topic']))
 	//get selected topic from POST and set preference; then, refresh page
 	$selected_topic_id = $_POST['dropdown_topic'];
 	$_SESSION['dropdown_history_topic'] = $selected_topic_id;
+	$usrmgr->m_user->SetPref('dropdown_history_topic',$selected_topic_id);
 	
 	header('Location:stats.php');
 }
 
 else//if no $_POST is set
 {
-	//get selected course from preferences
-	if (isset($_SESSION['dropdown_history_course']))
+	//get selected course
+	if (isset($_SESSION['sesstest']))
 	{
-		$selected_course_id = $_SESSION['dropdown_history_course'];
+		if (isset($_SESSION['dropdown_history_course']))
+		{
+			$selected_course_id = $_SESSION['dropdown_history_course'];
+		}
+		else
+		{
+			$selected_course_id = Null;
+		}
 	}
 	else
 	{
-		$selected_course_id = Null;
+		if ($usrmgr->m_user->GetPref('dropdown_history_course') !== Null)
+		{
+			$selected_course_id = $usrmgr->m_user->GetPref('dropdown_history_course');
+		}
+		else
+		{
+			$selected_course_id = Null;
+		}
 	}
-	if (isset($_SESSION['dropdown_history_topic']))
+	
+	//get selected topic
+	if (isset($_SESSION['sesstest']))
 	{
-		$selected_topic_id = $_SESSION['dropdown_history_topic'];
+		if (isset($_SESSION['dropdown_history_topic']))
+		{
+			$selected_course_id = $_SESSION['dropdown_history_topic'];
+		}
+		else
+		{
+			$selected_course_id = Null;
+		}
 	}
 	else
 	{
-		$selected_topic_id = Null;
+		if ($usrmgr->m_user->GetPref('dropdown_history_topic') !== Null)
+		{
+			$selected_course_id = $usrmgr->m_user->GetPref('dropdown_history_topic');
+		}
+		else
+		{
+			$selected_course_id = Null;
+		}
 	}
 		
 	//get array of all problem IDs within course
