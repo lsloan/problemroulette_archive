@@ -6,9 +6,9 @@ Class MProblem
 	var $m_prob_id;			#ID of problem
 	var $m_prob_name;		#Name of problem
 	var $m_prob_url;		#URL of problem
-	//var $m_prob_topic_id;	#topic of problem
 	var $m_prob_ans_count;	#Number of answers for problem
 	var $m_prob_correct;	#Correct answer choice for problem
+	var $m_prob_solution;	#URL of solution, if supplied
 	
 	function __construct($prob_id = Null)
 	{
@@ -27,9 +27,10 @@ Class MProblem
 		//$this->m_prob_topic_id = $res[0]['topic_id'];
 		$this->m_prob_ans_count = $res[0]['ans_count'];
 		$this->m_prob_correct = $res[0]['correct'];
+		$this->m_prob_solution = $res[0]['solution'];
 	}
 	
-	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct)
+	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')
 	{	
         global $dbmgr; 
 		$insertquery = "
@@ -37,12 +38,14 @@ Class MProblem
 			name,
 			url,
 			correct,
-			ans_count
+			ans_count, 
+			solution
         )VALUES(
             '".$prob_name."',
             '".$prob_url."',
             '".$prob_correct."',
-            '".$prob_ans_count."'
+            '".$prob_ans_count."', 
+			'".$prob_solution."'
         )";
         $dbmgr->exec_query($insertquery);
 	}
