@@ -1243,7 +1243,16 @@ class VProblemInfo
 				<p>
 				Correct answer: 
 				".$alphabet[$correct_answer-1]."
-				</p>
+				</p>";
+				if ($this->v_problem->m_prob_solution !== '')
+				{
+					$str .= "
+					<p>
+					Solution: <a class='link' target='_blank' href='".$this->v_problem->m_prob_solution."'>".$this->v_problem->m_prob_name."</a>
+					</p>
+					";
+				}
+				$str .= "
 				<img class='histogram'
 				src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=300x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Total%20Responses%20(N=".$ans_submit_count_sum.")'>
 				</img>
