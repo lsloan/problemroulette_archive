@@ -21,6 +21,7 @@ $_SESSION['sesstest'] = 1;
 
 //logic for course or topic course selector and shown row number selection
 global $usrmgr;
+
 if (isset($_POST['dropdown_course']))
 {
 	//get selected course from POST and set preference; then, refresh page
@@ -54,7 +55,7 @@ else//if no $_POST is set
 		}
 		else
 		{
-			$selected_course_id = Null;
+			$selected_course_id = 'all';
 		}
 	}
 	else
@@ -65,7 +66,7 @@ else//if no $_POST is set
 		}
 		else
 		{
-			$selected_course_id = Null;
+			$selected_course_id = 'all';
 		}
 	}
 	
@@ -74,22 +75,22 @@ else//if no $_POST is set
 	{
 		if (isset($_SESSION['dropdown_history_topic']))
 		{
-			$selected_course_id = $_SESSION['dropdown_history_topic'];
+			$selected_topic_id = $_SESSION['dropdown_history_topic'];
 		}
 		else
 		{
-			$selected_course_id = Null;
+			$selected_topic_id = 'all';
 		}
 	}
 	else
 	{
 		if ($usrmgr->m_user->GetPref('dropdown_history_topic') !== Null)
 		{
-			$selected_course_id = $usrmgr->m_user->GetPref('dropdown_history_topic');
+			$selected_topic_id = $usrmgr->m_user->GetPref('dropdown_history_topic');
 		}
 		else
 		{
-			$selected_course_id = Null;
+			$selected_topic_id = 'all';
 		}
 	}
 		
