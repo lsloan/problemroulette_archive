@@ -204,7 +204,7 @@ if (isset($_SESSION['sesstest']))
 {
 	if (isset($_SESSION['current_problem']))
 	{
-		if ($_SESSION['current_problem'] != Null)
+		if ($_SESSION['current_problem'] !== Null)
 		{
 			$picked_problem_id = $_SESSION['current_problem'];
 			$picked_problem = new MProblem($picked_problem_id);
