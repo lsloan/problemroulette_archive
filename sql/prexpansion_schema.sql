@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.5.1
+-- version 3.3.10.2
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Aug 12, 2013 at 02:25 PM
--- Server version: 5.5.24-log
--- PHP Version: 5.4.3
+-- Host: webapps-db.web.itd
+-- Generation Time: Sep 20, 2013 at 01:40 PM
+-- Server version: 5.0.45
+-- PHP Version: 5.2.17
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -17,7 +16,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `prexpansion`
+-- Database: `problemroulette`
 --
 
 -- --------------------------------------------------------
@@ -27,12 +26,12 @@ SET time_zone = "+00:00";
 --
 
 DROP TABLE IF EXISTS `12m_class_topic`;
-CREATE TABLE IF NOT EXISTS `12m_class_topic` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `12m_class_topic` (
+  `id` int(11) NOT NULL auto_increment,
   `class_id` int(11) NOT NULL,
   `topic_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=79 ;
 
 -- --------------------------------------------------------
 
@@ -41,28 +40,13 @@ CREATE TABLE IF NOT EXISTS `12m_class_topic` (
 --
 
 DROP TABLE IF EXISTS `12m_prob_ans`;
-CREATE TABLE IF NOT EXISTS `12m_prob_ans` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `12m_prob_ans` (
+  `id` int(11) NOT NULL auto_increment,
   `prob_id` int(11) NOT NULL,
   `ans_num` tinyint(4) NOT NULL,
-  `count` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=72 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `12m_prob_ans_stats`
---
-
-DROP TABLE IF EXISTS `12m_prob_ans_stats`;
-CREATE TABLE IF NOT EXISTS `12m_prob_ans_stats` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `prob_id` int(11) NOT NULL,
-  `ans_num` tinyint(4) NOT NULL,
-  `count` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  `count` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17540 ;
 
 -- --------------------------------------------------------
 
@@ -71,12 +55,12 @@ CREATE TABLE IF NOT EXISTS `12m_prob_ans_stats` (
 --
 
 DROP TABLE IF EXISTS `12m_topic_prob`;
-CREATE TABLE IF NOT EXISTS `12m_topic_prob` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `12m_topic_prob` (
+  `id` int(11) NOT NULL auto_increment,
   `topic_id` int(11) NOT NULL,
   `problem_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4110 ;
 
 -- --------------------------------------------------------
 
@@ -85,11 +69,11 @@ CREATE TABLE IF NOT EXISTS `12m_topic_prob` (
 --
 
 DROP TABLE IF EXISTS `class`;
-CREATE TABLE IF NOT EXISTS `class` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `class` (
+  `id` int(11) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
 
 -- --------------------------------------------------------
 
@@ -98,17 +82,18 @@ CREATE TABLE IF NOT EXISTS `class` (
 --
 
 DROP TABLE IF EXISTS `problems`;
-CREATE TABLE IF NOT EXISTS `problems` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `problems` (
+  `id` int(11) NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
   `url` varchar(300) NOT NULL,
   `correct` int(11) NOT NULL,
   `ans_count` tinyint(4) NOT NULL,
-  `tot_tries` int(11) NOT NULL DEFAULT '0',
-  `tot_correct` int(11) NOT NULL DEFAULT '0',
-  `tot_time` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+  `tot_tries` int(11) NOT NULL default '0',
+  `tot_correct` int(11) NOT NULL default '0',
+  `tot_time` int(11) NOT NULL default '0',
+  `solution` varchar(300) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4055 ;
 
 -- --------------------------------------------------------
 
@@ -117,15 +102,15 @@ CREATE TABLE IF NOT EXISTS `problems` (
 --
 
 DROP TABLE IF EXISTS `responses`;
-CREATE TABLE IF NOT EXISTS `responses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `responses` (
+  `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL,
   `prob_id` int(11) NOT NULL,
   `answer` tinyint(4) NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=125 ;
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5157 ;
 
 -- --------------------------------------------------------
 
@@ -134,13 +119,13 @@ CREATE TABLE IF NOT EXISTS `responses` (
 --
 
 DROP TABLE IF EXISTS `stats`;
-CREATE TABLE IF NOT EXISTS `stats` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `stats` (
+  `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL,
-  `tot_tries` int(11) NOT NULL DEFAULT '0',
-  `tot_correct` int(11) NOT NULL DEFAULT '0',
-  `tot_time` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `tot_tries` int(11) NOT NULL default '0',
+  `tot_correct` int(11) NOT NULL default '0',
+  `tot_time` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
@@ -150,11 +135,11 @@ CREATE TABLE IF NOT EXISTS `stats` (
 --
 
 DROP TABLE IF EXISTS `topic`;
-CREATE TABLE IF NOT EXISTS `topic` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `topic` (
+  `id` int(11) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=80 ;
 
 -- --------------------------------------------------------
 
@@ -163,14 +148,10 @@ CREATE TABLE IF NOT EXISTS `topic` (
 --
 
 DROP TABLE IF EXISTS `user`;
-CREATE TABLE IF NOT EXISTS `user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL auto_increment,
   `username` varchar(20) NOT NULL,
   `staff` int(11) NOT NULL,
   `prefs` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=909 ;
