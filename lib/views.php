@@ -862,14 +862,7 @@ class VProblems_submitted
 	    global $usrmgr;
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
-		if (isset($_SESSION['sesstest']))
-		{
-			$student_answer = $_SESSION['problem_submitted'];
-		}
-		else
-		{
-			$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
-		}
+		$student_answer = $_SESSION['problem_submitted'];
 		
 		//calculate solve time
 		$start_time = $usrmgr->m_user->GetPref('start_time');

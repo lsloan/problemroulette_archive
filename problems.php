@@ -31,9 +31,7 @@ if (isset($_POST['topic_checkbox_submission']))
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	$_SESSION['current_problem'] = Null;
-	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
-	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -44,9 +42,7 @@ if (isset($_POST['topic_link_submission']))
 	$selected_topics_list_id = $_POST['topic_link_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	$_SESSION['current_problem'] = Null;
-	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
-	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -66,14 +62,7 @@ if (isset($_POST['skip']))
 	}
 	
 	//get current problem
-	if (isset($_SESSION['sesstest']))
-	{
-		$current_problem_id = $_SESSION['current_problem'];
-	}
-	else
-	{
-		$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
-	}
+	$current_problem_id = $_SESSION['current_problem'];
 	$current_problem = new MProblem($current_problem_id);
 	
 	//get current topic_id and omitted problems list for given topic
@@ -90,9 +79,7 @@ if (isset($_POST['skip']))
 	$response->update_skips();
 	
 	$_SESSION['current_problem'] = Null;
-	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
-	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -127,17 +114,9 @@ if (isset($_POST['submit_answer']))
 		//get student answer
 		$student_answer = $_POST['student_answer'];
 		$_SESSION['problem_submitted'] = $student_answer;
-		$usrmgr->m_user->SetPref('problem_submitted',$student_answer);
 		
 		//get current problem and correct answer
-		if (isset($_SESSION['sesstest']))
-		{
-			$current_problem_id = $_SESSION['current_problem'];
-		}
-		else
-		{
-			$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
-		}
+		$current_problem_id = $_SESSION['current_problem'];
 		$current_problem = new MProblem($current_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
@@ -175,9 +154,7 @@ if (isset($_POST['submit_answer']))
 if (isset($_POST['next']))
 {
 	$_SESSION['current_problem'] = Null;
-	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
-	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -200,36 +177,12 @@ $remaining_problems_in_topic_list = $Picker->m_remaining_problems_in_topic_list;
 $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 
 //pick either current problem a student is working on OR pick new problem
-if (isset($_SESSION['sesstest']))
+if (isset($_SESSION['current_problem']))
 {
-	if (isset($_SESSION['current_problem']))
+	if ($_SESSION['current_problem'] !== Null)
 	{
-		if ($_SESSION['current_problem'] !== Null)
-		{
-			$picked_problem_id = $_SESSION['current_problem'];
-			$picked_problem = new MProblem($picked_problem_id);
-		}
-		else
-		{
-			//set current topic and pick random problem
-			$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
-			$picked_problem = $Picker->m_picked_problem;
-			$picked_problem_id = Null;
-			if ($picked_problem != Null)
-			{
-				$picked_problem_id = $picked_problem->m_prob_id;
-			}
-			
-			//set start time in session variable
-			$start_time = time();
-			$_SESSION['start_time'] = $start_time;
-			$usrmgr->m_user->SetPref('start_time',$start_time);
-		}
-		
-		if ($picked_problem_id != Null)
-		{
-			$_SESSION['current_problem'] = $picked_problem_id;
-		}
+		$picked_problem_id = $_SESSION['current_problem'];
+		$picked_problem = new MProblem($picked_problem_id);
 	}
 	else
 	{
@@ -246,68 +199,36 @@ if (isset($_SESSION['sesstest']))
 		$start_time = time();
 		$_SESSION['start_time'] = $start_time;
 		$usrmgr->m_user->SetPref('start_time',$start_time);
-		
-		if ($picked_problem_id != Null)
-		{
-			$_SESSION['current_problem'] = $picked_problem_id;
-		}
+	}
+	
+	if ($picked_problem_id !== Null)
+	{
+		$_SESSION['current_problem'] = $picked_problem_id;
 	}
 }
 else
 {
-	if ($usrmgr->m_user->GetPref('current_problem') !== Null)
+	//set current topic and pick random problem
+	$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
+	$picked_problem = $Picker->m_picked_problem;
+	$picked_problem_id = Null;
+	if ($picked_problem !== Null)
 	{
-		if ($usrmgr->m_user->GetPref('current_problem') != Null)
-		{
-			$picked_problem_id = $usrmgr->m_user->GetPref('current_problem');
-			$picked_problem = new MProblem($picked_problem_id);
-		}
-		else
-		{
-			//set current topic and pick random problem
-			$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
-			$picked_problem = $Picker->m_picked_problem;
-			$picked_problem_id = Null;
-			if ($picked_problem != Null)
-			{
-				$picked_problem_id = $picked_problem->m_prob_id;
-			}
-			
-			//set start time in session variable
-			$start_time = time();
-			$_SESSION['start_time'] = $start_time;
-			$usrmgr->m_user->SetPref('start_time',$start_time);
-		}
-		
-		if ($picked_problem_id != Null)
-		{
-			$_SESSION['current_problem'] = $picked_problem_id;
-			$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
-		}
+		$picked_problem_id = $picked_problem->m_prob_id;
 	}
-	else
+	
+	//set start time in session variable
+	$start_time = time();
+	$_SESSION['start_time'] = $start_time;
+	$usrmgr->m_user->SetPref('start_time',$start_time);
+	
+	if ($picked_problem_id !== Null)
 	{
-		//set current topic and pick random problem
-		$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
-		$picked_problem = $Picker->m_picked_problem;
-		$picked_problem_id = Null;
-		if ($picked_problem != Null)
-		{
-			$picked_problem_id = $picked_problem->m_prob_id;
-		}
-		
-		//set start time in session variable
-		$start_time = time();
-		$_SESSION['start_time'] = $start_time;
-		$usrmgr->m_user->SetPref('start_time',$start_time);
-		
-		if ($picked_problem_id != Null)
-		{
-			$_SESSION['current_problem'] = $picked_problem_id;
-			$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
-		}
+		$_SESSION['current_problem'] = $picked_problem_id;
 	}
 }
+
+
 	
 ///////////////////////////////////////////////////////////////////////////
 // page construction
@@ -315,35 +236,17 @@ else
 $head = new CHeadCSSJavascript("Problems", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problems'));
 
-if (isset($_SESSION['sesstest']))
+if (isset($_SESSION['problem_submitted']))
 {
-	if (isset($_SESSION['problem_submitted']))
-	{
-		$content = new VProblems_submitted($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
-	}
-	elseif ($num_topics >= 1)
-	{
-		$content = new VProblems($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
-	}
-	else
-	{
-		$content = new VProblems_no_topics();
-	}
+	$content = new VProblems_submitted($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
+}
+elseif ($num_topics >= 1)
+{
+	$content = new VProblems($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
 }
 else
 {
-	if ($usrmgr->m_user->GetPref('problem_submitted') !== Null)
-	{
-		$content = new VProblems_submitted($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
-	}
-	elseif ($num_topics >= 1)
-	{
-		$content = new VProblems($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
-	}
-	else
-	{
-		$content = new VProblems_no_topics();
-	}
+	$content = new VProblems_no_topics();
 }
 
 if ($picked_problem == Null)
