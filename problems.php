@@ -16,6 +16,16 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
+if (!isset($_SESSION['current_problem']))
+{
+	$usrmgr->m_user->SetPref('current_problem',Null);
+}
+
+if (!isset($_SESSION['problem_submitted']))
+{
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
+}
+
 $_SESSION['sesstest'] = 1;
 
 // populate and use models for business logic on page
@@ -31,7 +41,9 @@ if (isset($_POST['topic_checkbox_submission']))
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -42,7 +54,9 @@ if (isset($_POST['topic_link_submission']))
 	$selected_topics_list_id = $_POST['topic_link_submission'];
 	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -79,7 +93,9 @@ if (isset($_POST['skip']))
 	$response->update_skips();
 	
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -114,6 +130,7 @@ if (isset($_POST['submit_answer']))
 		//get student answer
 		$student_answer = $_POST['student_answer'];
 		$_SESSION['problem_submitted'] = $student_answer;
+		$usrmgr->m_user->SetPref('problem_submitted',$student_answer);
 		
 		//get current problem and correct answer
 		$current_problem_id = $_SESSION['current_problem'];
@@ -154,7 +171,9 @@ if (isset($_POST['submit_answer']))
 if (isset($_POST['next']))
 {
 	$_SESSION['current_problem'] = Null;
+	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
+	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
 }
 
@@ -204,6 +223,7 @@ if (isset($_SESSION['current_problem']))
 	if ($picked_problem_id !== Null)
 	{
 		$_SESSION['current_problem'] = $picked_problem_id;
+		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
 	}
 }
 else
@@ -225,6 +245,7 @@ else
 	if ($picked_problem_id !== Null)
 	{
 		$_SESSION['current_problem'] = $picked_problem_id;
+		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
 	}
 }
 
