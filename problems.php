@@ -190,7 +190,7 @@ if (isset($_SESSION['current_problem']))
 		$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
 		$picked_problem = $Picker->m_picked_problem;
 		$picked_problem_id = Null;
-		if ($picked_problem != Null)
+		if ($picked_problem !== Null)
 		{
 			$picked_problem_id = $picked_problem->m_prob_id;
 		}
