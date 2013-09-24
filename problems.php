@@ -76,7 +76,8 @@ if (isset($_POST['skip']))
 	}
 	
 	//get current problem
-	$current_problem_id = $_SESSION['current_problem'];
+	//$current_problem_id = $_SESSION['current_problem'];
+	$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
 	$current_problem = new MProblem($current_problem_id);
 	
 	//get current topic_id and omitted problems list for given topic
@@ -133,7 +134,8 @@ if (isset($_POST['submit_answer']))
 		$usrmgr->m_user->SetPref('problem_submitted',$student_answer);
 		
 		//get current problem and correct answer
-		$current_problem_id = $_SESSION['current_problem'];
+		//$current_problem_id = $_SESSION['current_problem'];
+		$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
 		$current_problem = new MProblem($current_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
@@ -196,11 +198,14 @@ $remaining_problems_in_topic_list = $Picker->m_remaining_problems_in_topic_list;
 $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 
 //pick either current problem a student is working on OR pick new problem
-if (isset($_SESSION['current_problem']))
-{
-	if ($_SESSION['current_problem'] !== Null)
+//if (isset($_SESSION['current_problem']))
+//{
+	//if ($_SESSION['current_problem'] !== Null)
+	if ($usrmgr->m_user->GetPref('current_problem') !== Null)
 	{
-		$picked_problem_id = $_SESSION['current_problem'];
+		//use current problem
+		//$picked_problem_id = $_SESSION['current_problem'];
+		$picked_problem_id = $usrmgr->m_user->GetPref('current_problem');
 		$picked_problem = new MProblem($picked_problem_id);
 	}
 	else
@@ -225,7 +230,7 @@ if (isset($_SESSION['current_problem']))
 		$_SESSION['current_problem'] = $picked_problem_id;
 		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
 	}
-}
+/*}
 else
 {
 	//set current topic and pick random problem
@@ -248,6 +253,7 @@ else
 		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
 	}
 }
+*/
 
 
 	
@@ -257,7 +263,8 @@ else
 $head = new CHeadCSSJavascript("Problems", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problems'));
 
-if (isset($_SESSION['problem_submitted']))
+//if (isset($_SESSION['problem_submitted']))
+if ($usrmgr->m_user->GetPref('problem_submitted') !== Null)
 {
 	$content = new VProblems_submitted($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
 }
