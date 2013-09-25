@@ -23,10 +23,29 @@ $staff = $usrmgr->m_user->staff;
 if ($staff != 1) 
     header('Location: ' . $GLOBALS["DOMAIN"]);
 
-#$cmd = "mysqldump --user='" . $GLOBALS["SQL_USER"] . "' --password='" . $GLOBALS["SQL_PASSWORD"] . "' --host='" . $GLOBALS["SQL_SERVER"] ."' ". $GLOBALS["SQL_DATABASE"] . " > " . $GLOBALS["DIR_DOWNLOADS"] . "down.sql";
-#exec($cmd);
+$cmd = "mysqldump --user='" . $GLOBALS["SQL_USER"] . "' --password='" . $GLOBALS["SQL_PASSWORD"] . "' --host='" . $GLOBALS["SQL_SERVER"] ."' ". $GLOBALS["SQL_DATABASE"] . " > " . $GLOBALS["DIR_DOWNLOADS"] . "down.sql";
+exec($cmd);
 
-   
+$file = $GLOBALS["DIR_DOWNLOADS"].'down.sql';
+if (file_exists($file)) {
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename='.basename($file));
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($file));
+    ob_clean();
+    flush();
+    readfile($file);
+    exit;
+}
+
+/*   
+#
+# KEEP AROUND...for a rainy day
+#
 global $dbmgr; 
 //get all of the tables
 $tables = array();
@@ -70,18 +89,8 @@ foreach($tables as $table)
 }
 $file = $GLOBALS["DIR_DOWNLOADS"].'down.sql';
 file_put_contents($file, $return);
-if (file_exists($file)) {
-    header('Content-Description: File Transfer');
-    header('Content-Type: application/octet-stream');
-    header('Content-Disposition: attachment; filename='.basename($file));
-    header('Content-Transfer-Encoding: binary');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
-    header('Content-Length: ' . filesize($file));
-    ob_clean();
-    flush();
-    readfile($file);
-    exit;
-}
+*/
+
+
+
 ?>
