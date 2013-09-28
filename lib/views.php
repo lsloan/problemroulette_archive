@@ -1256,7 +1256,10 @@ class VProblemInfo
 				".
 				$this->v_problem->m_prob_url
 				."'></iframe>
-			";		
+                <p align='center'>
+                <font color='blue'>".$this->v_problem->m_prob_url."</font>
+                </p>
+                ";		
 		}
 		return $str;
 	}
