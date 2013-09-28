@@ -792,7 +792,7 @@ Class MUserSummary
 			$this->m_start_time_list[$i] = $res[$i]['start_time'];
 			$this->m_end_time_list[$i] = $res[$i]['end_time'];
 			$this->m_user_id_list[$i] = $res[$i]['user_id'];
-			
+            date_default_timezone_set('America/New_York');
 			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
 			
 			$this->m_tot_tries += 1;
