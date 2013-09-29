@@ -1013,6 +1013,25 @@ class VProblems_submitted
     }
 }
 
+class VSpecialExam
+{
+    function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        return "
+        <br>
+        <p>
+        This special crowd sourced exam will only be available to particpants in the Chemistry 130 Exam Prep exercize.
+        </p>
+        <p>
+        This will be available beginning October 11th with additional information <a href='https://ecoach.lsa.umich.edu/coach8/tournament/01/' style='margin:0px;'>here</a> on ECoach.
+        </p>
+        ";
+    }
+}
 class VTopic_Selections
 {
 	var $v_CTprefs;//course/topic preferences
