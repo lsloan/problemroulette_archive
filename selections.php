@@ -97,6 +97,7 @@ $CTprefs = new MCTSelect();
 //set selected course if it exists
 if ($CTprefs->m_selected_course != Null)
 {
+    //this is dead logic?
 	$selected_course_id = $CTprefs->m_selected_course;
 	$selected_course = MCourse::get_course_by_id($selected_course_id);
 }
@@ -104,6 +105,7 @@ if ($CTprefs->m_selected_course != Null)
 //set selected topics list if it exists
 if ($CTprefs->m_selected_topics_list != Null)
 {
+    //this is dead logic?
 	$selected_topics_list = $CTprefs->m_selected_topics_list;
 }
 
