@@ -143,6 +143,14 @@ if (isset($_POST['submit_answer']))
 		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
 		$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
 		
+		if ($current_problem_id == 0)
+		{
+			$usrmgr->m_user->SetPref('bugcheck4','pid=0');
+		}
+		if ($current_problem_id == Null)
+		{
+			$usrmgr->m_user->SetPref('bugcheck5','pid=Null');
+		}
 		//if the student answered correctly, add current problem to omitted problems list for given topic
 		if ($current_problem_answer == $student_answer)
 		{
@@ -218,6 +226,10 @@ $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 		{
 			$picked_problem_id = $picked_problem->m_prob_id;
 		}
+		else
+		{
+			$usrmgr->m_user->SetPref('bugcheck1',1);
+		}
 		
 		//set start time in session variable
 		$start_time = time();
@@ -229,6 +241,14 @@ $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 	{
 		$_SESSION['current_problem'] = $picked_problem_id;
 		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+	}
+	else
+	{
+		$usrmgr->m_user->SetPref('bugcheck2',1);
+	}
+	if ($picked_problem_id == 0)
+	{
+		$usrmgr->m_user->SetPref('bugcheck3',1);
 	}
 /*}
 else
