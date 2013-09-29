@@ -150,6 +150,8 @@ if (isset($_POST['submit_answer']))
 		if ($current_problem_id == Null)
 		{
 			$usrmgr->m_user->SetPref('bugcheck5','pid=Null');
+			$usrmgr->m_user->SetPref('bugcheck6',$current_problem_id);
+			$usrmgr->m_user->SetPref('bugcheck7',$usrmgr->m_user->GetPref('current_problem'));
 		}
 		//if the student answered correctly, add current problem to omitted problems list for given topic
 		if ($current_problem_answer == $student_answer)
