@@ -245,6 +245,12 @@ $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 	{
 		$_SESSION['current_problem'] = $picked_problem_id;
 		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+		$test_curr_prob = $usrmgr->m_user->GetPref('current_problem');
+		if ($test_curr_prob == Null)
+		{
+			$usrmgr->m_user->SetPref('bugcheck10',$picked_problem_id);
+			$usrmgr->m_user->SetPref('bugcheck11',$test_curr_prob);
+		}
 	}
 	else
 	{
