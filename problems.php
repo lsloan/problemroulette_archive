@@ -109,6 +109,13 @@ if (isset($_POST['submit_answer']))
 	{
 		//increment page_loads
 		global $usrmgr;
+		
+		$test1 = $usrmgr->m_user->GetPref('current_problems');
+		if ($test1 == Null)
+		{
+			$usrmgr->m_user->SetPref('bugcheck12',1);
+		}
+		
 		$ploads = $usrmgr->m_user->GetPref('page_loads');
 		if (is_null($ploads))
 			$ploads = 1;
