@@ -127,7 +127,7 @@ if (isset($_POST['submit_answer']))
 		{
 			$start_time = $usrmgr->m_user->GetPref('start_time');
 		}
-		
+		$test_time = $usrmgr->m_user->GetPref('start_time');
 		//get student answer
 		$student_answer = $_POST['student_answer'];
 		$_SESSION['problem_submitted'] = $student_answer;
@@ -152,6 +152,8 @@ if (isset($_POST['submit_answer']))
 			$usrmgr->m_user->SetPref('bugcheck5','pid=Null');
 			$usrmgr->m_user->SetPref('bugcheck6',$current_problem_id);
 			$usrmgr->m_user->SetPref('bugcheck7',$usrmgr->m_user->GetPref('current_problem'));
+			$usrmgr->m_user->SetPref('bugcheck8',$test_time);
+			$usrmgr->m_user->SetPref('bugcheck9',$start_time);
 		}
 		//if the student answered correctly, add current problem to omitted problems list for given topic
 		if ($current_problem_answer == $student_answer)
