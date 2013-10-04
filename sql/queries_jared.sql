@@ -139,6 +139,7 @@ inner join class
 where 
     class.name='Chemistry 130'
     /*class.name like 'Physics%'*/
+    /*class.name like 'Statistics%'*/
 group by topic.id, problems.id
 having
     rate < 0.5
@@ -214,7 +215,9 @@ inner join user
     on user.id=responses.user_id
 where 
     class.name like 'Physics%'
+    /*class.name like 'Statistics%'*/
 INTO OUTFILE '/Users/jtritz/bitbucket/problemroulette/sql/pr_physics.csv'
+/*INTO OUTFILE '/Users/jtritz/bitbucket/problemroulette/sql/pr_stats.csv'*/
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
