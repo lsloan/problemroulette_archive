@@ -1,3 +1,9 @@
+/* select to file*/
+/* query goes here */
+INTO OUTFILE '/tmp/orders.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
 
 /* duplicate problems */
 select 
@@ -132,6 +138,7 @@ inner join class
     on class.id=c2t.class_id
 where 
     class.name='Chemistry 130'
+    /*class.name like 'Physics%'*/
 group by topic.id, problems.id
 having
     rate < 0.5
@@ -168,6 +175,49 @@ where
     class.name='Chemistry 130'
 group by responses.user_id
 order by tried
+;
+
+/* extract of pr data for analysis */
+select
+'username',
+'course',
+'topic',
+'url',
+'correct',
+'choice',
+'rate',
+'start_time',
+'end_time'
+union 
+select 
+    user.username,
+    class.name as course,
+    topic.name as topic,
+    problems.url,
+    problems.correct,
+    responses.answer as choice,
+    problems.tot_correct / problems.tot_tries as rate,
+    responses.start_time,
+    responses.end_time
+from responses
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+inner join user
+    on user.id=responses.user_id
+where 
+    class.name like 'Physics%'
+INTO OUTFILE '/Users/jtritz/bitbucket/problemroulette/sql/pr_physics.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
 ;
 
 
