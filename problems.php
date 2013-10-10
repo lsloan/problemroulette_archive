@@ -109,6 +109,13 @@ if (isset($_POST['submit_answer']))
 	{
 		//increment page_loads
 		global $usrmgr;
+		
+		$test1 = intval($usrmgr->m_user->GetPref('current_problem'));
+		if ($test1 == Null)
+		{
+			$usrmgr->m_user->SetPref('bugcheck12',1);
+		}
+		
 		$ploads = $usrmgr->m_user->GetPref('page_loads');
 		if (is_null($ploads))
 			$ploads = 1;
@@ -127,7 +134,7 @@ if (isset($_POST['submit_answer']))
 		{
 			$start_time = $usrmgr->m_user->GetPref('start_time');
 		}
-		
+		$test_time = $usrmgr->m_user->GetPref('start_time');
 		//get student answer
 		$student_answer = $_POST['student_answer'];
 		$_SESSION['problem_submitted'] = $student_answer;
@@ -150,6 +157,10 @@ if (isset($_POST['submit_answer']))
 		if ($current_problem_id == Null)
 		{
 			$usrmgr->m_user->SetPref('bugcheck5','pid=Null');
+			$usrmgr->m_user->SetPref('bugcheck6',$current_problem_id);
+			$usrmgr->m_user->SetPref('bugcheck7',$usrmgr->m_user->GetPref('current_problem'));
+			$usrmgr->m_user->SetPref('bugcheck8',$test_time);
+			$usrmgr->m_user->SetPref('bugcheck9',$start_time);
 		}
 		//if the student answered correctly, add current problem to omitted problems list for given topic
 		if ($current_problem_answer == $student_answer)
@@ -241,6 +252,12 @@ $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
 	{
 		$_SESSION['current_problem'] = $picked_problem_id;
 		$usrmgr->m_user->SetPref('current_problem',$picked_problem_id);
+		$test_curr_prob = $usrmgr->m_user->GetPref('current_problem');
+		if ($test_curr_prob == Null)
+		{
+			$usrmgr->m_user->SetPref('bugcheck10',$picked_problem_id);
+			$usrmgr->m_user->SetPref('bugcheck11',$test_curr_prob);
+		}
 	}
 	else
 	{
