@@ -23,7 +23,7 @@ $course_id = 10;
 
 $row = 1;
 //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-if (($handle = fopen("csvProbs/Chem130_Ch4.csv","r")) !== FALSE)
+if (($handle = fopen("csvProbs/Chem130_Ch6.csv","r")) !== FALSE)
 {
 	while (($data = fgetcsv($handle,10000,", ")) !== FALSE)
 	{
