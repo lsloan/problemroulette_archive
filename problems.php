@@ -29,7 +29,7 @@ if (!isset($_SESSION['problem_submitted']))
 $_SESSION['sesstest'] = 1;
 
 $curr_prob_test = $usrmgr->m_user->GetPref('current_problem');
-if ($curr_prob_test !== Null)
+if ($curr_prob_test !== Null && $curr_prob_test !== 0)
 {
 	$_SESSION['curr_prob_test_no_null'] = $curr_prob_test;
 }
@@ -212,7 +212,7 @@ if (isset($_POST['next']))
 
 $curr_prob_test_mid = $usrmgr->m_user->GetPref('current_problem');
 $_SESSION['curr_prob_test_mid'] = $curr_prob_test_mid;
-if ($curr_prob_test_mid !== Null)
+if ($curr_prob_test_mid !== Null && $curr_prob_test_mid !== 0)
 {
 	$_SESSION['curr_prob_test_mid_no_null'] = $curr_prob_test_mid;
 }
@@ -345,7 +345,7 @@ echo $page->Deliver();
 
 $curr_prob_test_end = $usrmgr->m_user->GetPref('current_problem');
 $_SESSION['curr_prob_test_end'] = $curr_prob_test_end;
-if ($curr_prob_test_end !== Null)
+if ($curr_prob_test_end !== Null && $curr_prob_test_end !== 0)
 {
 	$_SESSION['curr_prob_test_end_no_null'] = $curr_prob_test_end;
 }
