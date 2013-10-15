@@ -27,6 +27,9 @@ if (!isset($_SESSION['problem_submitted']))
 }
 
 $_SESSION['sesstest'] = 1;
+$_SESSION['curr_prob_test_no_null'] = 1;
+$_SESSION['curr_prob_test_mid_no_null'] = 1;
+$_SESSION['curr_prob_test_end_no_null'] = 1;
 
 $curr_prob_test = $usrmgr->m_user->GetPref('current_problem');
 if ($curr_prob_test !== Null)
