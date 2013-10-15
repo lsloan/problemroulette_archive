@@ -28,6 +28,8 @@ if (!isset($_SESSION['problem_submitted']))
 
 $_SESSION['sesstest'] = 1;
 
+$curr_prob_test = $usrmgr->m_user->GetPref('current_problem');
+
 // populate and use models for business logic on page
 
 //Get selected_topics_list and put into preferences
@@ -161,6 +163,7 @@ if (isset($_POST['submit_answer']))
 			$usrmgr->m_user->SetPref('bugcheck7',$usrmgr->m_user->GetPref('current_problem'));
 			$usrmgr->m_user->SetPref('bugcheck8',$test_time);
 			$usrmgr->m_user->SetPref('bugcheck9',$start_time);
+			$usrmgr->m_user->SetPref('bugcheck13',$curr_prob_test);
 		}
 		//if the student answered correctly, add current problem to omitted problems list for given topic
 		if ($current_problem_answer == $student_answer)
