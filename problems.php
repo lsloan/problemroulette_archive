@@ -29,6 +29,10 @@ if (!isset($_SESSION['problem_submitted']))
 $_SESSION['sesstest'] = 1;
 
 $curr_prob_test = $usrmgr->m_user->GetPref('current_problem');
+if ($curr_prob_test !== Null)
+{
+	$_SESSION['curr_prob_test_no_null'] = $curr_prob_test;
+}
 
 // populate and use models for business logic on page
 
@@ -164,6 +168,11 @@ if (isset($_POST['submit_answer']))
 			$usrmgr->m_user->SetPref('bugcheck8',$test_time);
 			$usrmgr->m_user->SetPref('bugcheck9',$start_time);
 			$usrmgr->m_user->SetPref('bugcheck13',$curr_prob_test);
+			$usrmgr->m_user->SetPref('bugcheck14',$_SESSION['curr_prob_test_no_null']);
+			$usrmgr->m_user->SetPref('bugcheck15',$_SESSION['curr_prob_test_mid']);
+			$usrmgr->m_user->SetPref('bugcheck16',$_SESSION['curr_prob_test_mid_no_null']);
+			$usrmgr->m_user->SetPref('bugcheck17',$_SESSION['curr_prob_test_end']);
+			$usrmgr->m_user->SetPref('bugcheck18',$_SESSION['curr_prob_test_end_no_null']);
 		}
 		//if the student answered correctly, add current problem to omitted problems list for given topic
 		if ($current_problem_answer == $student_answer)
@@ -199,6 +208,13 @@ if (isset($_POST['next']))
 	$_SESSION['problem_submitted'] = Null;
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 	header('Location:problems.php');
+}
+
+$curr_prob_test_mid = $usrmgr->m_user->GetPref('current_problem');
+$_SESSION['curr_prob_test_mid'] = $curr_prob_test_mid;
+if ($curr_prob_test_mid !== Null)
+{
+	$_SESSION['curr_prob_test_mid_no_null'] = $curr_prob_test_mid;
 }
 
 //$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
@@ -326,5 +342,12 @@ $page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html
 echo $page->Deliver();
+
+$curr_prob_test_end = $usrmgr->m_user->GetPref('current_problem');
+$_SESSION['curr_prob_test_end'] = $curr_prob_test_end;
+if ($curr_prob_test_end !== Null)
+{
+	$_SESSION['curr_prob_test_end_no_null'] = $curr_prob_test_end;
+}
 
 ?>
