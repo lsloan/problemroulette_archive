@@ -156,19 +156,19 @@ else
 	else
 	{
 	//<DISPLAY ALL PROBLEMS IN SELECTED TOPIC>
-		$problems_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id);
+		$problem_id_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id)->m_prob_id;
 		
-		$num_problems = count($problems_list);
+		$num_problems = count($problem_id_list);
 		
-		$problems_list_id = Array();
-		for ($i=0; $i<$num_problems; $i++)
-		{
-			array_push($problems_list_id, $problems_list[$i]->m_prob_id);
-		}
+		//$problems_list_id = Array();
+		//for ($i=0; $i<$num_problems; $i++)
+		//{
+		//	array_push($problems_list_id, $problems_list[$i]->m_prob_id);
+		//}
 		
 		if ($num_problems > 0)
 		{
-			$summary = new MUserSummary($problems_list_id,$search_username);
+			$summary = new MUserSummary($problem_id_list,$search_username);
 		}
 		else
 		{
