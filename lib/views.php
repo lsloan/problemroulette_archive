@@ -219,10 +219,12 @@ class VStudentPerformance
 
 		if ($staff == 1)//if user has staff permissions
 		{
-			$num_responses = count($this->v_summary->m_problem_list);
+			$num_responses = $this->v_summary->m_tot_tries;
 			
 			$all_courses_with_topics = MCourse::get_all_courses_with_topics();
 			$num_courses = count($all_courses_with_topics);
+			
+			$num_users = $this->v_summary->m_num_users;
 			
 			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 			
@@ -330,7 +332,7 @@ class VStudentPerformance
 				}
 			}
 			
-			$num_users = count(array_unique($this->v_summary->m_user_id_list));
+			//$num_users = count(array_unique($this->v_summary->m_user_id_list));
 			
 			$str .= "
 			</select>";
@@ -379,7 +381,10 @@ class VStudentPerformance
 				$str .= "<b>".$num_users."</b> users have ";
 			}
 			
-			$str .= "attempted <b>".$this->v_summary->m_tot_tries."</b> problems and got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
+			$str .= "attempted <b>".$this->v_summary->m_tot_tries."</b> problems";
+			if ($this->v_display_search !== Null && $this->v_display_search !== 0 && $this->v_display_search !== '')
+			{
+				$str .= " and got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
 			
 			if ($this->v_summary->m_tot_tries > 0)
 			{
@@ -387,8 +392,8 @@ class VStudentPerformance
 				The average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
 			}
 			
-			if ($this->v_display_search !== Null && $this->v_display_search !== 0 && $this->v_display_search !== '')
-			{
+			//if ($this->v_display_search !== Null && $this->v_display_search !== 0 && $this->v_display_search !== '')
+			//{
 				$str .= "
 				<form action='problem_info.php' method='POST' target='_blank'>
 				<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
@@ -430,6 +435,10 @@ class VStudentPerformance
 				</table>
 				</form>
 				";
+			}
+			else
+			{
+				$str .= ".";
 			}
 		}
 		else//if user does not have staff permissions

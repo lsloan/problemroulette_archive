@@ -699,6 +699,7 @@ Class MUserSummary
 	var $m_tot_tries = 0;
 	var $m_tot_correct = 0;
 	var $m_tot_time = 0;
+	var $m_num_users = 0;
 	//</OVERALL STATSISTICS>
 	
 	//<HISTORY>
@@ -731,22 +732,35 @@ Class MUserSummary
 		else
 		{
 			if ($all_users == '' || $all_users == Null)
-			if ($all_users !== 0)
 			{
+				if ($all_users !== 0)
+				{
+					{
+						$selectquery = "
+						SELECT * 
+						FROM responses 
+						WHERE answer <> 0";
+						
+						$numuserquery = "
+						SELECT DISTINCT user_id 
+						FROM responses 
+						WHERE answer <> 0";
+					}
+				}
+				else
 				{
 					$selectquery = "
 					SELECT * 
 					FROM responses 
-					WHERE answer <> 0";
+					WHERE user_id=".$user_id." AND 
+					answer <> 0";
+					
+					$numuserquery = "
+					SELECT DISTINCT user_id
+					FROM responses 
+					WHERE user_id=".$user_id." AND 
+					answer <> 0";
 				}
-			}
-			else
-			{
-				$selectquery = "
-				SELECT * 
-				FROM responses 
-				WHERE user_id=".$user_id." AND 
-				answer <> 0";
 			}
 			elseif ($all_users !== 0)
 			{
@@ -762,10 +776,17 @@ Class MUserSummary
 					FROM responses 
 					WHERE user_id=".$search_user_id." AND 
 					answer <> 0";
+					
+					$numuserquery = "
+					SELECT DISTINCT user_id 
+					FROM responses 
+					WHERE user_id=".$search_user_id." AND 
+					answer <> 0";
 				}
 				else
 				{
 					$selectquery = "SELECT * FROM responses WHERE user_id = 1 AND user_id = 2";
+					$numuserquery = "SELECT DISTINCT user_id FROM responses WHERE user_id = 1 AND user_id = 2";
 				}
 			}
 			else
@@ -775,27 +796,50 @@ Class MUserSummary
 				FROM responses 
 				WHERE user_id=".$user_id." AND 
 				answer <> 0";
+				
+				$numuserquery = "
+				SELECT DISTINCT user_id 
+				FROM responses 
+				WHERE user_id=".$user_id." AND 
+				answer <> 0";
 			}
 			
 			if ($this->m_problems_list_id != Null)
 			{
 				$selectquery .= " AND (";
+				$numuserquery .= " AND (";
 				for ($i=0; $i<$num_problems_in_selection; $i++)
 				{
 					$selectquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
+					$numuserquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
 					if ($i == ($num_problems_in_selection-1))
 					{
 						$selectquery .= "prob_id=".$this->m_problems_list_id[$i].")";
+						$numuserquery .= "prob_id=".$this->m_problems_list_id[$i].")";
 					}
 				}
 			}
 			$res = $dbmgr->fetch_assoc($selectquery);
-			$num_responses = count($res);			
+			$num_responses = count($res);
+
+			$res_user = $dbmgr->fetch_assoc($numuserquery);
+			$num_users = count($res_user);
+			
+			$this->m_tot_tries = $num_responses;
+			$this->m_num_users = $num_users;
+			
+			if ($all_users == '' || $all_users == Null)
+			{
+				if ($all_users !== 0)
+				{
+					return;
+				}
+			}
 		}
 		
 		if ($num_responses < 1)
 		{
-			$this->m_tot_tries = 0;
+			//$this->m_tot_tries = 0;
 			$this->m_tot_time = 0;
 			$this->m_tot_correct = 0;
 		}
@@ -810,7 +854,7 @@ Class MUserSummary
             date_default_timezone_set('America/New_York');
 			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
 			
-			$this->m_tot_tries += 1;
+			//$this->m_tot_tries += 1;
 			$this->m_tot_time += $this->m_solve_time_list[$i];
 			if ($this->m_student_answer_list[$i] == $this->m_problem_list[$i]->m_prob_correct)
 			{
