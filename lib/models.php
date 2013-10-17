@@ -741,8 +741,13 @@ Class MUserSummary
 						FROM responses 
 						WHERE answer <> 0";
 						
+						$numprobquery = "
+						SELECT COUNT(*) 
+						FROM responses 
+						WHERE answer <> 0";
+						
 						$numuserquery = "
-						SELECT DISTINCT user_id 
+						SELECT COUNT(DISTINCT user_id) 
 						FROM responses 
 						WHERE answer <> 0";
 					}
@@ -755,8 +760,14 @@ Class MUserSummary
 					WHERE user_id=".$user_id." AND 
 					answer <> 0";
 					
+					$numprobquery = "
+					SELECT COUNT(*) 
+					FROM responses 
+					WHERE user_id=".$user_id." AND 
+					answer <> 0";
+					
 					$numuserquery = "
-					SELECT DISTINCT user_id
+					SELECT COUNT(DISTINCT user_id)
 					FROM responses 
 					WHERE user_id=".$user_id." AND 
 					answer <> 0";
@@ -777,8 +788,14 @@ Class MUserSummary
 					WHERE user_id=".$search_user_id." AND 
 					answer <> 0";
 					
+					$numprobquery = "
+					SELECT COUNT(*) 
+					FROM responses 
+					WHERE user_id=".$search_user_id." AND 
+					answer <> 0";
+					
 					$numuserquery = "
-					SELECT DISTINCT user_id 
+					SELECT COUNT(DISTINCT user_id) 
 					FROM responses 
 					WHERE user_id=".$search_user_id." AND 
 					answer <> 0";
@@ -786,7 +803,8 @@ Class MUserSummary
 				else
 				{
 					$selectquery = "SELECT * FROM responses WHERE user_id = 1 AND user_id = 2";
-					$numuserquery = "SELECT DISTINCT user_id FROM responses WHERE user_id = 1 AND user_id = 2";
+					$numprobquery = "SELECT COUNT(*) FROM responses WHERE user_id = 1 AND user_id = 2";
+					$numuserquery = "SELECT COUNT(DISTINCT user_id) FROM responses WHERE user_id = 1 AND user_id = 2";
 				}
 			}
 			else
@@ -797,8 +815,14 @@ Class MUserSummary
 				WHERE user_id=".$user_id." AND 
 				answer <> 0";
 				
+				$numprobquery = "
+				SELECT COUNT(*) 
+				FROM responses 
+				WHERE user_id=".$user_id." AND 
+				answer <> 0";
+				
 				$numuserquery = "
-				SELECT DISTINCT user_id 
+				SELECT COUNT(DISTINCT user_id )
 				FROM responses 
 				WHERE user_id=".$user_id." AND 
 				answer <> 0";
@@ -807,23 +831,26 @@ Class MUserSummary
 			if ($this->m_problems_list_id != Null)
 			{
 				$selectquery .= " AND (";
+				$numprobquery .= " AND (";
 				$numuserquery .= " AND (";
 				for ($i=0; $i<$num_problems_in_selection; $i++)
 				{
 					$selectquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
+					$numprobquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
 					$numuserquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
 					if ($i == ($num_problems_in_selection-1))
 					{
 						$selectquery .= "prob_id=".$this->m_problems_list_id[$i].")";
+						$numprobquery .= "prob_id=".$this->m_problems_list_id[$i].")";
 						$numuserquery .= "prob_id=".$this->m_problems_list_id[$i].")";
 					}
 				}
 			}
-			$res = $dbmgr->fetch_assoc($selectquery);
-			$num_responses = count($res);
+			$res_prob = $dbmgr->fetch_num($numprobquery);
+			$num_responses = implode($res_prob[0]);
 
-			$res_user = $dbmgr->fetch_assoc($numuserquery);
-			$num_users = count($res_user);
+			$res_user = $dbmgr->fetch_num($numuserquery);
+			$num_users = implode($res_user[0]);
 			
 			$this->m_tot_tries = $num_responses;
 			$this->m_num_users = $num_users;
@@ -835,16 +862,19 @@ Class MUserSummary
 					return;
 				}
 			}
+			
+			$res = $dbmgr->fetch_assoc($selectquery);
+			$num_res = count($res);
 		}
 		
-		if ($num_responses < 1)
+		if ($num_res < 1)
 		{
 			//$this->m_tot_tries = 0;
 			$this->m_tot_time = 0;
 			$this->m_tot_correct = 0;
 		}
 		
-		for ($i=0;$i<$num_responses;$i++)
+		for ($i=0;$i<$num_res;$i++)
 		{
 			$this->m_problem_list[$i] = new MProblem($res[$i]['prob_id']);
 			$this->m_student_answer_list[$i] = $res[$i]['answer'];
