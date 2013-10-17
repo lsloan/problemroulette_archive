@@ -119,8 +119,9 @@ Class MProblem
 		#push data to database
 	}
 	
-	//for second variable, input 0 or nothing for no exclusion; input 1 or true for exclusion
-	public static function get_all_problems_in_topic_with_exclusion($topic_id,$exclusion = Null)
+	//for $exclusion: input 0 or nothing for no exclusion; input 1 or true for exclusion
+	//for $by_id: input 0 or nothing to return problem objects; input 1 or true to output problem ids
+	public static function get_all_problems_in_topic_with_exclusion($topic_id,$exclusion = Null,$by_id = Null)
 	{
 		global $usrmgr;
 		$omitted_problems_list = Null;
@@ -157,6 +158,20 @@ Class MProblem
 			}
 			$res = $dbmgr->fetch_assoc($selectquery);
 			$numrows = count($res);
+			
+			//return problem ids
+			if ($by_id == true || $by_id == 1)
+			{
+				$all_problem_ids_in_topic = array();
+				for ($i=0; $i<$numrows; $i++)
+				{
+					$all_problem_ids_in_topic[$i] = $res[$i]['problem_id'];
+				}
+				//$all_problem_ids_in_topic = pg_fetch_all($res)['problem_id'];
+				return $all_problem_ids_in_topic;
+			}
+			
+			//return problem objects
 			$all_problems_in_topic = array();
 			for ($i=0; $i<$numrows; $i++)
 			{
