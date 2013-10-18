@@ -45,7 +45,10 @@ $histogram_view = Null;
 if (isset($_POST['topic_checkbox_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
-	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+	if (min(implode(",",array_map("intval",$selected_topics_list_id))) !== 0)//make sure not to write a string
+	{
+		$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+	}
 	$_SESSION['current_problem'] = Null;
 	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
@@ -58,7 +61,10 @@ if (isset($_POST['topic_checkbox_submission']))
 if (isset($_POST['topic_link_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_link_submission'];
-	$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+	if (intval($selected_topics_list !== 0))//make sure not to write a string
+	{
+		$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+	}
 	$_SESSION['current_problem'] = Null;
 	$usrmgr->m_user->SetPref('current_problem',Null);
 	$_SESSION['problem_submitted'] = Null;
