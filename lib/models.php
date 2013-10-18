@@ -251,7 +251,7 @@ Class MCourse
 		return $all_courses;
 	}
 	
-	static function alphabetize_courses($a,$b)
+	static function alphabetize($a,$b)
 	{
 		$a1 = strtolower($a->m_name);
 		$b1 = strtolower($b->m_name);
@@ -347,16 +347,18 @@ Class MTopic
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_topics_in_course[$i] = new MTopic($res[$i]['id'],$res[$i]['name']);
-			#TEST ECHO:::::$all_topics_in_course[$i] = $res[$i]['name'];
 		}
-		
-		/*TEST ECHO:::::
-		for ($i=0; $i<$numrows; $i++)
-		{
-			echo $all_topics_in_course[$i];
-		}
-		*/
+		//UNCOMMENT TO ALPHABETIZE TOPICS
+		//usort($all_topics_in_course, array('MTopic','alphabetize'));
 		return $all_topics_in_course;
+	}
+	
+	static function alphabetize($a,$b)
+	{
+		$a1 = strtolower($a->m_name);
+		$b1 = strtolower($b->m_name);
+		if ($a1 == $b1){return 0;}
+		return ($a1 > $b1) ? +1 : -1;
 	}
 }
 Class MTabNav

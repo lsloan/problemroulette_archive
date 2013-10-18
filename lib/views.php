@@ -222,6 +222,7 @@ class VStudentPerformance
 			$num_responses = $this->v_summary->m_tot_tries;
 			
 			$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+			usort($all_courses_with_topics, array('MCourse', 'alphabetize'));
 			$num_courses = count($all_courses_with_topics);
 			
 			$num_users = $this->v_summary->m_num_users;
@@ -501,6 +502,7 @@ class VStats
 		$num_responses = count($this->v_summary->m_problem_list);
 		
 		$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+		usort($all_courses_with_topics, array('MCourse','alphabetize'));
 		$num_courses = count($all_courses_with_topics);
 		
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
@@ -1168,16 +1170,10 @@ class VCourse_Selections
 	{
 		$this->v_all_courses_with_topics = $all_courses_with_topics;
 	}
-	
-/*	function sort_courses_by_name($a, $b)
-	{
-		//if($a->m_name == $b->m_name){return 0 ;}
-		return strcamp($a->m_name,$b->m_name);
-	}*/
 				
 	function Deliver()
 	{
-		usort($this->v_all_courses_with_topics, array('MCourse', 'alphabetize_courses'));
+		usort($this->v_all_courses_with_topics, array('MCourse', 'alphabetize'));
 
         $str = "
         <div class='tab-pane active' id='problems'>
