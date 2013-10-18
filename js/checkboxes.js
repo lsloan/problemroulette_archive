@@ -12,14 +12,22 @@ $(document).ready(function() {
 	  }
 	})
 	if (count > 0) {
+		$('#use-selected-top').removeClass('disabled');
 		$('#use-selected').removeClass('disabled');
+		$('#reset-topics-top').removeClass('disabled');
 		$('#reset-topics').removeClass('disabled');
+		$('#use-selected-top').attr('href','javascript:document.topic_selector.submit();');
 		$('#use-selected').attr('href','javascript:document.topic_selector.submit();');
+		$('#reset-topics-top').attr('href',"javascript:reset_topic_checkboxes();");
 		$('#reset-topics').attr('href',"javascript:reset_topic_checkboxes();");
 	} else {
+		$('#use-selected-top').addClass('disabled');
 		$('#use-selected').addClass('disabled');
+		$('#reset-topics-top').addClass('disabled');
 		$('#reset-topics').addClass('disabled');
+		$('#use-selected-top').attr('href','javascript:void(0);');
 		$('#use-selected').attr('href','javascript:void(0);');
+		$('#reset-topics-top').attr('href','javascript:void(0);');
 		$('#reset-topics').attr('href','javascript:void(0);');
 	}
   });
@@ -37,14 +45,22 @@ $(document).ready(function() {
 	  }
 	})
 	if (count > 0) {
+		$('#use-selected-top').removeClass('disabled');
 		$('#use-selected').removeClass('disabled');
+		$('#reset-topics-top').removeClass('disabled');
 		$('#reset-topics').removeClass('disabled');
+		$('#use-selected-top').attr('href','javascript:document.topic_selector.submit();');
 		$('#use-selected').attr('href','javascript:document.topic_selector.submit();');
+		$('#reset-topics-top').attr('href',"javascript:reset_topic_checkboxes();");
 		$('#reset-topics').attr('href',"javascript:reset_topic_checkboxes();");
 	} else {
+		$('#use-selected-top').addClass('disabled');
 		$('#use-selected').addClass('disabled');
+		$('#reset-topics-top').addClass('disabled');
 		$('#reset-topics').addClass('disabled');
+		$('#use-selected-top').attr('href','javascript:void(0);');
 		$('#use-selected').attr('href','javascript:void(0);');
+		$('#reset-topics-top').attr('href','javascript:void(0);');
 		$('#reset-topics').attr('href','javascript:void(0);');
 	}
   });
@@ -71,14 +87,22 @@ $(document).ready(function(){
 		  }
 		})
 		if (count > 0) {
+			$('#use-selected-top').removeClass('disabled');
 			$('#use-selected').removeClass('disabled');
+			$('#reset-topics-top').removeClass('disabled');
 			$('#reset-topics').removeClass('disabled');
+			$('#use-selected-top').attr('href','javascript:document.topic_selector.submit();');
 			$('#use-selected').attr('href','javascript:document.topic_selector.submit();');
+			$('#reset-topics-top').attr('href',"javascript:reset_topic_checkboxes();");
 			$('#reset-topics').attr('href',"javascript:reset_topic_checkboxes();");
 		} else {
+			$('#use-selected-top').addClass('disabled');
 			$('#use-selected').addClass('disabled');
+			$('#reset-topics-top').addClass('disabled');
 			$('#reset-topics').addClass('disabled');
+			$('#use-selected-top').attr('href','javascript:void(0);');
 			$('#use-selected').attr('href','javascript:void(0);');
+			$('#reset-topics-top').attr('href','javascript:void(0);');
 			$('#reset-topics').attr('href','javascript:void(0);');
 		}
     })

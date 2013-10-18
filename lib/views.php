@@ -1076,6 +1076,14 @@ class VTopic_Selections
 		<p><span class='label label-inverse label-big'>".$this->v_selected_course->m_name."</span></p>
 		<p><strong>Please select a topic to begin:</strong></p>
 		
+		<form action='' method='post'>
+	    <button type='submit' class='btn btn-courses' name='select_different_course' value='1'>
+		<i class='icon-arrow-left'></i>
+		Select Different Course</button>
+		<a href='javascript:void(0);' id='reset-topics-top' class='btn btn-primary disabled'>Reset Selected Topics</a>
+		<a href='javascript:void(0);' id='use-selected-top' class='btn btn-primary disabled'>Use Selected Topics</a>
+		</form>
+		
 		<form action='problems.php' method='post' name='topic_selector'>
 		<table class='topic-selector table'>
 			<tr>
