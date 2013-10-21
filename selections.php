@@ -42,7 +42,6 @@ $course_or_topic = 0;
 $pre_fill_topics = 0;
 
 //checks to see if user is coming from different tab
-//CURRENTLY ONLY CHECKS FOR PROBLEMS TAB
 if (isset($_SERVER['HTTP_REFERER']))
 {
 	$ref = $_SERVER['HTTP_REFERER'];
@@ -57,11 +56,7 @@ if (isset($_SERVER['HTTP_REFERER']))
 if (isset($_POST['course_submission']))
 {
 	$course_or_topic = 1;
-	$selected_course_id = $_POST['course_submission'];
-	//$selected_course = MCourse::get_course_by_id($selected_course_id);
-	//echo $selected_course->m_topics[0]->m_name;
-	//echo count($selected_course->m_topics);
-	
+	$selected_course_id = $_POST['course_submission'];	
 	$timestamp = time();
 	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
 	$usrmgr->m_user->SetPref('last_activity',$timestamp);
@@ -79,12 +74,6 @@ if (isset($_POST['select_different_course']))
 //use Director object to determine whether to display course selector or topic selector
 $Director = new MDirector();
 $course_or_topic = $Director->m_course_or_topic;
-
-
-// populate and use models for business logic on page
-
-
-
 
 
 // page construction

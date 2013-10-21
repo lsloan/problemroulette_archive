@@ -163,28 +163,9 @@ class VCourseTopicNav
         return $str;
     }
 }
-/*
-            <h3>Section 2</h3>
-                <div>
-                content
-                </div>
-            <h3>Section 3</h3>
-                <div>
-                content
-                <ul>
-                <li>List item one</li>
-                <li>List item two</li>
-                <li>List item three</li>
-                </ul>
-                </div>
-            <h3>Section 4</h3>
-                <div>
-                </div>
-*/
 
 class VStaff
 {
-	#m_model
 	
 	function __construct()
 	{
@@ -332,9 +313,7 @@ class VStudentPerformance
 					</option>";
 				}
 			}
-			
-			//$num_users = count(array_unique($this->v_summary->m_user_id_list));
-			
+						
 			$str .= "
 			</select>";
 			if ($this->v_display_search !== 0)
@@ -387,14 +366,12 @@ class VStudentPerformance
 			{
 				$str .= " and got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
 			
-			if ($this->v_summary->m_tot_tries > 0)
-			{
-				$str .= "The average accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
-				The average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
-			}
+				if ($this->v_summary->m_tot_tries > 0)
+				{
+					$str .= "The average accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
+					The average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
+				}
 			
-			//if ($this->v_display_search !== Null && $this->v_display_search !== 0 && $this->v_display_search !== '')
-			//{
 				$str .= "
 				<form action='problem_info.php' method='POST' target='_blank'>
 				<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
@@ -487,7 +464,6 @@ class VProblemLibrary
 
 class VStats
 {
-	#m_model
 	var $v_summary;//summary statistics from responses table
 	
 	function __construct($summary)
@@ -496,9 +472,7 @@ class VStats
 	}
 	
 	function Deliver()
-	{
-		//$summary = new MUserSummary();
-		
+	{		
 		$num_responses = count($this->v_summary->m_problem_list);
 		
 		$all_courses_with_topics = MCourse::get_all_courses_with_topics();
@@ -873,7 +847,6 @@ class VProblems_submitted
 	    global $usrmgr;
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
-		//$student_answer = $_SESSION['problem_submitted'];
 		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
 		//calculate solve time
@@ -989,12 +962,10 @@ class VProblems_submitted
 			
 			if (isset($_SESSION['sesstest']))
 			{
-				//$str .= $alphabet[$_SESSION['problem_submitted']-1];
 				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
 			}
 			else
 			{
-				//$str .= $alphabet[$_SESSION['problem_submitted']-1];
 				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
 			}
 			
@@ -1163,7 +1134,6 @@ class VTopic_Selections
 
 class VCourse_Selections
 {
-	#m_model
 	var $v_all_courses_with_topics;
 	
 	function __construct($all_courses_with_topics)
@@ -1198,8 +1168,6 @@ class VCourse_Selections
 					".$this->v_all_courses_with_topics[$i]->m_name."
 					</button><br/>";
 				}
-				//<button class='btn' type='submit' name='course_submission' value='course1'>Course 1</button><br/>
-				//<button class='btn' type='submit' name='course_submission' value='course2'>Course 2</button><br/>
 			$str .= "</form>
             <!--<a class='btn' href='Home140.php'>Physics 140</a><br/>
             <a class='btn' href='Home240.php'>Physics 240</a><br/>
@@ -1299,8 +1267,6 @@ class VProblemInfo
 
 class VHome
 {
-	#m_model
-	
 	function __construct()
 	{
 	}
@@ -1312,9 +1278,7 @@ class VHome
 }
 
 class VProblemEditReview
-{
-	#m_model
-	
+{	
 	function __construct($model)
 	{
 		$this->m_model = $model;
