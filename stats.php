@@ -17,8 +17,6 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 session_start();
 $_SESSION['sesstest'] = 1;
 
-// populate and use models for business logic on page
-
 //logic for course or topic course selector and shown row number selection
 global $usrmgr;
 

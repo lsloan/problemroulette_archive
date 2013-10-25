@@ -251,7 +251,7 @@ Class MCourse
 		return $all_courses;
 	}
 	
-	static function alphabetize_courses($a,$b)
+	static function alphabetize($a,$b)
 	{
 		$a1 = strtolower($a->m_name);
 		$b1 = strtolower($b->m_name);
@@ -347,16 +347,18 @@ Class MTopic
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_topics_in_course[$i] = new MTopic($res[$i]['id'],$res[$i]['name']);
-			#TEST ECHO:::::$all_topics_in_course[$i] = $res[$i]['name'];
 		}
-		
-		/*TEST ECHO:::::
-		for ($i=0; $i<$numrows; $i++)
-		{
-			echo $all_topics_in_course[$i];
-		}
-		*/
+		//UNCOMMENT TO ALPHABETIZE TOPICS
+		//usort($all_topics_in_course, array('MTopic','alphabetize'));
 		return $all_topics_in_course;
+	}
+	
+	static function alphabetize($a,$b)
+	{
+		$a1 = strtolower($a->m_name);
+		$b1 = strtolower($b->m_name);
+		if ($a1 == $b1){return 0;}
+		return ($a1 > $b1) ? +1 : -1;
 	}
 }
 Class MTabNav
@@ -699,6 +701,7 @@ Class MUserSummary
 	var $m_tot_tries = 0;
 	var $m_tot_correct = 0;
 	var $m_tot_time = 0;
+	var $m_num_users = 0;
 	//</OVERALL STATSISTICS>
 	
 	//<HISTORY>
@@ -731,22 +734,46 @@ Class MUserSummary
 		else
 		{
 			if ($all_users == '' || $all_users == Null)
-			if ($all_users !== 0)
 			{
+				if ($all_users !== 0)
+				{
+					{
+						$selectquery = "
+						SELECT * 
+						FROM responses 
+						WHERE answer <> 0";
+						
+						$numprobquery = "
+						SELECT COUNT(*) 
+						FROM responses 
+						WHERE answer <> 0";
+						
+						$numuserquery = "
+						SELECT COUNT(DISTINCT user_id) 
+						FROM responses 
+						WHERE answer <> 0";
+					}
+				}
+				else
 				{
 					$selectquery = "
 					SELECT * 
 					FROM responses 
-					WHERE answer <> 0";
+					WHERE user_id=".$user_id." AND 
+					answer <> 0";
+					
+					$numprobquery = "
+					SELECT COUNT(*) 
+					FROM responses 
+					WHERE user_id=".$user_id." AND 
+					answer <> 0";
+					
+					$numuserquery = "
+					SELECT COUNT(DISTINCT user_id)
+					FROM responses 
+					WHERE user_id=".$user_id." AND 
+					answer <> 0";
 				}
-			}
-			else
-			{
-				$selectquery = "
-				SELECT * 
-				FROM responses 
-				WHERE user_id=".$user_id." AND 
-				answer <> 0";
 			}
 			elseif ($all_users !== 0)
 			{
@@ -762,10 +789,24 @@ Class MUserSummary
 					FROM responses 
 					WHERE user_id=".$search_user_id." AND 
 					answer <> 0";
+					
+					$numprobquery = "
+					SELECT COUNT(*) 
+					FROM responses 
+					WHERE user_id=".$search_user_id." AND 
+					answer <> 0";
+					
+					$numuserquery = "
+					SELECT COUNT(DISTINCT user_id) 
+					FROM responses 
+					WHERE user_id=".$search_user_id." AND 
+					answer <> 0";
 				}
 				else
 				{
 					$selectquery = "SELECT * FROM responses WHERE user_id = 1 AND user_id = 2";
+					$numprobquery = "SELECT COUNT(*) FROM responses WHERE user_id = 1 AND user_id = 2";
+					$numuserquery = "SELECT COUNT(DISTINCT user_id) FROM responses WHERE user_id = 1 AND user_id = 2";
 				}
 			}
 			else
@@ -775,32 +816,67 @@ Class MUserSummary
 				FROM responses 
 				WHERE user_id=".$user_id." AND 
 				answer <> 0";
+				
+				$numprobquery = "
+				SELECT COUNT(*) 
+				FROM responses 
+				WHERE user_id=".$user_id." AND 
+				answer <> 0";
+				
+				$numuserquery = "
+				SELECT COUNT(DISTINCT user_id )
+				FROM responses 
+				WHERE user_id=".$user_id." AND 
+				answer <> 0";
 			}
 			
 			if ($this->m_problems_list_id != Null)
 			{
 				$selectquery .= " AND (";
+				$numprobquery .= " AND (";
+				$numuserquery .= " AND (";
 				for ($i=0; $i<$num_problems_in_selection; $i++)
 				{
 					$selectquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
+					$numprobquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
+					$numuserquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
 					if ($i == ($num_problems_in_selection-1))
 					{
 						$selectquery .= "prob_id=".$this->m_problems_list_id[$i].")";
+						$numprobquery .= "prob_id=".$this->m_problems_list_id[$i].")";
+						$numuserquery .= "prob_id=".$this->m_problems_list_id[$i].")";
 					}
 				}
 			}
+			$res_prob = $dbmgr->fetch_num($numprobquery);
+			$num_responses = implode($res_prob[0]);
+
+			$res_user = $dbmgr->fetch_num($numuserquery);
+			$num_users = implode($res_user[0]);
+			
+			$this->m_tot_tries = $num_responses;
+			$this->m_num_users = $num_users;
+			
+			if ($all_users == '' || $all_users == Null)
+			{
+				if ($all_users !== 0)
+				{
+					return;
+				}
+			}
+			
 			$res = $dbmgr->fetch_assoc($selectquery);
-			$num_responses = count($res);			
+			$num_res = count($res);
 		}
 		
-		if ($num_responses < 1)
+		if ($num_res < 1)
 		{
-			$this->m_tot_tries = 0;
+			//$this->m_tot_tries = 0;
 			$this->m_tot_time = 0;
 			$this->m_tot_correct = 0;
 		}
 		
-		for ($i=0;$i<$num_responses;$i++)
+		for ($i=0;$i<$num_res;$i++)
 		{
 			$this->m_problem_list[$i] = new MProblem($res[$i]['prob_id']);
 			$this->m_student_answer_list[$i] = $res[$i]['answer'];
@@ -810,7 +886,7 @@ Class MUserSummary
             date_default_timezone_set('America/New_York');
 			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
 			
-			$this->m_tot_tries += 1;
+			//$this->m_tot_tries += 1;
 			$this->m_tot_time += $this->m_solve_time_list[$i];
 			if ($this->m_student_answer_list[$i] == $this->m_problem_list[$i]->m_prob_correct)
 			{
