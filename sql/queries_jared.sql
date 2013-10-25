@@ -147,37 +147,6 @@ having
 order by topic.id, rate
 ;
 
-/* usage by student */
-select 
-    user.username,
-    sum(case
-        when problems.correct=responses.answer then 1
-        else 0
-    end) as correct,
-    count(*) as tried,
-    sum(case
-        when problems.correct=responses.answer then 1
-        else 0
-    end) / count(*) as rate
-from responses
-inner join `user`
-    on user.id=responses.user_id 
-inner join problems
-    on problems.id=responses.prob_id
-inner join 12m_topic_prob t2p
-    on responses.prob_id=t2p.problem_id
-inner join topic
-    on topic.id=t2p.topic_id
-inner join 12m_class_topic c2t
-    on t2p.topic_id=c2t.topic_id
-inner join class
-    on class.id=c2t.class_id
-where 
-    class.name='Chemistry 130'
-group by responses.user_id
-order by tried
-;
-
 /* best students */
 select 
     user.username,
@@ -270,4 +239,60 @@ group by DAYOFYEAR(start_time)
 order by DAYOFYEAR(start_time)
 ;
 
+/* response counts by day of year */
+select 
+    DAYOFYEAR(start_time) as doy,
+    count(*)
+from responses
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+where 
+    class.name like 'Physics%'
+group by DAYOFYEAR(start_time)
+order by DAYOFYEAR(start_time)
+;
 
+/* usage by student */
+select 
+    user.username,
+    class.name,
+    sum(case
+        when problems.correct=responses.answer then 1
+        else 0
+    end) as correct,
+    count(*) as tried,
+    count(distinct dayofyear(responses.start_time)) as days,
+    sum(case
+        when problems.correct=responses.answer then 1
+        else 0
+    end) / count(*) as rate,
+    round(sum(to_seconds(responses.end_time) - to_seconds(responses.start_time))/count(*), 0) as avg_time,
+    round(sum(to_seconds(responses.end_time) - to_seconds(responses.start_time)), 0) as tot_time
+from responses
+inner join `user`
+    on user.id=responses.user_id 
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+where 
+    class.name like 'Physics%'
+    and dayofyear(responses.start_time) > dayofyear('03-09-13')
+    and dayofyear(responses.start_time) <= dayofyear('03-10-13')
+group by concat(responses.user_id, class.name)
+order by days, tried
+;
