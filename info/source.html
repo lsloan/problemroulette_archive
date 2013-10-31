@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="EN" lang="EN" dir="ltr">
+<head profile="http://gmpg.org/xfn/11">
+<title>Problem Roulette | About</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="imagetoolbar" content="no" />
+<link rel="stylesheet" href="styles/layout.css" type="text/css" />
+<script type="text/javascript" src="scripts/jquery-1.4.1.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.slidepanel.setup.js"></script>
+<script type="text/javascript" src="scripts/jquery.cycle.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.cycle.setup.js"></script>
+</head>
+<body>
+<div class="wrapper col0">
+  <div id="topbar">
+    <div id="loginpanel">
+      <ul>
+        <li class="left">Try it out &raquo;</li>
+        <li class="right" id="toggle"><a id="slideit" href="../">Problem Roulette</a></li>
+      </ul>
+    </div>
+    <br class="clear" />
+  </div>
+</div>
+<!-- ####################################################################################################### -->
+<div class="wrapper col1">
+  <div id="header">
+    <div id="logo">
+      <a href="index.html"><h1>Problem Roulette</h1></a>
+    </div>
+    <div id="topnav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li class="active"><a href="source.html">Source</a></li>
+        <li class="last"><a href="related.html">Related Research</a></li>
+      </ul>
+    </div>
+    <br class="clear" />
+  </div>
+</div>
+<!-- ####################################################################################################### -->
+<div class="wrapper col3">
+  <div id="container">
+    <div id="content">
+      <h1>Source</h1>
+      <p>
+	  The Problem Roulette Source Code is publicly available on 
+	  <a href="https://bitbucket.org/mcmills/problemroulette">Bitbucket</a></p>
+	  <br/>
+      <h2>Technical Information</h2>
+	  <p>
+	  PR is deployed in a LAMP (Linux, Apache, My-SQL, PHP) environment on a virtual host provided by Informational Technology Services (ITS) at the University of Michigan. The lightweight PHP application simply manages the web transactions and does not require any special framework.
+	  </p>
+	  <p>
+	  A standard server configuration for such a LAMP system is readily available on Amazon Web Services, so a PR application could be hosted in the public cloud for a modest fee. Our private cloud version hosted by ITS simplifies authentication for U-M students at a modest cost to the Physics Department of $50/year. 
+	  </p>
+	  <p>
+	  The PHP application follows an object-oriented Model-View-Control (MVC) design pattern. With an MVC design, the code is partitioned into three different parts designated for models, views, and controls.
+	  </p>
+	  <p>
+	  For example, model classes represent objects such as problems and users so that they have the appropriate properties and methods to be easily managed in the PR application.
+	  </p>
+	  <p>
+	  View classes represent visible elements and deliver display components which in this case are blocks of html, css, and javascript to create the web pages.
+	  </p>
+	  Control handlers are the php files that handle server requests, generated for example by clicking to select a particular topic or submitting an answer. Controls manipulate the model and view objects to maintain application state and produce updates to the interface. 
+	  <p>
+	  </p>
+	  <p>
+	  This design pattern structures the code to make it more readable, reusable, and robust.
+	  </p>
+    </div>
+    <div id="column">
+      <div class="holder">
+        <h2 class="title"><a href="http://arxiv.org/abs/1309.7678" target="_blank"><img class="imgtextbot" src="images/PR.jpg" alt="" height="60px"/><p>Read the Paper</p></a></h2>
+        <p>A paper describing the the service and analyzing statistics gathered from the service can be found on arXiv: 
+	  <a href="http://arxiv.org/abs/1309.7678" target="_blank">Problem Roulette: Studying Introductory Physics in the Cloud</a></p>
+      </div>
+	  <div class="holder">
+        <h2>Problem Roulette Status</h2>
+        <p>In the Fall 2013 semester, Problem Roulette has served 3,000 students with 250,000 problems in the following classes:</p>
+        <ul>
+          <li>Chemistry 130</li>
+          <li>MCDB 310</li>
+          <li>Physics 135</li>
+          <li>Physics 140</li>
+          <li>Physics 235</li>
+          <li>Physics 240</li>
+          <li>Statistics 250</li>
+        </ul>
+      </div>      <div id="featured">
+        <ul>
+          <li>
+            <h2>Service Activity in Fall 2012</h2>
+            <p class="imgholder"><img src="images/PR_activity.png" alt="" width="240px" height="90px"/></p>
+            <p>This graph from Google Analytics shows the total pageviews and total visits per day for the Fall 2012 semester. In this semester, Problem Roulette was active in Physics 135, 140, 235, and 240.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+</div>
+<!-- ####################################################################################################### -->
+<div class="wrapper col5">
+  <div id="copyright">
+    <p class="fl_left">Copyright &copy; 2011 - All Rights Reserved</a></p>
+    <p class="fl_right">Template by <a href="http://www.os-templates.com/" title="Free Website Templates">OS Templates</a></p>
+    <br class="clear" />
+  </div>
+</div>
+</body>
+</html>
