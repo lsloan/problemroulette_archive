@@ -456,24 +456,45 @@ else
 //use this variable (along with selected course from MCTSelect if topic selector) to display the right page;
 Class MDirector
 {
-	var $m_expiration_time = 5184000; //60 days in seconds
-	var $m_selected_course;//get from MCTSelect
-	var $m_last_activity = 0;//get from MCTSelect
-	var $m_current_time;//current timestamp
-	var $m_course_or_topic = 0;//bool--0 for course selector, 1 for topic selector
-	
-	function __construct()
+    # redirects
+    var $target_page;
+
+     # selector page
+    var $topic_selected; 
+    var $course_selected;
+    # var course_or_topic;
+   
+    # problems page
+    var $state_response; # 0 = working on problem, 1 = completed problem
+
+    # stats page
+    var $stats_course_selected;
+    var $stats_topic_selected;
+
+	function __construct($args)
 	{
-		$CTprefs = new MCTSelect();
-		$this->m_selected_course = $CTprefs->m_selected_course;
-		$this->m_last_activity = $CTprefs->m_last_activity;
-		$this->m_current_time = time();
-		//vvvvvvv course_or_topic vvvvvvv
-		if (($this->m_current_time - $this->m_last_activity) <= $this->m_expiration_time && $this->m_selected_course != Null)
-		{
-			$this->m_course_or_topic = 1;
-		}
+        $this->args = $args;
 	}
+
+    function init_selector()
+    {
+        # peal out the POST data (course/topic selected)
+        # reset user course/topic if time > X elapsed
+        # user has course?
+        # user has topic?        
+        # direct to selector page
+    }
+
+    function init_problems()
+    {
+        # peal out the POST data (
+
+    }
+
+    function init_stats()
+    {
+        
+    }
 }
 
 //read in preferences and pick a problem to output based on course and topic selection and omitted problems

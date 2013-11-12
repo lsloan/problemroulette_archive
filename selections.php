@@ -29,25 +29,20 @@ if (isset($_POST['topic_checkbox_submission']))
 	}
 }
 
-///////////////////////////////////////
+# direct topic link
 if (isset($_POST['topic_link_submission']))
 {
 	$topic_id = $_POST['topic_link_submission'];
 	$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);	
 }
 
-//course_or_topic logic (0 for course selection, 1 for topic selection)
-$course_or_topic = 0;
-//whether or not to pre-fill in the topics (only if returning from another tab)
+# set flag to indicate coming from any other tab
 $pre_fill_topics = 0;
-
-//checks to see if user is coming from different tab
 if (isset($_SERVER['HTTP_REFERER']))
 {
 	$ref = $_SERVER['HTTP_REFERER'];
 	if (strpos($ref,'problems.php') !== false || strpos($ref,'stats.php') !== false || strpos($ref,'staff.php') !== false)
 	{
-		$course_or_topic = 1;
 		$pre_fill_topics = 1;
 	}
 }
@@ -55,7 +50,6 @@ if (isset($_SERVER['HTTP_REFERER']))
 //checks to see if user has chosen a course; if so, updates preferences;
 if (isset($_POST['course_submission']))
 {
-	$course_or_topic = 1;
 	$selected_course_id = $_POST['course_submission'];	
 	$timestamp = time();
 	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
@@ -67,22 +61,23 @@ if (isset($_POST['course_submission']))
 if (isset($_POST['select_different_course']))
 {
 	$usrmgr->m_user->SetPref('selected_course',Null);
-	$course_or_topic = 0;
 	header('Location:selections.php');
 }
 
-//use Director object to determine whether to display course selector or topic selector
-$Director = new MDirector();
-$course_or_topic = $Director->m_course_or_topic;
-
-
-// page construction
-$head = new CHeadCSSJavascript("Selections", array(), array());
-$tab_nav = new VTabNav(new MTabNav('Selections'));
-
-//get course and topic selection options and time of last activity
+# choose course selector or topic selector
+$m_expiration_time = 5184000; //60 days in seconds
+$m_selected_course;//get from MCTSelect
+$m_last_activity = 0;//get from MCTSelect
+$m_current_time;//current timestamp
+$course_or_topic = 0;//bool--0 for course selector, 1 for topic selector
 $CTprefs = new MCTSelect();
-
+$m_selected_course = $CTprefs->m_selected_course;
+$m_last_activity = $CTprefs->m_last_activity;
+$m_current_time = time();
+if (($m_current_time - $m_last_activity) <= $m_expiration_time && $m_selected_course != Null)
+{
+    $course_or_topic = 1;
+}
 //set selected course if it exists
 if ($CTprefs->m_selected_course != Null)
 {
@@ -90,7 +85,6 @@ if ($CTprefs->m_selected_course != Null)
 	$selected_course_id = $CTprefs->m_selected_course;
 	$selected_course = MCourse::get_course_by_id($selected_course_id);
 }
-
 //set selected topics list if it exists
 if ($CTprefs->m_selected_topics_list != Null)
 {
@@ -98,6 +92,12 @@ if ($CTprefs->m_selected_topics_list != Null)
 	$selected_topics_list = $CTprefs->m_selected_topics_list;
 }
 
+
+// page construction
+$head = new CHeadCSSJavascript("Selections", array(), array());
+$tab_nav = new VTabNav(new MTabNav('Selections'));
+
+# choose topic or course selection view
 if ($course_or_topic == 1)
 {
 	$content = new VTopic_Selections($CTprefs,$pre_fill_topics);

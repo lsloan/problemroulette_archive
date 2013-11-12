@@ -16,21 +16,19 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
+# reset preferences if not logged in for a while
 if (!isset($_SESSION['current_problem']))
 {
 	$usrmgr->m_user->SetPref('current_problem',Null);
 }
-
 if (!isset($_SESSION['problem_submitted']))
 {
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
 }
-
 $_SESSION['sesstest'] = 1;
 
-$selected_topics_list_id = Null;
-$histogram_view = Null;
 
+$selected_topics_list_id = Null;
 //check to see if new topic was selected
 //get from checkboxes if available and put into preferences
 if (isset($_POST['topic_checkbox_submission']))
@@ -103,8 +101,8 @@ if (isset($_POST['skip']))
 }
 
 //check to see if user submitted an answer
-//if so, 	{set pref 'problem_submitted' to something other than null to display submitted problem view
-//			 if they get the problem right, exclude problem in future}
+//if so, {set pref 'problem_submitted' to something other than null to display submitted problem view
+//if they get the problem right, exclude problem in future}
 if (isset($_POST['submit_answer']))
 {
 	if (isset($_POST['student_answer']))
@@ -171,6 +169,7 @@ if (isset($_POST['submit_answer']))
 	}
 }
 
+# handle next event
 if (isset($_POST['next']))
 {
 	$_SESSION['current_problem'] = Null;
@@ -180,20 +179,19 @@ if (isset($_POST['next']))
 	header('Location:problems.php');
 }
 
+# translate ids to list of topic objects
 $selected_topics_list_id = $usrmgr->m_user->GetPref('selected_topics_list');
 $num_topics = count($selected_topics_list_id);
-
 for ($i=0; $i<$num_topics; $i++)
 {
 	$selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
 }
 
+# ask picker for problem using constraints
 $Picker = new MPpicker();
 $Picker->pick_problem();
-
 $remaining_problems_in_topic_list = $Picker->m_remaining_problems_in_topic_list;
 $total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
-
 //pick either current problem a student is working on OR pick new problem
 if ($usrmgr->m_user->GetPref('current_problem') !== Null)
 {
@@ -217,7 +215,6 @@ else
 	$_SESSION['start_time'] = $start_time;
 	$usrmgr->m_user->SetPref('start_time',$start_time);
 }
-
 if ($picked_problem_id !== Null)
 {
 	$_SESSION['current_problem'] = $picked_problem_id;
@@ -232,6 +229,7 @@ if ($picked_problem_id !== Null)
 $head = new CHeadCSSJavascript("Problems", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problems'));
 
+# decide if problem or histogram showing and get the correct view
 if ($usrmgr->m_user->GetPref('problem_submitted') !== Null)
 {
 	$content = new VProblems_submitted($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
@@ -244,7 +242,6 @@ else
 {
 	$content = new VProblems_no_topics();
 }
-
 if ($picked_problem == Null)
 {
 	$content = new Vproblems_no_problems();
