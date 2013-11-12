@@ -126,16 +126,16 @@ select
         else 0
     end) / count(*) as rate
 from responses
-inner join problems
-    on problems.id=responses.prob_id
-inner join 12m_topic_prob t2p
-    on responses.prob_id=t2p.problem_id
-inner join topic
-    on topic.id=t2p.topic_id
-inner join 12m_class_topic c2t
-    on t2p.topic_id=c2t.topic_id
-inner join class
-    on class.id=c2t.class_id
+inner join problems on 
+    problems.id=responses.prob_id
+inner join 12m_topic_prob t2p on 
+    responses.prob_id=t2p.problem_id
+inner join topic on 
+    topic.id=t2p.topic_id
+inner join 12m_class_topic c2t on 
+    t2p.topic_id=c2t.topic_id
+inner join class on 
+    class.id=c2t.class_id
 where 
     class.name='Chemistry 130'
     /*class.name like 'Physics%'*/
@@ -296,3 +296,20 @@ where
 group by concat(responses.user_id, class.name)
 order by days, tried
 ;
+
+/* count the users and responses for a topic */
+select 
+    count(user_id),
+    count(distinct user_id)
+from responses
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+where 
+    c2t.class_id = 10
+;
+
+
