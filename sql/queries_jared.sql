@@ -115,7 +115,7 @@ select
     class.name,
     topic.name,
     problems.url,
-    responses.answer,
+    problems.correct,
     sum(case
         when problems.correct=responses.answer then 1
         else 0
@@ -138,12 +138,14 @@ inner join class on
     class.id=c2t.class_id
 where 
     class.name='Chemistry 130'
-    /*class.name like 'Physics%'*/
-    /*class.name like 'Statistics%'*/
+    /*
+    class.name='Chemistry 130'
+    class.name like 'Statistics%'
+    */
 group by topic.id, problems.id
 having
-    rate < 0.5
-    and tried > 5
+    rate < 0.20
+    and tried > 20
 order by topic.id, rate
 ;
 
@@ -290,9 +292,14 @@ inner join 12m_class_topic c2t
 inner join class
     on class.id=c2t.class_id
 where 
+    /*
     class.name like 'Physics%'
     and dayofyear(responses.start_time) > dayofyear('03-09-13')
     and dayofyear(responses.start_time) <= dayofyear('03-10-13')
+    */
+    class.name ='Chemistry 130'
+    and dayofyear(responses.start_time) > dayofyear('03-09-13')
+    and dayofyear(responses.start_time) <= dayofyear('03-10-16')
 group by concat(responses.user_id, class.name)
 order by days, tried
 ;
