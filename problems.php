@@ -16,6 +16,22 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
+//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
+if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
+{
+	if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
+	{
+		$usrmgr->m_user->SetPref('selected_topics_list',Null);
+	}
+}
+else
+{
+	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+	{
+		$usrmgr->m_user->SetPref('selected_course',Null);
+	}
+}
+
 # reset preferences if not logged in for a while
 if (!isset($_SESSION['current_problem']))
 {

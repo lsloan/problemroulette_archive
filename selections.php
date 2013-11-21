@@ -16,6 +16,26 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
+//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
+if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+{
+	$usrmgr->m_user->SetPref('selected_course',Null);
+}
+if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
+{
+	if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
+	{
+		$usrmgr->m_user->SetPref('selected_topics_list',Null);
+	}
+}
+else
+{
+	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+	{
+		$usrmgr->m_user->SetPref('selected_course',Null);
+	}
+}
+
 global $usrmgr;
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))
