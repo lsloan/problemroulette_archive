@@ -23,13 +23,14 @@ $course_id = 10;
 
 $row = 1;
 //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-if (($handle = fopen("csvProbs/Chem130_Ch1.csv","r")) !== FALSE)
+if (($handle = fopen("csvProbs/Chem130_Practice_Exam.csv","r")) !== FALSE)
 {
 	while (($data = fgetcsv($handle,10000,", ")) !== FALSE)
 	{
 		$num = count($data);
 //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 		$topic_id = (49 - 100 + $data[0]);
+		//$topic_id = (49 - 43 + $data[0]);
 		$name = $data[1];
 		$url = $data[2];
 		$correct = $data[4];
