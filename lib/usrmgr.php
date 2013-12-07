@@ -108,7 +108,8 @@ class UserManager{
     {
         // set any default (in deveopement this will be the active user_id)		
         //$username = 'test_user8';
-        $username = 'jtritz';
+        //$username = 'jtritz';
+        $username = 'kbrobert';
         // check if the user just logged in through cosign
         if(isset($_SERVER['REMOTE_USER']))
             $username = $_SERVER["REMOTE_USER"];
