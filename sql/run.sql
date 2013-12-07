@@ -40,6 +40,9 @@ where
     class.name ='Chemistry 130'
     and dayofyear(responses.start_time) > dayofyear('16-10-13')
     and dayofyear(responses.start_time) <= dayofyear('22-11-13')
+    class.name ='Chemistry 130'
+    and dayofyear(responses.start_time) > dayofyear('03-10-13')
+    and dayofyear(responses.start_time) <= dayofyear('22-11-13')
     */
     class.name ='MCDB 310'
 group by concat(responses.user_id, class.name)
