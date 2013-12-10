@@ -337,6 +337,16 @@ th.headerSortDown{
 	border-color: #666666 #666666 #444444;
 }
 
+.btn-course:focus{
+color: #ffffff;
+background-color: #16c;
+}
+
+.btn-course:focus:hover{
+color: #ffffff;
+background-color: #15c;
+}
+
 .nav.nav-tabs{
 	margin-bottom: 10px;
 }

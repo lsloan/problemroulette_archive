@@ -1,9 +1,7 @@
 *.swp
 
-lib/dbmgr.php
 paths.inc.php
 PRdev/
-csvProbs/
 jpgraph-3.5.0b1/
 jpgraph/
 oldPR/
@@ -11,3 +9,4 @@ problemroulette/
 test/
 testStaff/
 
+downloads/down.sql

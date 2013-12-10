@@ -163,28 +163,9 @@ class VCourseTopicNav
         return $str;
     }
 }
-/*
-            <h3>Section 2</h3>
-                <div>
-                content
-                </div>
-            <h3>Section 3</h3>
-                <div>
-                content
-                <ul>
-                <li>List item one</li>
-                <li>List item two</li>
-                <li>List item three</li>
-                </ul>
-                </div>
-            <h3>Section 4</h3>
-                <div>
-                </div>
-*/
 
 class VStaff
 {
-	#m_model
 	
 	function __construct()
 	{
@@ -219,10 +200,13 @@ class VStudentPerformance
 
 		if ($staff == 1)//if user has staff permissions
 		{
-			$num_responses = count($this->v_summary->m_problem_list);
+			$num_responses = $this->v_summary->m_tot_tries;
 			
 			$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+			usort($all_courses_with_topics, array('MCourse', 'alphabetize'));
 			$num_courses = count($all_courses_with_topics);
+			
+			$num_users = $this->v_summary->m_num_users;
 			
 			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 			
@@ -329,9 +313,7 @@ class VStudentPerformance
 					</option>";
 				}
 			}
-			
-			$num_users = count(array_unique($this->v_summary->m_user_id_list));
-			
+						
 			$str .= "
 			</select>";
 			if ($this->v_display_search !== 0)
@@ -379,16 +361,17 @@ class VStudentPerformance
 				$str .= "<b>".$num_users."</b> users have ";
 			}
 			
-			$str .= "attempted <b>".$this->v_summary->m_tot_tries."</b> problems and got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
-			
-			if ($this->v_summary->m_tot_tries > 0)
-			{
-				$str .= "The average accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
-				The average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
-			}
-			
+			$str .= "attempted <b>".$this->v_summary->m_tot_tries."</b> problems";
 			if ($this->v_display_search !== Null && $this->v_display_search !== 0 && $this->v_display_search !== '')
 			{
+				$str .= " and got <b>".$this->v_summary->m_tot_correct."</b> right.</br>";
+			
+				if ($this->v_summary->m_tot_tries > 0)
+				{
+					$str .= "The average accuracy is <b>".round(100*$this->v_summary->m_tot_correct/$this->v_summary->m_tot_tries,1)."</b>%.</br>
+					The average time per problem is <b>".round($this->v_summary->m_tot_time/$this->v_summary->m_tot_tries,1)."</b> seconds.";
+				}
+			
 				$str .= "
 				<form action='problem_info.php' method='POST' target='_blank'>
 				<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
@@ -430,6 +413,10 @@ class VStudentPerformance
 				</table>
 				</form>
 				";
+			}
+			else
+			{
+				$str .= ".";
 			}
 		}
 		else//if user does not have staff permissions
@@ -477,7 +464,6 @@ class VProblemLibrary
 
 class VStats
 {
-	#m_model
 	var $v_summary;//summary statistics from responses table
 	
 	function __construct($summary)
@@ -486,12 +472,11 @@ class VStats
 	}
 	
 	function Deliver()
-	{
-		//$summary = new MUserSummary();
-		
+	{		
 		$num_responses = count($this->v_summary->m_problem_list);
 		
 		$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+		usort($all_courses_with_topics, array('MCourse','alphabetize'));
 		$num_courses = count($all_courses_with_topics);
 		
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
@@ -862,14 +847,7 @@ class VProblems_submitted
 	    global $usrmgr;
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
-		if (isset($_SESSION['sesstest']))
-		{
-			$student_answer = $_SESSION['problem_submitted'];
-		}
-		else
-		{
-			$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
-		}
+		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
 		
 		//calculate solve time
 		$start_time = $usrmgr->m_user->GetPref('start_time');
@@ -984,11 +962,11 @@ class VProblems_submitted
 			
 			if (isset($_SESSION['sesstest']))
 			{
-				$str .= $alphabet[$_SESSION['problem_submitted']-1];
+				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
 			}
 			else
 			{
-				$str .= $alphabet[$_SESSION['problem_submitted']-1];
+				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
 			}
 			
 			$str .= "
@@ -1017,6 +995,25 @@ class VProblems_submitted
     }
 }
 
+class VSpecialExam
+{
+    function __construct()
+	{
+	}
+	
+	function Deliver()
+	{
+        return "
+        <br>
+        <p>
+        This special crowd sourced exam will only be available to particpants in the Chemistry 130 Exam Prep exercize.
+        </p>
+        <p>
+        This will be available beginning October 11th with additional information <a href='https://ecoach.lsa.umich.edu/coach8/tournament/01/' style='margin:0px;'>here</a> on ECoach.
+        </p>
+        ";
+    }
+}
 class VTopic_Selections
 {
 	var $v_CTprefs;//course/topic preferences
@@ -1051,6 +1048,14 @@ class VTopic_Selections
 		<img class='logo' src='img/PR.jpg' width='200px'></img>
 		<p><span class='label label-inverse label-big'>".$this->v_selected_course->m_name."</span></p>
 		<p><strong>Please select a topic to begin:</strong></p>
+		
+		<form action='' method='post'>
+	    <button type='submit' class='btn btn-courses' name='select_different_course' value='1'>
+		<i class='icon-arrow-left'></i>
+		Select Different Course</button>
+		<a href='javascript:void(0);' id='reset-topics-top' class='btn btn-primary disabled'>Reset Selected Topics</a>
+		<a href='javascript:void(0);' id='use-selected-top' class='btn btn-primary disabled'>Use Selected Topics</a>
+		</form>
 		
 		<form action='problems.php' method='post' name='topic_selector'>
 		<table class='topic-selector table'>
@@ -1129,23 +1134,16 @@ class VTopic_Selections
 
 class VCourse_Selections
 {
-	#m_model
 	var $v_all_courses_with_topics;
 	
 	function __construct($all_courses_with_topics)
 	{
 		$this->v_all_courses_with_topics = $all_courses_with_topics;
 	}
-	
-/*	function sort_courses_by_name($a, $b)
-	{
-		//if($a->m_name == $b->m_name){return 0 ;}
-		return strcamp($a->m_name,$b->m_name);
-	}*/
 				
 	function Deliver()
 	{
-		usort($this->v_all_courses_with_topics, array('MCourse', 'alphabetize_courses'));
+		usort($this->v_all_courses_with_topics, array('MCourse', 'alphabetize'));
 
         $str = "
         <div class='tab-pane active' id='problems'>
@@ -1170,8 +1168,6 @@ class VCourse_Selections
 					".$this->v_all_courses_with_topics[$i]->m_name."
 					</button><br/>";
 				}
-				//<button class='btn' type='submit' name='course_submission' value='course1'>Course 1</button><br/>
-				//<button class='btn' type='submit' name='course_submission' value='course2'>Course 2</button><br/>
 			$str .= "</form>
             <!--<a class='btn' href='Home140.php'>Physics 140</a><br/>
             <a class='btn' href='Home240.php'>Physics 240</a><br/>
@@ -1260,7 +1256,10 @@ class VProblemInfo
 				".
 				$this->v_problem->m_prob_url
 				."'></iframe>
-			";		
+                <p align='center'>
+                <font color='blue'>".$this->v_problem->m_prob_url."</font>
+                </p>
+                ";		
 		}
 		return $str;
 	}
@@ -1268,8 +1267,6 @@ class VProblemInfo
 
 class VHome
 {
-	#m_model
-	
 	function __construct()
 	{
 	}
@@ -1281,9 +1278,7 @@ class VHome
 }
 
 class VProblemEditReview
-{
-	#m_model
-	
+{	
 	function __construct($model)
 	{
 		$this->m_model = $model;

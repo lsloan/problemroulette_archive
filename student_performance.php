@@ -19,6 +19,26 @@ $_SESSION['sesstest'] = 1;
 
 global $usrmgr;
 
+//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
+if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+{
+	$usrmgr->m_user->SetPref('selected_course',Null);
+}
+if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
+{
+	if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
+	{
+		$usrmgr->m_user->SetPref('selected_topics_list',Null);
+	}
+}
+else
+{
+	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+	{
+		$usrmgr->m_user->SetPref('selected_course',Null);
+	}
+}
+
 $search_username = Null;
 $display_search = 0;
 if (isset($_POST['input_search_username']))
@@ -120,30 +140,33 @@ else
 	if ($selected_topic_id == 'all')
 	{
 	//<DISPLAY ALL PROBLEMS IN GIVEN COURSE>
-		$problems_list = Array();
+		//$problems_list = Array();
+		$problem_id_list = Array();
 		$all_topics_in_course = MTopic::get_all_topics_in_course($selected_course_id);//topic objects
 		$num_topics = count($all_topics_in_course);
 		
 		for ($i=0; $i<$num_topics; $i++)
 		{
-			$problems_list_in_topic = MProblem::get_all_problems_in_topic_with_exclusion($all_topics_in_course[$i]->m_id);
-			for ($j=0; $j<count($problems_list_in_topic); $j++)
+			//$problems_list_in_topic = MProblem::get_all_problems_in_topic_with_exclusion($all_topics_in_course[$i]->m_id);
+			$problem_id_list_in_topic = MProblem::get_all_problems_in_topic_with_exclusion($all_topics_in_course[$i]->m_id,Null,1);
+			for ($j=0; $j<count($problem_id_list_in_topic); $j++)
 			{
-				array_push($problems_list,$problems_list_in_topic[$j]);
+				//array_push($problems_list,$problems_list_in_topic[$j]);
+				array_push($problem_id_list,$problem_id_list_in_topic[$j]);
 			}
 		}
 			
-		$num_problems = count($problems_list);
+		$num_problems = count($problem_id_list);
 		
-		$problems_list_id = Array();
-		for ($i=0; $i<$num_problems; $i++)
-		{
-			array_push($problems_list_id, $problems_list[$i]->m_prob_id);
-		}
+		//$problems_list_id = Array();
+		//for ($i=0; $i<$num_problems; $i++)
+		//{
+		//	array_push($problems_list_id, $problems_list[$i]->m_prob_id);
+		//}
 		
 		if ($num_problems > 0)
 		{
-			$summary = new MUserSummary($problems_list_id,$search_username);
+			$summary = new MUserSummary($problem_id_list,$search_username);
 		}
 		else
 		{
@@ -154,19 +177,20 @@ else
 	else
 	{
 	//<DISPLAY ALL PROBLEMS IN SELECTED TOPIC>
-		$problems_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id);
+		//$problems_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id);
+		$problem_id_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id,Null,1);
 		
-		$num_problems = count($problems_list);
+		$num_problems = count($problem_id_list);
 		
-		$problems_list_id = Array();
-		for ($i=0; $i<$num_problems; $i++)
-		{
-			array_push($problems_list_id, $problems_list[$i]->m_prob_id);
-		}
+		//$problems_list_id = Array();
+		//for ($i=0; $i<$num_problems; $i++)
+		//{
+		//	array_push($problems_list_id, $problems_list[$i]->m_prob_id);
+		//}
 		
 		if ($num_problems > 0)
 		{
-			$summary = new MUserSummary($problems_list_id,$search_username);
+			$summary = new MUserSummary($problem_id_list,$search_username);
 		}
 		else
 		{

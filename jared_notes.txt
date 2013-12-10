@@ -1,0 +1,47 @@
+#################selections.php#####################
+
+# handle topic reset
+
+# handle/parse topic link
+
+# set flag to indicate coming from any other tab
+
+# handle course selection
+
+# handle back to course selections 
+
+# decide on course selector or topic selector 
+
+# construct view for course or topic selector 
+
+
+#################problems.php#####################
+
+# reset preferences if not logged in for a while
+
+# handle checkbox selections
+
+# handle/redirect direct link selections
+
+# handle the skip event
+
+# handle submit answer event
+
+# handle next event
+
+# get the list of topics
+
+# ask picker for question using constraints
+
+# choose the correct sub-view
+
+
+#################stats.php#####################
+
+# handle course drop down
+
+# handle topic drop down
+
+# figure out which problems to display
+
+# construct page
