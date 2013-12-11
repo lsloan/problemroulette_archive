@@ -262,10 +262,71 @@ group by DAYOFYEAR(start_time)
 order by DAYOFYEAR(start_time)
 ;
 
+/* count the users and responses for a topic */
+select 
+    count(user_id),
+    count(distinct user_id)
+from responses
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+where 
+    c2t.class_id = 10
+;
+
 /* usage by student */
 select 
     user.username,
     class.name,
+    /*
+    Physics
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-03') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-31') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-31') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-21') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-21') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
+        else -1
+    end as exam,
+    Chemistry
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-16') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-16') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-20') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-20') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 3
+        else -1
+    end as exam,    
+    MCDB
+    Stats
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-17') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-17') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-14') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-14') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 3
+        else -1
+    end as exam,
+    */
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-09-30') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-30') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-28') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-28') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-18') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-18') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
+        else -1
+    end as exam,
     sum(case
         when problems.correct=responses.answer then 1
         else 0
@@ -293,31 +354,14 @@ inner join class
     on class.id=c2t.class_id
 where 
     /*
+    1
     class.name like 'Physics%'
-    and dayofyear(responses.start_time) > dayofyear('03-09-13')
-    and dayofyear(responses.start_time) <= dayofyear('03-10-13')
     class.name ='Chemistry 130'
-    and dayofyear(responses.start_time) > dayofyear('03-09-13')
-    and dayofyear(responses.start_time) <= dayofyear('03-10-16')
+    class.name = 'Statistics 250'
     */
     class.name ='MCDB 310'
-group by concat(responses.user_id, class.name)
-order by days, tried
-;
-
-/* count the users and responses for a topic */
-select 
-    count(user_id),
-    count(distinct user_id)
-from responses
-inner join 12m_topic_prob t2p
-    on responses.prob_id=t2p.problem_id
-inner join topic
-    on topic.id=t2p.topic_id
-inner join 12m_class_topic c2t
-    on t2p.topic_id=c2t.topic_id
-where 
-    c2t.class_id = 10
+group by concat(responses.user_id, class.name, exam)
+order by user.username, exam, class.name, days, tried
 ;
 
 /* all response data */
@@ -330,8 +374,8 @@ select
     problems.url as prob_url,
     problems.correct as correct_answer,
     responses.answer as resp_answer,
-    responses.start_time as resp_start_time,
-    responses.end_time as resp_end_time
+    unix_timestamp(responses.start_time) as resp_start_time,
+    unix_timestamp(responses.end_time) as resp_end_time
 from responses
 inner join `user`
     on user.id=responses.user_id 
@@ -347,17 +391,10 @@ inner join class
     on class.id=c2t.class_id
 where 
     /*
-    class.name like 'Physics%'
-    and dayofyear(responses.start_time) > dayofyear('03-09-13')
-    and dayofyear(responses.start_time) <= dayofyear('03-10-13')
-    class.name ='Chemistry 130'
-    and dayofyear(responses.start_time) > dayofyear('03-09-13')
-    and dayofyear(responses.start_time) <= dayofyear('03-10-16')
-    class.name ='Chemistry 130'
-    and dayofyear(responses.start_time) > dayofyear('16-10-13')
-    and dayofyear(responses.start_time) <= dayofyear('22-11-13')
-    */
     class.name ='MCDB 310'
+    class.name ='Chemistry 130'
+    class.name = 'Statistics 250'
+    */
+    class.name like 'Physics%'
+order by user.username, class.name, resp_start_time
 ;
-
-
