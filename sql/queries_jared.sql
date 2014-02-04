@@ -305,17 +305,6 @@ select
         else -1
     end as exam,    
     MCDB
-    Stats
-    case
-        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-10-17') then 1
-        when dayofyear(responses.start_time) >      dayofyear('2013-10-17') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-11-14') then 2
-        when dayofyear(responses.start_time) >      dayofyear('2013-11-14') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 3
-        else -1
-    end as exam,
-    */
     case
         when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
             and dayofyear(responses.start_time) <=  dayofyear('2013-09-30') then 1
@@ -327,6 +316,17 @@ select
             and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
         else -1
     end as exam,
+    Stats
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-17') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-17') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-14') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-14') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 3
+        else -1
+    end as exam,
+    */
     sum(case
         when problems.correct=responses.answer then 1
         else 0
@@ -397,4 +397,107 @@ where
     */
     class.name like 'Physics%'
 order by user.username, class.name, resp_start_time
+;
+
+/* schema */
+desc 12m_class_topic;
+desc 12m_prob_ans;
+desc 12m_prob_ans_stats;    
+desc 12m_topic_prob;    
+desc `class`;          
+desc problems;              
+desc responses;             
+desc session_table;
+desc stats;
+desc topic;
+desc `user`;
+
+/* new usage by student */
+select 
+    user.username,
+    class.name,
+    /*
+    Physics
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-03') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-31') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-31') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-21') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-21') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
+        else -1
+    end as exam,
+    Chemistry
+    MCDB
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-09-30') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-30') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-28') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-28') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-18') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-18') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
+        else -1
+    end as exam,
+    Stats
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-17') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-17') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-14') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-14') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 3
+        else -1
+    end as exam,
+    */
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2014-01-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-02-01') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2014-02-01') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-02-28') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2014-03-01') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-03-01') then 3
+        else -1
+    end as exam,    
+    sum(case
+        when problems.correct=responses.answer then 1
+        else 0
+    end) as correct,
+    count(distinct responses.id) as tried,
+    count(distinct dayofyear(responses.start_time)) as days,
+    sum(case
+        when problems.correct=responses.answer then 1
+        else 0
+    end) / count(*) as rate,
+    round(sum(to_seconds(responses.end_time) - to_seconds(responses.start_time))/count(*), 0) as avg_time,
+    round(sum(to_seconds(responses.end_time) - to_seconds(responses.start_time)) / 60 / 60, 2) as tot_hours
+from responses
+inner join `user`
+    on user.id=responses.user_id 
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+where 
+    /*
+    1
+    class.name like 'Physics%'
+    class.name = 'Statistics 250'
+    class.name ='MCDB 310'
+    and user.username='asjaqua'
+    */
+    class.name ='Chemistry 130'
+    and year(responses.start_time) = 2014
+group by concat(responses.user_id, class.name, exam)
+having exam=1 or exam=2 or exam=3
+order by user.username, exam, class.name, days, tried
 ;
