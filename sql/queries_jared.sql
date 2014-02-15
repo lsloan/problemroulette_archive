@@ -501,3 +501,80 @@ group by concat(responses.user_id, class.name, exam)
 having exam=1 or exam=2 or exam=3
 order by user.username, exam, class.name, days, tried
 ;
+
+/* jimmy's PR update query */
+select 
+    res1.who,
+    res1.days_logged_in,
+    res1.tot_probs,
+    round(res1.tot_probs / res1.days_logged_in, 0) as avg_per_day,
+    res2.days_over_3
+from
+(
+/* by user */
+select 
+    user.username as who,
+    class.name,
+    count(distinct dayofyear(responses.start_time)) as days_logged_in,
+    count(distinct responses.id) as tot_probs
+from responses
+inner join `user`
+    on user.id=responses.user_id 
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+where 
+    class.name ='Chemistry 130'
+    and dayofyear(responses.start_time) > dayofyear('2014-01-03') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-01')
+group by concat(class.name, responses.user_id)
+order by class.name, user.username
+) res1
+
+left join
+(
+/* days over 3 problems */
+select 
+    resB.who,
+    count(*) as days_over_3
+from
+(
+select 
+    user.username as who,
+    class.name,
+    count(responses.id) as prob_per_day
+from responses
+inner join `user`
+    on user.id=responses.user_id 
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+where 
+    class.name ='Chemistry 130'
+    and dayofyear(responses.start_time) > dayofyear('2014-01-03') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-01')
+group by concat(class.name, responses.user_id, dayofyear(responses.start_time))
+having prob_per_day > 2
+order by class.name, user.username
+) resB
+group by who
+) res2 on
+    res1.who = res2.who
+order by res1.days_logged_in desc, res1.tot_probs desc
+;
+
+
