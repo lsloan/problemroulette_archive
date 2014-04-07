@@ -418,18 +418,16 @@ select
     class.name,
     /*
     Physics
-    case
-        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-10-03') then 1
-        when dayofyear(responses.start_time) >      dayofyear('2013-10-03') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-10-31') then 2
-        when dayofyear(responses.start_time) >      dayofyear('2013-10-31') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-11-21') then 3
-        when dayofyear(responses.start_time) >      dayofyear('2013-11-21') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
-        else -1
-    end as exam,
     Chemistry
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2014-01-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-02-01') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2014-02-01') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-02-28') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2014-03-01') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-03-01') then 3
+        else -1
+    end as exam,    
     MCDB
     case
         when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
@@ -454,14 +452,14 @@ select
     end as exam,
     */
     case
-        when dayofyear(responses.start_time) >      dayofyear('2014-01-03') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-01') then 1
-        when dayofyear(responses.start_time) >      dayofyear('2014-02-01') 
+        when dayofyear(responses.start_time) >      dayofyear('2014-01-08') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-02-06') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2014-02-06') 
             and dayofyear(responses.start_time) <=  dayofyear('2014-02-28') then 2
         when dayofyear(responses.start_time) >      dayofyear('2014-03-01') 
             and dayofyear(responses.start_time) <=  dayofyear('2014-03-01') then 3
         else -1
-    end as exam,    
+    end as exam,
     sum(case
         when problems.correct=responses.answer then 1
         else 0
@@ -490,17 +488,36 @@ inner join class
 where 
     /*
     1
-    class.name like 'Physics%'
     class.name = 'Statistics 250'
     class.name ='MCDB 310'
     and user.username='asjaqua'
-    */
     class.name ='Chemistry 130'
+    */
+    class.name like 'Physics%'
     and year(responses.start_time) = 2014
 group by concat(responses.user_id, class.name, exam)
 having exam=1 or exam=2 or exam=3
 order by user.username, exam, class.name, days, tried
 ;
+
+/* sanity check on temporal distribution */
+select
+    username,
+    from_unixtime(round(UNIX_TIMESTAMP(start_time) / 3600, 0)*3600) as tt,
+    count(*) as cnt
+from responses 
+inner join user on 
+    user.id=responses.user_id
+where 
+    user_id='963'
+    or user_id='656'
+    /*
+    select * from responses where user_id='racheby';
+    select * from responses where user_id='yoohap';
+    */
+group by tt
+order by username, tt
+; 
 
 /* jimmy's PR update query */
 select 
@@ -532,8 +549,23 @@ inner join class
     on class.id=c2t.class_id
 where 
     class.name ='Chemistry 130'
-    and dayofyear(responses.start_time) > dayofyear('2014-01-03') 
-    and dayofyear(responses.start_time) <=  dayofyear('2014-02-01')
+    and dayofyear(responses.start_time) >   dayofyear('2014-04-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-04-04')
+    /*
+    and dayofyear(responses.start_time) >   dayofyear('2014-04-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-04-07')
+    and dayofyear(responses.start_time) >   dayofyear('2014-04-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-04-09')
+    ------------
+    and dayofyear(responses.start_time) >   dayofyear('2014-02-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-14')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-05')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-07')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-10')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-12')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-17')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-19')
+    */
 group by concat(class.name, responses.user_id)
 order by class.name, user.username
 ) res1
@@ -565,8 +597,23 @@ inner join class
     on class.id=c2t.class_id
 where 
     class.name ='Chemistry 130'
-    and dayofyear(responses.start_time) > dayofyear('2014-01-03') 
-    and dayofyear(responses.start_time) <=  dayofyear('2014-02-01')
+    and dayofyear(responses.start_time) >   dayofyear('2014-04-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-04-04')
+    /*
+    and dayofyear(responses.start_time) >   dayofyear('2014-04-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-04-07')
+    and dayofyear(responses.start_time) >   dayofyear('2014-04-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-04-09')
+    ------------
+    and dayofyear(responses.start_time) >   dayofyear('2014-02-02') 
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-14')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-05')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-07')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-10')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-12')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-17')
+    and dayofyear(responses.start_time) <=  dayofyear('2014-02-19')
+    */
 group by concat(class.name, responses.user_id, dayofyear(responses.start_time))
 having prob_per_day > 2
 order by class.name, user.username
@@ -576,5 +623,48 @@ group by who
     res1.who = res2.who
 order by res1.days_logged_in desc, res1.tot_probs desc
 ;
+
+/* single serve usage by student */
+select 
+    user.username,
+    class.name,
+    case
+        when dayofyear(responses.start_time) >      dayofyear('2014-01-04') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-04-06') then 1
+        else -1
+    end as semester,    
+    sum(case
+        when problems.correct=responses.answer then 1
+        else 0
+    end) as correct,
+    count(distinct responses.id) as tried,
+    count(distinct dayofyear(responses.start_time)) as days,
+    sum(case
+        when problems.correct=responses.answer then 1
+        else 0
+    end) / count(*) as rate,
+    round(sum(to_seconds(responses.end_time) - to_seconds(responses.start_time))/count(*), 0) as avg_time,
+    round(sum(to_seconds(responses.end_time) - to_seconds(responses.start_time)) / 60 / 60, 2) as tot_hours
+from responses
+inner join `user`
+    on user.id=responses.user_id 
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+where 
+    class.name ='Chemistry 130'
+    and year(responses.start_time) = 2014
+group by concat(responses.user_id, class.name, semester)
+having semester=1 
+order by user.username, semester, class.name, days, tried
+;
+
 
 
