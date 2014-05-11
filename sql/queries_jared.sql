@@ -676,9 +676,11 @@ select
         when dayofyear(responses.start_time) >      dayofyear('2014-01-08') 
             and dayofyear(responses.start_time) <=  dayofyear('2014-02-06') then 1
         when dayofyear(responses.start_time) >      dayofyear('2014-02-06') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-28') then 2
-        when dayofyear(responses.start_time) >      dayofyear('2014-03-01') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-03-01') then 3
+            and dayofyear(responses.start_time) <=  dayofyear('2014-03-13') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2014-03-13') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-04-10') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2014-04-10') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-04-24') then 4
         else -1
     end as exam,
     Chemistry
