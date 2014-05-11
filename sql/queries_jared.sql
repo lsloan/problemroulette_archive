@@ -683,16 +683,20 @@ select
             and dayofyear(responses.start_time) <=  dayofyear('2014-04-24') then 4
         else -1
     end as exam,
+    */
+    /*
     Chemistry
     case
-        when dayofyear(responses.start_time) >      dayofyear('2014-01-03') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-01') then 1
-        when dayofyear(responses.start_time) >      dayofyear('2014-02-01') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-28') then 2
-        when dayofyear(responses.start_time) >      dayofyear('2014-03-01') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-03-01') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2014-01-08') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-02-19') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2014-02-19') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-04-07') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2014-04-07') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-04-27') then 3
         else -1
     end as exam,    
+    */
+    /*
     MCDB
     case
         when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
@@ -705,6 +709,8 @@ select
             and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
         else -1
     end as exam,
+    */
+    /*
     Stats
     case
         when dayofyear(responses.start_time) >      dayofyear('2014-01-08') 
@@ -742,20 +748,22 @@ inner join 12m_class_topic c2t
 inner join class
     on class.id=c2t.class_id
 where 
-    /*
     1
-    class.name ='MCDB 310'
+    and class.name = 'Statistics 250'
+    /*
+    and class.name ='Chemistry 130'
     and user.username='asjaqua'
-    class.name ='Chemistry 130'
-    class.name like 'Physics%'
+    and class.name ='MCDB 310'
+    and class.name like 'Physics%'
     */
-    class.name = 'Statistics 250'
     and year(responses.start_time) = 2014
     and responses.answer != 0  /* avoid skips */
 group by concat(responses.user_id, class.name, exam)
-having exam=1 or exam=2 or exam=3
-order by user.username, exam, class.name, days, tried
+having exam > 0
+order by user.username, exam, class.name, distinct_days, tried
 ;
+
+exit
 
 /* extract of pr data for analysis */
 select 
@@ -783,13 +791,27 @@ inner join user
     on user.id=responses.user_id
 where 
     1 
+    and class.name = 'Statistics 250'
     and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
     and dayofyear(responses.start_time) <= dayofyear('2014-04-24')
     /*
-    and class.name like 'Physics%'
-    and class.name like 'Statistics%'
     */
-    and class.name='Chemistry 130'
+    /*
+    and class.name = 'MCDB 310'
+    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
+    and dayofyear(responses.start_time) <= dayofyear('2014-04-??')
+    */
+    /*
+    and class.name like 'Physics%'
+    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
+    and dayofyear(responses.start_time) <= dayofyear('2014-04-??')
+    */
+    /*
+    and class.name = 'Chemistry 130'
+    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
+    and dayofyear(responses.start_time) <= dayofyear('2014-04-27')
+    */
 ;
+
 
 
