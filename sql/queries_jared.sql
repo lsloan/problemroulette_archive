@@ -412,29 +412,31 @@ desc stats;
 desc topic;
 desc `user`;
 
-/* new usage by student */
+/* new usage by student Fall 2012*/
 select 
     user.username,
     class.name,
     /*
     Physics
     case
-        when dayofyear(responses.start_time) >      dayofyear('2014-01-08') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-06') then 1
-        when dayofyear(responses.start_time) >      dayofyear('2014-02-06') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-28') then 2
-        when dayofyear(responses.start_time) >      dayofyear('2014-03-01') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-03-01') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-03') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-31') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-31') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-21') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-21') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
         else -1
     end as exam,
     Chemistry
     case
-        when dayofyear(responses.start_time) >      dayofyear('2014-01-03') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-01') then 1
-        when dayofyear(responses.start_time) >      dayofyear('2014-02-01') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-02-28') then 2
-        when dayofyear(responses.start_time) >      dayofyear('2014-03-01') 
-            and dayofyear(responses.start_time) <=  dayofyear('2014-03-01') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-10-16') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2013-10-16') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-11-20') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2013-11-20') 
+            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 3
         else -1
     end as exam,    
     MCDB
