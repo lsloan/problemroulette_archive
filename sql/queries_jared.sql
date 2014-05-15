@@ -668,53 +668,7 @@ having semester=1
 order by user.username, semester, class.name, days, tried
 ;
 
-/* extract of pr data for analysis */
-select 
-    user.username as username,
-    class.name as course,
-    topic.name as topic,
-    problems.url url,
-    problems.correct as correct_answer,
-    responses.answer as student_answer,
-    /*problems.tot_correct / problems.tot_tries as rate, */
-    UNIX_TIMESTAMP(responses.start_time) as start_time,
-    UNIX_TIMESTAMP(responses.end_time) as end_time
-from responses
-inner join problems
-    on problems.id=responses.prob_id
-inner join 12m_topic_prob t2p
-    on responses.prob_id=t2p.problem_id
-inner join topic
-    on topic.id=t2p.topic_id
-inner join 12m_class_topic c2t
-    on t2p.topic_id=c2t.topic_id
-inner join class
-    on class.id=c2t.class_id
-inner join user
-    on user.id=responses.user_id
-where 
-    1 
-    /*
-    and class.name = 'Statistics 250'
-    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
-    and dayofyear(responses.start_time) <= dayofyear('2014-04-24')
-    */
-    /*
-    and class.name = 'MCDB 310'
-    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
-    and dayofyear(responses.start_time) <= dayofyear('2014-04-25')
-    */
-    /*
-    and class.name like 'Physics%'
-    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
-    and dayofyear(responses.start_time) <= dayofyear('2014-04-25')
-    */
-    /*
-    and class.name = 'Chemistry 130'
-    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
-    and dayofyear(responses.start_time) <= dayofyear('2014-04-24')
-    */
-;
+exit
 
 /* new usage by student Winter 2014 */
 select 
@@ -748,18 +702,18 @@ select
     */
     /*
     MCDB
-    */
     case
-        when dayofyear(responses.start_time) >      dayofyear('2013-09-03') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-09-30') then 1
-        when dayofyear(responses.start_time) >      dayofyear('2013-09-30') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-10-28') then 2
-        when dayofyear(responses.start_time) >      dayofyear('2013-10-28') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-11-18') then 3
-        when dayofyear(responses.start_time) >      dayofyear('2013-11-18') 
-            and dayofyear(responses.start_time) <=  dayofyear('2013-12-19') then 4
+        when dayofyear(responses.start_time) >      dayofyear('2014-01-08') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-02-06') then 1
+        when dayofyear(responses.start_time) >      dayofyear('2014-02-06') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-03-13') then 2
+        when dayofyear(responses.start_time) >      dayofyear('2014-03-13') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-04-03') then 3
+        when dayofyear(responses.start_time) >      dayofyear('2014-04-03') 
+            and dayofyear(responses.start_time) <=  dayofyear('2014-05-01') then 4
         else -1
     end as exam,
+    */
     /*
     Stats
     case
@@ -800,19 +754,68 @@ inner join class
 where 
     1
     /*
-    and class.name = 'Statistics 250'
-    and class.name ='Chemistry 130'
-    and user.username='asjaqua'
     and class.name ='MCDB 310'
-    */
+    and user.username='asjaqua'
     and class.name like 'Physics%'
     and year(responses.start_time) = 2014
+    and class.name ='Chemistry 130'
+    */
+    and class.name = 'Statistics 250'
+    and year(responses.start_time) = 2013
     and responses.answer != 0  /* avoid skips */
 group by concat(responses.user_id, class.name, exam)
 having exam > 0
 order by user.username, exam, class.name, distinct_days, tried
 ;
 
-exit
+/* raw data extract of pr data for analysis */
+select 
+    user.username as username,
+    class.name as course,
+    topic.name as topic,
+    problems.url url,
+    problems.correct as correct_answer,
+    responses.answer as student_answer,
+    /*problems.tot_correct / problems.tot_tries as rate, */
+    UNIX_TIMESTAMP(responses.start_time) as start_time,
+    UNIX_TIMESTAMP(responses.end_time) as end_time
+from responses
+inner join problems
+    on problems.id=responses.prob_id
+inner join 12m_topic_prob t2p
+    on responses.prob_id=t2p.problem_id
+inner join topic
+    on topic.id=t2p.topic_id
+inner join 12m_class_topic c2t
+    on t2p.topic_id=c2t.topic_id
+inner join class
+    on class.id=c2t.class_id
+inner join user
+    on user.id=responses.user_id
+where 
+    1 
+    /*
+    and class.name = 'MCDB 310'
+    and class.name = 'Chemistry 130'
+    and class.name like 'Physics%'
+    and class.name = 'Statistics 250'
+    */
+    /*
+    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
+    and dayofyear(responses.start_time) <= dayofyear('2014-04-24')
+    */
+    /*
+    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
+    and dayofyear(responses.start_time) <= dayofyear('2014-05-01')
+    */
+    /*
+    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
+    and dayofyear(responses.start_time) <= dayofyear('2014-04-25')
+    */
+    /*
+    and dayofyear(responses.start_time) > dayofyear('2014-01-08') 
+    and dayofyear(responses.start_time) <= dayofyear('2014-04-24')
+    */
+;
 
 
