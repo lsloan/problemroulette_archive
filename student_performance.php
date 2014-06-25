@@ -75,7 +75,7 @@ if (isset($_POST['dropdown_course']))
 	$_SESSION['dropdown_history_course'] = $selected_course_id;
 	$usrmgr->m_user->SetPref('dropdown_history_course',$selected_course_id);
 	$_SESSION['dropdown_history_topic'] = 'all';
-	$usrmgr->m_user->SetPref('dropdowb_history_topic','all');
+	$usrmgr->m_user->SetPref('dropdown_history_topic','all');
 	
 	//header('Location:student_performance.php');
 }

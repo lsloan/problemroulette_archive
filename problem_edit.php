@@ -1,59 +1,82 @@
 <?php
 // paths
 require_once("./paths.inc.php");
+// database
+require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
+$GLOBALS["dbmgr"] = new CDbMgr();
+// user manager
+require_once( $DIR_LIB."usrmgr.php" );
+$GLOBALS["usrmgr"] = new UserManager();
+// utilities
+require_once($GLOBALS["DIR_LIB"]."utilities.php");
+$args = GrabAllArgs();
 // application objects
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
-require_once( $DIR_LIB."usrmgr.php" );
-// utilities
-require_once($GLOBALS["DIR_LIB"]."utilities.php");
-// database
-require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
-//$GLOBALS["dbmgr"] = new CDbMgr( "host", "user", "password", "database" );
-$GLOBALS["dbmgr"] = new CDbMgr( "localhost", "pr_user", "pr_user", "prexpansion" );
-// session
-require_once( $DIR_LIB."sessions.php" );
-//$GLOBALS["sessionmgr"] = new CSessMgr( "session_table", 3600);
-// url arguments
-$args = GrabAllArgs();
 
-// permission
-$GLOBALS["usrmgr"] = new UserManager();
-
+session_start();
 // business logic
-$model = new MProblem(1);
+//get problem
+if (isset($_POST['problem_info']))
+{
+	$problem_id = $_POST['problem_info'];
+	$problem = new MProblem($problem_id);
+}
+elseif (isset($_GET['p_id']))
+{
+    $problem_id = $_GET['p_id'];
+    $problem = new MProblem($problem_id);
+}
+else
+{
+	$problem = Null;
+}
 
-#TEST: add problem
-#$model->create('hi', 'url-somewhere', 1, 5, 2);
+//Update problem name in database if requested
+if (isset($_POST['edit_problem_name']))
+{
+    $new_problem_name = $_POST['edit_problem_name'];
+    MProblem::update_problem_name($problem_id,$new_problem_name);
+    header('Location:problem_edit.php?p_id='.$problem_id);
+}
 
-#$course = new MCourse();
+//Update problem URL in database if requested
+if (isset($_POST['edit_problem_url']))
+{
+    $new_problem_url = str_replace(' ','',$_POST['edit_problem_url']);
+    MProblem::update_problem_url($problem_id,$new_problem_url);
+    header('Location:problem_edit.php?p_id='.$problem_id);
+}
 
-#TEST: see all courses
-#MCourse::get_all_courses();
+//Update number of answers in database if requested
+if (isset($_POST['edit_problem_num_ans']))
+{
+    $new_problem_num_ans = str_replace(' ','',$_POST['edit_problem_num_ans']);
+    MProblem::update_problem_num_ans($problem_id,$new_problem_num_ans);
+    header('Location:problem_edit.php?p_id='.$problem_id);
+}
 
-#TEST: get all topics in course ($course_id)
-#MTopic::get_all_topics_in_course(3);
+//Update correct answer in database if requested
+if (isset($_POST['edit_problem_cor_ans']))
+{
+    $new_problem_cor_ans = str_replace(' ','',$_POST['edit_problem_cor_ans']);
+    MProblem::update_problem_cor_ans($problem_id,$new_problem_cor_ans);
+    header('Location:problem_edit.php?p_id='.$problem_id);
+}
 
-#TEST: get all problems in topic ($topic_id)
-#MProblem::get_all_problems_in_topic(1);
-
-#TEST: add course
-#$course->create('Chemistry 456');
+//Update solution URL in database if requested
+if (isset($_POST['edit_problem_sol_url']))
+{
+    $new_problem_sol_url = str_replace(' ','',$_POST['edit_problem_sol_url']);
+    MProblem::update_problem_sol_url($problem_id,$new_problem_sol_url);
+    header('Location:problem_edit.php?p_id='.$problem_id);
+}
 
 // page construction
-$head = new CHeadCSSJavascript("Problem Roulette",
-    array(
-        #$GLOBALS["DOMAIN_CSS"]."test.css",
-    ),
-
-    array(
-        #$GLOBALS["DOMAIN_JS"]."test.js.php",
-    )
-);
-
-$body = new VProblemEditReview($model);
-$page = new CPageBasic($head, $body);
-//$page = new CPageBasic($head, $nav, $body);
+$head = new CHeadCSSJavascript("Edit Problem", array(), array());
+$tab_nav = new VNoTabNav(new MTabNav('My Summary'));
+$content = new VProblemEdit($problem);
+$page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html
 echo $page->Deliver();

@@ -23,6 +23,8 @@ class CHeadCSSJavascript{
         <script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
 		<script type='text/javascript' src='js/jquery.tablesorter.js'></script> 
+		<script type='text/javascript' src='js/problem_library_actions.js'></script> 
+		<script type='text/javascript' src='js/problem_edit_actions.js'></script> 
 		<script type='text/javascript' src='js/mytable.js'></script> 
         ";
         if($this->m_cssfile != NULL)
@@ -434,8 +436,9 @@ class VStudentPerformance
 class VProblemLibrary
 {
 	
-	function __construct()
+	function __construct($v_problem_library_list)
 	{
+		$this->v_problem_library_list = $v_problem_library_list;
 	}
 	
 	function Deliver()
@@ -445,10 +448,278 @@ class VProblemLibrary
 
 		if ($staff == 1)
 		{
-			$str = "<p class='half-line'>&nbsp;</p>
+			$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+			usort($all_courses_with_topics, array('MCourse', 'alphabetize'));
+			$num_courses = count($all_courses_with_topics);
+						
+			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+			
+			global $usrmgr;
+			$str = "
+			<p class='half-line'>&nbsp;</p>
+			<h4 class='summary-header'>
+				Update Problem Library
+			</h4>
+			<button class='btn btn-primary add-CTP' id='add_problem'>Add Problem</button>
+			<button class='btn remove-add-CTP-form' id='remove_add_problem_form'><i class='icon-remove'></i></button>
+			<button class='btn btn-primary add-CTP' id='add_topic'>Add Topic</button>
+			<button class='btn remove-add-CTP-form' id='remove_add_topic_form'><i class='icon-remove'></i></button>
+			<button class='btn btn-primary add-CTP' id='add_course'>Add Course</button>
+			<button class='btn remove-add-CTP-form' id='remove_add_course_form'><i class='icon-remove'></i></button>
+			<div class='div-update-problem-library'>
+			<form id='add_course_form' action='' method='POST' class='add-CTP-form'>
 			<p>
-				hi, this is the Problem Library page... this well soon be more then one page
-			</p>";
+			<h4 class='add-CTP-title'>Add Course</h4>
+			</p>
+			<p>
+			Course Name (alphanumeric and spaces only):
+			<input type='text' placeholder='Course Name' id='add_course_name' name='add_course_name' class='input-error'/>
+			</p>
+			<p>
+			<button class='btn' type='submit' id='submit_add_course'>Submit</button>
+			</p>
+			</form>
+			<form id='add_topic_form' action='' method='POST' class='add-CTP-form'>
+			<p>
+			<h4 class='add-CTP-title'>Add Topic</h4>
+			</p>
+			<p>
+			Select a Course
+			<select id='course_for_new_topic' name='course_for_new_topic' class='input-error'>
+			<option value='0' selected='selected'>Select One</option>";
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course_id = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$topic_count = count($all_topics_in_course);
+				for($j=0; $j<$topic_count; $j++)
+				{
+					$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+				}
+				
+				$str .= "<option 
+				value='".$all_courses_with_topics[$i]->m_id."'>
+				".$all_courses_with_topics[$i]->m_name."
+				</option>
+				";
+			}
+			$str .= "
+			</select>
+			</p>
+			<p>
+			Topic Name (alphanumeric and spaces only):
+			<input type='text' placeholder='Topic Name' id='add_topic_name' name='add_topic_name' class='input-error'/>
+			</p>
+			<p>
+			<button class='btn' type='submit' id='submit_add_topic'>Submit</button>
+			</p>
+			</form>
+			<form id='add_problem_form' action='' method='POST' class='add-CTP-form'>
+			<p>
+			<h4 class='add-CTP-title'>Add Problem</h4>
+			</p>
+			<p>
+			Select a Course
+			<select id='course_for_new_problem' name='course_for_new_problem' class='input-error'>
+			<option value='0' selected='selected'>Select One</option>";
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course_id = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$topic_count = count($all_topics_in_course);
+				for($j=0; $j<$topic_count; $j++)
+				{
+					$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+				}
+				
+				$str .= "<option 
+				value='".$all_courses_with_topics[$i]->m_id."'>
+				".$all_courses_with_topics[$i]->m_name."
+				</option>
+				";
+			}
+			$str .= "
+			</select>
+			</p>
+			<p>
+			Select a Topic (must select course): 
+			<select disabled='disabled' class='input-error' name='topic_for_new_problem' id='topic_for_new_problem'>
+			<option value='0' selected='selected'>Select One</option>";
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$num_topics = count($all_topics_in_course);
+				for ($j=0; $j<$num_topics; $j++)
+				{
+					$str .= "<option 
+					value='".$all_topics_in_course[$j]->m_id."'>
+					".$all_topics_in_course[$j]->m_name."
+					</option>";
+				}
+			}
+			$str .= "
+			</select>
+			</p>
+			<p>
+			Problem Name (alphanumeric and spaces only): <input type='text' placeholder='Problem Name' id='add_problem_name' name='add_problem_name' class='input-error' maxlength='200'/>
+			</p>
+			<p>
+			Problem URL: <input type='text' placeholder='Problem URL' id='add_problem_url' name='add_problem_url' class='input-error' maxlength='300'/>
+			</p>
+			<p>
+			Number of Answer Choices (numeric): <input type='text' placeholder='Number of Answer Choices' id='add_problem_num_ans' name='add_problem_num_ans' class='input-error'/>
+			</p>
+			<p>
+			Correct Answer (numeric, 1 for first answer, 2 for second, etc.): <input type='text' placeholder='Correct Answer' id='add_problem_cor_ans' name='add_problem_cor_ans' class='input-error'/>
+			</p>
+			<p>
+			Solution URL (optional): <input type='text' placeholder='Solution URL' id='add_problem_solution_url' name='add_problem_solution_url' maxlength='300'/>
+			</p>
+			<p>
+			<button class='btn' type='submit' id='submit_add_problem' disabled='disabled'>Submit</button>
+			</p>
+            </form>
+			</div>
+			<h4 class='summary-header'>
+				Problem Library
+			</h4>
+			<div class='div-history-dropdown-course-topic'>
+			Filter by Course: 
+			<form name='PL_dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
+			<select name='PL_dropdown_course' id='PL_dropdown_course' class='dropdown-course'>
+			<option value='0' selected='selected'>Select a Course</option>";
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course_id = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$topic_count = count($all_topics_in_course);
+				for($j=0; $j<$topic_count; $j++)
+				{
+					$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+				}
+				
+				$str .= "<option 
+				value='".$all_courses_with_topics[$i]->m_id."'";
+				if (isset($_SESSION['dropdown_history_course']) && $_SESSION['dropdown_history_course'] == $all_courses_with_topics[$i]->m_id)
+				{
+					$str .= " selected='selected'";
+				}
+				$str .= ">
+				".$all_courses_with_topics[$i]->m_name."
+				</option>
+				";
+			}
+						
+			$str .= "</select>
+            </form>";
+			
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course_id = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$topic_count = count($all_topics_in_course);
+				for($j=0; $j<$topic_count; $j++)
+				{
+					$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+				}
+				
+				$str .= "
+				<input type='hidden'
+				id='".$all_courses_with_topics[$i]->m_id."'
+				value='".implode(',',$all_topics_in_course_id)."'/>
+				";
+			}
+			
+			$str .= "
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			Filter by Topic (must select course): 
+			<form name='PL_dropdown_topic_form' action='' method='POST' class='dropdown-course-topic-form'>
+			<select disabled='disabled' name='PL_dropdown_topic' id='PL_dropdown_topic' class='dropdown-topic'>
+			<option value='all' selected='selected'>All Topics</option>";
+			for ($i=0; $i<$num_courses; $i++)
+			{
+				$all_topics_in_course = Array();
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$num_topics = count($all_topics_in_course);
+				for ($j=0; $j<$num_topics; $j++)
+				{
+					$str .= "<option 
+					value='".$all_topics_in_course[$j]->m_id."'";
+					if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
+					{
+						$str .= " selected='selected'";
+					}
+					$str .= ">
+					".$all_topics_in_course[$j]->m_name."
+					</option>";
+				}
+			}
+			$str .= "
+			</select>
+			</form>
+			";
+					
+			if (count($this->v_problem_library_list)>0)
+			{
+				$str .= "
+				</div>
+				<div>
+				<form action='problem_edit.php' method='POST' target='_blank'>
+				<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
+					<thead>
+						<tr>
+							<th>Name (click to edit)</th>
+							<th>Answer Choices</th>
+							<th>Correct Answer</th>
+							<th>Total Tries</th>
+							<th>Accuracy&nbsp;&nbsp;&nbsp;</th>
+							<th>Average Time (seconds)</th>
+							<th>Solution</th>
+						</tr>
+					</thead>
+					<tbody>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+					<td class='invis'></td>
+						";
+						//<table body>
+						for ($i=0; $i<count($this->v_problem_library_list); $i++)
+						{
+							$str .= "
+								<tr>
+									<td><button class='btn btn-link btn-link-history' type='submit' name='problem_info' value='".$this->v_problem_library_list[$i]->m_prob_id."'>".$this->v_problem_library_list[$i]->m_prob_name."</button></td>
+									<td>".$this->v_problem_library_list[$i]->m_prob_ans_count."</td>
+									<td>".$alphabet[$this->v_problem_library_list[$i]->m_prob_correct-1]."</td>
+									<td>".$this->v_problem_library_list[$i]->m_prob_tot_tries."</td>
+									<td>".round($this->v_problem_library_list[$i]->m_prob_tot_correct/$this->v_problem_library_list[$i]->m_prob_tot_tries,3)."</td>
+									<td>".round($this->v_problem_library_list[$i]->m_prob_tot_time/$this->v_problem_library_list[$i]->m_prob_tot_tries,1)."</td>
+									<td><a href='".$this->v_problem_library_list[$i]->m_prob_solution."'>".$this->v_problem_library_list[$i]->m_prob_solution."</a></td>
+								</tr>
+							";
+						}
+						//</table body>
+						$str .= "
+					</tbody>
+				</table>
+				</form>";
+			}
+			$all_courses = MCourse::get_all_courses();
+			$str .= "<label id='num_courses' class='label-hidden'>".count($all_courses)."</label>";
+			for ($i=0;$i<count($all_courses);$i++)
+			{
+				$str .= "<label id='course".$i."' class='label-hidden'>".$all_courses[$i]->m_name."</label>
+				";
+			}
+			$str .= "</div>";
 		}
 		else
 		{
@@ -895,11 +1166,25 @@ class VProblems_submitted
 		{
 			if ($i == $this->v_picked_problem->m_prob_ans_count)
 			{
-				$ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+                if ($ans_submit_count_sum > 0)
+                {
+                    $ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+                }
+                else
+                {
+                    $ans_submit_frac_count_string .= $this->v_picked_problem->get_ans_submit_count($i);
+                }
 			}
 			else
 			{
-				$ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+                if ($ans_submit_count_sum > 0)
+                {
+                    $ans_submit_frac_count_string .= ($this->v_picked_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+                }
+                else
+                {
+                    $ans_submit_frac_count_string .= $this->v_picked_problem->get_ans_submit_count($i).",";
+                }
 			}
 			$histogram_ans_string .= $alphabet[($i-1)]."|";
 		}
@@ -982,9 +1267,14 @@ class VProblems_submitted
 				</p>
 				";
 			}
+            $chart_width = 150;
+            if ($this->v_picked_problem->m_prob_ans_count > 3)
+            {
+                $chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
+            }
 			$str .= "
 			<img class='histogram'
-			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=300x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Total%20Responses%20(N=".$ans_submit_count_sum.")'>
+			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
 			</img>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
@@ -1231,38 +1521,187 @@ class VProblemInfo
 	
 			//problem info and histogram
 			$str = "
-				<p class='half-line'>&nbsp;</p>
-				<p>
-				Average user time: 
-				".$this->v_problem->get_avg_time()." seconds
-				</p>
-				<p>
-				Correct answer: 
-				".$alphabet[$correct_answer-1]."
-				</p>";
-				if ($this->v_problem->m_prob_solution !== '')
-				{
-					$str .= "
-					<p>
-					Solution: <a class='link' target='_blank' href='".$this->v_problem->m_prob_solution."'>".$this->v_problem->m_prob_name."</a>
-					</p>
-					";
-				}
-				$str .= "
-				<img class='histogram'
-				src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=300x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Total%20Responses%20(N=".$ans_submit_count_sum.")'>
-				</img>
-				<iframe class='problemIframe' id='problemIframe' src='
-				".
-				$this->v_problem->m_prob_url
-				."'></iframe>
-                <p align='center'>
-                <font color='blue'>".$this->v_problem->m_prob_url."</font>
+            <p class='half-line'>&nbsp;</p>
+            <p>
+            Average user time: 
+            ".$this->v_problem->get_avg_time()." seconds
+            </p>
+            <p>
+            Correct answer: 
+            ".$alphabet[$correct_answer-1]."
+            </p>";
+            if ($this->v_problem->m_prob_solution !== '')
+            {
+                $str .= "
+                <p>
+                Solution: <a class='link' target='_blank' href='".$this->v_problem->m_prob_solution."'>".$this->v_problem->m_prob_name."</a>
                 </p>
-                ";		
+                ";
+            }
+            $chart_width = 150;
+            $chart_width = 50*$this->v_problem->m_prob_ans_count;
+            $str .= "
+            <img class='histogram'
+            src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
+            </img>
+            <iframe class='problemIframe' id='problemIframe' src='
+            ".
+            $this->v_problem->m_prob_url
+            ."'></iframe>
+            <p align='center'>
+            <font color='blue'>".$this->v_problem->m_prob_url."</font>
+            </p>
+            ";		
 		}
 		return $str;
 	}
+}
+
+class VProblemEdit
+{
+    //vars
+	var $v_problem = Null;//problem to display info about NULL: DISPLAY MESSAGE SAYING YOU NEED PROBLEM
+    
+    //constructor
+    function __construct($problem)
+    {
+		$this->v_problem = $problem;
+    }
+    
+    //page construction
+    function Deliver()
+    {
+		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		
+		if ($this->v_problem == Null)
+		{
+			$str = "<p class='half-line'>&nbsp;</p>
+			<p>Sorry! There is no problem selected. I have no data to give.</p>
+			";
+		}
+		else
+		{		
+			$correct_answer = $this->v_problem->m_prob_correct;
+			
+			//determine total tries for a problem (N)
+			$ans_submit_count_sum = 0;
+			for ($i=1;$i<($this->v_problem->m_prob_ans_count+1);$i++)
+			{
+				$ans_submit_count_sum += $this->v_problem->get_ans_submit_count($i);
+			}
+			
+			//create some substrings to help generate histogram
+			$ans_submit_frac_count_string = "";
+			$histogram_ans_string = "|";
+			for ($i=1;$i<($this->v_problem->m_prob_ans_count+1);$i++)
+			{
+				if ($i == $this->v_problem->m_prob_ans_count)
+				{
+					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+				}
+				else
+				{
+					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+				}
+				$histogram_ans_string .= $alphabet[($i-1)]."|";
+			}
+
+    
+            $str = 
+            "<p class='half-line'>&nbsp;</p>
+            <h1 class='indent10'>Edit Problem Information</h1>
+            <p>
+                <span class='label label-info'>Current Problem Name:</span> 
+                <span class='current-problem-info' id='current_problem_info_name'>".$this->v_problem->m_prob_name."</span>
+            </p>
+            <p>
+                <button class='btn btn-primary add-CTP' id='edit_problem_name_button'>Change Problem Name</button>
+                <button class='btn remove-add-CTP-form' id='remove_edit_problem_name_button'><i class='icon-remove'></i></button>
+                <form action='' method='POST' class='indent10 hide' id='edit_problem_name_form'>
+                    Enter new problem name (alphanumeric and spaces only): 
+                    <input type='text' placeholder='Problem Name' id='edit_problem_name' name='edit_problem_name'  maxlength='200' class='fit-problem-name'/>
+                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
+                    <button class='btn' type='submit' id='edit_problem_name_submit'>Submit</button>
+                </form>
+            </p>
+            <p>
+                <span class='label label-info'>Current Problem URL:</span> 
+                <span class='current-problem-info' id='current_problem_info_url'><a class='current-problem-url' href='".$this->v_problem->m_prob_url."' target='_blank'>".$this->v_problem->m_prob_url."</a></span>
+            </p>
+            <p>
+                <button class='btn btn-primary add-CTP' id='edit_problem_url_button'>Change Problem URL</button>
+                <button class='btn remove-add-CTP-form' id='remove_edit_problem_url_button'><i class='icon-remove'></i></button>
+                <form action='' method='POST' class='indent10 hide' id='edit_problem_url_form'>
+                    Enter new problem URL: 
+                    <input type='text' placeholder='Problem URL' id='edit_problem_url' name='edit_problem_url'  maxlength='300' class='fit-problem-name'/>
+                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
+                    <button class='btn' type='submit' id='edit_problem_url_submit'>Submit</button>
+                </form>
+            </p>
+            <p>
+                <span class='label label-info'>Current Number of Answers:</span> 
+                <span class='current-problem-info' id='current_problem_info_num_ans'>".$this->v_problem->m_prob_ans_count."</span>
+            </p>
+            <p>
+                <button class='btn btn-primary add-CTP' id='edit_problem_num_ans_button'>Change Number of Answers</button>
+                <button class='btn remove-add-CTP-form' id='remove_edit_problem_num_ans_button'><i class='icon-remove'></i></button>
+                <form action='' method='POST' class='indent10 hide' id='edit_problem_num_ans_form'>
+                    Enter new number of answers (numeric): 
+                    <input type='text' placeholder='Number of Answers' id='edit_problem_num_ans' name='edit_problem_num_ans'/>
+                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
+                    <button class='btn' type='submit' id='edit_problem_num_ans_submit'>Submit</button>
+                </form>
+            </p>
+            <p>
+                <span class='label label-info'>Current Answer to Problem:</span> 
+                <span class='current-problem-info' id='current_problem_info_cor_ans'>".$this->v_problem->m_prob_correct."</span>
+            </p>
+            <p>
+                <button class='btn btn-primary add-CTP' id='edit_problem_cor_ans_button'>Change Correct Answer</button>
+                <button class='btn remove-add-CTP-form' id='remove_edit_problem_cor_ans_button'><i class='icon-remove'></i></button>
+                <form action='' method='POST' class='indent10 hide' id='edit_problem_cor_ans_form'>
+                    Enter new correct answer (numeric, 1 for first answer, 2 for second, etc.): 
+                    <input type='text' placeholder='Correct Answer' id='edit_problem_cor_ans' name='edit_problem_cor_ans'/>
+                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
+                    <button class='btn' type='submit' id='edit_problem_cor_ans_submit'>Submit</button>
+                </form>
+            </p>
+            <p>
+                <span class='label label-info'>Current Solution URL:</span> 
+                <span class='current-problem-info' id='current_problem_info_sol_url'><a class='current-problem-url' href='".$this->v_problem->m_prob_solution."' target='_blank'>".$this->v_problem->m_prob_solution."</a></span>
+            </p>
+            <p>
+                <button class='btn btn-primary add-CTP' id='edit_problem_sol_url_button'>Change Solution URL</button>
+                <button class='btn remove-add-CTP-form' id='remove_edit_problem_sol_url_button'><i class='icon-remove'></i></button>
+                <form action='' method='POST' class='indent10 hide' id='edit_problem_sol_url_form'>
+                    Enter new solution URL: 
+                    <input type='text' placeholder='Solution URL' id='edit_problem_sol_url' name='edit_problem_sol_url'  maxlength='300' class='fit-problem-name'/>
+                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
+                    <button class='btn' type='submit' id='edit_problem_sol_url_submit'>Submit</button>                    
+                </form>
+            </p>
+            ";
+            
+            $chart_width = 150;
+            if ($this->v_problem->m_prob_ans_count > 3)
+            {
+                $chart_width = 50*$this->v_problem->m_prob_ans_count;
+            }
+            $str .= "
+            <img class='histogram'
+            src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
+            </img>
+            <iframe class='problemIframe' id='problemIframe' src='
+            ".
+            $this->v_problem->m_prob_url
+            ."'></iframe>
+            <p align='center'>
+            <font color='blue'>".$this->v_problem->m_prob_url."</font>
+            </p>
+            ";		
+        }
+        return $str;
+    }
 }
 
 class VHome

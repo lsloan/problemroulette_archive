@@ -8,6 +8,9 @@ Class MProblem
 	var $m_prob_url;		#URL of problem
 	var $m_prob_ans_count;	#Number of answers for problem
 	var $m_prob_correct;	#Correct answer choice for problem
+	var $m_prob_tot_tries;	#Number of times this problem was attempted
+	var $m_prob_tot_correct;#Number of times this problem was correctly answered
+	var $m_prob_tot_time;	#Cumulative time spent working on this problem
 	var $m_prob_solution;	#URL of solution, if supplied
 	
 	function __construct($prob_id = Null)
@@ -24,9 +27,11 @@ Class MProblem
 		$this->m_prob_id = $prob_id;
 		$this->m_prob_name = $res[0]['name'];
 		$this->m_prob_url = $res[0]['url'];
-		//$this->m_prob_topic_id = $res[0]['topic_id'];
 		$this->m_prob_ans_count = $res[0]['ans_count'];
 		$this->m_prob_correct = $res[0]['correct'];
+		$this->m_prob_tot_tries = $res[0]['tot_tries'];
+		$this->m_prob_tot_correct = $res[0]['tot_correct'];
+		$this->m_prob_tot_time = $res[0]['tot_time'];
 		$this->m_prob_solution = $res[0]['solution'];
 	}
 	
@@ -62,7 +67,14 @@ Class MProblem
 			AND ans_num = ".$ans_num;
 			
 			$res = $dbmgr->fetch_assoc($selectquery);
-			$count = $res[0]['count'];
+            if ($res)
+            {
+                $count = $res[0]['count'];
+            }
+            else
+            {
+                $count = 0;
+            }
 			return $count;
 		}
 	}
@@ -119,6 +131,61 @@ Class MProblem
 		#push data to database
 	}
 	
+    public static function update_problem_name($prob_id=Null, $new_prob_name=Null)
+    {
+        global $dbmgr;
+        $updatequery = "
+        UPDATE problems 
+        SET 
+            name='".$new_prob_name."'
+        WHERE id=".$prob_id;
+        $dbmgr->exec_query($updatequery);
+    }
+    
+    public static function update_problem_url($prob_id=Null, $new_prob_url=Null)
+    {
+        global $dbmgr;
+        $updatequery = "
+        UPDATE problems 
+        SET 
+            url='".$new_prob_url."'
+        WHERE id=".$prob_id;
+        $dbmgr->exec_query($updatequery);
+    }
+    
+    public static function update_problem_num_ans($prob_id=Null, $new_prob_num_ans=Null)
+    {
+        global $dbmgr;
+        $updatequery = "
+        UPDATE problems 
+        SET 
+            ans_count='".$new_prob_num_ans."'
+        WHERE id=".$prob_id;
+        $dbmgr->exec_query($updatequery);
+    }
+    
+    public static function update_problem_cor_ans($prob_id=Null, $new_prob_cor_ans=Null)
+    {
+        global $dbmgr;
+        $updatequery = "
+        UPDATE problems 
+        SET 
+            correct='".$new_prob_cor_ans."'
+        WHERE id=".$prob_id;
+        $dbmgr->exec_query($updatequery);
+    }
+    
+    public static function update_problem_sol_url($prob_id=Null, $new_prob_sol_url=Null)
+    {
+        global $dbmgr;
+        $updatequery = "
+        UPDATE problems 
+        SET 
+            solution='".$new_prob_sol_url."'
+        WHERE id=".$prob_id;
+        $dbmgr->exec_query($updatequery);
+    }
+    
 	//for $exclusion: input 0 or nothing for no exclusion; input 1 or true for exclusion
 	//for $by_id: input 0 or nothing to return problem objects; input 1 or true to output problem ids
 	public static function get_all_problems_in_topic_with_exclusion($topic_id,$exclusion = Null,$by_id = Null)
@@ -476,6 +543,163 @@ Class MDirector
         $this->args = $args;
 	}
 
+	public static function safecheck_CT_selected()
+	{
+		global $usrmgr;
+		//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
+		if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+		{
+			$usrmgr->m_user->SetPref('selected_course',Null);
+		}
+		if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
+		{
+			if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
+			{
+				$usrmgr->m_user->SetPref('selected_topics_list',Null);
+			}
+		}
+		else
+		{
+			if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+			{
+				$usrmgr->m_user->SetPref('selected_course',Null);
+			}
+		}
+	}
+	
+	public static function post2sess_CT_history()
+	{
+		global $usrmgr;
+		if (isset($_POST['dropdown_course']))
+		{
+			//get selected course from POST and set preference
+			$selected_course_id = $_POST['dropdown_course'];
+			$_SESSION['dropdown_history_course'] = $selected_course_id;
+			$usrmgr->m_user->SetPref('dropdown_history_course',$selected_course_id);
+			$_SESSION['dropdown_history_topic'] = 'all';
+			$usrmgr->m_user->SetPref('dropdown_history_topic','all');
+			}
+
+		elseif (isset($_POST['dropdown_topic']))
+		{
+			//get selected topic from POST and set preference
+			$selected_topic_id = $_POST['dropdown_topic'];
+			$_SESSION['dropdown_history_topic'] = $selected_topic_id;
+			$usrmgr->m_user->SetPref('dropdown_history_topic',$selected_topic_id);
+		}
+	}
+	
+	public static function get_selected_course_history()
+	{
+		global $usrmgr;
+		if (isset($_SESSION['dropdown_history_course']))
+		{
+			$selected_course_id = $_SESSION['dropdown_history_course'];
+		}
+		else
+		{
+			$selected_course_id = 'all';
+		}
+		return $selected_course_id;
+	}
+	
+	public static function get_selected_topic_history()
+	{
+		global $usrmgr;
+		if (isset($_SESSION['dropdown_history_topic']))
+		{
+			$selected_topic_id = $_SESSION['dropdown_history_topic'];
+		}
+		else
+		{
+			$selected_topic_id = 'all';
+		}
+		return $selected_topic_id;
+	}
+	
+	public static function get_problem_library_list($selected_course_id,$selected_topic_id)
+	{
+		if ($selected_course_id !== Null && $selected_course_id !== 'all')
+		{
+			if ($selected_topic_id !== Null && $selected_topic_id !== 'all')
+			{
+				//12m_topic_prob -> list of probs
+				$problem_library_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id);
+			}
+			else
+			{
+				//12m_class_topic -> list of topics -> 12m_topic_prob -> list of probs
+				$topic_list = MTopic::get_all_topics_in_course($selected_course_id);
+				$problem_library_list = array();
+				for ($i=0;$i<count($topic_list);$i++)
+				{
+					$temp = MProblem::get_all_problems_in_topic_with_exclusion($topic_list[$i]->m_id);
+					for ($j=0;$j<count($temp);$j++)
+					{
+						$problem_library_list[] = $temp[$j];
+					}
+				}
+			}
+		}
+		else
+		{
+			//no problems
+			$problem_library_list = Null;
+		}
+		return $problem_library_list;
+	}
+	
+	//Add a course to the database ($course_name should be a string)
+	public static function add_course_to_db($course_name)
+	{
+		global $dbmgr;
+		$insertquery = "
+        INSERT INTO class 
+		(name)
+		VALUES 
+		('".$course_name."')";
+        $dbmgr->exec_query($insertquery);
+	}
+	
+	public static function add_topic_to_db($course_id, $topic_name)
+	{
+		global $dbmgr;
+		//insert new topic
+		$insertquery = "INSERT INTO topic VALUES (Null,'".$topic_name."')";
+		$dbmgr->exec_query($insertquery);
+		//get new topic id
+		$selectquery = "SELECT * FROM topic ORDER BY id DESC";
+		$res=$dbmgr->fetch_assoc($selectquery);
+		$topic_id = $res[0]['id'];
+		//insert into 12m_class_topic
+		$insertquery = "INSERT INTO 12m_class_topic VALUES (Null,'".$course_id."','".$topic_id."')";
+		$dbmgr->exec_query($insertquery);
+	}
+	
+    public static function add_problem_to_db($topic_id, $prob_name, $prob_url, $num_ans, $cor_ans, $sol_url="")
+    {
+        global $dbmgr;
+        //CREATE NEW PROBLEM OBJECT
+        $new_prob = new MProblem();
+        $new_prob->create($prob_name, $prob_url, $num_ans, $cor_ans, $sol_url);
+        
+        //GET NEW PROBLEM ID
+        $selectquery = "SELECT * FROM problems ORDER BY id DESC";
+        $res=$dbmgr->fetch_assoc($selectquery);
+        $problem_id = $res[0]['id'];
+
+        //GENERATE BLANK 12M_PROB_ANS FOR PROBLEM
+        for ($i=0;$i<$num_ans;$i++)
+        {
+            $insertquery = "INSERT INTO 12m_prob_ans VALUES (Null,'".$problem_id."','".($i+1)."','0')";
+            $dbmgr->exec_query($insertquery);
+        }
+
+        //FILL IN 12M_TOPIC_PROB
+        $insertquery = "INSERT INTO 12m_topic_prob VALUES (Null,'".$topic_id."','".$problem_id."')";
+        $dbmgr->exec_query($insertquery);
+    }
+    
     function init_selector()
     {
         # peal out the POST data (course/topic selected)
