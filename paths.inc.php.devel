@@ -1,15 +1,18 @@
 <?php
 // all the global stuff goes hear and gets included on every page
-#$GLOBALS["SQL_SERVER"] = "localhost";
-$GLOBALS["DOMAIN"] = "http://pr.local/";
+$GLOBALS["SQL_SERVER"] = "localhost";
+$GLOBALS["SQL_USER"] = "problemroulette";
+$GLOBALS["SQL_PASSWORD"] = "e3001h0e";
+$GLOBALS["SQL_DATABASE"] = "problemroulette";
+$GLOBALS["DOMAIN"] = "http://apps.edu/roulette/";
 $GLOBALS["DOMAIN_PICS"] = $DOMAIN."pics/";
 $GLOBALS["DOMAIN_JS"] = $DOMAIN."js/";
 $GLOBALS["DOMAIN_CSS"] = $DOMAIN."css/";
 $GLOBALS["DOMAIN_LIB"] = $DOMAIN."lib/";
 #$GLOBALS["DIR"] = "C:/wamp/www/roadmaps2/";
-$GLOBALS["DIR"] = "/Users/jtritz/bitbucket/problemroulette/";
+$GLOBALS["DIR"] = "/apps/problemroulette/";
 $GLOBALS["DIR_PICS"] = $GLOBALS["DIR"]."pics/";
 $GLOBALS["DIR_JS"] = $GLOBALS["DIR"]."js/";
 $GLOBALS["DIR_CSS"] = $GLOBALS["DIR"]."css/";
 $GLOBALS["DIR_LIB"] = $GLOBALS["DIR"]."lib/";
-?>
+
