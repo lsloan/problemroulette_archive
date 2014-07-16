@@ -12,7 +12,7 @@ Class MProblem
 	var $m_prob_tot_correct;#Number of times this problem was correctly answered
 	var $m_prob_tot_time;	#Cumulative time spent working on this problem
 	var $m_prob_solution;	#URL of solution, if supplied
-	
+
 	function __construct($prob_id = Null)
 	{
 		if ($prob_id == Null)
@@ -20,10 +20,7 @@ Class MProblem
 			return;
 		}
         global $dbmgr; 
-		$selectquery = "SELECT * 
-		FROM problems
-		WHERE id = ".$prob_id;
-        $res = $dbmgr->fetch_assoc($selectquery);
+    $res = $dbmgr->fetch_assoc("SELECT * FROM problems WHERE id=:id",array(":id"=>$prob_id));
 		$this->m_prob_id = $prob_id;
 		$this->m_prob_name = $res[0]['name'];
 		$this->m_prob_url = $res[0]['url'];
@@ -38,21 +35,7 @@ Class MProblem
 	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')
 	{	
         global $dbmgr; 
-		$insertquery = "
-        INSERT INTO problems(
-			name,
-			url,
-			correct,
-			ans_count, 
-			solution
-        )VALUES(
-            '".$prob_name."',
-            '".$prob_url."',
-            '".$prob_correct."',
-            '".$prob_ans_count."', 
-			'".$prob_solution."'
-        )";
-        $dbmgr->exec_query($insertquery);
+        $res = $dbmgr->exec_query("INSERT INTO problems (name,url,correct,ans_count,solution) VALUES (:prob_name,:prob_url,:prob_correct,:prob_ans_count,:prob_solution)",array(":prob_name"=>$prob_name,":prob_url"=>$prob_url,":prob_correct"=>$problem_correct,":prob_ans_count"=>$prob_ans_count,":prob_solution"=>$prob_solution));
 	}
 	
 	function get_ans_submit_count($ans_num)
@@ -60,13 +43,7 @@ Class MProblem
 		if ($this->m_prob_id != Null)
 		{
 			global $dbmgr;
-			$selectquery = "
-			SELECT count 
-			FROM 12m_prob_ans 
-			WHERE prob_id = ".$this->m_prob_id." 
-			AND ans_num = ".$ans_num;
-			
-			$res = $dbmgr->fetch_assoc($selectquery);
+			$res = $dbmgr->fetch_assoc("SELECT count FROM 12m_prob_ans WHERE prob_id =:prob_id AND ans_num =:ans_num",array(":prob_id"=>$this->m_prob_id,":ans_num"=>$ans_num));
             if ($res)
             {
                 $count = $res[0]['count'];
@@ -84,15 +61,9 @@ Class MProblem
 		if ($this->m_prob_id != Null)
 		{
 			global $dbmgr;
-			$selectquery = "
-			SELECT tot_tries, tot_time 
-			FROM problems
-			WHERE id = ".$this->m_prob_id;
-			
-			$res = $dbmgr->fetch_assoc($selectquery);
+			$res = $dbmgr->fetch_assoc("SELECT tot_tries, tot_time FROM problems WHERE id =:id",array(":id"=>$this->m_prob_id));
 			$tot_tries = $res[0]['tot_tries'];
 			$tot_time = $res[0]['tot_time'];
-			
 			$avg_time = $tot_time/$tot_tries;
 			
 			return round($avg_time,1);
@@ -134,56 +105,30 @@ Class MProblem
     public static function update_problem_name($prob_id=Null, $new_prob_name=Null)
     {
         global $dbmgr;
-        $updatequery = "
-        UPDATE problems 
-        SET 
-            name='".$new_prob_name."'
-        WHERE id=".$prob_id;
-        $dbmgr->exec_query($updatequery);
+        $dbmgr->exec_query("UPDATE problems SET name=:name WHERE id=:prob_id",array(":name"=>$new_prob_name,":id"=>$prob_id));
     }
     
     public static function update_problem_url($prob_id=Null, $new_prob_url=Null)
     {
-        global $dbmgr;
-        $updatequery = "
-        UPDATE problems 
-        SET 
-            url='".$new_prob_url."'
-        WHERE id=".$prob_id;
-        $dbmgr->exec_query($updatequery);
+       $dbmgr->exec_query("UPDATE problems SET  url=:url  WHERE id=:id",array(":url"=>$new_prob_url,":id"=>$prob_id));
     }
     
     public static function update_problem_num_ans($prob_id=Null, $new_prob_num_ans=Null)
     {
         global $dbmgr;
-        $updatequery = "
-        UPDATE problems 
-        SET 
-            ans_count='".$new_prob_num_ans."'
-        WHERE id=".$prob_id;
-        $dbmgr->exec_query($updatequery);
+        $dbmgr->exec_query("UPDATE problems SET ans_count=:new_prob_num_ans  WHERE id=:id",array(":new_prob_num_ans"=>$new_prob_num_ans,":id"=>$prob_id));
     }
     
     public static function update_problem_cor_ans($prob_id=Null, $new_prob_cor_ans=Null)
     {
         global $dbmgr;
-        $updatequery = "
-        UPDATE problems 
-        SET 
-            correct='".$new_prob_cor_ans."'
-        WHERE id=".$prob_id;
-        $dbmgr->exec_query($updatequery);
+        $dbmgr->exec_query("UPDATE problems SET correct=:correct WHERE id=:id",array(":correct"=>$new_prob_cor_ans,":id"=>$prob_id));
     }
     
     public static function update_problem_sol_url($prob_id=Null, $new_prob_sol_url=Null)
     {
         global $dbmgr;
-        $updatequery = "
-        UPDATE problems 
-        SET 
-            solution='".$new_prob_sol_url."'
-        WHERE id=".$prob_id;
-        $dbmgr->exec_query($updatequery);
+        $dbmgr->exec_query("UPDATE problems SET solution=:solution WHERE id=:id",array(":solution"=>$new_prob_sol_url,":id"=>$prob_id));
     }
     
 	//for $exclusion: input 0 or nothing for no exclusion; input 1 or true for exclusion
@@ -204,26 +149,32 @@ Class MProblem
 		{
 			$topic_id = $topic_id[0];
 		}
+		$where_clause = array();
+		$bindings = array();
+
 		if (isset($topic_id))
 		{
 			$selectquery = "SELECT * 
 			FROM 12m_topic_prob
-			WHERE topic_id = ".$topic_id;
+			WHERE topic_id = :topic_id ";
+			$bindings[":topic_id"]= $topic_id;
+
 			if ($omitted_problems_list != Null)
 			{
 				$selectquery .= " AND ";
 				$omitted_length = count($omitted_problems_list);
-				
+
 				for ($i=0; $i<$omitted_length; $i++)
 				{
-					$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
+					$selectquery .= "problem_id <> :omitted_problems_list_$i ";
+					$bindings[":omitted_problems_list_$i"] = $omitted_problems_list[$i];
 					if ($i < ($omitted_length - 1))
 					{
 						$selectquery .= " AND ";
 					}
 				}
 			}
-			$res = $dbmgr->fetch_assoc($selectquery);
+			$res = $dbmgr->fetch_assoc($selectquery,$bindings);
 			$numrows = count($res);
 			
 			//return problem ids
@@ -268,21 +219,20 @@ Class MCourse
 	function create($name)
 	{
 		global $dbmgr;
-		$insertquery = "
-		INSERT INTO class(
-			name
-		) VALUES(
-			'".$name."'
-		)
-		";
-		$dbmgr->exec_query($insertquery);
+//E		$insertquery = "
+//E		INSERT INTO class(
+//E			name
+//E		) VALUES(
+//E			'".$name."'
+//E		)
+//E		";
+		$dbmgr->exec_query("INSERT INTO class(name) VALUES (:name)",array(":name",$name));
 	}
 	
 	public static function get_course_by_id($id)
 	{
 		global $dbmgr;
-		$selectquery = "SELECT * FROM class WHERE id = ".$id;
-		$res = $dbmgr->fetch_assoc($selectquery);
+		$res = $dbmgr->fetch_assoc("SELECT * FROM class WHERE id =:id",array(":id"=>$id));
 		$course = new MCourse($res[0]['id'],$res[0]['name']);
 		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 		return $course;
@@ -291,8 +241,7 @@ Class MCourse
 	public static function get_all_courses()
 	{
 		global $dbmgr;
-		$selectquery = "SELECT * FROM class";
-		$res = $dbmgr->fetch_assoc($selectquery);
+		$res = $dbmgr->fetch_assoc("SELECT * FROM class");
 		$numrows = count($res);
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
@@ -305,8 +254,7 @@ Class MCourse
 	public static function get_all_courses_with_topics()
 	{
 		global $dbmgr;
-		$selectquery = "SELECT * FROM class";
-		$res = $dbmgr->fetch_assoc($selectquery);
+		$res = $dbmgr->fetch_assoc("SELECT * FROM class");
 		$numrows = count($res);
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
@@ -347,8 +295,7 @@ Class MTopic
 		{
 			$id = $id[0];
 		}
-		$selectquery = "SELECT * FROM topic WHERE id = ".$id;
-		$res = $dbmgr->fetch_assoc($selectquery);
+		$res = $dbmgr->fetch_assoc("SELECT * FROM topic WHERE id =:id",array(':id'=>$id));
 		$topic = new MTopic($res[0]['id'],$res[0]['name']);
 		//$topic->m_questions = MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id);
 		return $topic;
@@ -358,8 +305,7 @@ Class MTopic
 	public static function get_all_topics()
 	{
 		global $dbmgr;
-		$selectquery = "SELECT * FROM topic";
-		$res = $dbmgr->fetch_assoc($selectquery);
+		$res = $dbmgr->fetch_assoc("SELECT * FROM topic");
 		$numrows = count($res);
 		$all_topics = array();
 		for ($i=0; $i<$numrows; $i++)
@@ -372,12 +318,9 @@ Class MTopic
 	public static function get_all_topics_in_course($course_id)
 	{
 		global $dbmgr;
-		$selectquery = "SELECT * 
-		FROM 12m_class_topic
-		WHERE class_id = ".$course_id;
 		if ($course_id !== Null)
 		{
-		$res = $dbmgr->fetch_assoc($selectquery);
+		$res = $dbmgr->fetch_assoc("SELECT * FROM 12m_class_topic	WHERE class_id =:course_id",array(":course_id"=>$course_id));
 		}
 		else
 		{
@@ -389,26 +332,23 @@ Class MTopic
 		{
 			$all_topic_ids_in_course[$i] = $res[$i]['topic_id'];
 		}
-		
-		$whereclause = "WHERE 1=0";
-		
+		$where_clause = array();
+		$bindings = array();
 		if ($numrows > 0)
 		{
-		$whereclause = "WHERE ";
 		for ($i=0; $i<$numrows; $i++)
 			{
-				$whereclause .= "id = ".$all_topic_ids_in_course[$i];
-				if ($i < ($numrows - 1))
-				{
-					$whereclause .= " OR ";
-				}
+				$where_clause[]="id = :id_$i";
+				$bindings[":id_$i"] = $all_topic_ids_in_course[$i];
 			}
 		}
-		
-		$selectquery = "SELECT * 
-		FROM topic
-		".$whereclause;
-		$res = $dbmgr->fetch_assoc($selectquery);
+
+		$selectquery = "SELECT * FROM topic";
+		if ( !empty($where_clause) )
+		{
+      $selectquery .= " WHERE " . implode(" OR ", $where_clause );
+		}
+		$res = $dbmgr->fetch_assoc($selectquery, $bindings);
 		$numrows = count($res);
 		$all_topics_in_course = array();
 		for ($i=0; $i<$numrows; $i++)
@@ -653,27 +593,19 @@ Class MDirector
 	public static function add_course_to_db($course_name)
 	{
 		global $dbmgr;
-		$insertquery = "
-        INSERT INTO class 
-		(name)
-		VALUES 
-		('".$course_name."')";
-        $dbmgr->exec_query($insertquery);
+      $dbmgr->exec_query("INSERT INTO class (name) VALUES (:name)",array(":name",$course_name));
 	}
 	
 	public static function add_topic_to_db($course_id, $topic_name)
 	{
 		global $dbmgr;
 		//insert new topic
-		$insertquery = "INSERT INTO topic VALUES (Null,'".$topic_name."')";
-		$dbmgr->exec_query($insertquery);
+		$dbmgr->exec_query("INSERT INTO topic VALUES (:nil_value,:topic_name)",array(":nil_value"=>Null,":topic_name"=>$topic_name));
 		//get new topic id
-		$selectquery = "SELECT * FROM topic ORDER BY id DESC";
-		$res=$dbmgr->fetch_assoc($selectquery);
+    $res=$dbmgr->fetch_assoc("SELECT * FROM topic ORDER BY id DESC");
 		$topic_id = $res[0]['id'];
 		//insert into 12m_class_topic
-		$insertquery = "INSERT INTO 12m_class_topic VALUES (Null,'".$course_id."','".$topic_id."')";
-		$dbmgr->exec_query($insertquery);
+		$dbmgr->exec_query("INSERT INTO 12m_class_topic VALUES (:nil_value,:course_id,:topic_id)",array(":nil_value"=>Null,":course_id"=>$course_id,":topic_id"=>$topic_id));
 	}
 	
     public static function add_problem_to_db($topic_id, $prob_name, $prob_url, $num_ans, $cor_ans, $sol_url="")
@@ -684,20 +616,17 @@ Class MDirector
         $new_prob->create($prob_name, $prob_url, $num_ans, $cor_ans, $sol_url);
         
         //GET NEW PROBLEM ID
-        $selectquery = "SELECT * FROM problems ORDER BY id DESC";
-        $res=$dbmgr->fetch_assoc($selectquery);
+        $res=$dbmgr->fetch_assoc("SELECT * FROM problems ORDER BY id DESC");
         $problem_id = $res[0]['id'];
 
         //GENERATE BLANK 12M_PROB_ANS FOR PROBLEM
         for ($i=0;$i<$num_ans;$i++)
         {
-            $insertquery = "INSERT INTO 12m_prob_ans VALUES (Null,'".$problem_id."','".($i+1)."','0')";
-            $dbmgr->exec_query($insertquery);
+					$dbmgr->exec_query("INSERT INTO 12m_prob_ans VALUES (:nil_value,:problem_id,:i_value,:zero_value)", array(":nil_value"=>Null,":problem_id"=>$problem_id,":i_value"=>($i+1),":zero_value"=>'0'));
         }
 
         //FILL IN 12M_TOPIC_PROB
-        $insertquery = "INSERT INTO 12m_topic_prob VALUES (Null,'".$topic_id."','".$problem_id."')";
-        $dbmgr->exec_query($insertquery);
+        $dbmgr->exec_query("INSERT INTO 12m_topic_prob VALUES (:nil_value,:topic_id,:problem_id)",array(":nil_value"=>Null,":topic_id"=>$topic_id,":problem_id"=>$problem_id));
     }
     
     function init_selector()
@@ -830,41 +759,50 @@ Class MResponse
 	function update_responses()
 	{
         global $dbmgr; 
-		$insertquery = "
-        INSERT INTO responses(
-			start_time,
-			end_time,
-			user_id,
-			prob_id,
-			answer
-        )VALUES(
-            '".date('Y-m-d H:i:s',$this->m_start_time)."',
-            '".date('Y-m-d H:i:s',$this->m_end_time)."',
-            '".$this->m_user_id."',
-            '".$this->m_problem_id."',
-            '".$this->m_student_answer."'
-        )";
-        $dbmgr->exec_query($insertquery);
+        $dbmgr->exec_query("INSERT INTO responses(
+        	 										start_time,
+        	 										end_time,user_id,
+        	 										prob_id,
+        	 										answer)
+                            VALUES(
+                            	:start_time,
+                            	:end_time,
+                            	:user_id,
+                            	:prob_id,
+                            	:answer)",
+        										array(
+        											":start_time"=>date('Y-m-d H:i:s',$this->m_start_time),
+        											":end_time"=>date('Y-m-d H:i:s',$this->m_end_time),
+        											":user_id"=>$this->m_user_id,
+        											":prob_id"=>$this->m_problem_id,
+        											":answer"=>$this->m_student_answer
+        											   )
+        									);
 	}
 	
 	function update_skips()
 	{
         global $dbmgr; 
-		$insertquery = "
-        INSERT INTO responses(
-			start_time,
-			end_time,
-			user_id,
-			prob_id,
-			answer
-        )VALUES(
-            '".date('Y-m-d H:i:s',$this->m_start_time)."',
-            '".date('Y-m-d H:i:s',$this->m_end_time)."',
-            '".$this->m_user_id."',
-            '".$this->m_problem_id."',
-			'0'
-        )";
-        $dbmgr->exec_query($insertquery);
+        $dbmgr->exec_query("INSERT INTO responses(
+        	                  	start_time,
+        	                  	end_time,
+        	                  	user_id,
+        	                  	prob_id,
+        	                  	answer)
+                            VALUES(
+                            	:start_time,
+                            	:end_time,
+                            	:user_id,
+                            	:prob_id,
+                            	:answer)",
+                            array(
+                            		":start_time"=>date('Y-m-d H:i:s',$this->m_start_time),
+                            		":end_time"=>date('Y-m-d H:i:s',$this->m_end_time),
+                            		":user_id"=>$this->m_user_id,
+                            		":prob_id"=>$this->m_problem_id,
+                            		"answer"=>'0'
+                            		)
+                          );
 	}
 	
 	function update_stats()
@@ -885,15 +823,10 @@ Class MResponse
 		//update stats table
 		if ($solve_time <= $this->m_maximum_recorded_time)
 		{
-			$updatequery = "
-			UPDATE stats 
-			SET 
-				tot_tries=tot_tries+1,
-				tot_correct=tot_correct+".$student_answered_correctly.", 
-				tot_time=tot_time+".$solve_time."
-			WHERE user_id=".$this->m_user_id;
-			$dbmgr->exec_query($updatequery);
-		}
+     	$dbmgr->exec_query("UPDATE stats SET tot_tries = tot_tries + 1 , tot_correct = tot_correct + :student_answered_correctly, tot_time = tot_time + :solve_time WHERE user_id = :user_id",
+                          array(":student_answered_correctly"=>$student_answered_correctly,":solve_time"=>$solve_time,":user_id"=>$this->m_user_id));
+
+    }
 	}
 
 	function update_problems()
@@ -914,28 +847,19 @@ Class MResponse
 		//update stats table
 		if ($solve_time <= $this->m_maximum_recorded_time)
 		{
-			$updatequery = "
-			UPDATE problems 
-			SET 
-				tot_tries=tot_tries+1,
-				tot_correct=tot_correct+".$student_answered_correctly.", 
-				tot_time=tot_time+".$solve_time."
-			WHERE id=".$this->m_problem_id;
-			$dbmgr->exec_query($updatequery);
+      $dbmgr->exec_query("UPDATE problems SET tot_tries = tot_tries + 1, tot_correct = tot_correct + :student_answered_correctly, tot_time = tot_time + :solve_time WHERE id = :m_problem_id",
+                          array(":student_answered_correctly"=>$student_answered_correctly,":solve_time"=>$solve_time, ":m_problem_id"=>$this->m_problem_id));
+
+
 		}
 	}
 	
 	function update_12m_prob_ans()
 	{
 		global $dbmgr;
-		
-		$updatequery = "
-		UPDATE 12m_prob_ans 
-		SET count=count+1
-		WHERE prob_id=".$this->m_problem_id."
-		AND ans_num=".$this->m_student_answer;
-		
-		$dbmgr->exec_query($updatequery);
+
+    $dbmgr->exec_query("UPDATE 12m_prob_ans SET count = count + 1  WHERE prob_id = :prob_id AND ans_num = :ans_num ",
+       									array(":prob_id"=>$this->m_problem_id,"ans_num"=>$this->m_student_answer));
 	}
 	
 }
@@ -978,129 +902,73 @@ Class MUserSummary
 		}
 		else
 		{
+			$bindings=array();
+			$whole_thing=array(
+				"select"=>array(
+					"all"=>"SELECT * FROM responses WHERE answer <> 0",
+				  "user"=>"SELECT * FROM responses WHERE user_id=:user_id AND answer <> 0",
+				),
+				"numprob"=>array(
+					"all"=>"SELECT COUNT(*) FROM responses WHERE answer <> 0",
+					"user"=>"SELECT COUNT(*) FROM responses WHERE user_id=:user_id AND answer <> 0",
+			  ),
+				"numuser"=>array(
+					"all"=>"SELECT COUNT(DISTINCT user_id) FROM responses WHERE answer <> 0",
+					"user"=>"SELECT COUNT(DISTINCT user_id) FROM responses WHERE user_id=:user_id AND answer <> 0",
+			  ),
+			);
+			$type = "all";
 			if ($all_users == '' || $all_users == Null)
 			{
-				if ($all_users !== 0)
+				if ($all_users == 0)
 				{
-					{
-						$selectquery = "
-						SELECT * 
-						FROM responses 
-						WHERE answer <> 0";
-						
-						$numprobquery = "
-						SELECT COUNT(*) 
-						FROM responses 
-						WHERE answer <> 0";
-						
-						$numuserquery = "
-						SELECT COUNT(DISTINCT user_id) 
-						FROM responses 
-						WHERE answer <> 0";
-					}
-				}
-				else
-				{
-					$selectquery = "
-					SELECT * 
-					FROM responses 
-					WHERE user_id=".$user_id." AND 
-					answer <> 0";
-					
-					$numprobquery = "
-					SELECT COUNT(*) 
-					FROM responses 
-					WHERE user_id=".$user_id." AND 
-					answer <> 0";
-					
-					$numuserquery = "
-					SELECT COUNT(DISTINCT user_id)
-					FROM responses 
-					WHERE user_id=".$user_id." AND 
-					answer <> 0";
+					$type = "user";
+					$bindings[":user_id"]=$user_id;
 				}
 			}
 			elseif ($all_users !== 0)
 			{
 				$search_user_id = 0;
 				$search_username = $all_users;
-				$select_user_id_query = "SELECT id FROM user WHERE username = '".$search_username."'";
-				$res = $dbmgr->fetch_assoc($select_user_id_query);
+        $type = "user";
+				$res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username =:username",array(":username"=>$search_username));
 				if (count($res) > 0)
 				{
-					$search_user_id = $res[0]['id'];
-					$selectquery = "
-					SELECT * 
-					FROM responses 
-					WHERE user_id=".$search_user_id." AND 
-					answer <> 0";
-					
-					$numprobquery = "
-					SELECT COUNT(*) 
-					FROM responses 
-					WHERE user_id=".$search_user_id." AND 
-					answer <> 0";
-					
-					$numuserquery = "
-					SELECT COUNT(DISTINCT user_id) 
-					FROM responses 
-					WHERE user_id=".$search_user_id." AND 
-					answer <> 0";
+          $bindings[":user_id"]=$res[0]["id"];
 				}
 				else
 				{
-					$selectquery = "SELECT * FROM responses WHERE user_id = 1 AND user_id = 2";
-					$numprobquery = "SELECT COUNT(*) FROM responses WHERE user_id = 1 AND user_id = 2";
-					$numuserquery = "SELECT COUNT(DISTINCT user_id) FROM responses WHERE user_id = 1 AND user_id = 2";
+					$type = "user";
+					$bindings[":user_id"]=-1;
 				}
 			}
 			else
 			{
-				$selectquery = "
-				SELECT * 
-				FROM responses 
-				WHERE user_id=".$user_id." AND 
-				answer <> 0";
-				
-				$numprobquery = "
-				SELECT COUNT(*) 
-				FROM responses 
-				WHERE user_id=".$user_id." AND 
-				answer <> 0";
-				
-				$numuserquery = "
-				SELECT COUNT(DISTINCT user_id )
-				FROM responses 
-				WHERE user_id=".$user_id." AND 
-				answer <> 0";
+					$type = "user";
+					$bindings[":user_id"]=$user_id;
 			}
 			
 			if ($this->m_problems_list_id != Null)
 			{
-				$selectquery .= " AND (";
-				$numprobquery .= " AND (";
-				$numuserquery .= " AND (";
+				$additional_clause = array();
 				for ($i=0; $i<$num_problems_in_selection; $i++)
 				{
-					$selectquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
-					$numprobquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
-					$numuserquery .= "prob_id=".$this->m_problems_list_id[$i]." OR ";
-					if ($i == ($num_problems_in_selection-1))
-					{
-						$selectquery .= "prob_id=".$this->m_problems_list_id[$i].")";
-						$numprobquery .= "prob_id=".$this->m_problems_list_id[$i].")";
-						$numuserquery .= "prob_id=".$this->m_problems_list_id[$i].")";
-					}
+					$additional_clause[] = "prob_id=:prob_id_$i";
+					$bindings[":prob_id_$i"]= $this->m_problems_list_id[$i];
 				}
+				$additional_clause = " AND ( " . implode( " OR " , $additional_clause ) . " ) ";
 			}
-			$res_prob = $dbmgr->fetch_num($numprobquery);
-			$num_responses = implode($res_prob[0]);
+      else
+      {
+      	$additional_clause = "";
+      }
+      foreach (array("numprob","numuser") AS $key ) {
+  	    $res = $dbmgr->fetch_num($whole_thing[$key][$type].$additional_clause,$bindings);
+        $whole_thing[$key]["count"] =  $res[0][0];
+      }
 
-			$res_user = $dbmgr->fetch_num($numuserquery);
-			$num_users = implode($res_user[0]);
-			
-			$this->m_tot_tries = $num_responses;
-			$this->m_num_users = $num_users;
+				$this->m_tot_tries = $whole_thing["numprob"]["count"];
+				$this->m_num_users = $whole_thing["numuser"]["count"];
 			
 			if ($all_users == '' || $all_users == Null)
 			{
@@ -1109,8 +977,7 @@ Class MUserSummary
 					return;
 				}
 			}
-			
-			$res = $dbmgr->fetch_assoc($selectquery);
+			$res = $dbmgr->fetch_num($whole_thing["select"][$type].$additional_clause,$bindings);
 			$num_res = count($res);
 		}
 		

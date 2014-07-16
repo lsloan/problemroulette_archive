@@ -27,13 +27,11 @@ if (($handle = fopen("csvProbs/stats250v3.csv","r")) !== FALSE)
 		$solution = $data[5];
 
 		//SEARCH TO SEE IF PROBLEM EXISTS
-		$selectquery = "SELECT * FROM problems WHERE url='".$url."'";
-		$res=$dbmgr->fetch_assoc($selectquery);
+		$res=$dbmgr->fetch_assoc("SELECT * FROM problems WHERE url=:url",array(":url"=>$url));
 		$p_id = $res[0]['id'];
 
 		//UPDATE PROBLEM IN PROBLEM TABLE
-		$updatequery = "UPDATE problems SET solution='".$solution."' WHERE id=$p_id";
-		$dbmgr->exec_query($updatequery);
+		$dbmgr->exec_query("UPDATE problems SET solution=:solution WHERE id=:id",array(":solution"=>$solution,":id"=>$p_id));
 
 		$row++;
 	}

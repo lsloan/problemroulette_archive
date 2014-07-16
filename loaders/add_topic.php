@@ -17,17 +17,14 @@ $course_id = 8;
 $topic = "Chapter 25, 26, 27";
 
 //insert new topic
-$insertquery = "INSERT INTO topic VALUES (Null,'".$topic."')";
-$dbmgr->exec_query($insertquery);
+$dbmgr->exec_query("INSERT INTO topic VALUES (:null_value,:topic)",array(":null_value"=>Null,":topic"=>$topic));
 
 //get new topic id
-$selectquery = "SELECT * FROM topic ORDER BY id DESC";
-$res=$dbmgr->fetch_assoc($selectquery);
+$res=$dbmgr->fetch_assoc("SELECT * FROM topic ORDER BY id DESC");
 $topic_id = $res[0]['id'];
 
 //insert into 12m_class_topic
-$insertquery = "INSERT INTO 12m_class_topic VALUES (Null,'".$course_id."','".$topic_id."')";
-$dbmgr->exec_query($insertquery);
+$dbmgr->exec_query("INSERT INTO 12m_class_topic VALUES (:null_value,:course_id,:topic_id)"array(":null_value"=>Null,":course_id"=>$course_id,":topic_id"=>$topic_id));
 
 echo $topic." added to ".$course;
 

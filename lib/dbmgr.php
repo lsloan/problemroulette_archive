@@ -26,47 +26,47 @@ class CDbMgr
 		$this->m_link = false;
 
 		//	Connect to the database
-        $lnk = new mysqli( $this->m_host, $this->m_user, $this->m_pswd, $this->m_db );
-        if ($lnk->connect_errno) {
-            echo "Failed to connect to MySQL: (" . $lnk->connect_errno . ") " . $lnk->connect_error;
-        }
-        else
-        {
-            $this->m_link = $lnk;
-            #echo $lnk->host_info . "\n";
-        }
+    $lnk = new PDO( "mysql:dbname={$this->m_db};host={$this->m_host}", $this->m_user, $this->m_pswd  );
+    if ($lnk->errorCode())
+    {
+        echo "Failed to connect to MySQL: (" . $lnk->errorCode() . ") " . print_r($lnk->errorInfo(),true);
+    }
+    else
+    {
+        $this->m_link = $lnk;
+        #echo $lnk->host_info . "\n";
+    }
 	}
-
+  // call user_func_array
+  function prepare()
+  {
+    return call_user_func_array(array($this->m_link,"prepare"), func_get_args());
+  }
 	//	Primitives
-	function exec_query( $query )
+	function exec_query( $query, $bindings = array() )
 	{
-        $result = $this->m_link->query($query);
+    $result = $this->m_link->prepare($query);
+    //print __FUNCTION__;
+    //print_r($bindings);
 		if (!$result)
 		{
-            echo "query failed: " .$query. "(" . $this->m_link->errno . ") " . $this->m_link->error;
+      echo "query failed: " .$query. "(" . $this->m_link->errno . ") " . $this->m_link->error;
 		}
+    $result->execute($bindings);
 		return $result;
 	}
-    function fetch_num( $query )
-    {
-        $res = $this->exec_query($query);
-        $results = array();
-        while($value = $res->fetch_row())
-        {
-            array_push($results, $value);
-        }
-        return $results;
-    }
-    function fetch_assoc( $query )
-    {
-        $res = $this->exec_query($query);
-        $results = array();
-        while($value = $res->fetch_assoc())
-        {
-            array_push($results, $value);
-        }
-        return $results;
-    }
+
+  function fetch_num( $query , $bindings = array() )
+  {
+    $res = $this->exec_query($query, $bindings);
+    return $res->fetchAll(PDO::FETCH_NUM);
+  }
+
+  function fetch_assoc( $query, $bindings = array() )
+  {
+    $res = $this->exec_query($query,$bindings);
+    return $res->fetchAll(PDO::FETCH_ASSOC);
+  }
 	function db_addslashes( $x ) { return addslashes( $x ); }
 	function db_stripslashes( $x ) { return stripslashes( $x ); }
 

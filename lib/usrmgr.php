@@ -19,8 +19,7 @@ class MUser
     function create()
     {
 		global $dbmgr;
-        $query = "INSERT INTO user(username, staff, prefs) VALUES('".$this->username."', ".$this->staff.", '" .$this->package(Array()). "')";
-		$dbmgr->exec_query($query);
+		$dbmgr->exec_query("INSERT INTO user(username, staff, prefs) VALUES ( :username, :staff, :prefs )",array(":username"=>$this->username,":staff"=>$this->staff, ":prefs"=>$this->package(Array())));
     }
   
     function package($input)
@@ -36,8 +35,8 @@ class MUser
 	function get_id()
 	{
 		global $dbmgr;
-		$query = "SELECT id FROM user WHERE username='".$this->username."'";
-		$res = $dbmgr->fetch_assoc($query);
+        $username = $this->username;
+        $res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username=:username",array(':username'=>$username));
 		// populate user (if found)
         if(count($res) == 1)
         {
@@ -50,9 +49,8 @@ class MUser
     function read()
     {
         global $dbmgr; 
+        $res = $dbmgr->fetch_assoc("SELECT staff, prefs FROM user WHERE username=:username",array(":username"=>$this->username));
 
-        $query = "SELECT staff, prefs FROM user where username='".$this->username."'";
-        $res = $dbmgr->fetch_assoc($query);
         // populate user (if found)
         if(count($res) == 1)
         {
@@ -67,8 +65,7 @@ class MUser
     function WritePrefs()
     {   // write all prefs back to user table
         global $dbmgr;
-        $query = "UPDATE user set prefs='".$this->package($this->prefs). "' where username='".$this->username."'";
-		$dbmgr->exec_query($query);
+		$dbmgr->exec_query("UPDATE user SET prefs=:prefs WHERE username=:username",array(":prefs"=>$this->package($this->prefs),":username"=>$this->username));
     }
 
     function GetPref($key)
@@ -115,6 +112,5 @@ class UserManager{
         $this->m_user = new MUser($username);
 	}
 }
-
 
 ?>

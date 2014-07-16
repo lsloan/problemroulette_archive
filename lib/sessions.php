@@ -56,8 +56,17 @@ class CSessMgr
 	{
 		global $dbmgr;
 
-		$res = $dbmgr->exec_query( "SELECT data_value FROM " . $this->m_table . "
-		WHERE id='$aKey'" );
+//E		$res = $dbmgr->exec_query( "SELECT data_value FROM " . $this->m_table . "
+//E		WHERE id='$aKey'" );
+		$res = $dbmgr->exec_query( "SELECT data_value
+																FROM :table=:table
+																WHERE id=:id
+															 ",
+															 array(
+															 	":table"=>$this->m_table,
+															 	":id"=>$aKey)
+															);
+
 		if( $dbmgr->db_num_rows( $res ) == 1 )
 		{
 			$r = $dbmgr->fetch_assoc($res);
@@ -66,8 +75,28 @@ class CSessMgr
 		else
 		{
 			$dbmgr->exec_query(
-				"INSERT INTO " . $this->m_table . "
+			"INSERT INTO " . $this->m_table . "
 				(id, last_update, data_value) VALUES ('$aKey', NOW(), '')" );
+
+			$dbmgr->exec_query( "INSERT INTO table=:table
+													(
+				                  	id,
+													  last_update,
+													  data_value
+													 )VALUES
+													(
+														:id,
+														:last_update,
+														:data_value
+													)
+													",
+        						array(
+        									":table"=>$this->m_table,
+        									":id"=>$aKey,
+        									":last_update"=>NOW(),
+        									":data_value"=>''
+        									)
+                         );
 			return "";
 		}
 	}
@@ -78,9 +107,22 @@ class CSessMgr
 		// stuff is finished.  So thus we must create a new object here to finish session work!
         $tmpDbmgr = new CDbMgr( $GLOBALS["SQL_SERVER"], "pr_user", "pr_user", "prexpansion" );
 		$aVal = $tmpDbmgr->db_addslashes( $aVal );
+	//E	$tmpDbmgr->exec_query(
+	//E		"UPDATE ". $this->m_table . " SET data_value = '$aVal', last_update =
+	//E		NOW() WHERE id = '$aKey'" );
 		$tmpDbmgr->exec_query(
-			"UPDATE ". $this->m_table . " SET data_value = '$aVal', last_update =
-			NOW() WHERE id = '$aKey'" );
+													"UPDATE table=:table SET
+														data_value =:data_value ,
+														last_update =:last_update
+													 WHERE id =:id"
+													 ,
+													 array(":table"=>$this->m_table,
+													 	 		 ":data_value"=>$aVal,
+													 	 		 ":last_update"=>NOW(),
+													 	 		 ":id"=>$aKey
+													 	 	  )
+													);
+
 		unset($tmpDbmgr); // complete the hack :(
 		return true;
 	}
@@ -89,7 +131,14 @@ class CSessMgr
 	{
 		global $dbmgr;
 
-		$dbmgr->exec_query( "DELETE FROM " . $this->m_table . " WHERE id = '$aKey'" );
+//E		$dbmgr->exec_query( "DELETE FROM " . $this->m_table . " WHERE id = '$aKey'" );
+		$dbmgr->exec_query( "DELETE FROM table=:table
+			                   WHERE id =:id "
+		                    ,
+		                    array(":table"=>$this->m_table,
+		                    	    ":id"=>$aKey
+		                    	     )
+		                  );
 		return true;
 	}
 	//	Garbage collect session data
@@ -97,9 +146,17 @@ class CSessMgr
 	{
 		global $dbmgr;
 
-		$dbmgr->exec_query(
-			"DELETE FROM " . $this->m_table . " WHERE (UNIX_TIMESTAMP(NOW()) -
-			UNIX_TIMESTAMP(last_update)) > $aLife" );
+//E		$dbmgr->exec_query(
+//E			"DELETE FROM " . $this->m_table . " WHERE (UNIX_TIMESTAMP(NOW()) -
+//E			UNIX_TIMESTAMP(last_update)) > $aLife" );
+	$dbmgr->exec_query(
+											"DELETE FROM table=:table
+			 								 WHERE (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_update)) > aLife=:aLife
+			 								"
+			 								,
+			 							  array(":table"=>$this->m_table,
+			 							  	    ":aLife"=>$aLife)
+			 							);
 		return true;
 	}
 
