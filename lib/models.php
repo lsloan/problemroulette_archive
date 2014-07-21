@@ -825,7 +825,7 @@ Class MResponse
 		$this->m_user_id = $user_id;
 		$this->m_problem_id = $problem_id;
 		$this->m_student_answer = $student_answer;
-		
+
 		$this->verify_problem_id();
 	}
 	
@@ -954,7 +954,6 @@ Class MResponse
           $backtrace .= "{$key}: {$value['class']}.{$value['function']} ({$value['file']}  at {$value['line']})\n";
       }
       error_log($backtrace);
-
 		}
 	}
 	
