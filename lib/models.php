@@ -948,12 +948,12 @@ Class MResponse
 	{
 		if ($this->m_problem_id < 1)
 		{
-      error_log("ERROR in saving/updating MResponse: Invalid value for 'm_problem_id: {$this->m_problem_id}'\n");
-      $backtrace = '';
-      foreach (debug_backtrace() as $key => $value) {
-          $backtrace .= "{$key}: {$value['class']}.{$value['function']} ({$value['file']}  at {$value['line']})\n";
-      }
-      error_log($backtrace);
+			error_log("ERROR in saving/updating MResponse: Invalid value for 'm_problem_id: {$this->m_problem_id}'\n");
+			$backtrace = '';
+			foreach (debug_backtrace() as $key => $value) {
+					$backtrace .= "{$key}: {$value['class']}.{$value['function']} ({$value['file']}	at {$value['line']})\n";
+			}
+			error_log($backtrace);
 		}
 	}
 	
