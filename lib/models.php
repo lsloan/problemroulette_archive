@@ -825,10 +825,14 @@ Class MResponse
 		$this->m_user_id = $user_id;
 		$this->m_problem_id = $problem_id;
 		$this->m_student_answer = $student_answer;
+		
+		$this->verify_problem_id();
 	}
 	
 	function update_responses()
 	{
+		$this->verify_problem_id();
+
         global $dbmgr; 
 		$insertquery = "
         INSERT INTO responses(
@@ -849,6 +853,8 @@ Class MResponse
 	
 	function update_skips()
 	{
+		$this->verify_problem_id();
+
         global $dbmgr; 
 		$insertquery = "
         INSERT INTO responses(
@@ -936,6 +942,20 @@ Class MResponse
 		AND ans_num=".$this->m_student_answer;
 		
 		$dbmgr->exec_query($updatequery);
+	}
+
+	function verify_problem_id()
+	{
+		if ($this->m_problem_id < 1)
+		{
+      error_log("ERROR in saving/updating MResponse: Invalid value for 'm_problem_id: {$this->m_problem_id}'\n");
+      $backtrace = '';
+      foreach (debug_backtrace() as $key => $value) {
+          $backtrace .= "{$key}: {$value['class']}.{$value['function']} ({$value['file']}  at {$value['line']})\n";
+      }
+      error_log($backtrace);
+
+		}
 	}
 	
 }
