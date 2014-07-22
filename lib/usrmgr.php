@@ -89,8 +89,25 @@ class MUser
 
     function SetPref($key, $val)
     {
+        $this->validatePref($key, $val);
         $this->prefs[$key] = $val;
         $this->WritePrefs();
+    }
+
+    function validatePref($key, $val)
+    {
+        if ($key != Null && $key == 'current_problem')
+        {
+            if ($val != Null && intval($val) < 1)
+            {
+                error_log("ERROR in SetPref: Invalid value for 'current_problem': {$val}\n");
+                $backtrace = '';
+                foreach (debug_backtrace() as $key => $value) {
+                    $backtrace .= "{$key}: {$value['class']}.{$value['function']} ({$value['file']}  at {$value['line']})\n";
+                }
+                error_log($backtrace);
+            }
+        }
     }
 }
 
