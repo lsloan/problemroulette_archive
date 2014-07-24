@@ -13,8 +13,6 @@ Class MProblem
 	var $m_prob_tot_time;	#Cumulative time spent working on this problem
 	var $m_prob_solution;	#URL of solution, if supplied
 
-//	print "foo"; exit;
-
 	function __construct($prob_id = Null)
 	{
 		if ($prob_id == Null)
@@ -90,14 +88,9 @@ Class MProblem
 			SELECT tot_tries, tot_time 
 			FROM problems
 			WHERE id = ".$this->m_prob_id;
-			
 			$res = $dbmgr->fetch_assoc($selectquery);
-
-
-
 			$tot_tries = $res[0]['tot_tries'];
 			$tot_time = $res[0]['tot_time'];
-			
 			$avg_time = $tot_time/$tot_tries;
 			
 			return round($avg_time,1);

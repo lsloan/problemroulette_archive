@@ -13,7 +13,6 @@ $args = GrabAllArgs();
 // application objects
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
-print "foo"; exit;
 global $dbmgr;
 //COURSE TO ADD TO
 //WWWWWWWWWWWWWWWWWWWWWWWWWWWW(OPTIONAL)
@@ -39,15 +38,8 @@ if (($handle = fopen("csvProbs/Chem130_Practice_Exam.csv","r")) !== FALSE)
 
 		//SEARCH TO SEE IF PROBLEM EXISTS
 		$url = $data[2];
-
-//
-	//	$selectquery = "SELECT * FROM problems WHERE url=:url";
-		//$hStmt=$dbmgr->prepare("select * from problems where url=:url");
 		$res = $dbmgr->prepare("select * from problems where url=:url")
 			->execute(array(':url',$url))->fetch_all(MYSQLI_ASSOC);
-
-  //  $selectquery = "SELECT * FROM problems WHERE url='".$url."'";
-//		$res=$dbmgr->fetch_assoc($selectquery);
 		$num = count($res);
 		$p_id = $res[0]['id'];
 		$ans_cnt = $res[0]['ans_count'];

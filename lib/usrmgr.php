@@ -36,19 +36,8 @@ class MUser
 	function get_id()
 	{
 		global $dbmgr;
-		//$query = "SELECT id FROM user WHERE username='".$this->username."'";
-	//	$res = $dbmgr->fetch_assoc($query);
-      //  print "foo"; exit;
         $username = $this->username;
-
-       $res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username=:username",array(':username'=>$username));
-
-       //$res = $dbmgr->prepare("SELECT id FROM user WHERE username=:username");
-       //$res->execute(array(':username'=>$username));
-       //$res = $res->fetchAll(PDO::FETCH_ASSOC);
-       //print_r ($res); exit;
-            //
-
+        $res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username=:username",array(':username'=>$username));
 		// populate user (if found)
         if(count($res) == 1)
         {
@@ -61,10 +50,8 @@ class MUser
     function read()
     {
         global $dbmgr; 
-
         $query = "SELECT staff, prefs FROM user where username='".$this->username."'";
         $res = $dbmgr->fetch_assoc($query);
-
         // populate user (if found)
         if(count($res) == 1)
         {
@@ -127,6 +114,5 @@ class UserManager{
         $this->m_user = new MUser($username);
 	}
 }
-
 
 ?>
