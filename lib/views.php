@@ -978,23 +978,19 @@ class VProblems
 	{
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
+		if (! is_array($selected_topics_list_id)) {
+			$selected_topics_list_id = MakeArray($selected_topics_list_id);
+		}
 		$num_topics = count($selected_topics_list_id);
-		if (is_array($selected_topics_list_id))
+		for ($i=0; $i<$num_topics; $i++)
 		{
-			for ($i=0; $i<$num_topics; $i++)
-			{
-				$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-			}
-			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-			{
-				$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-			}
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
 		}
-		else
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 		{
-			$this->v_selected_topics_list = MTopic::get_topic_by_id($selected_topics_list_id);
-			$this->v_selected_topics_list_name = $this->v_selected_topics_list->m_name;
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
+
 		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
 		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
 	}
@@ -1092,22 +1088,17 @@ class VProblems_submitted
 	{
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
-		$num_topics = count($selected_topics_list_id);
-		if (is_array($selected_topics_list_id))
-		{
-			for ($i=0; $i<$num_topics; $i++)
-			{
-				$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-			}
-			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-			{
-				$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-			}
+		if (! is_array($selected_topics_list_id)) {
+			$selected_topics_list_id = MakeArray($selected_topics_list_id);
 		}
-		else
+		$num_topics = count($selected_topics_list_id);
+		for ($i=0; $i<$num_topics; $i++)
 		{
-			$this->v_selected_topics_list = MTopic::get_topic_by_id($selected_topics_list_id);
-			$this->v_selected_topics_list_name = $this->v_selected_topics_list->m_name;
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
+		}
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
+		{
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
 		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
 		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;

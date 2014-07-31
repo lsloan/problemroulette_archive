@@ -11,4 +11,11 @@ function GrabAllArgs()
     return $a;
 }
 
+function MakeArray($variable) {
+  if (! is_array($variable)) {
+    $variable = array($variable);
+  }
+  return $variable;
+}
+
 ?>
