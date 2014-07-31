@@ -19,20 +19,23 @@ Class MProblem
 		{
 			return;
 		}
-        global $dbmgr; 
+    global $dbmgr;
 		$selectquery = "SELECT * 
 		FROM problems
 		WHERE id = ".$prob_id;
-        $res = $dbmgr->fetch_assoc($selectquery);
-		$this->m_prob_id = $prob_id;
-		$this->m_prob_name = $res[0]['name'];
-		$this->m_prob_url = $res[0]['url'];
-		$this->m_prob_ans_count = $res[0]['ans_count'];
-		$this->m_prob_correct = $res[0]['correct'];
-		$this->m_prob_tot_tries = $res[0]['tot_tries'];
-		$this->m_prob_tot_correct = $res[0]['tot_correct'];
-		$this->m_prob_tot_time = $res[0]['tot_time'];
-		$this->m_prob_solution = $res[0]['solution'];
+    $res = $dbmgr->fetch_assoc($selectquery);
+    if (! empty($res[0]))
+    {
+			$this->m_prob_id = $prob_id;
+			$this->m_prob_name = $res[0]['name'];
+			$this->m_prob_url = $res[0]['url'];
+			$this->m_prob_ans_count = $res[0]['ans_count'];
+			$this->m_prob_correct = $res[0]['correct'];
+			$this->m_prob_tot_tries = $res[0]['tot_tries'];
+			$this->m_prob_tot_correct = $res[0]['tot_correct'];
+			$this->m_prob_tot_time = $res[0]['tot_time'];
+			$this->m_prob_solution = $res[0]['solution'];
+		}
 	}
 	
 	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')

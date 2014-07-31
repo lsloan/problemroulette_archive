@@ -33,10 +33,10 @@ else
 }
 
 # reset preferences if not logged in for a while
-if (!isset($_SESSION['current_problem']))
-{
-	$usrmgr->m_user->SetPref('current_problem',Null);
-}
+// if (!isset($_SESSION['current_problem']))
+// {
+// 	$usrmgr->m_user->SetPref('current_problem',Null);
+// }
 if (!isset($_SESSION['problem_submitted']))
 {
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
@@ -50,7 +50,10 @@ $selected_topics_list_id = Null;
 if (isset($_POST['topic_checkbox_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
-	if (min(implode(",",array_map("intval",$selected_topics_list_id))) !== 0)//make sure not to write a string
+//
+//	if (min(implode(",",array_map("intval",$selected_topics_list_id))) !== 0)//make sure not to write a string
+//  prevent error in logs re only one arg to min must be an array - implode was making it a string
+	if ( min(array_map("intval",$selected_topics_list_id)) !== 0 )
 	{
 		$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	}
@@ -198,6 +201,12 @@ if (isset($_POST['next']))
 # translate ids to list of topic objects
 $selected_topics_list_id = $usrmgr->m_user->GetPref('selected_topics_list');
 $num_topics = count($selected_topics_list_id);
+// $selected_topics_list_id might just be a single topic as a string
+if (! is_array($selected_topics_list_id))
+{
+	$selected_topics_list_id = MakeArray($selected_topics_list_id);
+}
+
 for ($i=0; $i<$num_topics; $i++)
 {
 	$selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
