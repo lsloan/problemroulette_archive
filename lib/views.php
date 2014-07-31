@@ -96,7 +96,7 @@ class VPageTabs{
       For issues with the content of the problems, see your instructor first.
     </p>
     </div>
-    <div class="problem-roulette-tag" style="display:none;">2.0.1</div>
+    <div class='problem-roulette-tag' style='display:none;'>2.0.1</div>
 </div>
 
 </body>
