@@ -194,14 +194,6 @@ Class MProblem
 	public static function get_all_problems_in_topic_with_exclusion($topic_id,$exclusion = Null,$by_id = Null)
 	{
 		global $usrmgr;
-		$omitted_problems_list = Null;
-		if ($exclusion == true || $exclusion == 1)
-		{
-			if ($usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']') != Null)
-			{
-				$omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
-			}
-		}
 		global $dbmgr;
 		if (is_array($topic_id))
 		{
@@ -212,20 +204,17 @@ Class MProblem
 			$selectquery = "SELECT * 
 			FROM 12m_topic_prob
 			WHERE topic_id = ".$topic_id;
-			if ($omitted_problems_list != Null)
+			if ($exclusion == true || $exclusion == 1)
 			{
-				$selectquery .= " AND ";
-				$omitted_length = count($omitted_problems_list);
-				
-				for ($i=0; $i<$omitted_length; $i++)
-				{
-					$selectquery .= "problem_id <> ".$omitted_problems_list[$i];
-					if ($i < ($omitted_length - 1))
-					{
-						$selectquery .= " AND ";
-					}
-				}
+				//get user_id
+				$usrmgr->m_user->get_id();
+				$user_id = $usrmgr->m_user->id;
+
+				$selectquery .= " AND problem_id NOT IN ".
+					"(SELECT problem_id from omitted_problems where user_id='".
+					$user_id."' and topic_id='".$topic_id."')";
 			}
+
 			$res = $dbmgr->fetch_assoc($selectquery);
 			$numrows = count($res);
 			
@@ -490,10 +479,16 @@ Class MCTSelect
 		$this->m_selected_course = $usrmgr->m_user->GetPref('selected_course');
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
 		$num_selected_topics = count($this->m_selected_topics_list);
+
+		//get user_id
+		$usrmgr->m_user->get_id();
+		$user_id = $usrmgr->m_user->id;
+
 		for ($i=0; $i<$num_selected_topics; $i++)
 		{
 			$topic_id = $this->m_selected_topics_list[$i];
-			$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
+			$omitted_problem = new OmittedProblem($user_id, $topic_id);
+			$this->m_omitted_problems_list[$topic_id] = $omitted_problem->find();
 		}
 		//^^^taken care of above^^^//$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
 		$this->m_last_activity = $usrmgr->m_user->GetPref('last_activity');
@@ -742,12 +737,17 @@ Class MPpicker
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
 		$num_selected_topics = count($this->m_selected_topics_list);
 		
+		//get user_id
+		$usrmgr->m_user->get_id();
+		$user_id = $usrmgr->m_user->id;
+
 		if (is_array($this->m_selected_topics_list))
 		{
 			for ($i=0; $i<$num_selected_topics; $i++)
 			{
 				$topic_id = $this->m_selected_topics_list[$i];
-				$this->m_omitted_problems_list[$topic_id] = $usrmgr->m_user->GetPref('omitted_problems_list['.$topic_id.']');
+				$omitted_problem = new OmittedProblem($user_id, $topic_id);
+				$this->m_omitted_problems_list[$topic_id] = $omitted_problem->find();
 			}
 			
 			for ($i=0;$i<count($this->m_selected_topics_list);$i++)
@@ -767,7 +767,8 @@ Class MPpicker
 		else
 		{
 			$topic_id = $this->m_selected_topics_list;
-			$this->m_omitted_problems_list[intval($topic_id)] = $usrmgr->m_user->GetPref('omitted_problems_list['.intval($topic_id).']');
+			$omitted_problem = new OmittedProblem($user_id, $topic_id);
+			$this->m_omitted_problems_list[intval($topic_id)] = $omitted_problem->find();
 			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[intval($topic_id)]);
 			$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
 			$this->m_remaining_problems_in_topic_list = count($remaining_problems);
@@ -1163,6 +1164,94 @@ Class MUserSummary
 		//</GET RESPONSES>
 	}
 	
+}
+
+/**
+* 
+*/
+class OmittedProblem
+{
+	var $m_user_id;
+	var $m_topic_id;
+	var $m_problem_id;
+	
+	function __construct($user_id, $topic_id = NULL, $problem_id = NULL)
+	{
+		$this->m_user_id = $user_id;
+		$this->m_topic_id = $topic_id;
+		$this->m_problem_id = $problem_id;
+	}
+
+	function find() {
+		global $dbmgr;
+
+		$query =
+			"select problem_id from omitted_problems where user_id='".$this->m_user_id."'";
+
+		if ($this->m_topic_id) {
+			$query .= " and topic_id='".$this->m_topic_id."'";
+			if ($this->m_problem_id) {
+				$query .= " and problem_id='".$this->m_problem_id."'";
+			}
+		}
+
+		$result = $dbmgr->exec_query($query);
+		$row_cnt = $result->num_rows;
+		$array = array();
+		for ($i=0; $i < $row_cnt; $i++) { 
+			$row = mysqli_fetch_row($result);
+			$array[] = $row[0];
+		}
+
+		return $array;
+	}
+
+	function count() {
+		global $dbmgr;
+
+		$query =
+			"select count(*) from omitted_problems where user_id='".$this->m_user_id."'";
+
+		if ($this->m_topic_id) {
+			$query .= " and topic_id='".$this->m_topic_id."'";
+			if ($this->m_problem_id) {
+				$query .= " and problem_id='".$this->m_problem_id."'";
+			}
+		}
+
+		$count = $dbmgr->fetch_num($query)[0][0];
+
+		return $count;
+	}
+
+	function add() {
+		global $dbmgr;
+
+		$query =
+			"insert into omitted_problems (user_id, topic_id, problem_id) values ('".
+				$this->m_user_id."','".$this->m_topic_id."','".$this->m_problem_id."')";
+
+		$dbmgr->exec_query($query);
+	}
+
+	function remove() {
+		global $dbmgr;
+
+		if ($this->m_user_id) {
+			$query =
+				"delete from omitted_problems where user_id='".$this->m_user_id."'";
+
+			if ($this->m_topic_id) {
+				$query .= " and topic_id='".$this->m_topic_id."'";
+				if ($this->m_problem_id) {
+					$query .= " and problem_id='".$this->m_problem_id."'";
+				}
+			}
+
+			$dbmgr->exec_query($query);
+		}
+	}
+
 }
 
 ?>

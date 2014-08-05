@@ -99,14 +99,15 @@ if (isset($_POST['skip']))
 	$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
 	$current_problem = new MProblem($current_problem_id);
 	
-	//get current topic_id and omitted problems list for given topic
-	$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
-	$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
-		
 	//get user_id
 	$usrmgr->m_user->get_id();
 	$user_id = $usrmgr->m_user->id;
-	
+
+	//get current topic_id and omitted problems list for given topic
+	$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+	$omitted_problem = new OmittedProblem($user_id, $current_topic_id);
+	$current_omitted_problems_list = $omitted_problem->find();
+			
 	//update tables upon response
 	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,Null);
 	
@@ -159,22 +160,19 @@ if (isset($_POST['submit_answer']))
 		
 		//get current topic_id and omitted problems list for given topic
 		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
-		$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
-		
-		//if the student answered correctly, add current problem to omitted problems list for given topic
-		if ($current_problem_answer == $student_answer)
-		{
-			if ($current_omitted_problems_list == Null)
-			{
-				$current_omitted_problems_list = Array();
-			}
-			array_push($current_omitted_problems_list,$current_problem_id);
-			$usrmgr->m_user->SetPref('omitted_problems_list['.$current_topic_id.']',$current_omitted_problems_list);
-		}
 		
 		//get user_id
 		$usrmgr->m_user->get_id();
 		$user_id = $usrmgr->m_user->id;
+
+		//if the student answered correctly, add current problem to omitted problems list for given topic
+		if ($current_problem_answer == $student_answer)
+		{
+			$omitted_problem = new OmittedProblem($user_id, $current_topic_id, $current_problem_id);
+			if ($omitted_problem->count() < 1) {
+				$omitted_problem->add();
+			}
+		}
 		
 		//update tables upon response
 		$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,$student_answer);
