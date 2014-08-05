@@ -50,8 +50,13 @@ function handle_omitted_problems(&$topic_map, $key, $value) {
 }
  
 function unpackage($input) {
-    return unserialize(stripslashes($input));
+  return unserialize(stripslashes($input));
 }
+
+function package($input) {
+  return addslashes(serialize($input));
+}
+
 
 print "init_omitted_problems started\n";
 
@@ -85,15 +90,26 @@ if ($result = $dbmgr->exec_query($selectQuery)) {
 $insertQuery = "insert into omitted_problems (user_id, topic_id, problem_id) values (%s, %s, %s)";
 
 foreach ($user_map as $user_id => $topic_map) {
+  # maybe only do this if $topic_map size > 0 ??
+  $userQuery = "select id, prefs from user where id='".$user_id."'";
+  $result = $dbmgr->exec_query($userQuery);
+  $row = mysqli_fetch_row($result);
+  $user_id = $row[0];
+  $prefs = unpackage($row[1]);
+  $update_needed = false;
   foreach ($topic_map as $topic_id => $problem_map) {
     foreach ($problem_map as $problem_id => $count) {
       # printf("%s,%s,%s,%s\n", $user_id, $topic_id, $problem_id, $count);
       $dbmgr->exec_query(sprintf($insertQuery, $user_id, $topic_id, $problem_id));
     }
+    $prefs["omitted_problems_list[".$topic_id."]"] = Null;
+    $update_needed = true;
+  }
+  if ($update_needed) {
+    $updateQuery = "UPDATE user set prefs='".package($prefs)."' where id='".$user_id."'";
+    $dbmgr->exec_query($updateQuery);
   }
 }
-
-
 
 print "init_omitted_problems ended\n";
 
