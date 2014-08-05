@@ -37,6 +37,11 @@ else
 }
 
 global $usrmgr;
+
+//get user_id
+$usrmgr->m_user->get_id();
+$user_id = $usrmgr->m_user->id;
+
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))
 {
@@ -45,7 +50,7 @@ if (isset($_POST['topic_checkbox_submission']))
 	for ($i=0; $i<$length; $i++)
 	{
 		$topic_id = $reset_topics_list_id[$i];
-		$omitted_problem = new OmittedProblem($usrmgr->m_user->get_id(), $topic_id);
+		$omitted_problem = new OmittedProblem($user_id, $topic_id);
 		$current_omitted_problems_list = $omitted_problem->remove();
 	}
 }
@@ -54,7 +59,7 @@ if (isset($_POST['topic_checkbox_submission']))
 if (isset($_POST['topic_link_submission']))
 {
 	$topic_id = $_POST['topic_link_submission'];
-	$omitted_problem = new OmittedProblem($usrmgr->m_user->get_id(), $topic_id);
+	$omitted_problem = new OmittedProblem($user_id, $topic_id);
 	$current_omitted_problems_list = $omitted_problem->remove();
 }
 
