@@ -14,30 +14,31 @@ class CHeadCSSJavascript{
 
 	function Deliver(){
 		$str   = "\n<title>".$this->m_title." - Problem Roulette</title>";
-        $str .= " 
-        <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
-        <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
-        <link href='css/styles.css' rel='stylesheet' media='screen'>
-        <script src='js/trackingcode.js'></script>
-        <script src='js/jquery-1.10.1.js'></script>
-        <script src='js/bootstrap.js'></script>
+    $str .= "
+    <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
+    <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
+    <link href='css/styles.css' rel='stylesheet' media='screen'>
+		<script src='js/trackingcode.js'></script>
+		<script src='js/jquery-1.10.1.js'></script>
+		<script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
-		<script type='text/javascript' src='js/jquery.tablesorter.js'></script> 
-		<script type='text/javascript' src='js/problem_library_actions.js'></script> 
-		<script type='text/javascript' src='js/problem_edit_actions.js'></script> 
-		<script type='text/javascript' src='js/mytable.js'></script> 
-        ";
-        if($this->m_cssfile != NULL)
-		foreach((array)$this->m_cssfile as $css){
-			$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
-		}
-        if($this->m_javafile != NULL)
-		foreach((array)$this->m_javafile as $java){
-			$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
-		}
-        $str .= "
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        ";
+		<script type='text/javascript' src='js/jquery.tablesorter.js'></script>
+		<script type='text/javascript' src='js/problem_library_actions.js'></script>
+		<script type='text/javascript' src='js/problem_edit_actions.js'></script>
+		<script type='text/javascript' src='js/mytable.js'></script>
+		<script type='text/javascript' src='js/problem.js'></script>
+    ";
+    if($this->m_cssfile != NULL)
+			foreach((array)$this->m_cssfile as $css){
+				$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
+			}
+    if($this->m_javafile != NULL)
+			foreach((array)$this->m_javafile as $java){
+				$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
+			}
+    $str .= "
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    ";
 		return $str;
 	}
 }
@@ -1038,7 +1039,7 @@ class VProblems
 			}
 			$str .= "
 			</p>
-			<form class='ans-form' action='' method='POST'>
+			<form class='ans-form' name='ans_form' action='' method='POST'>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)
 			{
@@ -1064,6 +1065,7 @@ class VProblems
 			<button type='submit'
 			class='btn'
 			name='skip'
+			id='skip'
 			value='1'>
 				Skip
 			</button>
