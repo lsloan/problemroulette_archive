@@ -100,7 +100,6 @@ if (isset($_POST['skip']))
 	$current_problem = new MProblem($current_problem_id);
 	
 	//get user_id
-	$usrmgr->m_user->get_id();
 	$user_id = $usrmgr->m_user->id;
 
 	//get current topic_id and omitted problems list for given topic
@@ -162,7 +161,6 @@ if (isset($_POST['submit_answer']))
 		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
 		
 		//get user_id
-		$usrmgr->m_user->get_id();
 		$user_id = $usrmgr->m_user->id;
 
 		//if the student answered correctly, add current problem to omitted problems list for given topic

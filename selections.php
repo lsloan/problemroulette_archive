@@ -39,7 +39,6 @@ else
 global $usrmgr;
 
 //get user_id
-$usrmgr->m_user->get_id();
 $user_id = $usrmgr->m_user->id;
 
 //checks to see if user reset topics
