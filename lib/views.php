@@ -1039,6 +1039,8 @@ class VProblems
 			$str .= "
 			</p>
 			<form class='ans-form' action='' method='POST'>
+			<input type='hidden' name='problem' value='".$this->v_picked_problem->m_prob_id."'>
+			<input type='hidden' name='started' value='".date("U")."'>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)
 			{
@@ -1084,8 +1086,10 @@ class VProblems_submitted
 	var $v_selected_topics_list_name;
 	var $v_remaining_problems_in_topic_list;
 	var $v_total_problems_in_topic_list;
+	var $v_solve_time;
+	var $v_student_answer;
 
-	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list)
+	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list, $student_answer, $solve_time = 0)
 	{
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
@@ -1103,6 +1107,8 @@ class VProblems_submitted
 		}
 		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
 		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
+		$this->v_student_answer = $student_answer;
+		$this->v_solve_time = $solve_time;
 	}
 	
 	function Deliver()
@@ -1110,38 +1116,15 @@ class VProblems_submitted
 	    global $usrmgr;
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
-		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
-		
-		//calculate solve time
-		$start_time = $usrmgr->m_user->GetPref('start_time');
-		$end_time = $usrmgr->m_user->GetPref('end_time');
-		$solve_time = $end_time - $start_time;
 		
 		//green label for correct answer; red label for incorrect answer
-		if ($correct_answer == $student_answer)
+		if ($correct_answer == $this->v_student_answer)
 		{
 			$label_class = 'label-success';
 		}
 		else
 		{
 			$label_class = 'label-important';
-		}
-		
-		//set color for 'Your Time' label
-		if ($solve_time <= $this->v_picked_problem->get_avg_time())
-		{
-			//$time_label_class = "label-success";//green
-			$time_label_class = "";//gray
-		}
-		elseif ($solve_time <= 1.3*$this->v_picked_problem->get_avg_time())
-		{
-			//$time_label_class = "label-warning";//yellow
-			$time_label_class = "";//gray
-		}
-		else
-		{
-			//$time_label_class = "label-important";//red
-			$time_label_class = "";//gray
 		}
 		
 		//determine total tries for a problem (N)
@@ -1224,9 +1207,9 @@ class VProblems_submitted
 			</button>
 			</form>
 			<p>
-			<span class='label student-answer ".$time_label_class."'>
+			<span class='label student-answer'>
 			Your time:&nbsp;
-			".$solve_time."
+			".$this->v_solve_time."
 			 seconds
 			</span>
 			Average user time: 
@@ -1237,14 +1220,7 @@ class VProblems_submitted
 			Your answer:&nbsp;
 			";
 			
-			if (isset($_SESSION['sesstest']))
-			{
-				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
-			}
-			else
-			{
-				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
-			}
+			$str .= $alphabet[$this->v_student_answer-1];
 			
 			$str .= "
 			</span>

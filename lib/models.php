@@ -733,23 +733,18 @@ Class MPpicker
 	{
 		global $usrmgr;
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
-		$num_selected_topics = count($this->m_selected_topics_list);
 		
 		//get user_id
 		$user_id = $usrmgr->m_user->id;
 
 		if (is_array($this->m_selected_topics_list))
 		{
-			for ($i=0; $i<$num_selected_topics; $i++)
+			for ($i=0; $i<count($this->m_selected_topics_list); $i++)
 			{
 				$topic_id = $this->m_selected_topics_list[$i];
 				$omitted_problem = new OmittedProblem($user_id, $topic_id);
 				$this->m_omitted_problems_list[$topic_id] = $omitted_problem->find();
-			}
-			
-			for ($i=0;$i<count($this->m_selected_topics_list);$i++)
-			{
-				$topic_id = $this->m_selected_topics_list[$i];
+
 				$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
 				$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
 				$this->m_remaining_problems_in_topic_list[$i] = count($remaining_problems);
