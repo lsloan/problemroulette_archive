@@ -1047,8 +1047,7 @@ class VProblems
 				$str .= "<input type='radio' 
 				class='ans-choice' 
 				name='student_answer' 
-				value='".($i+1)."' 
-				onClick='javascript:document.getElementById(&quot;submit_answer&quot;).disabled=false'></input> 
+				value='".($i+1)."'></input> 
 				<font size='4'>".$alphabet[$i]."</font>
 				";
 			}
