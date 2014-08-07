@@ -1040,6 +1040,7 @@ class VProblems
 			$str .= "
 			</p>
 			<form class='ans-form' name='ans_form' action='' method='POST'>
+			<input type='hidden' id='submit_or_skip' name='tbd' value='0'/>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)
 			{
