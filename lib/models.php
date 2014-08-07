@@ -219,13 +219,6 @@ Class MCourse
 	function create($name)
 	{
 		global $dbmgr;
-//E		$insertquery = "
-//E		INSERT INTO class(
-//E			name
-//E		) VALUES(
-//E			'".$name."'
-//E		)
-//E		";
 		$dbmgr->exec_query("INSERT INTO class(name) VALUES (:name)",array(":name",$name));
 	}
 	
