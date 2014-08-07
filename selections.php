@@ -37,6 +37,11 @@ else
 }
 
 global $usrmgr;
+
+//get user_id
+$usrmgr->m_user->get_id();
+$user_id = $usrmgr->m_user->id;
+
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))
 {
@@ -45,7 +50,8 @@ if (isset($_POST['topic_checkbox_submission']))
 	for ($i=0; $i<$length; $i++)
 	{
 		$topic_id = $reset_topics_list_id[$i];
-		$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);
+		$omitted_problem = new OmittedProblem($user_id, $topic_id);
+		$current_omitted_problems_list = $omitted_problem->remove();
 	}
 }
 
@@ -53,7 +59,8 @@ if (isset($_POST['topic_checkbox_submission']))
 if (isset($_POST['topic_link_submission']))
 {
 	$topic_id = $_POST['topic_link_submission'];
-	$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);	
+	$omitted_problem = new OmittedProblem($user_id, $topic_id);
+	$current_omitted_problems_list = $omitted_problem->remove();
 }
 
 # set flag to indicate coming from any other tab
