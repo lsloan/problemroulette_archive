@@ -207,7 +207,6 @@ Class MProblem
 			if ($exclusion == true || $exclusion == 1)
 			{
 				//get user_id
-				$usrmgr->m_user->get_id();
 				$user_id = $usrmgr->m_user->id;
 
 				$selectquery .= " AND problem_id NOT IN ".
@@ -481,7 +480,6 @@ Class MCTSelect
 		$num_selected_topics = count($this->m_selected_topics_list);
 
 		//get user_id
-		$usrmgr->m_user->get_id();
 		$user_id = $usrmgr->m_user->id;
 
 		for ($i=0; $i<$num_selected_topics; $i++)
@@ -738,7 +736,6 @@ Class MPpicker
 		$num_selected_topics = count($this->m_selected_topics_list);
 		
 		//get user_id
-		$usrmgr->m_user->get_id();
 		$user_id = $usrmgr->m_user->id;
 
 		if (is_array($this->m_selected_topics_list))
@@ -990,8 +987,7 @@ Class MUserSummary
 		
 		$this->m_problems_list_id = $problems_list_id;
 		$num_problems_in_selection = count($this->m_problems_list_id);
-		
-		$usrmgr->m_user->get_id();
+
 		$user_id = $usrmgr->m_user->id;
 		
 		//<GET RESPONSES>
