@@ -2,6 +2,7 @@
 
 class MUser
 {
+    var $id;
     var $username;
     var $prefs = null;
     var $staff = 0;
@@ -21,6 +22,7 @@ class MUser
 		global $dbmgr;
         $query = "INSERT INTO user(username, staff, prefs) VALUES('".$this->username."', ".$this->staff.", '" .$this->package(Array()). "')";
 		$dbmgr->exec_query($query);
+        get_id();
     }
   
     function package($input)
@@ -45,17 +47,18 @@ class MUser
             return True;
         }
         return False;
-		}
+	}
  
     function read()
     {
         global $dbmgr; 
 
-        $query = "SELECT staff, prefs FROM user where username='".$this->username."'";
+        $query = "SELECT id, staff, prefs FROM user where username='".$this->username."'";
         $res = $dbmgr->fetch_assoc($query);
         // populate user (if found)
         if(count($res) == 1)
         {
+            $this->id = $res[0]['id'];
             $this->staff = $res[0]['staff'];
             $this->prefs = $this->unpackage($res[0]['prefs']);
             return True;
