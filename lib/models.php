@@ -923,11 +923,12 @@ Class MUserSummary
 			{
 				$search_user_id = 0;
 				$search_username = $all_users;
-        $type = "user";
+        $type = "all";
 				$res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username =:username",array(":username"=>$search_username));
 				if (count($res) > 0)
 				{
           $bindings[":user_id"]=$res[0]["id"];
+
 				}
 				else
 				{
@@ -973,7 +974,9 @@ Class MUserSummary
 			$res = $dbmgr->fetch_num($whole_thing["select"][$type].$additional_clause,$bindings);
 			$num_res = count($res);
 		}
-		
+
+		$res = $dbmgr->fetch_assoc($whole_thing["select"][$type].$additional_clause,$bindings);
+
 		if ($num_res < 1)
 		{
 			//$this->m_tot_tries = 0;
