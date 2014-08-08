@@ -46,49 +46,46 @@ if (($handle = fopen("csvProbs/Chem130_Practice_Exam.csv","r")) !== FALSE)
 
 		//if ($num == 0)
 		//{
-			//CREATE NEW PROBLEM
-			$new_prob = new MProblem();
-			$new_prob->create($name,$url,$ans_count,$correct);
+		//CREATE NEW PROBLEM
+		$new_prob = new MProblem();
+		$new_prob->create($name,$url,$ans_count,$correct);
 
-			//GET NEW PROBLEM ID
-			$selectquery = "SELECT * FROM problems ORDER BY id DESC";
-			$res=$dbmgr->fetch_assoc($selectquery);
-			$problem_id = $res[0]['id'];
+		//GET NEW PROBLEM ID
+		$query = "
+		SELECT *
+		FROM problems
+		ORDER BY id DESC";
+		$res=$dbmgr->fetch_assoc($query);
+		$problem_id = $res[0]['id'];
 
-			//GENERATE BLANK 12M_PROB_ANS FOR PROBLEM
-			for ($i=0;$i<$ans_count;$i++)
-			{
-				$insertquery = "INSERT INTO 12m_prob_ans VALUES (Null,'".$problem_id."','".($i+1)."','0')";
-				$dbmgr->exec_query("INSERT INTO 12m_prob_ans
-					                  VALUES (:param_one,
-					                  	      :problem_id,
-					                  	      :param_three,
-					                  	      :param_four
-					                  	     )
-				                   "
-				                          ,
-				                          array(
-					                  	      ":param_one"=>Null,
-					                  	      ":problem_id"=>$problem_id,
-					                  	      ":param_three"=>($i+1),
-					                  	      ":param_four"=>'0'
-					                  	      )
-				                   );
-			}
+		//GENERATE BLANK 12M_PROB_ANS FOR PROBLEM
+		for ($i=0;$i<$ans_count;$i++)
+		{
+			$query = "
+			INSERT INTO 12m_prob_ans
+			VALUES (
+				:param_one,
+				:problem_id,
+				:param_three,
+				:param_four)";
+			$bindings = array(
+				":param_one"=>Null,
+				":problem_id"=>$problem_id,
+				":param_three"=>($i+1),
+				":param_four"=>'0');
 
-			//FILL IN 12M_TOPIC_PROB
-			$insertquery = "INSERT INTO 12m_topic_prob VALUES (Null,'".$topic_id."','".$problem_id."')";
-			$dbmgr->exec_query("INSERT INTO 12m_topic_prob
-				                  VALUES (:param_one,
-					                  	    :topic_id,
-					                  	    :problem_id
-					                  	    )"
-																,
-														array(
-				                 					":param_one"=>Null,
-				                 					":topic_id"=>$topic_id,
-				                 					":problem_id"=>$problem_id)
-												);
+		$dbmgr->exec_query( $query , $bindings );
+}
+
+//FILL IN 12M_TOPIC_PROB
+$query = "
+INSERT INTO 12m_topic_prob
+VALUES (:param_one,:topic_id,:problem_id)";
+$bindings = array(
+	":param_one"=>Null,
+	":topic_id"=>$topic_id,
+	":problem_id"=>$problem_id);
+$dbmgr->exec_query( $query , $bindings );
 		//}
 		/*else
 		{

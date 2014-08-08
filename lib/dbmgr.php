@@ -46,8 +46,6 @@ class CDbMgr
 	function exec_query( $query, $bindings = array() )
 	{
     $result = $this->m_link->prepare($query);
-    //print __FUNCTION__;
-    //print_r($bindings);
 		if (!$result)
 		{
       echo "query failed: " .$query. "(" . $this->m_link->errno . ") " . $this->m_link->error;
