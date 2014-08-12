@@ -28,7 +28,7 @@ $c_answer = Null;
 
 $_SESSION['sesstest'] = 1;
 
-//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
+//Set current_course_id or selected_topics_list to Null if it is currently a string (instead of a number)
 if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
 {
 	if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
@@ -38,9 +38,9 @@ if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
 }
 else
 {
-	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+	if (intval($usrmgr->m_user->current_course_id == 0))
 	{
-		$usrmgr->m_user->SetPref('selected_course',Null);
+		$usrmgr->m_user->update('current_course_id',Null);
 	}
 }
 
@@ -101,12 +101,12 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		//increment page_loads
 		global $usrmgr;
 		
-		$ploads = $usrmgr->m_user->GetPref('page_loads');
+		$ploads = $usrmgr->m_user->page_loads;
 		if (is_null($ploads))
 			$ploads = 1;
 		else
 			$ploads += 1;
-		$usrmgr->m_user->SetPref('page_loads', $ploads);
+		$usrmgr->m_user->update('page_loads', $ploads);
 		
 		//get end time and compare to start time to get total time
 		$c_start_time = $_POST['started'];

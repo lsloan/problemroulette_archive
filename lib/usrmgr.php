@@ -6,6 +6,9 @@ class MUser
     var $username;
     var $prefs = null;
     var $staff = 0;
+    var $current_course_id;
+    var $last_activity;
+    var $page_loads;
 
     function __construct($username, $staff=0)
     {
@@ -19,10 +22,34 @@ class MUser
 
     function create()
     {
-		global $dbmgr;
-        $query = "INSERT INTO user(username, staff, prefs) VALUES('".$this->username."', ".$this->staff.", '" .$this->package(Array()). "')";
-		$dbmgr->exec_query($query);
+        global $dbmgr;
+        $query = "INSERT INTO user(username, staff, prefs, current_course_id, last_activity, page_loads) VALUES('".$this->username."', ".$this->staff.", '" .$this->package(Array()).", '" .$this->current_course_id.", '" .$this->last_activity.", '" .$this->page_loads. "')";
+        $dbmgr->exec_query($query);
         get_id();
+    }
+  
+    function update($column, $value)
+    {
+        global $dbmgr;
+        $update_date = False;
+        $update_integer = False;
+        if ($column == 'page_loads') {
+            $this->page_loads = $value;
+            $update_integer = True;
+        } elseif ($column == 'last_activity') {
+            $this->last_activity = $value;
+            $update_date = True;
+        } elseif ($column == 'current_course_id') {
+            $this->current_course_id = $value;
+            $update_integer = True;
+        }
+        if ($update_date) {
+            $query = "update user set ".$column."='".date("Y-m-d H:i:s", $value)."'' where id=".$this->id;
+            $dbmgr->exec_query($query);
+        } elseif ($update_integer) {
+            $query = "update user set ".$column."=".$value." where id=".$this->id;
+            $dbmgr->exec_query($query);
+        }
     }
   
     function package($input)
@@ -53,7 +80,7 @@ class MUser
     {
         global $dbmgr; 
 
-        $query = "SELECT id, staff, prefs FROM user where username='".$this->username."'";
+        $query = "SELECT id, staff, prefs, current_course_id, last_activity, page_loads FROM user where username='".$this->username."'";
         $res = $dbmgr->fetch_assoc($query);
         // populate user (if found)
         if(count($res) == 1)
@@ -61,6 +88,9 @@ class MUser
             $this->id = $res[0]['id'];
             $this->staff = $res[0]['staff'];
             $this->prefs = $this->unpackage($res[0]['prefs']);
+            $this->current_course_id = $res[0]['current_course_id'];
+            $this->last_activity = $res[0]['last_activity'];
+            $this->page_loads = $res[0]['page_loads'];
             return True;
         }
         return False;

@@ -16,23 +16,11 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
-//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
-if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
-{
-	$usrmgr->m_user->SetPref('selected_course',Null);
-}
 if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
 {
 	if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
 	{
 		$usrmgr->m_user->SetPref('selected_topics_list',Null);
-	}
-}
-else
-{
-	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
-	{
-		$usrmgr->m_user->SetPref('selected_course',Null);
 	}
 }
 
@@ -76,17 +64,18 @@ if (isset($_SERVER['HTTP_REFERER']))
 //checks to see if user has chosen a course; if so, updates preferences;
 if (isset($_POST['course_submission']))
 {
-	$selected_course_id = $_POST['course_submission'];	
+	$selected_course_id = $_POST['course_submission'];
+	error_log(sprintf("selections.php course_submission == %s", $selected_course_id));
 	$timestamp = time();
-	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
-	$usrmgr->m_user->SetPref('last_activity',$timestamp);
+	$usrmgr->m_user->update('current_course_id',$selected_course_id);
+	$usrmgr->m_user->update('last_activity', $timestamp);
 	header('Location:selections.php');
 }
 
 //checks to see if user hit the 'Select Different Course' button
 if (isset($_POST['select_different_course']))
 {
-	$usrmgr->m_user->SetPref('selected_course',Null);
+	$usrmgr->m_user->update('current_course_id',Null);
 	header('Location:selections.php');
 }
 
@@ -99,6 +88,8 @@ $course_or_topic = 0;//bool--0 for course selector, 1 for topic selector
 $CTprefs = new MCTSelect();
 $m_selected_course = $CTprefs->m_selected_course;
 $m_last_activity = $CTprefs->m_last_activity;
+
+error_log(sprintf(" ==> %s ... %s <==\n", $m_selected_course, $m_last_activity));
 $m_current_time = time();
 if (($m_current_time - $m_last_activity) <= $m_expiration_time && $m_selected_course != Null)
 {

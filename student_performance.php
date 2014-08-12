@@ -20,9 +20,9 @@ $_SESSION['sesstest'] = 1;
 global $usrmgr;
 
 //Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
-if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+if (intval($usrmgr->m_user->current_course_id == 0))
 {
-	$usrmgr->m_user->SetPref('selected_course',Null);
+	$usrmgr->m_user->update('current_course_id',Null);
 }
 if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
 {
@@ -33,9 +33,9 @@ if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
 }
 else
 {
-	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+	if (intval($usrmgr->m_user->current_course_id == 0))
 	{
-		$usrmgr->m_user->SetPref('selected_course',Null);
+		$usrmgr->m_user->update('current_course_id',Null);
 	}
 }
 

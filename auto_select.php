@@ -15,8 +15,8 @@ require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
 $timestamp = time();
-$usrmgr->m_user->SetPref('selected_course',10);
-$usrmgr->m_user->SetPref('last_activity',$timestamp);
+$usrmgr->m_user->update('current_course_id',10);
+$usrmgr->m_user->update('last_activity',$timestamp);
 $usrmgr->m_user->SetPref('selected_topics_list', Array(50,51,52,53,54,55));
 
 #print_r($usrmgr->m_user->GetPref('selected_topics_list'));

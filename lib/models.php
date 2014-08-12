@@ -274,6 +274,8 @@ Class MCourse
 		global $dbmgr;
 		$selectquery = "SELECT * FROM class WHERE id = ".$id;
 		$res = $dbmgr->fetch_assoc($selectquery);
+		error_log(sprintf("models.php get_course_by_id(%s) query: %s\n", $id, $selectquery));
+		error_log(print_r($res, true));
 		$course = new MCourse($res[0]['id'],$res[0]['name']);
 		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 		return $course;
@@ -373,6 +375,7 @@ Class MTopic
 		else
 		{
 		echo "Error! please contact mcmills@umich.edu.";
+		echo sprintf("course_id ==> %s <==\n", $course_id);
 		}
 		$numrows = count($res);
 		$all_topic_ids_in_course = array();
@@ -463,7 +466,7 @@ Class MCourseTopicNav
 //this model doesn't do anything, just stores the variables
 Class MCTSelect
 {
-	var $m_selected_course;//get from preferences
+	var $m_selected_course;//get from user
 	var $m_selected_topics_list;//one or more topics (By ID), get from preferences
 	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
 								//^^^^^Associative array (omitted_problems_list[topic_id] = array of omitted problems in topic)
@@ -475,7 +478,9 @@ Class MCTSelect
 	function __construct()
 	{
 		global $usrmgr;
-		$this->m_selected_course = $usrmgr->m_user->GetPref('selected_course');
+		$this->m_selected_course = $usrmgr->m_user->current_course_id;
+		error_log(sprintf("MCTSelect.__construct user_id == %s", $usrmgr->m_user->id));
+		error_log(sprintf("MCTSelect.__construct m_selected_course == %s", $this->m_selected_course));
 		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
 		$num_selected_topics = count($this->m_selected_topics_list);
 
@@ -489,7 +494,7 @@ Class MCTSelect
 			$this->m_omitted_problems_list[$topic_id] = $omitted_problem->find();
 		}
 		//^^^taken care of above^^^//$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
-		$this->m_last_activity = $usrmgr->m_user->GetPref('last_activity');
+		$this->m_last_activity = $usrmgr->m_user->last_activity;
 		
 		for ($i=0;$i<count($this->m_selected_topics_list);$i++)
 		{
@@ -543,9 +548,9 @@ Class MDirector
 	{
 		global $usrmgr;
 		//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
-		if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+		if (intval($usrmgr->m_user->current_course_id == 0))
 		{
-			$usrmgr->m_user->SetPref('selected_course',Null);
+			$usrmgr->m_user->update('current_course_id',Null);
 		}
 		if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
 		{
@@ -556,9 +561,9 @@ Class MDirector
 		}
 		else
 		{
-			if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+			if (intval($usrmgr->m_user->current_course_id == 0))
 			{
-				$usrmgr->m_user->SetPref('selected_course',Null);
+				$usrmgr->m_user->update('current_course_id',Null);
 			}
 		}
 	}
