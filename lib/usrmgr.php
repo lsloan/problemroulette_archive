@@ -23,33 +23,31 @@ class MUser
     function create()
     {
         global $dbmgr;
-        $query = "INSERT INTO user(username, staff, prefs, current_course_id, last_activity, page_loads) VALUES('".$this->username."', ".$this->staff.", '" .$this->package(Array()).", '" .$this->current_course_id.", '" .$this->last_activity.", '" .$this->page_loads. "')";
-        $dbmgr->exec_query($query);
-        get_id();
+        $query = "
+        INSERT INTO user(username, staff, prefs, current_course_id, last_activity, page_loads)
+        VALUES ( :username, :staff, :prefs, :current_course_id, :last_activity, :page_loads )";
+        $bindings = array(
+            ":username"=>$this->username,
+            ":staff"=>$this->staff,
+            ":prefs"=>$this->package(Array()),
+            ":current_course_id"=>$this->current_course_id,
+            ":last_activity"=>sprintf("'%s'", date("Y-m-d H:i:s", $this->last_activity)),
+            ":page_loads"=>$this->page_loads
+            );
+        $dbmgr->exec_query( $query, $bindings );
     }
   
     function update($column, $value)
     {
         global $dbmgr;
-        $update_date = False;
-        $update_integer = False;
-        if ($column == 'page_loads') {
-            $this->page_loads = $value;
-            $update_integer = True;
-        } elseif ($column == 'last_activity') {
-            $this->last_activity = $value;
-            $update_date = True;
-        } elseif ($column == 'current_course_id') {
-            $this->current_course_id = $value;
-            $update_integer = True;
+        $query = sprintf("update user set %s=:value where id=:user_id", $column);
+        $bindings = array(':user_id' => $this->id);
+        if ($column == 'last_activity') {
+            $bindings[":value"] = date("Y-m-d H:i:s", $value);
+        } else {
+            $bindings[":value"] = $value;
         }
-        if ($update_date) {
-            $query = "update user set ".$column."='".date("Y-m-d H:i:s", $value)."'' where id=".$this->id;
-            $dbmgr->exec_query($query);
-        } elseif ($update_integer) {
-            $query = "update user set ".$column."=".$value." where id=".$this->id;
-            $dbmgr->exec_query($query);
-        }
+        $dbmgr->exec_query($query, $bindings);
     }
   
     function package($input)
@@ -65,8 +63,13 @@ class MUser
 	function get_id()
 	{
 		global $dbmgr;
-		$query = "SELECT id FROM user WHERE username='".$this->username."'";
-		$res = $dbmgr->fetch_assoc($query);
+        $username = $this->username;
+        $query = "
+        SELECT id
+        FROM user
+        WHERE username = :username ";
+        $bindings = array(':username'=>$username);
+        $res = $dbmgr->fetch_assoc( $query , $bindings );
 		// populate user (if found)
         if(count($res) == 1)
         {
@@ -78,12 +81,14 @@ class MUser
  
     function read()
     {
-        global $dbmgr; 
-
-        $query = "SELECT id, staff, prefs, current_course_id, last_activity, page_loads FROM user where username='".$this->username."'";
-        $res = $dbmgr->fetch_assoc($query);
+        global $dbmgr;
+        $query = "
+        SELECT id, staff, prefs, current_course_id, last_activity, page_loads FROM
+        user WHERE username = :username";
+        $bindings = array(":username"=>$this->username);
+        $res = $dbmgr->fetch_assoc( $query , $bindings );
         // populate user (if found)
-        if(count($res) == 1)
+        if(count($res) > 0)
         {
             $this->id = $res[0]['id'];
             $this->staff = $res[0]['staff'];
@@ -100,8 +105,14 @@ class MUser
     function WritePrefs()
     {   // write all prefs back to user table
         global $dbmgr;
-        $query = "UPDATE user set prefs='".$this->package($this->prefs). "' where username='".$this->username."'";
-		$dbmgr->exec_query($query);
+        $query = "
+        UPDATE user
+        SET prefs = :prefs
+        WHERE username = :username ";
+        $bindings = array(
+            ":prefs"=>$this->package($this->prefs),
+            ":username"=>$this->username);
+		$dbmgr->exec_query( $query , $bindings );
     }
 
     function GetPref($key)
@@ -165,6 +176,5 @@ class UserManager{
         $this->m_user = new MUser($username);
 	}
 }
-
 
 ?>

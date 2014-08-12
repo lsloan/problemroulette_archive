@@ -59,7 +59,7 @@ if (isset($_SERVER['HTTP_REFERER']))
 	{
 		$pre_fill_topics = 1;
 	}
-}
+} 
 
 //checks to see if user has chosen a course; if so, updates preferences;
 if (isset($_POST['course_submission']))
