@@ -44,83 +44,36 @@ if (($handle = fopen("csvProbs/Chem130_Practice_Exam.csv","r")) !== FALSE)
 		$p_id = $res[0]['id'];
 		$ans_cnt = $res[0]['ans_count'];
 
-		//if ($num == 0)
-		//{
 		//CREATE NEW PROBLEM
 		$new_prob = new MProblem();
 		$new_prob->create($name,$url,$ans_count,$correct);
 
 		//GET NEW PROBLEM ID
-		$query = "
-		SELECT *
-		FROM problems
-		ORDER BY id DESC";
+		$query = "SELECT * FROM problems ORDER BY id DESC";
 		$res=$dbmgr->fetch_assoc($query);
 		$problem_id = $res[0]['id'];
 
 		//GENERATE BLANK 12M_PROB_ANS FOR PROBLEM
 		for ($i=0;$i<$ans_count;$i++)
 		{
-			$query = "
-			INSERT INTO 12m_prob_ans
-			VALUES (
-				:param_one,
-				:problem_id,
-				:param_three,
-				:param_four)";
+			$query =
+				"INSERT INTO 12m_prob_ans (prob_id, ans_num) ".
+				"VALUES (:problem_id, :ans_num)";
 			$bindings = array(
-				":param_one"=>Null,
-				":problem_id"=>$problem_id,
-				":param_three"=>($i+1),
-				":param_four"=>'0');
+				":problem_id"  => $problem_id,
+				":ans_num"     => ($i+1));
 
+			$dbmgr->exec_query( $query , $bindings );
+		}
+
+		//FILL IN 12M_TOPIC_PROB
+		$query =
+			"INSERT INTO 12m_topic_prob (topic_id, problem_id) ".
+			"VALUES (:topic_id, :problem_id)";
+		$bindings = array(
+			":topic_id"   => $topic_id,
+			":problem_id" => $problem_id);
 		$dbmgr->exec_query( $query , $bindings );
-}
-
-//FILL IN 12M_TOPIC_PROB
-$query = "
-INSERT INTO 12m_topic_prob
-VALUES (:param_one,:topic_id,:problem_id)";
-$bindings = array(
-	":param_one"=>Null,
-	":topic_id"=>$topic_id,
-	":problem_id"=>$problem_id);
-$dbmgr->exec_query( $query , $bindings );
-		//}
-		/*else
-		{
-			//UPDATE PROBLEM IN PROBLEM TABLE
-			$updatequery = "UPDATE problems SET name=$name, correct=$correct, ans_count=$ans_count WHERE id=$p_id";
-			$dbmgr->exec_query($updatequery);
-
-			//UPDATE 12M_TOPIC_PROB IF NECESSARY
-			$selectquery = "SELECT * FROM 12m_topic_prob WHERE problem_id=$p_id";
-			$res=$dbmgr->fetch_assoc($selectquery);
-			if (count($res) > 0)
-			{
-				$t_id = $res[0]['topic_id'];
-				if ($topic_id !== $t_id)
-				{
-					$updatequery = "UPDATE 12m_topic_prob SET topic_id=$topic_id WHERE problem_id=$p_id";
-					$dbmgr->exec_query($updatequery);
-				}
-			}
-
-			//UPDATE 12M_PROB_ANS IF NECESSARY
-			if ($ans_count !== $ans_cnt)
-			{
-				//DELETE CURRENT ROWS IN 12M_PROB_ANS FOR PROBLEM
-				$deletequery = "DELETE FROM 12m_prob_ans WHERE prob_id=$p_id";
-				$dbmgr->exec_query($deletequery);
-
-				//CREATE NEW ROWS IN 12M_PROB_ANS FOR PROBLEM
-				for ($i=0;$i<$ans_count;$i++)
-				{
-					$insertquery = "INSERT INTO 12m_prob_ans VALUES (Null,'".$problem_id."','".($i+1)."','0')";
-					$dbmgr->exec_query($insertquery);
-				}
-			}
-		}*/
 
 		$row++;
 	}
