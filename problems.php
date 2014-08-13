@@ -33,10 +33,10 @@ else
 }
 
 # reset preferences if not logged in for a while
-if (!isset($_SESSION['current_problem']))
-{
-	$usrmgr->m_user->SetPref('current_problem',Null);
-}
+// if (!isset($_SESSION['current_problem']))
+// {
+// 	$usrmgr->m_user->SetPref('current_problem',Null);
+// }
 if (!isset($_SESSION['problem_submitted']))
 {
 	$usrmgr->m_user->SetPref('problem_submitted',Null);
@@ -50,7 +50,10 @@ $selected_topics_list_id = Null;
 if (isset($_POST['topic_checkbox_submission']))
 {
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
-	if (min(implode(",",array_map("intval",$selected_topics_list_id))) !== 0)//make sure not to write a string
+//
+//	if (min(implode(",",array_map("intval",$selected_topics_list_id))) !== 0)//make sure not to write a string
+//  prevent error in logs re only one arg to min must be an array - implode was making it a string
+	if ( min(array_map("intval",$selected_topics_list_id)) !== 0 )
 	{
 		$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
 	}
@@ -96,14 +99,14 @@ if (isset($_POST['skip']))
 	$current_problem_id = $usrmgr->m_user->GetPref('current_problem');
 	$current_problem = new MProblem($current_problem_id);
 	
+	//get user_id
+	$user_id = $usrmgr->m_user->id;
+
 	//get current topic_id and omitted problems list for given topic
 	$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
-	$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
-		
-	//get user_id
-	$usrmgr->m_user->get_id();
-	$user_id = $usrmgr->m_user->id;
-	
+	$omitted_problem = new OmittedProblem($user_id, $current_topic_id);
+	$current_omitted_problems_list = $omitted_problem->find();
+			
 	//update tables upon response
 	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,Null);
 	
@@ -156,22 +159,18 @@ if (isset($_POST['submit_answer']))
 		
 		//get current topic_id and omitted problems list for given topic
 		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
-		$current_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list['.$current_topic_id.']');
 		
+		//get user_id
+		$user_id = $usrmgr->m_user->id;
+
 		//if the student answered correctly, add current problem to omitted problems list for given topic
 		if ($current_problem_answer == $student_answer)
 		{
-			if ($current_omitted_problems_list == Null)
-			{
-				$current_omitted_problems_list = Array();
+			$omitted_problem = new OmittedProblem($user_id, $current_topic_id, $current_problem_id);
+			if ($omitted_problem->count() < 1) {
+				$omitted_problem->add();
 			}
-			array_push($current_omitted_problems_list,$current_problem_id);
-			$usrmgr->m_user->SetPref('omitted_problems_list['.$current_topic_id.']',$current_omitted_problems_list);
 		}
-		
-		//get user_id
-		$usrmgr->m_user->get_id();
-		$user_id = $usrmgr->m_user->id;
 		
 		//update tables upon response
 		$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,$student_answer);
@@ -198,6 +197,12 @@ if (isset($_POST['next']))
 # translate ids to list of topic objects
 $selected_topics_list_id = $usrmgr->m_user->GetPref('selected_topics_list');
 $num_topics = count($selected_topics_list_id);
+// $selected_topics_list_id might just be a single topic as a string
+if (! is_array($selected_topics_list_id))
+{
+	$selected_topics_list_id = MakeArray($selected_topics_list_id);
+}
+
 for ($i=0; $i<$num_topics; $i++)
 {
 	$selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);

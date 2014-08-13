@@ -14,30 +14,31 @@ class CHeadCSSJavascript{
 
 	function Deliver(){
 		$str   = "\n<title>".$this->m_title." - Problem Roulette</title>";
-        $str .= " 
-        <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
-        <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
-        <link href='css/styles.css' rel='stylesheet' media='screen'>
-        <script src='js/trackingcode.js'></script>
-        <script src='js/jquery-1.10.1.js'></script>
-        <script src='js/bootstrap.js'></script>
+    $str .= "
+    <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
+    <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
+    <link href='css/styles.css' rel='stylesheet' media='screen'>
+		<script src='js/trackingcode.js'></script>
+		<script src='js/jquery-1.10.1.js'></script>
+		<script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
-		<script type='text/javascript' src='js/jquery.tablesorter.js'></script> 
-		<script type='text/javascript' src='js/problem_library_actions.js'></script> 
-		<script type='text/javascript' src='js/problem_edit_actions.js'></script> 
-		<script type='text/javascript' src='js/mytable.js'></script> 
-        ";
-        if($this->m_cssfile != NULL)
-		foreach((array)$this->m_cssfile as $css){
-			$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
-		}
-        if($this->m_javafile != NULL)
-		foreach((array)$this->m_javafile as $java){
-			$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
-		}
-        $str .= "
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        ";
+		<script type='text/javascript' src='js/jquery.tablesorter.js'></script>
+		<script type='text/javascript' src='js/problem_library_actions.js'></script>
+		<script type='text/javascript' src='js/problem_edit_actions.js'></script>
+		<script type='text/javascript' src='js/mytable.js'></script>
+		<script type='text/javascript' src='js/problem.js'></script>
+    ";
+    if($this->m_cssfile != NULL)
+			foreach((array)$this->m_cssfile as $css){
+				$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
+			}
+    if($this->m_javafile != NULL)
+			foreach((array)$this->m_javafile as $java){
+				$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
+			}
+    $str .= "
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    ";
 		return $str;
 	}
 }
@@ -96,6 +97,7 @@ class VPageTabs{
       For issues with the content of the problems, see your instructor first.
     </p>
     </div>
+    <div class='problem-roulette-tag' style='display:none;'>2.0.1</div>
 </div>
 
 </body>
@@ -978,23 +980,19 @@ class VProblems
 	{
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
+		if (! is_array($selected_topics_list_id)) {
+			$selected_topics_list_id = MakeArray($selected_topics_list_id);
+		}
 		$num_topics = count($selected_topics_list_id);
-		if (is_array($selected_topics_list_id))
+		for ($i=0; $i<$num_topics; $i++)
 		{
-			for ($i=0; $i<$num_topics; $i++)
-			{
-				$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-			}
-			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-			{
-				$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-			}
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
 		}
-		else
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 		{
-			$this->v_selected_topics_list = MTopic::get_topic_by_id($selected_topics_list_id);
-			$this->v_selected_topics_list_name = $this->v_selected_topics_list->m_name;
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
+
 		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
 		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
 	}
@@ -1041,15 +1039,15 @@ class VProblems
 			}
 			$str .= "
 			</p>
-			<form class='ans-form' action='' method='POST'>
+			<form class='ans-form' name='ans_form' action='' method='POST'>
+			<input type='hidden' id='submit_or_skip' name='tbd' value='0'/>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)
 			{
 				$str .= "<input type='radio' 
 				class='ans-choice' 
 				name='student_answer' 
-				value='".($i+1)."' 
-				onClick='javascript:document.getElementById(&quot;submit_answer&quot;).disabled=false'></input> 
+				value='".($i+1)."'></input> 
 				<font size='4'>".$alphabet[$i]."</font>
 				";
 			}
@@ -1067,6 +1065,7 @@ class VProblems
 			<button type='submit'
 			class='btn'
 			name='skip'
+			id='skip'
 			value='1'>
 				Skip
 			</button>
@@ -1092,22 +1091,17 @@ class VProblems_submitted
 	{
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
-		$num_topics = count($selected_topics_list_id);
-		if (is_array($selected_topics_list_id))
-		{
-			for ($i=0; $i<$num_topics; $i++)
-			{
-				$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-			}
-			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-			{
-				$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-			}
+		if (! is_array($selected_topics_list_id)) {
+			$selected_topics_list_id = MakeArray($selected_topics_list_id);
 		}
-		else
+		$num_topics = count($selected_topics_list_id);
+		for ($i=0; $i<$num_topics; $i++)
 		{
-			$this->v_selected_topics_list = MTopic::get_topic_by_id($selected_topics_list_id);
-			$this->v_selected_topics_list_name = $this->v_selected_topics_list->m_name;
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
+		}
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
+		{
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
 		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
 		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
