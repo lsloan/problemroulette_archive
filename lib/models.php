@@ -345,7 +345,7 @@ Class MTopic
 		if ($course_id !== Null)
 		{
 			$query =
-				"SELECT topic.* FROM topic t ".
+				"SELECT t.* FROM topic t ".
 				"INNER JOIN 12m_class_topic tc ON t.id = tc.topic_id ".
 				"WHERE tc.class_id = :course_id";
 			$bindings = array(":course_id" => $course_id);
@@ -1101,15 +1101,7 @@ class OmittedProblem
 		}
 
 		$query .= implode(' AND ', $conditions);
-		$result = $dbmgr->exec_query($query, $params);
-		$row_cnt = $result->num_rows;
-		$array = array();
-		for ($i=0; $i < $row_cnt; $i++) { 
-			$row = mysqli_fetch_row($result);
-			$array[] = $row[0];
-		}
-
-		return $array;
+		return $dbmgr->fetch_column($query, $params, 0);
 	}
 
 	function count() {

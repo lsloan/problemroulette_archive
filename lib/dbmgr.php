@@ -68,6 +68,12 @@ class CDbMgr
 		return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+	function fetch_column( $query, $bindings = array(), $column = 0 )
+	{
+		$res = $this->exec_query($query, $bindings);
+		return $res->fetchAll(PDO::FETCH_COLUMN, $column);
+	}
+
 	function db_addslashes( $x ) { return addslashes( $x ); }
 	function db_stripslashes( $x ) { return stripslashes( $x ); }
 
