@@ -20,8 +20,9 @@ class MUser
     function create()
     {
 		global $dbmgr;
-        $query = "INSERT INTO user(username, staff, prefs) VALUES('".$this->username."', ".$this->staff.", '" .$this->package(Array()). "')";
-		$dbmgr->exec_query($query);
+        $query = "INSERT INTO user(username, staff, prefs) VALUES(:username, :staff, :prefs)";
+        $bindings = array( ":username" => $this->username, ":staff" => $this->staff, ":prefs" => $this->package(Array()) );
+		$dbmgr->exec_query($query, $bindings);
         get_id();
     }
   
@@ -39,7 +40,7 @@ class MUser
 	{
 		global $dbmgr;
         $username = $this->username;
-        $res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username=:username",array(':username'=>$username));
+        $res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username=:username", array(':username'=>$username));
 		// populate user (if found)
         if(count($res) == 1)
         {
@@ -53,8 +54,9 @@ class MUser
     {
         global $dbmgr; 
 
-        $query = "SELECT id, staff, prefs FROM user where username='".$this->username."'";
-        $res = $dbmgr->fetch_assoc($query);
+        $query = "SELECT id, staff, prefs FROM user where username=:username";
+        $bindings = array(":username" => $this->username);
+        $res = $dbmgr->fetch_assoc($query, $bindings);
         // populate user (if found)
         if(count($res) == 1)
         {
