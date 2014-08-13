@@ -654,7 +654,7 @@ Class MDirector
 
         //FILL IN 12M_TOPIC_PROB
         $query =
-            "INSERT INTO 12m_topic_prob (topic_id, problem_id)".
+            "INSERT INTO 12m_topic_prob (topic_id, problem_id) ".
             "VALUES (:topic_id, :problem_id)";
         $bindings = array(":topic_id" => $topic_id, ":problem_id" => $problem_id);
         $dbmgr->exec_query( $query , $bindings );
@@ -850,9 +850,9 @@ Class MResponse
 		{
 			$query =
 				"UPDATE stats SET ".
-				"tot_tries = tot_tries + 1 , ",
-				"tot_correct = tot_correct + :student_answered_correctly, ",
-				"tot_time = tot_time + :solve_time ",
+				"tot_tries = tot_tries + 1 , ".
+				"tot_correct = tot_correct + :student_answered_correctly, ".
+				"tot_time = tot_time + :solve_time ".
 				"WHERE user_id = :user_id";
 			$bindings = array(
 				":student_answered_correctly" => $student_answered_correctly,
@@ -880,17 +880,16 @@ Class MResponse
 		//update stats table
 		if ($solve_time <= $this->m_maximum_recorded_time)
 		{
-			$query = "
-			UPDATE problems SET
-			tot_tries = tot_tries + 1,
-			tot_correct = tot_correct + :student_answered_correctly,
-			tot_time = tot_time + :solve_time
-			WHERE
-			id = :m_problem_id";
+			$query =
+				"UPDATE problems SET ".
+				"tot_tries = tot_tries + 1, ".
+				"tot_correct = tot_correct + :student_answered_correctly, ".
+				"tot_time = tot_time + :solve_time ".
+				"WHERE id = :m_problem_id";
 			$bindings = array(
-				":student_answered_correctly"=>$student_answered_correctly,
-				":solve_time"=>$solve_time,
-				":m_problem_id"=>$this->m_problem_id);
+				":student_answered_correctly" => $student_answered_correctly,
+				":solve_time"                 => $solve_time,
+				":m_problem_id"               => $this->m_problem_id);
 			$dbmgr->exec_query( $query , $bindings );
 		}
 	}
@@ -899,7 +898,7 @@ Class MResponse
 	{
 		global $dbmgr;
 		$query =
-			"UPDATE 12m_prob_ans SET count = count + 1 ",
+			"UPDATE 12m_prob_ans SET count = count + 1 ".
 			"WHERE prob_id = :prob_id AND ans_num = :ans_num ";
 		$bindings = array(":prob_id" => $this->m_problem_id, "ans_num" => $this->m_student_answer);
 		$dbmgr->exec_query( $query , $bindings );
@@ -1023,8 +1022,8 @@ Class MUserSummary
 				$whole_thing[$key]["count"] =  $res[0][0];
 			}
 
-				$this->m_tot_tries = $whole_thing["numprob"]["count"];
-				$this->m_num_users = $whole_thing["numuser"]["count"];
+			$this->m_tot_tries = $whole_thing["numprob"]["count"];
+			$this->m_num_users = $whole_thing["numuser"]["count"];
 			
 			if ($all_users == '' || $all_users == Null)
 			{
@@ -1089,19 +1088,19 @@ class OmittedProblem
 
 		$query = "SELECT problem_id FROM omitted_problems WHERE ";
 
-        $conditions = ['user_id = ?'];
-        $params = [$this->m_user_id];
+		$conditions = ['user_id = ?'];
+		$params = [$this->m_user_id];
 
 		if ($this->m_topic_id) {
-            $conditions[] = 'topic_id = ?';
-            $params[] = $this->m_topic_id;
+			$conditions[] = 'topic_id = ?';
+			$params[] = $this->m_topic_id;
 			if ($this->m_problem_id) {
-                $conditions[] = 'problem_id = ?';
-                $params[] = $this->m_problem_id;
+				$conditions[] = 'problem_id = ?';
+				$params[] = $this->m_problem_id;
 			}
 		}
 
-        $query .= implode(' AND ', $conditions);
+		$query .= implode(' AND ', $conditions);
 		$result = $dbmgr->exec_query($query, $params);
 		$row_cnt = $result->num_rows;
 		$array = array();
@@ -1117,21 +1116,21 @@ class OmittedProblem
 		global $dbmgr;
 
 		$query = "SELECT COUNT(*) FROM omitted_problems WHERE ";
-        
-        $conditions = ['user_id = ?'];
-        $params = [$this->m_user_id];
+
+		$conditions = ['user_id = ?'];
+		$params = [$this->m_user_id];
 
 		if ($this->m_topic_id) {
 			$conditions[] = "topic_id = ?";
-            $params[] = $this->m_topic_id;
+			$params[] = $this->m_topic_id;
 			if ($this->m_problem_id) {
 				$conditions[] = "problem_id = ?";
-                $params[] = $this->m_problem_id;
+				$params[] = $this->m_problem_id;
 			}
 		}
 
-        $query .= implode(' AND ', $conditions);
-        $res = $dbmgr->fetch_num($query);
+		$query .= implode(' AND ', $conditions);
+		$res = $dbmgr->fetch_num($query);
 		$count = $res[0][0];
 
 		return $count;
@@ -1141,7 +1140,7 @@ class OmittedProblem
 		global $dbmgr;
 
 		$query = "INSERT INTO omitted_problems (user_id, topic_id, problem_id) VALUES (?, ?, ?)";
-        $params = [$this->m_user_id, $this->m_topic_id, $this->m_problem_id];
+		$params = [$this->m_user_id, $this->m_topic_id, $this->m_problem_id];
 
 		$dbmgr->exec_query($query, $params);
 	}
@@ -1151,19 +1150,19 @@ class OmittedProblem
 
 		if ($this->m_user_id) {
 			$query = "DELETE FROM omitted_problems WHERE ";
-            $conditions = ['user_id = ?'];
-            $params = [$this->m_user_id];
+			$conditions = ['user_id = ?'];
+			$params = [$this->m_user_id];
 
 			if ($this->m_topic_id) {
 				$conditions[] = "topic_id = ?";
-                $params[] = $this->m_topic_id;
+				$params[] = $this->m_topic_id;
 				if ($this->m_problem_id) {
-                    $conditions[] = "problem_id = ?";
-                    $params[] = $this->m_problem_id;
+					$conditions[] = "problem_id = ?";
+					$params[] = $this->m_problem_id;
 				}
 			}
 
-            $query .= implode(' AND ', $conditions);
+			$query .= implode(' AND ', $conditions);
 			$dbmgr->exec_query($query, $params);
 		}
 	}
