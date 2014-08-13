@@ -46,8 +46,6 @@ class CDbMgr
 	function exec_query( $query, $bindings = array() )
 	{
     $result = $this->m_link->prepare($query);
-    //print __FUNCTION__;
-    //print_r($bindings);
 		if (!$result)
 		{
       echo "query failed: " .$query. "(" . $this->m_link->errno . ") " . $this->m_link->error;
@@ -56,9 +54,9 @@ class CDbMgr
 		return $result;
 	}
 
-  function fetch_num( $query )
+  function fetch_num( $query , $bindings = array() )
   {
-    $res = $this->exec_query($query);
+    $res = $this->exec_query($query, $bindings);
     return $res->fetchAll(PDO::FETCH_NUM);
   }
 

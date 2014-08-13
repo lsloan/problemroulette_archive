@@ -20,9 +20,13 @@ class MUser
     function create()
     {
 		global $dbmgr;
-        $query = "INSERT INTO user(username, staff, prefs) VALUES(:username, :staff, :prefs)";
-        $bindings = array( ":username" => $this->username, ":staff" => $this->staff, ":prefs" => $this->package(Array()) );
-		$dbmgr->exec_query($query, $bindings);
+        $query = "INSERT INTO user(username, staff, prefs) ".
+                 "VALUES ( :username, :staff, :prefs )";
+        $bindings = array(
+            ":username"=>$this->username,
+            ":staff"=>$this->staff,
+            ":prefs"=>$this->package(Array()));
+		$dbmgr->exec_query( $query , $bindings );
         get_id();
     }
   
@@ -40,7 +44,11 @@ class MUser
 	{
 		global $dbmgr;
         $username = $this->username;
-        $res = $dbmgr->fetch_assoc("SELECT id FROM user WHERE username=:username", array(':username'=>$username));
+        $query = "SELECT id ".
+                 "FROM user ".
+                 "WHERE username = :username ";
+        $bindings = array(':username'=>$username);
+        $res = $dbmgr->fetch_assoc( $query , $bindings );
 		// populate user (if found)
         if(count($res) == 1)
         {
@@ -52,11 +60,11 @@ class MUser
  
     function read()
     {
-        global $dbmgr; 
-
-        $query = "SELECT id, staff, prefs FROM user where username=:username";
-        $bindings = array(":username" => $this->username);
-        $res = $dbmgr->fetch_assoc($query, $bindings);
+        global $dbmgr;
+        $query = "SELECT id, staff, prefs FROM ".
+                 "user WHERE username = :username";
+        $bindings = array(":username"=>$this->username);
+        $res = $dbmgr->fetch_assoc( $query , $bindings );
         // populate user (if found)
         if(count($res) == 1)
         {
@@ -72,8 +80,14 @@ class MUser
     function WritePrefs()
     {   // write all prefs back to user table
         global $dbmgr;
-        $query = "UPDATE user set prefs='".$this->package($this->prefs). "' where username='".$this->username."'";
-		$dbmgr->exec_query($query);
+        $query = "
+        UPDATE user
+        SET prefs = :prefs
+        WHERE username = :username ";
+        $bindings = array(
+            ":prefs"=>$this->package($this->prefs),
+            ":username"=>$this->username);
+		$dbmgr->exec_query( $query , $bindings );
     }
 
     function GetPref($key)
