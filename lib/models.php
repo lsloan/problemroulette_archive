@@ -46,11 +46,11 @@ Class MProblem
 		$bindings = array(
 			":prob_name"      => $prob_name,
 			":prob_url"       => $prob_url,
-			":prob_correct"   => $problem_correct,
+			":prob_correct"   => $prob_correct,
 			":prob_ans_count" => $prob_ans_count,
 			":prob_solution"  => $prob_solution
 			);
-		$res = $dbmgr->exec_query( $query , $bidings );
+		$res = $dbmgr->exec_query( $query , $bindings );
 	}
 	
 	function get_ans_submit_count($ans_num)
@@ -901,12 +901,21 @@ Class MResponse
 
 	function verify_problem_id()
 	{
-		if ($this->m_problem_id < 1)
+		if ($this->m_problem_id == Null)
 		{
-			error_log("ERROR in saving/updating MResponse: Invalid value for 'm_problem_id: {$this->m_problem_id}'\n");
+			error_log("ERROR in saving/updating MResponse: Null value for 'm_problem_id'");
 			$backtrace = '';
 			foreach (debug_backtrace() as $key => $value) {
-					$backtrace .= "{$key}: {$value['class']}.{$value['function']} ({$value['file']}	at {$value['line']})\n";
+					$backtrace .= "  -- {$key}: {$value['class']}.{$value['function']} ({$value['file']} at {$value['line']})";
+			}
+			error_log($backtrace);
+		}
+		elseif ($this->m_problem_id < 1)
+		{
+			error_log("ERROR in saving/updating MResponse: Invalid value for 'm_problem_id: {$this->m_problem_id}'");
+			$backtrace = '';
+			foreach (debug_backtrace() as $key => $value) {
+					$backtrace .= "  -- {$key}: {$value['class']}.{$value['function']} ({$value['file']} at {$value['line']})";
 			}
 			error_log($backtrace);
 		}
@@ -1117,7 +1126,7 @@ class OmittedProblem
 		}
 
 		$query .= implode(' AND ', $conditions);
-		$res = $dbmgr->fetch_num($query);
+		$res = $dbmgr->fetch_num($query, $params);
 		$count = $res[0][0];
 
 		return $count;

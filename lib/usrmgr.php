@@ -144,11 +144,14 @@ class MUser
             $saved = true;
         } elseif ($key == 'last_activity') {
             $query = "update user set last_activity = :value where id = :user_id";
-            $bindings = array(":value" => $value, ":user_id" => $this->id);
+            $bindings = array(":value" => date("Y-m-d H:i:s", $value), ":user_id" => $this->id);
             $dbmgr->exec_query($query, $bindings);
             $this->last_activity = $value;
             $saved = true;
         } elseif ($key == 'selected_topics_list') {
+            $query = "delete from selected_topics where user_id = :user_id";
+            $bindings = array(':user_id' => $this->id);
+            $dbmgr->exec_query($query, $bindings);
             $query = "insert into selected_topics (user_id, topic_id) values (:user_id, :topic_id)";
             if (is_array($value)) {
                 foreach ($value as $index => $topic_id) {
@@ -168,12 +171,16 @@ class MUser
     // two or more arrays.
     function flatten($array) {
         $result = array();
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $result = array_merge($result, $value);
-            } else {
-                $result[] = $value;
-            }
+        if (is_array($array)) {
+            foreach ($array as $key => $value) {
+                if (is_array($value)) {
+                    $result = array_merge($result, $value);
+                } else {
+                    $result[] = $value;
+                }
+            }    
+        } else {
+            $result[] = $array;
         }
         return $result;
     }
@@ -196,8 +203,8 @@ class MUser
                 error_log(sprintf("ERROR IN PREFS -- page_loads (%s) is not same as page_loads in prefs (%s).", $this->page_loads, $prefs_val));
             }
         } elseif ($key == 'last_activity') {
-            if ($this->last_activity != $prefs_val) {
-                error_log(sprintf("ERROR IN PREFS -- last_activity (%s) is not same as last_activity in prefs (%s).", $this->last_activity, $prefs_val));
+            if (strtotime($this->last_activity) != $prefs_val) {
+                error_log(sprintf("ERROR IN PREFS -- last_activity (%s) is not same as last_activity in prefs (%s).", strtotime($this->last_activity), $prefs_val));
             }
         } elseif ($key == 'selected_topics_list') {
             $query = "select topic_id from selected_topics where user_id = :user_id order by topic_id";
@@ -212,6 +219,8 @@ class MUser
 
             if ($prefs_array != $values) {
                 error_log(sprintf("ERROR IN PREFS -- selected_topics array and selected_topics_list in prefs are not the same for user %s.",$this->id));
+                error_log(sprintf("Array from selected_topics_list in prefs: %s", print_r($prefs_array, true)));
+                error_log(sprintf("Array from selected_topics table: %s", print_r($values, true)));
             }
         }        
     }

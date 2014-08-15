@@ -62,9 +62,11 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	//check to see if new topic was selected
 	//get from link if available and put into preferences
 	$selected_topics_list_id = $_POST['topic_link_submission'];
-	if (intval($selected_topics_list !== 0))//make sure not to write a string
+	if (intval($selected_topics_list_id !== 0))//make sure not to write a string
 	{
-		$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
+		$array = array();
+		$array[] = $selected_topics_list_id;
+		$usrmgr->m_user->SetPref('selected_topics_list',$array);
 	}
 	header('Location:problems.php');
 } elseif (isset($_POST['skip'])) {
