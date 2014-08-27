@@ -1093,7 +1093,7 @@ class OmittedProblem
 		$query = "SELECT problem_id FROM omitted_problems WHERE ";
 
 		$conditions = array('user_id = ?');
-		$params = array(this->m_user_id);
+		$params = array($this->m_user_id);
 
 		if ($this->m_topic_id) {
 			$conditions[] = 'topic_id = ?';
@@ -1114,7 +1114,7 @@ class OmittedProblem
 		$query = "SELECT COUNT(*) FROM omitted_problems WHERE ";
 
 		$conditions = array('user_id = ?');
-		$params = array(this->m_user_id);
+		$params = array($this->m_user_id);
 
 		if ($this->m_topic_id) {
 			$conditions[] = "topic_id = ?";
