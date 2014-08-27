@@ -43,33 +43,22 @@ function init_new_columns($user_id, $prefs) {
         $bindings = array(":value" => $value, ":user_id" => $user_id);
         $dbmgr->exec_query(sprintf($updateQuery, 'selected_course_id'), $bindings);
       }
-      # $dead_prefs[] = $key;
     } elseif ($key == 'selected_topics_list') {
       if (is_array($value)) {
         foreach ($value as $index => $topic_id) {
           $bindings = array(':user_id' => $user_id, ':topic_id' => $topic_id);
           $dbmgr->exec_query($selectedTopicQuery, $bindings);
         }
-        # $dead_prefs[] = $key;
       } else {
         $bindings = array(':user_id' => $user_id, ':topic_id' => $value);
         $dbmgr->exec_query($selectedTopicQuery, $bindings);
-        # $dead_prefs[] = $key;
       }
     } elseif ($key == 'page_loads') {
       $bindings = array(":value" => $value, ":user_id" => $user_id);
       $dbmgr->exec_query(sprintf($updateQuery, $key), $bindings);
-      # $dead_prefs[] = $key;
     } elseif ($key == 'last_activity') {
       $bindings = array(":value" => date("Y-m-d H:i:s", $value), ":user_id" => $user_id);
       $dbmgr->exec_query(sprintf($updateQuery, $key), $bindings);
-      # $dead_prefs[] = $key;
-    } elseif (preg_match("/^(bugcheck[0-9]+)$/", $key, $matches)) {
-      # $dead_prefs[] = $matches[1];
-    } elseif (preg_match("/^(omitted_problems_list\[[0-9]+\])$/", $key, $matches)) {
-      # $dead_prefs[] = $matches[1];
-    } elseif ($key == 'start_time' || $key == 'end_time' || $key == 'current_problem' || $key == 'problem_submitted') {
-      # $dead_prefs[] = $key;
     }
   }
 }
