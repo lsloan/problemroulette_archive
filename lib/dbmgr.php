@@ -6,6 +6,14 @@
 //
 //
 
+if (!extension_loaded('pdo')) {
+	dl('pdo.so');
+}
+
+if (!extension_loaded('pdo_mysql')) {
+	dl('pdo_mysql.so');
+}
+
 class CDbMgr
 {
 	//	Members
