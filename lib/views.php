@@ -98,6 +98,7 @@ class VPageTabs{
     </p>
     </div>
     <div class='problem-roulette-tag' style='display:none;'>2.0.3</div>
+    <div class='php-version' style='display:none;'>".PHP_VERSION."</div>
 </div>
 
 </body>
