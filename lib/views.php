@@ -99,8 +99,9 @@ class VNoTabNav
 	
 	function Deliver()
 	{
-        $str = "";
-        return $str;
+        ob_start(); ?>
+
+         <? return ob_get_flush();
     }
 }
 
@@ -137,11 +138,12 @@ class VStaff
 	
 	function Deliver()
 	{
-        $str = "
+		ob_start(); ?>
         <p>
             hi, this is the staff page... this well soon be more then one page
-        </p>";
-        return $str;
+        </p>
+        <? return ob_get_flush();
+
     }
 }
 
@@ -175,7 +177,7 @@ class VStudentPerformance
 			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 			
 			global $usrmgr;
-			$str = "
+			ob_start(); ?>
 			<p class='half-line'>&nbsp;</p>
 			<h4 class='summary-header'>
 				Student Peformance
@@ -184,7 +186,9 @@ class VStudentPerformance
 			Filter by Course: 
 			<form name='dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
 			<select class='dropdown-course' name='dropdown_course'>
-			<option value='all' selected='selected'>All Courses</option>";
+			<option value='all' selected='selected'>All Courses</option>
+			<? return ob_get_flush();
+
 			for ($i=0; $i<$num_courses; $i++)
 			{
 				$all_topics_in_course = Array();
