@@ -1092,8 +1092,8 @@ class OmittedProblem
 
 		$query = "SELECT problem_id FROM omitted_problems WHERE ";
 
-		$conditions = ['user_id = ?'];
-		$params = [$this->m_user_id];
+		$conditions = array('user_id = ?');
+		$params = array(this->m_user_id);
 
 		if ($this->m_topic_id) {
 			$conditions[] = 'topic_id = ?';
@@ -1113,8 +1113,8 @@ class OmittedProblem
 
 		$query = "SELECT COUNT(*) FROM omitted_problems WHERE ";
 
-		$conditions = ['user_id = ?'];
-		$params = [$this->m_user_id];
+		$conditions = array('user_id = ?');
+		$params = array(this->m_user_id);
 
 		if ($this->m_topic_id) {
 			$conditions[] = "topic_id = ?";
@@ -1136,7 +1136,7 @@ class OmittedProblem
 		global $dbmgr;
 
 		$query = "INSERT INTO omitted_problems (user_id, topic_id, problem_id) VALUES (?, ?, ?)";
-		$params = [$this->m_user_id, $this->m_topic_id, $this->m_problem_id];
+		$params = array($this->m_user_id, $this->m_topic_id, $this->m_problem_id);
 
 		$dbmgr->exec_query($query, $params);
 	}
@@ -1146,8 +1146,8 @@ class OmittedProblem
 
 		if ($this->m_user_id) {
 			$query = "DELETE FROM omitted_problems WHERE ";
-			$conditions = ['user_id = ?'];
-			$params = [$this->m_user_id];
+			$conditions = array('user_id = ?');
+			$params = array($this->m_user_id);
 
 			if ($this->m_topic_id) {
 				$conditions[] = "topic_id = ?";
