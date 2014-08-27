@@ -12,9 +12,10 @@ class CHeadCSSJavascript{
 		$this->m_cssfile = $cssfile;
 	}
 
+
 	function Deliver(){
-		$str   = "\n<title>".$this->m_title." - Problem Roulette</title>";
-        $str .= " 
+		ob_start(); ?>
+		<title><?= $this->m_title ?> - Problem Roulette</title>
         <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
         <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
         <link href='css/styles.css' rel='stylesheet' media='screen'>
@@ -26,19 +27,18 @@ class CHeadCSSJavascript{
 		<script type='text/javascript' src='js/problem_library_actions.js'></script> 
 		<script type='text/javascript' src='js/problem_edit_actions.js'></script> 
 		<script type='text/javascript' src='js/mytable.js'></script> 
-        ";
-        if($this->m_cssfile != NULL)
-		foreach((array)$this->m_cssfile as $css){
-			$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
-		}
-        if($this->m_javafile != NULL)
-		foreach((array)$this->m_javafile as $java){
-			$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
-		}
-        $str .= "
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        ";
-		return $str;
+        <? if($this->m_cssfile != NULL): ?>
+		<? foreach((array)$this->m_cssfile as $css): ?>
+			<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
+		<? endforeach ?>
+		<? endif ?>
+        <? if($this->m_javafile != NULL): ?>
+		<? foreach((array)$this->m_javafile as $java): ?>
+			<script type='text/JavaScript' src='<?= $java ?>'></script>
+		<? endforeach ?>
+		<? endif ?>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'
+        <? return ob_get_flush();
 	}
 }
 
