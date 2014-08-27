@@ -97,7 +97,8 @@ class VPageTabs{
       For issues with the content of the problems, see your instructor first.
     </p>
     </div>
-    <div class='problem-roulette-tag' style='display:none;'>2.0.3</div>
+    <div class='problem-roulette-tag' style='display:none;'>2.0.4</div>
+    <div class='php-version' style='display:none;'>".PHP_VERSION."</div>
 </div>
 
 </body>
