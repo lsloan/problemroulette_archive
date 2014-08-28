@@ -23,22 +23,22 @@ class CHeadCSSJavascript{
         <script src='js/jquery-1.10.1.js'></script>
         <script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
-		<script type='text/javascript' src='js/jquery.tablesorter.js'></script> 
-		<script type='text/javascript' src='js/problem_library_actions.js'></script> 
-		<script type='text/javascript' src='js/problem_edit_actions.js'></script> 
-		<script type='text/javascript' src='js/mytable.js'></script> 
-        <? if($this->m_cssfile != NULL): ?>
-		<? foreach((array)$this->m_cssfile as $css): ?>
+		<script type='text/javascript' src='js/jquery.tablesorter.js'></script>
+		<script type='text/javascript' src='js/problem_library_actions.js'></script>
+		<script type='text/javascript' src='js/problem_edit_actions.js'></script>
+		<script type='text/javascript' src='js/mytable.js'></script>
+        <?php if($this->m_cssfile != NULL): ?>
+		<?php foreach((array)$this->m_cssfile as $css): ?>
 			<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
-		<? endforeach ?>
-		<? endif ?>
-        <? if($this->m_javafile != NULL): ?>
-		<? foreach((array)$this->m_javafile as $java): ?>
+		<?php endforeach ?>
+		<?php endif ?>
+        <?php if($this->m_javafile != NULL): ?>
+		<?php foreach((array)$this->m_javafile as $java): ?>
 			<script type='text/JavaScript' src='<?= $java ?>'></script>
-		<? endforeach ?>
-		<? endif ?>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'
-        <? return ob_get_flush();
+		<?php endforeach ?>
+		<?php endif ?>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+        <?php return ob_get_clean();
 	}
 }
 
@@ -59,7 +59,7 @@ class VPageTabs{
 	function render($view) {
 		ob_start();
 		include($view);
-		return ob_get_flush();
+		return ob_get_clean();
 	}
 
 	function Deliver(){
@@ -101,7 +101,7 @@ class VNoTabNav
 	{
         ob_start(); ?>
 
-         <? return ob_get_flush();
+         <? return ob_get_clean();
     }
 }
 
@@ -142,7 +142,7 @@ class VStaff
         <p>
             hi, this is the staff page... this well soon be more then one page
         </p>
-        <? return ob_get_flush();
+        <? return ob_get_clean();
 
     }
 }
