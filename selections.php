@@ -74,13 +74,14 @@ if (isset($_SERVER['HTTP_REFERER']))
 }
 
 //checks to see if user has chosen a course; if so, updates preferences;
+
 if (isset($_POST['course_submission']))
 {
-	$selected_course_id = $_POST['course_submission'];	
+	$selected_course_id = $_POST['course_submission'];
 	$timestamp = time();
 	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
 	$usrmgr->m_user->SetPref('last_activity',$timestamp);
-	header('Location:selections.php');
+	// header('Location:selections.php');
 }
 
 //checks to see if user hit the 'Select Different Course' button
@@ -120,8 +121,14 @@ if ($CTprefs->m_selected_topics_list != Null)
 
 
 // page construction
-$head = new CHeadCSSJavascript("Selections", array(), array());
-$tab_nav = new VTabNav(new MTabNav('Selections'));
+if (isset($_POST['course_submission'])) {
+	$head = new CHeadCSSJavascript("Selections", array(), array());
+	$tab_nav = new VTabNavProbDisabled(new MTabNav('Selections'));
+}
+else {
+	$head = new CHeadCSSJavascript("Selections", array(), array());
+	$tab_nav = new VTabNav(new MTabNav('Selections'));
+ }
 
 # choose topic or course selection view
 if ($course_or_topic == 1)
