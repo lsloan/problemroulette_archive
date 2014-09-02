@@ -109,12 +109,12 @@ class VPageTabs{
 }
 
 class VTabNav
-{	
+{
 	function __construct($nav)
 	{
         $this->m_nav = $nav;
 	}
-	
+
 	function Deliver()
 	{
         $selected = 'Problems';
@@ -124,7 +124,30 @@ class VTabNav
             $tabStyle = '';
             if($this->m_nav->m_selected == $tab)
                 $tabStyle = 'active';
-            $str .= "<li class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+            $str .= "<li  class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+        }
+        $str .= "</ul>";
+        return $str;
+    }
+}
+
+class VTabNavProbDisabled extends VTabNav
+{
+	function Deliver()
+	{
+        $selected = 'Problems';
+        $str = "<ul class='nav nav-tabs'>";
+		foreach($this->m_nav->m_pages as $tab=>$url)
+        {
+            $tabStyle = '';
+            if($this->m_nav->m_selected == $tab)
+                $tabStyle = 'active';
+            if ($tab == 'Problems')
+                $str .= "<li  class='problem_tab disabled' ".
+            			$tabStyle."onclick='return false'>
+            			<a href='".$url."'>".$tab."</a></li>";
+            else
+            	$str .= "<li  class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
         }
         $str .= "</ul>";
         return $str;
@@ -1333,7 +1356,7 @@ class VTopic_Selections
 					$topic = $this->v_selected_course->m_topics[$i];
 					$str .= "<tr>
 					<td class='cell-checkbox'><input type='checkbox' 
-					class = 'group checkbox' 
+					class = 'group checkbox'
 					name='topic_checkbox_submission[]'
 					value='".$topic->m_id."'";
 					if ($this->v_pre_fill_topics == 1)
