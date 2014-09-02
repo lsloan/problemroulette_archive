@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+
 // all the global stuff goes hear and gets included on every page
 #$GLOBALS["SQL_SERVER"] = "localhost";
 $GLOBALS["DOMAIN"] = "http://pr.local/";

@@ -37,6 +37,10 @@ else
 }
 
 global $usrmgr;
+
+//get user_id
+$user_id = $usrmgr->m_user->id;
+
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))
 {
@@ -45,7 +49,8 @@ if (isset($_POST['topic_checkbox_submission']))
 	for ($i=0; $i<$length; $i++)
 	{
 		$topic_id = $reset_topics_list_id[$i];
-		$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);
+		$omitted_problem = new OmittedProblem($user_id, $topic_id);
+		$current_omitted_problems_list = $omitted_problem->remove();
 	}
 }
 
@@ -53,7 +58,8 @@ if (isset($_POST['topic_checkbox_submission']))
 if (isset($_POST['topic_link_submission']))
 {
 	$topic_id = $_POST['topic_link_submission'];
-	$usrmgr->m_user->SetPref('omitted_problems_list['.$topic_id.']',Null);	
+	$omitted_problem = new OmittedProblem($user_id, $topic_id);
+	$current_omitted_problems_list = $omitted_problem->remove();
 }
 
 # set flag to indicate coming from any other tab
@@ -68,13 +74,14 @@ if (isset($_SERVER['HTTP_REFERER']))
 }
 
 //checks to see if user has chosen a course; if so, updates preferences;
+
 if (isset($_POST['course_submission']))
 {
-	$selected_course_id = $_POST['course_submission'];	
+	$selected_course_id = $_POST['course_submission'];
 	$timestamp = time();
 	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
 	$usrmgr->m_user->SetPref('last_activity',$timestamp);
-	header('Location:selections.php');
+	// header('Location:selections.php');
 }
 
 //checks to see if user hit the 'Select Different Course' button
@@ -114,8 +121,14 @@ if ($CTprefs->m_selected_topics_list != Null)
 
 
 // page construction
-$head = new CHeadCSSJavascript("Selections", array(), array());
-$tab_nav = new VTabNav(new MTabNav('Selections'));
+if (isset($_POST['course_submission'])) {
+	$head = new CHeadCSSJavascript("Selections", array(), array());
+	$tab_nav = new VTabNavProbDisabled(new MTabNav('Selections'));
+}
+else {
+	$head = new CHeadCSSJavascript("Selections", array(), array());
+	$tab_nav = new VTabNav(new MTabNav('Selections'));
+ }
 
 # choose topic or course selection view
 if ($course_or_topic == 1)

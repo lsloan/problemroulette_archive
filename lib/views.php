@@ -61,19 +61,18 @@ class VPageTabs{
 		include($view);
 		return ob_get_clean();
 	}
-
 	function Deliver(){
 		return $this->render('views/layout.php');
 	}
 }
 
 class VTabNav
-{	
+{
 	function __construct($nav)
 	{
         $this->m_nav = $nav;
 	}
-	
+
 	function Deliver()
 	{
         $selected = 'Problems';
@@ -83,7 +82,30 @@ class VTabNav
             $tabStyle = '';
             if($this->m_nav->m_selected == $tab)
                 $tabStyle = 'active';
-            $str .= "<li class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+            $str .= "<li  class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+        }
+        $str .= "</ul>";
+        return $str;
+    }
+}
+
+class VTabNavProbDisabled extends VTabNav
+{
+	function Deliver()
+	{
+        $selected = 'Problems';
+        $str = "<ul class='nav nav-tabs'>";
+		foreach($this->m_nav->m_pages as $tab=>$url)
+        {
+            $tabStyle = '';
+            if($this->m_nav->m_selected == $tab)
+                $tabStyle = 'active';
+            if ($tab == 'Problems')
+                $str .= "<li  class='problem_tab disabled' ".
+            			$tabStyle."onclick='return false'>
+            			<a href='".$url."'>".$tab."</a></li>";
+            else
+            	$str .= "<li  class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
         }
         $str .= "</ul>";
         return $str;
@@ -944,23 +966,19 @@ class VProblems
 	{
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
+		if (! is_array($selected_topics_list_id)) {
+			$selected_topics_list_id = MakeArray($selected_topics_list_id);
+		}
 		$num_topics = count($selected_topics_list_id);
-		if (is_array($selected_topics_list_id))
+		for ($i=0; $i<$num_topics; $i++)
 		{
-			for ($i=0; $i<$num_topics; $i++)
-			{
-				$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-			}
-			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-			{
-				$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-			}
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
 		}
-		else
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
 		{
-			$this->v_selected_topics_list = MTopic::get_topic_by_id($selected_topics_list_id);
-			$this->v_selected_topics_list_name = $this->v_selected_topics_list->m_name;
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
+
 		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
 		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
 	}
@@ -1007,15 +1025,17 @@ class VProblems
 			}
 			$str .= "
 			</p>
-			<form class='ans-form' action='' method='POST'>
+			<form class='ans-form' name='ans_form' action='' method='POST'>
+			<input type='hidden' id='submit_or_skip' name='tbd' value='0'/>
+			<input type='hidden' name='problem' value='".$this->v_picked_problem->m_prob_id."'>
+			<input type='hidden' name='started' value='".date("U")."'>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)
 			{
 				$str .= "<input type='radio' 
 				class='ans-choice' 
 				name='student_answer' 
-				value='".($i+1)."' 
-				onClick='javascript:document.getElementById(&quot;submit_answer&quot;).disabled=false'></input> 
+				value='".($i+1)."'></input> 
 				<font size='4'>".$alphabet[$i]."</font>
 				";
 			}
@@ -1033,6 +1053,7 @@ class VProblems
 			<button type='submit'
 			class='btn'
 			name='skip'
+			id='skip'
 			value='1'>
 				Skip
 			</button>
@@ -1053,30 +1074,29 @@ class VProblems_submitted
 	var $v_selected_topics_list_name;
 	var $v_remaining_problems_in_topic_list;
 	var $v_total_problems_in_topic_list;
+	var $v_solve_time;
+	var $v_student_answer;
 
-	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list)
+	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list, $student_answer, $solve_time = 0)
 	{
 		$this->v_picked_problem = $picked_problem;
 		$selected_topics_list_id = $selected_topics_list;
-		$num_topics = count($selected_topics_list_id);
-		if (is_array($selected_topics_list_id))
-		{
-			for ($i=0; $i<$num_topics; $i++)
-			{
-				$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-			}
-			for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-			{
-				$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-			}
+		if (! is_array($selected_topics_list_id)) {
+			$selected_topics_list_id = MakeArray($selected_topics_list_id);
 		}
-		else
+		$num_topics = count($selected_topics_list_id);
+		for ($i=0; $i<$num_topics; $i++)
 		{
-			$this->v_selected_topics_list = MTopic::get_topic_by_id($selected_topics_list_id);
-			$this->v_selected_topics_list_name = $this->v_selected_topics_list->m_name;
+			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
+		}
+		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
+		{
+			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
 		}
 		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
 		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
+		$this->v_student_answer = $student_answer;
+		$this->v_solve_time = $solve_time;
 	}
 	
 	function Deliver()
@@ -1084,38 +1104,15 @@ class VProblems_submitted
 	    global $usrmgr;
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
-		$student_answer = $usrmgr->m_user->GetPref('problem_submitted');
-		
-		//calculate solve time
-		$start_time = $usrmgr->m_user->GetPref('start_time');
-		$end_time = $usrmgr->m_user->GetPref('end_time');
-		$solve_time = $end_time - $start_time;
 		
 		//green label for correct answer; red label for incorrect answer
-		if ($correct_answer == $student_answer)
+		if ($correct_answer == $this->v_student_answer)
 		{
 			$label_class = 'label-success';
 		}
 		else
 		{
 			$label_class = 'label-important';
-		}
-		
-		//set color for 'Your Time' label
-		if ($solve_time <= $this->v_picked_problem->get_avg_time())
-		{
-			//$time_label_class = "label-success";//green
-			$time_label_class = "";//gray
-		}
-		elseif ($solve_time <= 1.3*$this->v_picked_problem->get_avg_time())
-		{
-			//$time_label_class = "label-warning";//yellow
-			$time_label_class = "";//gray
-		}
-		else
-		{
-			//$time_label_class = "label-important";//red
-			$time_label_class = "";//gray
 		}
 		
 		//determine total tries for a problem (N)
@@ -1198,9 +1195,9 @@ class VProblems_submitted
 			</button>
 			</form>
 			<p>
-			<span class='label student-answer ".$time_label_class."'>
+			<span class='label student-answer'>
 			Your time:&nbsp;
-			".$solve_time."
+			".$this->v_solve_time."
 			 seconds
 			</span>
 			Average user time: 
@@ -1211,14 +1208,7 @@ class VProblems_submitted
 			Your answer:&nbsp;
 			";
 			
-			if (isset($_SESSION['sesstest']))
-			{
-				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
-			}
-			else
-			{
-				$str .= $alphabet[$usrmgr->m_user->GetPref('problem_submitted')-1];
-			}
+			$str .= $alphabet[$this->v_student_answer-1];
 			
 			$str .= "
 			</span>
@@ -1328,7 +1318,7 @@ class VTopic_Selections
 					$topic = $this->v_selected_course->m_topics[$i];
 					$str .= "<tr>
 					<td class='cell-checkbox'><input type='checkbox' 
-					class = 'group checkbox' 
+					class = 'group checkbox'
 					name='topic_checkbox_submission[]'
 					value='".$topic->m_id."'";
 					if ($this->v_pre_fill_topics == 1)
