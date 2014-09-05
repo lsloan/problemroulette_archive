@@ -112,5 +112,32 @@ class CDbMgr
 	function GetPswd() { return $this->m_pswd; }
 	function GetDB()   { return $this->m_db; }
 	function GetLink() { return $this->m_link; }
+
+	// PDO does not support binding arrays as parameters
+	// like you might want to do with an "in" clause, 
+	// so here is a "BindParamArray" function, cased on: 
+	// http://stackoverflow.com/a/22663617/1786958
+	// (with some modifications).
+	// Example usage:
+	//   $bindString = helper::bindParamArray("id", array(3,6,9), $bindArray);
+	//   $userConditions .= " AND users.id IN($bindString)";
+	// That returns a string ":id1, :id2, :id3" and also updates 
+	// $bindArray with ":id1" => 3, ":id2" => 6, ":id3" => 9
+	function BindParamArray($prefix, $values, &$bindArray){
+    $str = "";
+    if (is_scalar($values)) {
+    	$values = array($values);
+    }
+    foreach($values as $index => $value){
+    	$name = ":".$prefix.$index;
+    	if ($index == 0) {
+    		$str .= $name;
+    	} else {
+    		$str .= ", ".$name;
+    	}
+      $bindArray[$name] = $value;
+    }
+    return $str;     
+	}
 }
 ?>

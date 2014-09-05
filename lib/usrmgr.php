@@ -9,6 +9,8 @@ class MUser
     var $selected_course_id;
     var $page_loads;
     var $last_activity;
+    var $selection_id;
+    var $selected_topics_list;
 
     function __construct($username, $staff=0)
     {
@@ -63,7 +65,7 @@ class MUser
     function read()
     {
         global $dbmgr;
-        $query = "SELECT id, staff, prefs, selected_course_id, page_loads, last_activity FROM user WHERE username = :username";
+        $query = "SELECT t1.id id, t1.staff staff, t1.prefs prefs, t1.page_loads page_loads, t1.last_activity last_activity, t1.selection_id selection_id, t2.class_id selected_course_id FROM user t1 join selections t2 on t1.selection_id=t2.id WHERE t1.username = :username";
         $bindings = array(":username" => $this->username);
         $res = $dbmgr->fetch_assoc( $query , $bindings );
         // populate user (if found)
@@ -72,9 +74,11 @@ class MUser
             $this->id = $res[0]['id'];
             $this->staff = $res[0]['staff'];
             $this->prefs = $this->unpackage($res[0]['prefs']);
-            $this->selected_course_id = $res[0]['selected_course_id'];
             $this->page_loads = $res[0]['page_loads'];
             $this->last_activity = $res[0]['last_activity'];
+            $this->selection_id = $res[0]['selection_id'];
+            $this->selected_course_id = $res[0]['selected_course_id'];
+            $this->LoadSelectedTopics();
 
             return True;
         }
@@ -109,11 +113,86 @@ class MUser
     function SetPref($key, $val)
     {
         $this->validatePref($key, $val);
-        $saved = $this->SavePrefsInNewColumns($key, $val);
-        # later to stop saving values in both ways we can  
-        # skip the following steps if $saved is true.
-        $this->prefs[$key] = $val;
-        $this->WritePrefs();
+        if (! $this->SavePrefsInNewColumns($key, $val)) {
+            # skip saving in prefs if saved to other column(s).
+            $this->prefs[$key] = $val;
+            $this->WritePrefs();
+        }
+    }
+
+    function SetSelectedCourseId($selected_course_id) {
+        global $dbmgr;
+        $insertQuery = "insert ignore into selections (user_id, class_id) values (:user_id,:class_id)";
+        $selectQuery = "select id from selections where (user_id = :user_id and class_id = :class_id) limit 1";
+        $updateQuery = "update user set selection_id = :selection_id where id = :user_id";
+
+        $bindings = array(":user_id" => $this->id, ":class_id" => $selected_course_id);
+        $dbmgr->exec_query($insertQuery, $bindings);
+
+        $res = $dbmgr->fetch_assoc( $selectQuery , $bindings );
+        if(count($res) == 1) {
+            $selection_id = $res[0]['id'];
+            $bindings = array(":selection_id" => $selection_id, ":user_id" => $this->id);
+            $dbmgr->exec_query($updateQuery, $bindings); 
+            $this->selected_course_id = $selected_course_id;
+            $this->selection_id = $selection_id;
+            $this->LoadSelectedTopics();
+            return True;
+        }
+        return False;
+    }
+
+    function SetPageLoads($page_loads) {
+        global $dbmgr;
+        $query = "update user set page_loads = :page_loads where id = :user_id";
+        $bindings = array(":page_loads" => $page_loads, ":user_id" => $this->id);
+        $dbmgr->exec_query($query, $bindings);
+        $this->page_loads = $page_loads;
+    }
+
+    function SetLastActivity($last_activity) {
+        global $dbmgr;
+        $query = "update user set last_activity = :last_activity where id = :user_id";
+        $bindings = array(":last_activity" => date("Y-m-d H:i:s", $last_activity), ":user_id" => $this->id);
+        $dbmgr->exec_query($query, $bindings);
+        $this->last_activity = $last_activity;
+    }
+
+    function ResetSelectedTopicsForClass($class_id) {
+        global $dbmgr;
+        $query = "delete from selected_topics where selection_id in (select id from selections where user_id = :user_id and class_id = :user_id)";
+        $bindings = array(":user_id" => $this->id, ":class_id" => $class_id);
+        $dbmgr->exec_query($query, $bindings);
+        if ($this->selected_course_id == $class_id) {
+            $this->selected_topics = [];
+        }
+    }
+
+    function AddSelectedTopics($topic_id_list) {
+        global $dbmgr;
+        $bindings = array(':user_id' => $this->id);
+        $bind_string = $dbmgr->BindParamArray("topic", $topic_id_list, $bindings);
+        $ensureSelectionsQuery = sprintf("insert ignore into selections (user_id, class_id) select :user_id, class_id from 12m_class_topic where topic_id in (%s)",$bind_string);
+
+        error_log(sprintf("UserManager.AddSelectedTopics(%s) ",print_r($topic_id_list, true)));
+        error_log(sprintf("bindings: %s ",print_r($bindings, true)));
+        error_log(sprintf("query: %s ",$ensureSelectionsQuery));
+        $dbmgr->exec_query($ensureSelectionsQuery, $bindings);
+
+        $insertTopicIdsQuery = "insert ignore into selected_topics (selection_id, topic_id) select t1.id selection_id, t2.topic_id topic_id from selections t1 join 12m_class_topic t2 on t1.class_id=t2.class_id where t2.topic_id in ($bind_string) and t1.user_id=:user_id";
+        $dbmgr->exec_query($insertTopicIdsQuery, $bindings);
+    }
+
+    function SetSelectedTopicsForClass($class_id, $topic_id_list) {
+        $this->ResetSelectedTopicsForClass($class_id);
+        $this->AddSelectedTopics($topic_id_list);
+    }
+
+    function LoadSelectedTopics() {
+        global $dbmgr;
+        $query = "select topic_id from selected_topics where selection_id = :selection_id";
+        $bindings = array(":selection_id" => $this->selection_id);
+        $this->selected_topics_list = $dbmgr->fetch_column($query, $bindings, 0);
     }
 
     // This function persists certain prefs in a new way --

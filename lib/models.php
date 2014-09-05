@@ -432,8 +432,8 @@ Class MCTSelect
 	function __construct()
 	{
 		global $usrmgr;
-		$this->m_selected_course = $usrmgr->m_user->GetPref('selected_course');
-		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
+		$this->m_selected_course = $usrmgr->m_user->selected_course_id;
+		$this->m_selected_topics_list = $usrmgr->m_user->selected_topics_list;
 		$num_selected_topics = count($this->m_selected_topics_list);
 
 		//get user_id
@@ -446,7 +446,7 @@ Class MCTSelect
 			$this->m_omitted_problems_list[$topic_id] = $omitted_problem->find();
 		}
 		//^^^taken care of above^^^//$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
-		$this->m_last_activity = $usrmgr->m_user->GetPref('last_activity');
+		$this->m_last_activity = $usrmgr->m_user->last_activity;
 		
 		for ($i=0;$i<count($this->m_selected_topics_list);$i++)
 		{
@@ -500,22 +500,22 @@ Class MDirector
 	{
 		global $usrmgr;
 		//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
-		if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+		if (intval($usrmgr->m_user->selected_course_id == 0))
 		{
-			$usrmgr->m_user->SetPref('selected_course',Null);
+			$usrmgr->m_user->SetSelectedCourseId(Null);
 		}
-		if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
+		if (is_array($usrmgr->m_user->selected_topics_list))
 		{
-			if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
+			if (min(array_map("intval",$usrmgr->m_user->selected_topics_list)) == 0)
 			{
-				$usrmgr->m_user->SetPref('selected_topics_list',Null);
+				$usrmgr->m_user->ResetSelectedTopicsForClass($usrmgr->m_user->selected_course_id);
 			}
 		}
 		else
 		{
-			if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
+			if (intval($usrmgr->m_user->selected_course_id == 0))
 			{
-				$usrmgr->m_user->SetPref('selected_course',Null);
+				$usrmgr->m_user->SetSelectedCourseId(Null);
 			}
 		}
 	}
@@ -696,7 +696,7 @@ Class MPpicker
 	function __construct()
 	{
 		global $usrmgr;
-		$this->m_selected_topics_list = $usrmgr->m_user->GetPref('selected_topics_list');
+		$this->m_selected_topics_list = $usrmgr->m_user->selected_topics_list;
 		
 		//get user_id
 		$user_id = $usrmgr->m_user->id;

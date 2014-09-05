@@ -16,30 +16,14 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
-//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
-if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
-{
-	$usrmgr->m_user->SetPref('selected_course',Null);
-}
-if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
-{
-	if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
-	{
-		$usrmgr->m_user->SetPref('selected_topics_list',Null);
-	}
-}
-else
-{
-	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
-	{
-		$usrmgr->m_user->SetPref('selected_course',Null);
-	}
-}
-
 global $usrmgr;
 
 //get user_id
 $user_id = $usrmgr->m_user->id;
+
+error_log("Hello");
+error_log(print_r($_POST, true));
+
 
 //checks to see if user reset topics
 if (isset($_POST['topic_checkbox_submission']))
@@ -79,15 +63,16 @@ if (isset($_POST['course_submission']))
 {
 	$selected_course_id = $_POST['course_submission'];
 	$timestamp = time();
-	$usrmgr->m_user->SetPref('selected_course',$selected_course_id);
-	$usrmgr->m_user->SetPref('last_activity',$timestamp);
+	$usrmgr->m_user->SetSelectedCourseId($selected_course_id);
+	$usrmgr->m_user->SetLastActivity($timestamp);
+	error_log(sprintf("Saved selected_course_id: %s selection_id: \n",$usrmgr->m_user->selected_course_id, $usrmgr->m_user->selection_id ));
 	// header('Location:selections.php');
 }
 
 //checks to see if user hit the 'Select Different Course' button
 if (isset($_POST['select_different_course']))
 {
-	$usrmgr->m_user->SetPref('selected_course',Null);
+	$usrmgr->m_user->SetSelectedCourseId(Null);
 	header('Location:selections.php');
 }
 
