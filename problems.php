@@ -16,8 +16,8 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
-error_log("Problems");
-error_log(print_r($_POST, true));
+// error_log("Problems");
+// error_log(print_r($_POST, true));
 
 
 // Instead of using session and prefs to track 

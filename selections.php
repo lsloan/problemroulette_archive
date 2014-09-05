@@ -21,8 +21,8 @@ global $usrmgr;
 //get user_id
 $user_id = $usrmgr->m_user->id;
 
-error_log("Hello");
-error_log(print_r($_POST, true));
+// error_log("Selections");
+// error_log(print_r($_POST, true));
 
 
 //checks to see if user reset topics
