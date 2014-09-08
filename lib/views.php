@@ -12,34 +12,32 @@ class CHeadCSSJavascript{
 		$this->m_cssfile = $cssfile;
 	}
 
-
 	function Deliver(){
 		ob_start(); ?>
 		<title><?= $this->m_title ?> - Problem Roulette</title>
-        <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
-        <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
-        <link href='css/styles.css' rel='stylesheet' media='screen'>
-        <script src='js/trackingcode.js'></script>
-        <script src='js/jquery-1.10.1.js'></script>
-        <script src='js/bootstrap.js'></script>
+		<link href='css/bootstrap.css' rel='stylesheet' media='screen'>
+		<link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
+		<link href='css/styles.css' rel='stylesheet' media='screen'>
+		<script src='js/trackingcode.js'></script>
+		<script src='js/jquery-1.10.1.js'></script>
+		<script src='js/bootstrap.js'></script>
 		<script src='js/checkboxes.js'></script>
 		<script type='text/javascript' src='js/jquery.tablesorter.js'></script>
 		<script type='text/javascript' src='js/problem_library_actions.js'></script>
 		<script type='text/javascript' src='js/problem_edit_actions.js'></script>
 		<script type='text/javascript' src='js/mytable.js'></script>
-        <?php if($this->m_cssfile != NULL): ?>
-		<?php foreach((array)$this->m_cssfile as $css): ?>
-			<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
-		<?php endforeach ?>
+		<?php if($this->m_cssfile != NULL): ?>
+			<?php foreach((array)$this->m_cssfile as $css): ?>
+				<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
+			<?php endforeach ?>
 		<?php endif ?>
-        <?php if($this->m_javafile != NULL): ?>
-		<?php foreach((array)$this->m_javafile as $java): ?>
-			<script type='text/JavaScript' src='<?= $java ?>'></script>
-		<?php endforeach ?>
+		<?php if($this->m_javafile != NULL): ?>
+			<?php foreach((array)$this->m_javafile as $java): ?>
+				<script type='text/JavaScript' src='<?= $java ?>'></script>
+			<?php endforeach ?>
 		<?php endif ?>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
-        <?php return ob_get_clean();
-	}
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+		<?php return ob_get_clean();
 }
 
 class VPageTabs{
@@ -121,10 +119,9 @@ class VNoTabNav
 	
 	function Deliver()
 	{
-        ob_start(); ?>
-
-         <? return ob_get_clean();
-    }
+		ob_start(); ?>
+		<? return ob_get_clean();
+	}
 }
 
 class VCourseTopicNav
@@ -161,12 +158,11 @@ class VStaff
 	function Deliver()
 	{
 		ob_start(); ?>
-        <p>
-            hi, this is the staff page... this well soon be more then one page
-        </p>
-        <? return ob_get_clean();
-
-    }
+		<p>
+			hi, this is the staff page... this well soon be more then one page
+		</p>
+		<? return ob_get_clean();
+	}
 }
 
 class VStudentPerformance
@@ -199,7 +195,7 @@ class VStudentPerformance
 			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 			
 			global $usrmgr;
-			ob_start(); ?>
+			$str = "
 			<p class='half-line'>&nbsp;</p>
 			<h4 class='summary-header'>
 				Student Peformance
@@ -208,9 +204,7 @@ class VStudentPerformance
 			Filter by Course: 
 			<form name='dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
 			<select class='dropdown-course' name='dropdown_course'>
-			<option value='all' selected='selected'>All Courses</option>
-			<? return ob_get_flush();
-
+			<option value='all' selected='selected'>All Courses</option>";
 			for ($i=0; $i<$num_courses; $i++)
 			{
 				$all_topics_in_course = Array();
