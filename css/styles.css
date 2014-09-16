@@ -414,6 +414,11 @@ input[type="text"], select {
 	color: black ;
 }
 
+hr {
+	color: darkgrey;
+	border: 1px solid;
+	margin: 0 10px 0 10px;
+}
 form#edit_problem label {
 	padding-top: 5px;
 	margin-right: 8px;
