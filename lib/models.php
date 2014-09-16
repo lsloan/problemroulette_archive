@@ -12,6 +12,7 @@ Class MProblem
 	var $m_prob_tot_correct;#Number of times this problem was correctly answered
 	var $m_prob_tot_time;	#Cumulative time spent working on this problem
 	var $m_prob_solution;	#URL of solution, if supplied
+	var $m_prob_topic_name;	#topic name the problem is in (NOTE: what to do when problem can be in multiple topics?)
 
 	function __construct($prob_id = Null)
 	{
@@ -34,6 +35,13 @@ Class MProblem
 			$this->m_prob_tot_correct = $res[0]['tot_correct'];
 			$this->m_prob_tot_time = $res[0]['tot_time'];
 			$this->m_prob_solution = $res[0]['solution'];
+		}
+		$query = "SELECT name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
+		$bindings = array(":pid"=>$prob_id);
+		$res = $dbmgr->fetch_assoc($query, $bindings);
+		if (! empty($res[0]))
+		{
+			$this->m_prob_topic_name = $res[0]['name'];
 		}
 	}
 	
@@ -78,6 +86,17 @@ Class MProblem
 		}
 	}
 	
+	function get_prob_class_id($prob_id)
+	{
+		global $dbmgr;
+		$query = "SELECT c.id from class c, 12m_topic_prob tp, 12m_class_topic ct ".
+				  "WHERE tp.problem_id = :prob_id AND ct.topic_id = tp.topic_id AND c.id = ct.class_id";
+		$bindings = array( ":prob_id"=>$prob_id);
+		$res = $dbmgr->fetch_assoc( $query , $bindings );
+		$pid = $res[0]['id'];
+		return $pid;
+	}
+
 	function get_avg_time()
 	{
 		if ($this->m_prob_id != Null)
@@ -129,10 +148,8 @@ Class MProblem
     public static function update_problem_name($prob_id=Null, $new_prob_name=Null)
     {
         global $dbmgr;
-        $query = "UPDATE problems SET name = :name WHERE id = :prob_id";
-        $bindings = array(
-                ":name" => $new_prob_name,
-                ":id"   => $prob_id);
+        $query = "UPDATE problems SET name = :name WHERE id = :id";
+        $bindings = array(":name" => $new_prob_name, ":id"   => $prob_id);
         $dbmgr->exec_query( $query , $bindings );
     }
 
@@ -141,7 +158,7 @@ Class MProblem
         global $dbmgr;
         $query = "UPDATE problems SET url = :url WHERE id = :id";
         $bindings = array(":url" => $new_prob_url, ":id" => $prob_id);
-        $dbmgr->exec_query( $bindings , $query );
+        $dbmgr->exec_query( $query, $bindings );
     }
 
     public static function update_problem_num_ans($prob_id=Null, $new_prob_num_ans=Null)
@@ -166,6 +183,19 @@ Class MProblem
         $query = "UPDATE problems SET solution = :solution WHERE id = :id";
         $bindings = array(":solution" => $new_prob_sol_url, ":id" => $prob_id);
         $dbmgr->exec_query( $query , $bindings );
+    }
+
+    public static function update_problem($prob_id, $name, $url, $num_ans, $cor_ans, $sol_url, $topic_id)
+    {
+    	global $dbmgr;
+    	$query = "UPDATE problems SET name = :name, url = :url, correct = :cor_ans, ans_count = :num_ans, solution = :sol_url " .
+    			 " WHERE id = :id";
+    	$bindings = array(":name" => $name, ":url" => $url, ":cor_ans" => $cor_ans,
+    					  ":num_ans" => $num_ans, ":sol_url" => $sol_url, ":id" => $prob_id);
+    	$dbmgr->exec_query($query, $bindings);
+    	$query = "UPDATE 12m_topic_prob SET topic_id = :topic_id WHERE problem_id = :prob_id";
+    	$bindings = array(":topic_id"=>$topic_id, ":prob_id"=>$prob_id);
+    	$dbmgr->exec_query($query, $bindings);
     }
 
 	//for $exclusion: input 0 or nothing for no exclusion; input 1 or true for exclusion
@@ -323,7 +353,6 @@ Class MTopic
 		//$topic->m_questions = MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id);
 		return $topic;
 	}
-
 	
 	public static function get_all_topics()
 	{

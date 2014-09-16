@@ -18,4 +18,17 @@ function MakeArray($variable) {
   return $variable;
 }
 
+function MakeSelections($curval)
+{
+  for ($j=1; $j<11; $j++)
+  {
+    $str .= "<option";
+    if ($j == $curval) {
+      $str .= " selected='selected' ";
+    }
+    $str .= " value='".$j."'> ".$j." </option>";
+  }
+  return $str;
+}
+
 ?>
