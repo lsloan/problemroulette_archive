@@ -1599,14 +1599,23 @@ class VProblemEdit
 				}
 				$histogram_ans_string .= $alphabet[($i-1)]."|";
 			}
-    
+			// make an array of the topic names
+			$topic_choices = array();
+			$class_id = MProblem::get_prob_class_id($this->v_problem->m_prob_id);
+			$all_topics_in_course = MTopic::get_all_topics_in_course($class_id);
+			$num_topics = count($all_topics_in_course);
+			for ($j=0; $j<$num_topics; $j++)
+			{
+				$topic_choices[$all_topics_in_course[$j]->m_name] = $all_topics_in_course[$j]->m_id;
+			}
+
             $str = 
             "<p class='half-line'>&nbsp;</p>
             <h1 class='indent10'>Edit Problem Information</h1>
 
             <form action='' method='POST' class='indent10' id='edit_problem'>
             <p>
-                <label for='edit_problem_name' class='span2 text-right' >Name</label>
+                <label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
                 <input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
             </p>
 
@@ -1614,21 +1623,8 @@ class VProblemEdit
             	<label for='topic_for_new_problem' class='span2 text-right'>Topic</label>
             	<select class='span4' required name='topic_for_new_problem' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
 			";
-					$all_topics_in_course = Array();
-					$cid = MProblem::get_prob_class_id($this->v_problem->m_prob_id);
 
-					$all_topics_in_course = MTopic::get_all_topics_in_course($cid);
-					$num_topics = count($all_topics_in_course);
-					for ($j=0; $j<$num_topics; $j++)
-					{
-						$str .= "<option";
-						if ($all_topics_in_course[$j]->m_name == $this->v_problem->m_prob_topic_name)
-							{ $str .= " selected='selected'"; }
-						$str .= "
-						value='".$all_topics_in_course[$j]->m_id."'>
-						".$all_topics_in_course[$j]->m_name."
-						</option>";
-					}
+			$str .= MakeSelectOptions($topic_choices, $this->v_problem->m_prob_topic_name);
 			$str .= "</select></p>
 
             <p>
@@ -1640,7 +1636,7 @@ class VProblemEdit
                 <label for='edit_problem_num_ans' class='span2 text-right'>Number of Answers</label>
 				<select required id='edit_problem_num_ans' value='".$this->v_problem->m_prob_ans_count."'name='edit_problem_num_ans' class='span1 left'>
 				";
-				$str .= MakeSelections($this->v_problem->m_prob_ans_count);
+				$str .= MakeSelectOptions(AnswerNumbers(), $this->v_problem->m_prob_ans_count);
 				$str .="</select>
             </p>
 
@@ -1648,7 +1644,7 @@ class VProblemEdit
                 <label for='edit_problem_cor_ans' class='span2 text-right'>Correct Answer Number</label>
                 <select required type='text'  id='edit_problem_cor_ans' value='".$this->v_problem->m_prob_correct."' name='edit_problem_cor_ans' class='span1 left'>
 				";
-				$str .= MakeSelections($this->v_problem->m_prob_correct);
+				$str .= MakeSelectOptions(AnswerNumbers(), $this->v_problem->m_prob_correct);
 				$str .="</select>
             </p>
 

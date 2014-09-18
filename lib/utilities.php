@@ -18,17 +18,30 @@ function MakeArray($variable) {
   return $variable;
 }
 
-function MakeSelections($curval)
+// this creates options for a select input. $array contains  key, value
+// where the key is the option label and the value is the option value
+function MakeSelectOptions($array, $curlabel)
 {
-  for ($j=1; $j<11; $j++)
+  foreach ($array as $key => $value)
   {
     $str .= "<option";
-    if ($j == $curval) {
+    if ($key == $curlabel) {
       $str .= " selected='selected' ";
     }
-    $str .= " value='".$j."'> ".$j." </option>";
+    $str .= " value='".$value."'> ".$key." </option>";
   }
   return $str;
+}
+
+// creates an array of key,value to use in creating the options for selecting how many answer choices
+function AnswerNumbers()
+{ //set $num_values = to the number of answer number choices allowed
+  $num_values = 10;
+  $array = array();
+  for ($i=1; $i<$num_values+1; $i++) {
+    $array[$i] = $i;
+  }
+  return $array;
 }
 
 ?>

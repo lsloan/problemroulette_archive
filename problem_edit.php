@@ -79,7 +79,8 @@ if (isset($_POST['edit_problem_name']))
     $new_problem_cor_ans = str_replace(' ','',$_POST['edit_problem_cor_ans']);
     $new_problem_sol_url = str_replace(' ','',$_POST['edit_problem_sol_url']);
     $new_topic_id = $_POST['topic_for_new_problem'];
-    MProblem::update_problem($problem_id, $new_problem_name, $new_problem_url, $new_problem_num_ans, $new_problem_cor_ans, $new_problem_sol_url, $new_topic_id);
+    MProblem::update_problem($problem_id, $new_problem_name, $new_problem_url, $new_problem_num_ans, $new_problem_cor_ans, $new_problem_sol_url);
+    MTopic::update_problem_topic($problem_id, $new_topic_id);
     # header('Location:problem_edit.php?p_id='.$problem_id);
     header('Location:problem_library.php');
 }

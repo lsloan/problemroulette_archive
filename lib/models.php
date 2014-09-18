@@ -185,16 +185,13 @@ Class MProblem
         $dbmgr->exec_query( $query , $bindings );
     }
 
-    public static function update_problem($prob_id, $name, $url, $num_ans, $cor_ans, $sol_url, $topic_id)
+    public static function update_problem($prob_id, $name, $url, $num_ans, $cor_ans, $sol_url)
     {
     	global $dbmgr;
     	$query = "UPDATE problems SET name = :name, url = :url, correct = :cor_ans, ans_count = :num_ans, solution = :sol_url " .
     			 " WHERE id = :id";
     	$bindings = array(":name" => $name, ":url" => $url, ":cor_ans" => $cor_ans,
     					  ":num_ans" => $num_ans, ":sol_url" => $sol_url, ":id" => $prob_id);
-    	$dbmgr->exec_query($query, $bindings);
-    	$query = "UPDATE 12m_topic_prob SET topic_id = :topic_id WHERE problem_id = :prob_id";
-    	$bindings = array(":topic_id"=>$topic_id, ":prob_id"=>$prob_id);
     	$dbmgr->exec_query($query, $bindings);
     }
 
@@ -396,6 +393,14 @@ Class MTopic
 		//usort($all_topics_in_course, array('MTopic','alphabetize'));
 		return $all_topics_in_course;
 	}
+
+	public static function update_problem_topic($prob_id, $topic_id)
+    {
+    	global $dbmgr;
+    	$query = "UPDATE 12m_topic_prob SET topic_id = :topic_id WHERE problem_id = :prob_id";
+    	$bindings = array(":topic_id"=>$topic_id, ":prob_id"=>$prob_id);
+    	$dbmgr->exec_query($query, $bindings);
+    }
 	
 	static function alphabetize($a,$b)
 	{
