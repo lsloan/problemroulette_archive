@@ -35,9 +35,13 @@ $(document).ready(function()
 		$("#edit_problem_cor_ans_form").hide();
 	});
     
+  $('#clear_solution').click(function(){
+    $('#edit_problem_sol_url').val('');
+  });
+
 	//CHANGE NAME//Set Submit button to disabled by default
 	$('#edit_problem_name_submit').attr("disabled","disabled");
-	$('#edit_problem_name').addClass('input-error');
+	// $('#edit_problem_name').addClass('input-error');
 	//Enable Submit button if input is valid (alphanumeric + spaces)
 	$('#edit_problem_name').keyup(function(){
 		var validation = true;
@@ -63,10 +67,14 @@ $(document).ready(function()
 			$('#edit_problem_name').addClass('input-error');
 		}
 	});
-    
+  $('#edit_problem_name').change(function(){
+    if ( $(this).val() == '' ||  $.trim($(this).val()).length == 0) {
+      alert('You must enter a problem name - cannot be blank!');
+    }
+  });
 	//CHANGE URL//Set Submit button to disabled by default
 	$('#edit_problem_url_submit').attr("disabled","disabled");
-	$('#edit_problem_url').addClass('input-error');
+	// $('#edit_problem_url').addClass('input-error');
 	//Enable Submit button if input is valid
 	$('#edit_problem_url').keyup(function(){
 		var validation = true;
@@ -86,10 +94,14 @@ $(document).ready(function()
 			$('#edit_problem_url').addClass('input-error');
 		}
 	});
-    
+  $('#edit_problem_url').change(function(){
+    if ( $(this).val() == '' ||  $.trim($(this).val()).length == 0) {
+      alert('You must enter a problem URL - cannot be blank!');
+    }
+  });
 	//CHANGE SOLUTION URL//Set Submit button to disabled by default
 	$('#edit_problem_sol_url_submit').attr("disabled","disabled");
-	$('#edit_problem_sol_url').addClass('input-error');
+	// $('#edit_problem_sol_url').addClass('input-error');
 	//Enable Submit button if input is valid
 	$('#edit_problem_sol_url').keyup(function(){
 		var validation = true;
@@ -112,7 +124,7 @@ $(document).ready(function()
     
 	//CHANGE NUMBER OF ANSWERS//Set Submit button to disabled by default
 	$('#edit_problem_num_ans_submit').attr("disabled","disabled");
-	$('#edit_problem_num_ans').addClass('input-error');
+	// $('#edit_problem_num_ans').addClass('input-error');
 	//Enable Submit button if input is valid
 	$('#edit_problem_num_ans').keyup(function(){
 		var validation = true;
@@ -162,7 +174,7 @@ $(document).ready(function()
     
 	//CHANGE CORRECT ANSWER//Set Submit button to disabled by default
 	$('#edit_problem_cor_ans_submit').attr("disabled","disabled");
-	$('#edit_problem_cor_ans').addClass('input-error');
+	// $('#edit_problem_cor_ans').addClass('input-error');
 	//Enable Submit button if input is valid
 	$('#edit_problem_cor_ans').keyup(function(){
 		var validation = true;
@@ -209,5 +221,5 @@ $(document).ready(function()
 			$('#edit_problem_cor_ans').addClass('input-error');
 		}
 	});
-    
+
 });

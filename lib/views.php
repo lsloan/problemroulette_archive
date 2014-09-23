@@ -695,7 +695,7 @@ class VProblemLibrary
 				$str .= "
 				</div>
 				<div>
-				<form action='problem_edit.php' method='POST' target='_blank'>
+				<form action='problem_edit.php' method='POST' >
 				<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
 					<thead>
 						<tr>
@@ -1599,83 +1599,71 @@ class VProblemEdit
 				}
 				$histogram_ans_string .= $alphabet[($i-1)]."|";
 			}
+			// make an array of the topic names
+			$topic_choices = array();
+			$class_id = MProblem::get_prob_class_id($this->v_problem->m_prob_id);
+			$all_topics_in_course = MTopic::get_all_topics_in_course($class_id);
+			$num_topics = count($all_topics_in_course);
+			for ($j=0; $j<$num_topics; $j++)
+			{
+				$topic_choices[$all_topics_in_course[$j]->m_name] = $all_topics_in_course[$j]->m_id;
+			}
 
-    
             $str = 
             "<p class='half-line'>&nbsp;</p>
             <h1 class='indent10'>Edit Problem Information</h1>
+
+            <form action='' method='POST' class='indent10' id='edit_problem'>
             <p>
-                <span class='label label-info'>Current Problem Name:</span> 
-                <span class='current-problem-info' id='current_problem_info_name'>".$this->v_problem->m_prob_name."</span>
+                <label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
+                <input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
             </p>
+
             <p>
-                <button class='btn btn-primary add-CTP' id='edit_problem_name_button'>Change Problem Name</button>
-                <button class='btn remove-add-CTP-form' id='remove_edit_problem_name_button'><i class='icon-remove'></i></button>
-                <form action='' method='POST' class='indent10 hide' id='edit_problem_name_form'>
-                    Enter new problem name (alphanumeric and spaces only): 
-                    <input type='text' placeholder='Problem Name' id='edit_problem_name' name='edit_problem_name'  maxlength='200' class='fit-problem-name'/>
-                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
-                    <button class='btn' type='submit' id='edit_problem_name_submit'>Submit</button>
-                </form>
-            </p>
+            	<label for='topic_for_new_problem' class='span2 text-right'>Topic</label>
+            	<select class='span4' required name='topic_for_new_problem' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
+			";
+
+			$str .= MakeSelectOptions($topic_choices, $this->v_problem->m_prob_topic_name);
+			$str .= "</select></p>
+
             <p>
-                <span class='label label-info'>Current Problem URL:</span> 
-                <span class='current-problem-info' id='current_problem_info_url'><a class='current-problem-url' href='".$this->v_problem->m_prob_url."' target='_blank'>".$this->v_problem->m_prob_url."</a></span>
+                <label for='edit_problem_url' class='span2 text-right'>Problem URL</label>
+				<input required type='text'  id='edit_problem_url' name='edit_problem_url' value='".$this->v_problem->m_prob_url."' maxlength='300' class='span7 left'/>
             </p>
+
             <p>
-                <button class='btn btn-primary add-CTP' id='edit_problem_url_button'>Change Problem URL</button>
-                <button class='btn remove-add-CTP-form' id='remove_edit_problem_url_button'><i class='icon-remove'></i></button>
-                <form action='' method='POST' class='indent10 hide' id='edit_problem_url_form'>
-                    Enter new problem URL: 
-                    <input type='text' placeholder='Problem URL' id='edit_problem_url' name='edit_problem_url'  maxlength='300' class='fit-problem-name'/>
-                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
-                    <button class='btn' type='submit' id='edit_problem_url_submit'>Submit</button>
-                </form>
+                <label for='edit_problem_num_ans' class='span2 text-right'>Number of Answers</label>
+				<select required id='edit_problem_num_ans' value='".$this->v_problem->m_prob_ans_count."'name='edit_problem_num_ans' class='span1 left'>
+				";
+				$str .= MakeSelectOptions(AnswerNumbers(), $this->v_problem->m_prob_ans_count);
+				$str .="</select>
             </p>
+
             <p>
-                <span class='label label-info'>Current Number of Answers:</span> 
-                <span class='current-problem-info' id='current_problem_info_num_ans'>".$this->v_problem->m_prob_ans_count."</span>
+                <label for='edit_problem_cor_ans' class='span2 text-right'>Correct Answer Number</label>
+                <select required type='text'  id='edit_problem_cor_ans' value='".$this->v_problem->m_prob_correct."' name='edit_problem_cor_ans' class='span1 left'>
+				";
+				$str .= MakeSelectOptions(AnswerNumbers(), $this->v_problem->m_prob_correct);
+				$str .="</select>
             </p>
+
             <p>
-                <button class='btn btn-primary add-CTP' id='edit_problem_num_ans_button'>Change Number of Answers</button>
-                <button class='btn remove-add-CTP-form' id='remove_edit_problem_num_ans_button'><i class='icon-remove'></i></button>
-                <form action='' method='POST' class='indent10 hide' id='edit_problem_num_ans_form'>
-                    Enter new number of answers (numeric): 
-                    <input type='text' placeholder='Number of Answers' id='edit_problem_num_ans' name='edit_problem_num_ans'/>
-                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
-                    <button class='btn' type='submit' id='edit_problem_num_ans_submit'>Submit</button>
-                </form>
+                <label for='edit_problem_sol_url' class='span2 text-right'>Solution URL</label>
+				<input type='text' id='edit_problem_sol_url' name='edit_problem_sol_url' value='".$this->v_problem->m_prob_solution."' maxlength='300' class='span7 left'/>
+				<a href='#' id='clear_solution' title='Remove the Solution URL'> Clear </a>
             </p>
-            <p>
-                <span class='label label-info'>Current Answer to Problem:</span> 
-                <span class='current-problem-info' id='current_problem_info_cor_ans'>".$this->v_problem->m_prob_correct."</span>
-            </p>
-            <p>
-                <button class='btn btn-primary add-CTP' id='edit_problem_cor_ans_button'>Change Correct Answer</button>
-                <button class='btn remove-add-CTP-form' id='remove_edit_problem_cor_ans_button'><i class='icon-remove'></i></button>
-                <form action='' method='POST' class='indent10 hide' id='edit_problem_cor_ans_form'>
-                    Enter new correct answer (numeric, 1 for first answer, 2 for second, etc.): 
-                    <input type='text' placeholder='Correct Answer' id='edit_problem_cor_ans' name='edit_problem_cor_ans'/>
-                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
-                    <button class='btn' type='submit' id='edit_problem_cor_ans_submit'>Submit</button>
-                </form>
-            </p>
-            <p>
-                <span class='label label-info'>Current Solution URL:</span> 
-                <span class='current-problem-info' id='current_problem_info_sol_url'><a class='current-problem-url' href='".$this->v_problem->m_prob_solution."' target='_blank'>".$this->v_problem->m_prob_solution."</a></span>
-            </p>
-            <p>
-                <button class='btn btn-primary add-CTP' id='edit_problem_sol_url_button'>Change Solution URL</button>
-                <button class='btn remove-add-CTP-form' id='remove_edit_problem_sol_url_button'><i class='icon-remove'></i></button>
-                <form action='' method='POST' class='indent10 hide' id='edit_problem_sol_url_form'>
-                    Enter new solution URL: 
-                    <input type='text' placeholder='Solution URL' id='edit_problem_sol_url' name='edit_problem_sol_url'  maxlength='300' class='fit-problem-name'/>
-                    <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
-                    <button class='btn' type='submit' id='edit_problem_sol_url_submit'>Submit</button>                    
-                </form>
-            </p>
+                <input type='hidden' name='problem_info' value='".$this->v_problem->m_prob_id."'/>
+            <div class='row'>
+            	<div class='offset3'>
+	            	<button class='btn btn-primary offset3 span1 text-center' type='submit' id='edit_problem'>Submit</button>
+	            	<a class='btn btn-primary' href='problem_library.php'>Cancel</a>
+            	</div>
+            </div>
+            </form>
+            <hr>
             ";
-            
+
             $chart_width = 150;
             if ($this->v_problem->m_prob_ans_count > 3)
             {
