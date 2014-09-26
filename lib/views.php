@@ -13,11 +13,11 @@ class CHeadCSSJavascript{
 	}
 
 	function Deliver(){
-		$str   = "\n<title>".$this->m_title." - Problem Roulette</title>";
-    $str .= "
-    <link href='css/bootstrap.css' rel='stylesheet' media='screen'>
-    <link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
-    <link href='css/styles.css' rel='stylesheet' media='screen'>
+		ob_start(); ?>
+		<title><?= $this->m_title ?> - Problem Roulette</title>
+		<link href='css/bootstrap.css' rel='stylesheet' media='screen'>
+		<link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
+		<link href='css/styles.css' rel='stylesheet' media='screen'>
 		<script src='js/trackingcode.js'></script>
 		<script src='js/jquery-1.10.1.js'></script>
 		<script src='js/bootstrap.js'></script>
@@ -26,21 +26,18 @@ class CHeadCSSJavascript{
 		<script type='text/javascript' src='js/problem_library_actions.js'></script>
 		<script type='text/javascript' src='js/problem_edit_actions.js'></script>
 		<script type='text/javascript' src='js/mytable.js'></script>
-		<script type='text/javascript' src='js/problem.js'></script>
-    ";
-    if($this->m_cssfile != NULL)
-			foreach((array)$this->m_cssfile as $css){
-				$str .= "\n<link rel='stylesheet' href='".$css."' type='text/css' media='screen'></link>";
-			}
-    if($this->m_javafile != NULL)
-			foreach((array)$this->m_javafile as $java){
-				$str .= "\n<script type='text/JavaScript' src='".$java."'></script>";
-			}
-    $str .= "
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    ";
-		return $str;
-	}
+		<?php if($this->m_cssfile != NULL): ?>
+			<?php foreach((array)$this->m_cssfile as $css): ?>
+				<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
+			<?php endforeach ?>
+		<?php endif ?>
+		<?php if($this->m_javafile != NULL): ?>
+			<?php foreach((array)$this->m_javafile as $java): ?>
+				<script type='text/JavaScript' src='<?= $java ?>'></script>
+			<?php endforeach ?>
+		<?php endif ?>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+		<?php return ob_get_clean();
 }
 
 class VPageTabs{
@@ -57,54 +54,13 @@ class VPageTabs{
 		$this->m_content = $content;
 	}
 
+	function render($view) {
+		ob_start();
+		include($view);
+		return ob_get_clean();
+	}
 	function Deliver(){
-		$str 	= "
-<!doctype html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
-<html lang='en'>
-<!--open head-->
-	<head>
-    "
-	.$this->m_head->Deliver().
-	"</head>
-<!--close head-->
-<!--open body-->
-<body>
-
-<div id='wrap'>
-    <div class='container'>
-        "
-        .$this->m_nav->Deliver().
-        "
-        <div class='tab-content'>
-            <div class='tab-pane active' id='problems'>
-            " 
-            .$this->m_content->Deliver().
-            "
-            </div>
-        </div>
-    </div>
-    <div id='push'>
-    </div>
-</div>
-
-<div id='footer'>
-    <div class='container'>
-    <p class='muted credit'>
-      Development of this site was sponsored by the <a href='http://www.provost.umich.edu' target='_blank'>UM Office of the Provost</a> through the Gilbert Whitaker Fund for the Improvement of Teaching.
-    </p>
-    <p class='muted credit'>
-      Please send any feedback to <a href='mailto:physics.sso@umich.edu'>physics.sso@umich.edu</a><br/>
-      For issues with the content of the problems, see your instructor first.
-    </p>
-    </div>
-    <div class='problem-roulette-tag' style='display:none;'>2.0.4</div>
-    <div class='php-version' style='display:none;'>".PHP_VERSION."</div>
-</div>
-
-</body>
-<!--close body-->
-</html>";
-		return $str;
+		return $this->render('views/layout.php');
 	}
 }
 
@@ -163,9 +119,9 @@ class VNoTabNav
 	
 	function Deliver()
 	{
-        $str = "";
-        return $str;
-    }
+		ob_start(); ?>
+		<? return ob_get_clean();
+	}
 }
 
 class VCourseTopicNav
@@ -201,12 +157,12 @@ class VStaff
 	
 	function Deliver()
 	{
-        $str = "
-        <p>
-            hi, this is the staff page... this well soon be more then one page
-        </p>";
-        return $str;
-    }
+		ob_start(); ?>
+		<p>
+			hi, this is the staff page... this well soon be more then one page
+		</p>
+		<? return ob_get_clean();
+	}
 }
 
 class VStudentPerformance
