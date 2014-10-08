@@ -38,6 +38,7 @@ class CHeadCSSJavascript{
 		<?php endif ?>
 		<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
 		<?php return ob_get_clean();
+	}
 }
 
 class VPageTabs{
