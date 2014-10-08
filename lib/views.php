@@ -121,7 +121,7 @@ class VNoTabNav
 	function Deliver()
 	{
 		ob_start(); ?>
-		<? return ob_get_clean();
+		<?php return ob_get_clean();
 	}
 }
 
