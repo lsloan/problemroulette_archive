@@ -26,6 +26,7 @@ class CHeadCSSJavascript{
 		<script type='text/javascript' src='js/problem_library_actions.js'></script>
 		<script type='text/javascript' src='js/problem_edit_actions.js'></script>
 		<script type='text/javascript' src='js/mytable.js'></script>
+		<script type='text/javascript' src='js/problem.js'></script>
 		<?php if($this->m_cssfile != NULL): ?>
 			<?php foreach((array)$this->m_cssfile as $css): ?>
 				<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
