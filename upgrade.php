@@ -2,7 +2,7 @@
 
 // All registered migrations, mapping the class name to the file in migrations/.
 // Each item should have name and file keys. For example:
-//   array('name' => 'Foo', 'file' => 'foo.php')
+//   array('name' => 'Example', 'file' => 'example.php')
 $migrations = array(
 );
 
