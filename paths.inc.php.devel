@@ -14,4 +14,6 @@ $GLOBALS["DIR_PICS"] = $GLOBALS["DIR"]."pics/";
 $GLOBALS["DIR_JS"] = $GLOBALS["DIR"]."js/";
 $GLOBALS["DIR_CSS"] = $GLOBALS["DIR"]."css/";
 $GLOBALS["DIR_LIB"] = $GLOBALS["DIR"]."lib/";
+
+$GLOBALS["SEND_MIGRATION_MAIL"] = false;
 ?>
