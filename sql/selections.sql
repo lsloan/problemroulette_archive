@@ -1,3 +1,5 @@
+-- IMPORTANT: selections.sql must be run before drop_user_id_from_selected_topics.sql
+
 alter table `user` add column `selection_id` int(11);
 
 CREATE TABLE `selections` (
