@@ -1,11 +1,12 @@
-create table `user_backup` as select * from user;
+alter table `user` add column `selection_id` int(11);
 
-alter table `user` add column `selected_course_id` int(11), add column `last_activity` datetime, add column `page_loads` int(11) default 0;
-
-create table `selected_topics` (
+CREATE TABLE `selections` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `topic_id` int(11) NOT NULL,
-  PRIMARY KEY (id)
+  `class_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `selections_user_class_idx` (`user_id`,`class_id`)
 );
-create unique index selected_topics_idx on selected_topics(`user_id`, `topic_id`);
+
+insert into selections (user_id, class_id) select id user_id, selected_course_id class_id from user where selected_course_id is not null;
+update user,selections set user.selection_id=selections.id where user.id=selections.user_id and user.selected_course_id=selections.class_id;
