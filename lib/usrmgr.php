@@ -253,17 +253,17 @@ class MUser
             $this->last_activity = $value;
             $saved = true;
         } elseif ($key == 'selected_topics_list') {
-            $query = "delete from selected_topics where user_id = :user_id";
+            $query = "delete selected_topics from selected_topics,user where selected_topics.selection_id = user.selection_id and user_id = :user_id";
             $bindings = array(':user_id' => $this->id);
             $dbmgr->exec_query($query, $bindings);
-            $query = "insert into selected_topics (user_id, topic_id) values (:user_id, :topic_id)";
+            $query = "insert into selected_topics (user_id, selection_id, topic_id) values (:user_id, :selection_id, :topic_id)";
             if (is_array($value)) {
                 foreach ($value as $index => $topic_id) {
-                    $bindings = array(':user_id' => $this->id, ':topic_id' => $topic_id);
+                    $bindings = array(':user_id' => $this->id, ':selection_id' => $this->selection_id, ':topic_id' => $topic_id);
                     $dbmgr->exec_query($query, $bindings);
                 }
             } else {
-                $bindings = array(':user_id' => $this->id, ':topic_id' => $value);
+                $bindings = array(':user_id' => $this->id, ':selection_id' => $this->selection_id, ':topic_id' => $value);
                 $dbmgr->exec_query($query, $bindings);
             }
             $saved = true;
