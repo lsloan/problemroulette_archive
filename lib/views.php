@@ -1857,4 +1857,24 @@ class VGlobalAlertsAdmin
 	}
 }
 
+class VErrorPage
+{
+    function __construct()
+        {
+        }
+
+    function Deliver()
+    {
+        return "
+        <div class='error-page'>
+        	<img class='logo' src='img/PR.jpg' width='200px' alt='Problem Roulette'/>
+          	<h1>Page Not Found</h1>
+          	<p>
+            	Please contact <a href='mailto:physics.sso@umich.edu'>physics.sso@umich.edu</a> with any problems.
+          	</p>
+        </div>
+        ";
+	}
+}
+
 ?>

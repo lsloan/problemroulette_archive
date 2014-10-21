@@ -481,6 +481,20 @@ height: 90px;
 background-color: #e5e5e5;
 }
 
+.error-page {
+  text-align: center;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+.error-page, h1 {
+  color: #000000;
+}
+
+.tab-pane .error-page a {
+  margin: 0;
+}
+
 /* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) {
 #footer {
