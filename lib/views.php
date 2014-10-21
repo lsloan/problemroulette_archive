@@ -1724,17 +1724,15 @@ class VErrorPage
 
     function Deliver()
     {
-    	return "
-    	<br>
-    	<img class='logo' src='img/PR.jpg' width='200px'></img>
-    	<h4>
-     	<p>The page you are trying to reach does not exist</p>
-    	</h4>
-    	<p>
-     	Please contact  <a href='mailto:physics.sso@umich.edu'>physics.sso@umich.edu</a> for this issue.
-    	</p>
-    	<br>
-    	";
+        return "
+        <div class='error-page'>
+        	<img class='logo' src='img/PR.jpg' width='200px' alt='Problem Roulette'/>
+          	<h1>Page Not Found</h1>
+          	<p>
+            	Please contact <a href='mailto:physics.sso@umich.edu'>physics.sso@umich.edu</a> with any problems.
+          	</p>
+        </div>
+        ";
 	}
 }
 
