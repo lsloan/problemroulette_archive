@@ -1715,4 +1715,27 @@ class VProblemEditReview
 		return $str;
 	}
 }
+
+class VErrorPage
+{
+    function __construct()
+        {
+        }
+
+    function Deliver()
+    {
+    	return "
+    	<br>
+    	<img class='logo' src='img/PR.jpg' width='200px'></img>
+    	<h4>
+     	<p>The page you are trying to reach does not exist</p>
+    	</h4>
+    	<p>
+     	Please contact  <a href='mailto:physics.sso@umich.edu'>physics.sso@umich.edu</a> for this issue.
+    	</p>
+    	<br>
+    	";
+	}
+}
+
 ?>
