@@ -1321,20 +1321,14 @@ class VTopic_Selections
 					{
 						if (is_array($this->v_selected_topics_list_id))
 						{
-							for ($j=0;$j<count($this->v_selected_topics_list_id);$j++)
-							{
-								if ($topic->m_id == $this->v_selected_topics_list_id[$j])
-								{
-									$str .= " checked='checked'";
-								}
-							}
-						}
-						else
-						{
-							if ($topic->m_id == $this->v_selected_topics_list_id)
+							if (in_array($topic->m_id, $this->v_selected_topics_list_id))
 							{
 								$str .= " checked='checked'";
 							}
+						}
+						elseif ($topic->m_id == $this->v_selected_topics_list_id)
+						{
+							$str .= " checked='checked'";
 						}
 					}
 					$str .= "/></td>

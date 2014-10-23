@@ -16,6 +16,10 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 session_start();
 
+// error_log("Problems");
+// error_log(print_r($_POST, true));
+
+
 // Instead of using session and prefs to track 
 // current_problem_id, start_time, end_time, and 
 // student_answer, we will use local variables.
@@ -28,35 +32,15 @@ $c_answer = Null;
 
 $_SESSION['sesstest'] = 1;
 
-//Set selected_course or selected_topics_list to Null if it is currently a string (instead of a number)
-if (is_array($usrmgr->m_user->GetPref('selected_topics_list')))
-{
-	if (min(array_map("intval",$usrmgr->m_user->GetPref('selected_topics_list'))) == 0)
-	{
-		$usrmgr->m_user->SetPref('selected_topics_list',Null);
-	}
-}
-else
-{
-	if (intval($usrmgr->m_user->GetPref('selected_course') == 0))
-	{
-		$usrmgr->m_user->SetPref('selected_course',Null);
-	}
-}
-
 $selected_topics_list_id = Null;
 
 if (isset($_POST['topic_checkbox_submission'])) {
 	//check to see if new topic was selected
 	//get from checkboxes if available and put into preferences
 	$selected_topics_list_id = $_POST['topic_checkbox_submission'];
-//
-//	if (min(implode(",",array_map("intval",$selected_topics_list_id))) !== 0)//make sure not to write a string
-//  prevent error in logs re only one arg to min must be an array - implode was making it a string
-	if ( min(array_map("intval",$selected_topics_list_id)) !== 0 )
-	{
-		$usrmgr->m_user->SetPref('selected_topics_list',$selected_topics_list_id);
-	}
+	
+	$usrmgr->m_user->SetSelectedTopicsForClass($usrmgr->m_user->selected_course_id, $selected_topics_list_id);
+
 	header('Location:problems.php');
 } elseif (isset($_POST['topic_link_submission'])) {
 	//check to see if new topic was selected
@@ -66,7 +50,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	{
 		$array = array();
 		$array[] = $selected_topics_list_id;
-		$usrmgr->m_user->SetPref('selected_topics_list',$array);
+		$usrmgr->m_user->SetSelectedTopicsForClass($usrmgr->m_user->selected_course_id,$array);
 	}
 	header('Location:problems.php');
 } elseif (isset($_POST['skip'])) {
@@ -103,12 +87,12 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		//increment page_loads
 		global $usrmgr;
 		
-		$ploads = $usrmgr->m_user->GetPref('page_loads');
+		$ploads = $usrmgr->m_user->page_loads;
 		if (is_null($ploads))
 			$ploads = 1;
 		else
 			$ploads += 1;
-		$usrmgr->m_user->SetPref('page_loads', $ploads);
+		$usrmgr->m_user->SetPageLoads($ploads);
 		
 		//get end time and compare to start time to get total time
 		$c_start_time = $_POST['started'];
@@ -159,7 +143,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 }
 
 # translate ids to list of topic objects
-$selected_topics_list_id = $usrmgr->m_user->GetPref('selected_topics_list');
+$selected_topics_list_id = $usrmgr->m_user->selected_topics_list;
 $num_topics = count($selected_topics_list_id);
 // $selected_topics_list_id might just be a single topic as a string
 if (! is_array($selected_topics_list_id))
