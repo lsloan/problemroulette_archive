@@ -187,7 +187,7 @@ class MUser
         $bindings = array(":user_id" => $this->id, ":class_id" => $class_id);
         $dbmgr->exec_query($query, $bindings);
         if ($this->selected_course_id == $class_id) {
-            $this->selected_topics = [];
+            $this->selected_topics = array();
         }
     }
 
@@ -216,7 +216,7 @@ class MUser
             $bindings = array(":selection_id" => $this->selection_id);
             $this->selected_topics_list = $dbmgr->fetch_column($query, $bindings, 0);
         } else {
-            $this->selected_topics_list = [];
+            $this->selected_topics_list = array();
         }
     }
 
