@@ -811,14 +811,16 @@ Class MResponse
 	var $m_user_id;//integer (unique) user id
 	var $m_problem_id;//integer (unique) problem id
 	var $m_student_answer;//integer (1=A, 2=B, 3,4,...) student answer value
+	var $m_answer_correct = 0; // boolean (0=false, 1=true)
 	
-	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer)
+	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer, $student_answer_correct)
 	{
 		$this->m_start_time = $start_time;
 		$this->m_end_time = $end_time;
 		$this->m_user_id = $user_id;
 		$this->m_problem_id = $problem_id;
 		$this->m_student_answer = $student_answer;
+		$this->m_student_answer_correct = $student_answer_correct;
 
 		$this->verify_problem_id();
 	}
@@ -829,14 +831,15 @@ Class MResponse
 
 		global $dbmgr;
 		$query =
-			"INSERT INTO responses (start_time,   end_time,  user_id,  prob_id,  answer) ".
-			"VALUES                (:start_time, :end_time, :user_id, :prob_id, :answer)";
+			"INSERT INTO responses (start_time,   end_time,  user_id,  prob_id,  answer, ans_correct) ".
+			"VALUES                (:start_time, :end_time, :user_id, :prob_id, :answer, :ans_correct)";
 		$bindings = array(
 			":start_time" => date('Y-m-d H:i:s',$this->m_start_time),
 			":end_time"   => date('Y-m-d H:i:s',$this->m_end_time),
 			":user_id"    => $this->m_user_id,
 			":prob_id"    => $this->m_problem_id,
-			":answer"     => $this->m_student_answer
+			":answer"     => $this->m_student_answer,
+			":ans_correct" => $this->m_student_answer_correct
 			);
 		$dbmgr->exec_query( $query, $bindings );
 	}
@@ -868,11 +871,6 @@ Class MResponse
 		//determine if student answer is correct
 		$current_problem = new MProblem($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
-		$student_answered_correctly = 0;
-		if ($current_problem_answer == $this->m_student_answer)
-		{
-			$student_answered_correctly = 1;
-		}
 		
 		//update stats table
 		if ($solve_time <= $this->m_maximum_recorded_time)
@@ -884,7 +882,7 @@ Class MResponse
 				"tot_time = tot_time + :solve_time ".
 				"WHERE user_id = :user_id";
 			$bindings = array(
-				":student_answered_correctly" => $student_answered_correctly,
+				":student_answered_correctly" => $this->m_student_answer_correct,
 				":solve_time"                 => $solve_time,
 				":user_id"                    => $this->m_user_id);
 			$dbmgr->exec_query( $query , $bindings );
@@ -900,11 +898,6 @@ Class MResponse
 		//determine if student answer is correct
 		$current_problem = new MProblem($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
-		$student_answered_correctly = 0;
-		if ($current_problem_answer == $this->m_student_answer)
-		{
-			$student_answered_correctly = 1;
-		}
 		
 		//update stats table
 		if ($solve_time <= $this->m_maximum_recorded_time)
@@ -916,7 +909,7 @@ Class MResponse
 				"tot_time = tot_time + :solve_time ".
 				"WHERE id = :m_problem_id";
 			$bindings = array(
-				":student_answered_correctly" => $student_answered_correctly,
+				":student_answered_correctly" => $this->m_student_answer_correct,
 				":solve_time"                 => $solve_time,
 				":m_problem_id"               => $this->m_problem_id);
 			$dbmgr->exec_query( $query , $bindings );

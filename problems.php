@@ -73,7 +73,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$current_omitted_problems_list = $omitted_problem->find();
 			
 	//update tables upon response
-	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,Null);
+	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,Null,false);
 	
 	$response->update_skips();
 	
@@ -114,16 +114,20 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$user_id = $usrmgr->m_user->id;
 
 		//if the student answered correctly, add current problem to omitted problems list for given topic
+		// and set student_answered_correctly to true
 		if ($current_problem_answer == $c_answer)
 		{
 			$omitted_problem = new OmittedProblem($user_id, $current_topic_id, $c_problem_id);
 			if ($omitted_problem->count() < 1) {
 				$omitted_problem->add();
 			}
+			$c_student_answered_correctly = true;
+		} else {
+			$c_student_answered_correctly = false;
 		}
 		
 		//update tables upon response
-		$response = new MResponse($c_start_time,$c_end_time,$user_id,$c_problem_id,$c_answer);
+		$response = new MResponse($c_start_time,$c_end_time,$user_id,$c_problem_id,$c_answer,$c_student_answered_correctly);
 		
 		$response->update_responses();
 		$response->update_stats();
