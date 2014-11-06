@@ -908,6 +908,100 @@ class VStats
     }
 }
 
+class VStatsExport
+{
+	var $v_semesters;
+	var $v_courses;
+	var $v_files;
+	
+	function __construct($semesters, $courses, $files)
+	{
+		$this->v_semesters = $semesters;
+		$this->v_courses   = $courses;
+		$this->v_files     = $files;
+	}
+	
+	function Deliver()
+	{
+		global $usrmgr;
+		
+		// show sql dumps available to download (by date, description).
+
+		// show choices of semesters and classes and enable start of an sql dump.
+		ob_start(); ?>
+		<div class='tab-pane active' id='export-stats'>
+			<p class='half-line'>&nbsp;</p>
+			<h4 class='summary-header'>Export summary data</h4>
+      <p>
+      	Options in this page:
+      </p>
+      <ul>
+      	<li>Download an existing export file</li>
+      	<li>Generate a new export file of all data</li>
+      	<li>Generate a new export file filtered by selester and/or class</li>
+      </ul>
+      <h5>Download existing export file</h5>
+      <?php if($this->v_files == NULL): ?>
+      	<p>No files to download</p>
+      <?php else: ?>
+      	<ul>
+					<?php foreach((array)$this->v_files as $file): ?>
+						<li>
+							<a href='<?= $GLOBALS["PATH_DOWNLOADS"].$file ?>'><?= $file ?></a>
+						</li>
+					<?php endforeach ?>
+				</ul>
+      <?php endif ?>
+      <h5>Generate a new export file</h5>
+      <form action='' method='post'>
+	      <h6>Specify filters (if any)</h6>
+	      <fieldset>
+		      <legend>Semester(s)</legend>
+	      	<div class="row-fluid">
+						<?php foreach((array)$this->v_semesters as $index => $semester): ?>
+							<div class="span3">
+								<label class="checkbox" for="semester-<?= $semester->m_id ?>">
+									<input type="checkbox" name="semester[]" value="<?= $semester->m_id ?>" id="semester-<?= $semester->m_id ?>" class="semester-filter" />
+									<?= $semester->m_name ?>
+								</label>
+							</div>
+							<?php if(($index + 1) % 4 == 0): ?>
+								</div>
+								<div class="row-fluid">
+							<?php endif ?>
+						<?php endforeach ?>
+					</div>
+				</fieldset>
+				<fieldset>
+		      <legend>Course(s)</legend>
+	      	<div class="row-fluid">
+						<?php foreach((array)$this->v_courses as $index => $course): ?>
+							<div class="span3">
+								<label class="checkbox" for="course-<?= $course->m_id ?>">
+									<input type="checkbox" name="course[]" value="<?= $course->m_id ?>" id="course-<?= $course->m_id ?>" class="course-filter" />
+									<?= $course->m_name ?>
+								</label>
+							</div>
+							<?php if(($index + 1) % 4 == 0): ?>
+								</div>
+								<div class="row-fluid">
+							<?php endif ?>
+						<?php endforeach ?>
+					</div>
+				</fieldset>
+				<h5>Start exporting data to file</h5>
+				<p>
+					<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
+						Start Export
+					</button>
+				</p>
+			</form>
+		</div>
+		<?php return ob_get_clean();
+	}
+		
+}
+
 class VProblems_no_topics
 {
 	function __construct()

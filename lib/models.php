@@ -285,6 +285,24 @@ Class MCourse
 		return $course;
 	}
 	
+	public static function get_courses($course_ids)
+	{
+		global $dbmgr;
+		
+		$params = array();
+		$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+
+		$query = 'SELECT * FROM class WHERE id in ('.$bindString.')';
+		$res = $dbmgr->fetch_assoc( $query , $params );
+		$numrows = count($res);
+		$all_courses = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name']);
+		}
+		return $all_courses;
+	}
+
 	public static function get_all_courses()
 	{
 		global $dbmgr;
@@ -410,6 +428,56 @@ Class MTopic
 		return ($a1 > $b1) ? +1 : -1;
 	}
 }
+
+Class MSemester
+{
+	var $m_id;
+	var $m_name;
+	var $m_abbreviation;
+	var $m_start_time;
+	var $m_end_time;
+
+	function __construct($id, $name, $abbreviation, $start_time, $end_time)
+	{
+		$this->m_id = $id;
+		$this->m_name = $name;
+		$this->m_abbreviation = $abbreviation;
+		$this->m_start_time = $start_time;
+		$this->m_end_time = $end_time;
+	}
+
+	public static function get_all_semesters()
+	{
+		global $dbmgr;
+		$query = "SELECT * FROM semesters";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_semesters = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_semesters[$i] = new MSemester($res[$i]['id'],$res[$i]['name'],$res[$i]['abbreviation'],$res[$i]['start_time'],$res[$i]['end_time']);
+		}
+		return $all_semesters;
+	}
+
+	public static function get_semesters($semester_ids)
+	{
+		global $dbmgr;
+		$params = array();
+		$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
+		
+		$query = 'SELECT * FROM semesters where id in ('.$bindString.')';
+		$res = $dbmgr->fetch_assoc( $query, $params );
+		$numrows = count($res);
+		$all_semesters = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_semesters[$i] = new MSemester($res[$i]['id'],$res[$i]['name'],$res[$i]['abbreviation'],$res[$i]['start_time'],$res[$i]['end_time']);
+		}
+		return $all_semesters;		
+	}
+}
+
 Class MTabNav
 {
     var $m_selected = 'Home';
@@ -427,7 +495,8 @@ Class MTabNav
 			'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
 			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php', 
 			'Problem Library' => $GLOBALS["DOMAIN"] . 'problem_library.php',
-			'Student Performance' => $GLOBALS["DOMAIN"] . 'student_performance.php'
+			'Student Performance' => $GLOBALS["DOMAIN"] . 'student_performance.php',
+			'Stats Export' => $GLOBALS["DOMAIN"] . 'stats_export.php'
 			);
 		}
 		else
@@ -1188,6 +1257,58 @@ class OmittedProblem
 			$query .= implode(' AND ', $conditions);
 			$dbmgr->exec_query($query, $params);
 		}
+	}
+
+}
+
+Class MStatsFile
+{
+	var $m_filename;
+	var $m_courses;
+	var $m_semesters;
+
+
+	public static function start_export($semester_ids, $course_ids)
+	{
+		global $dbmgr;
+		$tablename = "stats_".date('Ymd\_His');
+		$params = array();
+		$filename = "problem_roulette_".date('\_Ymd\_His');
+
+		
+		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, count(t1.id) response_count, count(t1.ans_correct) correct_count, sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site from responses t1 left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) left join user t3 on t1.user_id=t3.id  left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id left join 12m_class_topic t5 on t4.topic_id=t5.topic_id left join class t6 on t5.class_id=t6.id where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null";
+		if (isset($semester_ids)) {
+			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
+			$query .= ' and t2.id in ('.$bindString.')';
+
+			$terms = MSemester::get_semesters($semester_ids);
+			foreach ($terms as $key => $value) {
+				$filename .= '_'.$value->m_abbreviation;
+			}
+		}
+		if (isset($course_ids)) {
+			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+			$query .= ' and t5.class_id in ('.$bindString.')';
+
+			$classes = MCourse::get_courses($course_ids);
+			foreach ($classes as $key => $value) {
+				$filename .= '_'.strtolower(str_replace(' ','_',$value->m_name));
+			}
+		}
+		$query .= " group by t1.user_id, t2.id, t5.class_id order by t1.user_id, t2.id, t5.class_id";
+		$filename .= '.sql';
+
+		error_log($tablename);
+		error_log($query);
+		error_log($filename);
+
+		$dbmgr->exec_query($query, $params);
+
+		$dbmgr->dump_stats_table($tablename, $filename);
+
+		$query = "drop table ".$tablename;
+		$dbmgr->exec_query($query, array());
+
 	}
 
 }

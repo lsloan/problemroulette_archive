@@ -24,7 +24,7 @@ class CDbMgr
 	var $m_link;
 	
 	//	Constructor
-    function CDbMgr()
+  function CDbMgr()
 	{
 		//	Save the database variables.
 		$this->m_host = $GLOBALS["SQL_SERVER"];
@@ -115,7 +115,7 @@ class CDbMgr
 
 	// PDO does not support binding arrays as parameters
 	// like you might want to do with an "in" clause, 
-	// so here is a "BindParamArray" function, cased on: 
+	// so here is a "BindParamArray" function, based on: 
 	// http://stackoverflow.com/a/22663617/1786958
 	// (with some modifications).
 	// Example usage:
@@ -138,6 +138,12 @@ class CDbMgr
       $bindArray[$name] = $value;
     }
     return $str;     
+	}
+
+	function dump_stats_table($tablename, $filename)
+	{
+		$cmd = 'mysqldump --user='.$this->m_user.' --password='.$this->m_pswd.' --host='.$this->m_host.' '.$this->m_db.' '.$tablename.' > '.$GLOBALS["DIR_DOWNLOADS"].$filename;
+		exec($cmd);
 	}
 }
 ?>
