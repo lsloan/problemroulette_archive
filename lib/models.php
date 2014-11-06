@@ -1298,10 +1298,6 @@ Class MStatsFile
 		$query .= " group by t1.user_id, t2.id, t5.class_id order by t1.user_id, t2.id, t5.class_id";
 		$filename .= '.sql';
 
-		error_log($tablename);
-		error_log($query);
-		error_log($filename);
-
 		$dbmgr->exec_query($query, $params);
 
 		$dbmgr->dump_stats_table($tablename, $filename);
