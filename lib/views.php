@@ -937,12 +937,16 @@ class VStatsExport
 						<p class='half-line'>&nbsp;</p>
 						<h4 class='summary-header'>Export summary data</h4>
 						<div class="row-fluid">
-							<strong class="span8">
-								Files downloaded from this page are for research purposes only. 
-								Disclosure to other people or any other use besides the intended
-								purpose violates policies of The University of Michigan and 
-								federal law.
-							</strong>
+							<div class="span8">
+								<div class="well well-large">
+									<strong>
+										Files downloaded from this page are for research purposes only. 
+										Disclosure to other people or any other use besides the intended
+										purpose may violate policies of The University of Michigan and 
+										federal or state laws.
+									</strong>
+								</div>
+							</div>
 						</div>
 			      <h5>
 			      	Options in this page:
