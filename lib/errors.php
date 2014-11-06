@@ -1,56 +1,38 @@
 <?php
-set_error_handler('myErrorHandler');
-register_shutdown_function('fatalErrorShutdownHandler');
 
-// error handler function
-function myErrorHandler($errno, $errstr, $errfile, $errline)
-{
-    if (!(error_reporting() & $errno)) {
-        // This error code is not included in error_reporting
-        return;
-    }
+register_shutdown_function( 'shutdownHandle' );
 
-    switch ($errno) {
+function shutdownHandle() {
 
-    case E_ERROR:
-        echo "<b>My ERROR</b> [$errno] $errstr<br />\n";
-        echo "  Fatal error on line $errline in file $errfile";
-        echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
-        echo "Aborting...<br />\n";
-        exit(1);
-        break;
-    case E_ERROR:
-        echo "<b>My ERROR</b> [$errno] $errstr<br />\n";
-        echo "  Fatal error on line $errline in file $errfile";
-        echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
-        echo "Aborting...<br />\n";
-        exit(1);
-        break;
+   $e = error_get_last();
 
-    case E_USER_WARNING:
-        echo "<b>My WARNING</b> [$errno] $errstr<br />\n";
-        break;
+    if (
+        in_array(
+            $e['type'],
+            array(
+                E_PARSE,
+                E_ERROR,
+                E_COMPILE_ERROR,
+                E_COMPILE_WARNING,
+                E_USER_ERROR
+            )
+        )
+    ) {
+       ob_clean();
+       header( 'HTTP/1.1 500 Internal Server Error' );
+       echo '<div class="error-page">'
+       echo '<h1>Internal Server Error</h1>';
+       echo "<img class='logo' src='img/PR.jpg' width='200px' alt='Problem Roulette'/>";
+       echo '<p>';
+       echo 'Please contact <a href="mailto:physics.sso@umich.edu">physics.sso@umich.edu</a> with any problems.';
+       echo '</p>';
+       // whatever type of output you want including mail(), public message, etc.
+       // in this case debug info
+       print_r($e);
+       echo '</div>'
+       exit(1);
+   }
 
-    case E_USER_NOTICE:
-        echo "<b>My NOTICE</b> [$errno] $errstr<br />\n";
-        break;
- 
-    default:
-        echo "Unknown error type: [$errno] $errstr<br />\n";
-        break;
-    }
-
-    /* Don't execute PHP internal error handler */
-    return true;
 }
 
-function fatalErrorShutdownHandler()
-{
-    $last_error = error_get_last();
-    if (($last_error['type'] === E_ERROR) || ($last_error['type'] === E_PARSE)) {
-    // fatal error
-        myErrorHandler(E_ERROR, $last_error['message'], $last_error['file'], $last_error['line']);
-    }
-}
-
-?>        
+?>
