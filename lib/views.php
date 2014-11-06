@@ -939,8 +939,9 @@ class VStatsExport
 						<div class="row-fluid">
 							<strong class="span8">
 								Files downloaded from this page are for research purposes only. 
-								Any other use or disclosure to other people violates policies of
-								The University of Michigan and federal law.
+								Disclosure to other people or any other use besides the intended
+								purpose violates policies of The University of Michigan and 
+								federal law.
 							</strong>
 						</div>
 			      <h5>
