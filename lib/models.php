@@ -331,6 +331,23 @@ Class MCourse
 		}
 		return $all_courses;
 	}
+
+	public static function get_courses_and_response_counts()
+	{
+		global $dbmgr;
+		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id join 12m_topic_prob t3 on t2.id=t3.topic_id join responses t4 on t3.problem_id=t4.prob_id group by t1.id";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_courses = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_courses[$i] = array(
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name']),
+				'response_count' => $res[$i]['response_count']
+			);
+		}
+		return $all_courses;
+	}
 	
 	static function alphabetize($a,$b)
 	{
@@ -456,6 +473,23 @@ Class MSemester
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_semesters[$i] = new MSemester($res[$i]['id'],$res[$i]['name'],$res[$i]['abbreviation'],$res[$i]['start_time'],$res[$i]['end_time']);
+		}
+		return $all_semesters;
+	}
+
+	public static function get_semesters_and_response_counts()
+	{
+		global $dbmgr;
+		$query = "SELECT distinct t1.*, count(t2.id) as response_count FROM semesters t1 join responses t2 on t2.start_time > t1.start_time and t2.end_time < t1.end_time group by t1.id";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_semesters = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_semesters[$i] = array( 
+				'semester' => new MSemester($res[$i]['id'],$res[$i]['name'],$res[$i]['abbreviation'],$res[$i]['start_time'],$res[$i]['end_time']), 
+				'response_count' => $res[$i]['response_count']
+			);
 		}
 		return $all_semesters;
 	}
@@ -1266,6 +1300,11 @@ Class MStatsFile
 	var $m_filename;
 	var $m_courses;
 	var $m_semesters;
+
+	public static function delete_file($filename)
+	{
+		return unlink($GLOBALS["DIR_DOWNLOADS"].$filename);
+	}
 
 
 	public static function start_export($semester_ids, $course_ids)

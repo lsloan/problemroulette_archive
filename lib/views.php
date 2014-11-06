@@ -27,6 +27,7 @@ class CHeadCSSJavascript{
 		<script type='text/javascript' src='js/problem_edit_actions.js'></script>
 		<script type='text/javascript' src='js/mytable.js'></script>
 		<script type='text/javascript' src='js/problem.js'></script>
+		<script type='text/javascript' src='js/stats_export.js'></script>
 		<?php if($this->m_cssfile != NULL): ?>
 			<?php foreach((array)$this->m_cssfile as $css): ?>
 				<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
@@ -930,72 +931,95 @@ class VStatsExport
 		// show choices of semesters and classes and enable start of an sql dump.
 		ob_start(); ?>
 		<div class='tab-pane active' id='export-stats'>
-			<p class='half-line'>&nbsp;</p>
-			<h4 class='summary-header'>Export summary data</h4>
-      <p>
-      	Options in this page:
-      </p>
-      <ul>
-      	<li>Download an existing export file</li>
-      	<li>Generate a new export file of all data</li>
-      	<li>Generate a new export file filtered by selester and/or class</li>
-      </ul>
-      <h5>Download existing export file</h5>
-      <?php if($this->v_files == NULL): ?>
-      	<p>No files to download</p>
-      <?php else: ?>
-      	<ul>
-					<?php foreach((array)$this->v_files as $file): ?>
-						<li>
-							<a href='<?= $GLOBALS["PATH_DOWNLOADS"].$file ?>'><?= $file ?></a>
-						</li>
-					<?php endforeach ?>
-				</ul>
-      <?php endif ?>
-      <h5>Generate a new export file</h5>
-      <form action='' method='post'>
-	      <h6>Specify filters (if any)</h6>
-	      <fieldset>
-		      <legend>Semester(s)</legend>
-	      	<div class="row-fluid">
-						<?php foreach((array)$this->v_semesters as $index => $semester): ?>
-							<div class="span3">
-								<label class="checkbox" for="semester-<?= $semester->m_id ?>">
-									<input type="checkbox" name="semester[]" value="<?= $semester->m_id ?>" id="semester-<?= $semester->m_id ?>" class="semester-filter" />
-									<?= $semester->m_name ?>
-								</label>
-							</div>
-							<?php if(($index + 1) % 4 == 0): ?>
+			<div class="export_stats_page">
+				<div class="row-fluid">
+					<div class="span12">
+						<p class='half-line'>&nbsp;</p>
+						<h4 class='summary-header'>Export summary data</h4>
+			      <h5>
+			      	Options in this page:
+			      </h5>
+			      <ul>
+			      	<li>Download an existing export file</li>
+			      	<li>Generate a new export file of all data</li>
+			      	<li>Generate a new export file filtered by selester and/or class</li>
+			      </ul>
+			      <h5>Download existing export file</h5>
+			      <?php if($this->v_files == NULL): ?>
+			      	<p>No files to download</p>
+			      <?php else: ?>
+			      	<ul>
+								<?php foreach((array)$this->v_files as $file): ?>
+									<li class="export_file_for_download">
+										<a href='<?= $GLOBALS["PATH_DOWNLOADS"].$file ?>' class="stats_file" title="Download the file (<?= $file ?>)"><?= $file ?></a>
+										<a href='#' class="delete_stats_file" data-url="<?= $GLOBALS["DOMAIN"] . 'stats_export.php' ?>" data-filename="<?= $file ?>" title="Permanently delete the file (<?= $file ?>)">
+											<img src="img/delete_16.png"></img>
+										</a>
+									</li>
+								<?php endforeach ?>
+							</ul>
+			      <?php endif ?>
+			      <h5>Generate a new export file</h5>
+			      <form action='' method='post'>
+				      <h6>Specify filters (if any)</h6>
+				      <fieldset>
+					      <legend>Semester(s)</legend>
+					      <div class="row-fluid">
+					      	<p class="span8">
+						      	Checking one or more semesters will filter the responses included in the export, 
+						      	eliminating any responses that did not occur during the selected semesters.  To 
+						      	export data about all semesters, leave all semesters unchecked.
+						      </p>
+						    </div>
+				      	<div class="row-fluid">
+									<?php foreach((array)$this->v_semesters as $index => $item): ?>
+										<div class="span3">
+											<label class="checkbox" for="semester-<?= $semester->m_id ?>">
+												<input type="checkbox" name="semester[]" value="<?= $item['semester']->m_id ?>" id="semester-<?= $item['semester']->m_id ?>" class="semester-filter" />
+												<strong><?= $item['semester']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses)</small>
+											</label>
+										</div>
+										<?php if(($index + 1) % 4 == 0): ?>
+											</div>
+											<div class="row-fluid">
+										<?php endif ?>
+									<?php endforeach ?>
 								</div>
-								<div class="row-fluid">
-							<?php endif ?>
-						<?php endforeach ?>
-					</div>
-				</fieldset>
-				<fieldset>
-		      <legend>Course(s)</legend>
-	      	<div class="row-fluid">
-						<?php foreach((array)$this->v_courses as $index => $course): ?>
-							<div class="span3">
-								<label class="checkbox" for="course-<?= $course->m_id ?>">
-									<input type="checkbox" name="course[]" value="<?= $course->m_id ?>" id="course-<?= $course->m_id ?>" class="course-filter" />
-									<?= $course->m_name ?>
-								</label>
-							</div>
-							<?php if(($index + 1) % 4 == 0): ?>
+							</fieldset>
+							<fieldset>
+					      <legend>Course(s)</legend>
+					      <div class="row-fluid">
+					      	<p class="span8">
+						      	Checking one or more courses will filter the responses included in the export, 
+						      	eliminating any responses that do not relate to the selected courses.  To 
+						      	export data about all courses, leave all courses unchecked.
+						      </p>
+						    </div>
+					      <div class="row-fluid">
+									<?php foreach((array)$this->v_courses as $index => $item): ?>
+										<div class="span3">
+											<label class="checkbox" for="course-<?= $item['course']->m_id ?>">
+												<input type="checkbox" name="course[]" value="<?= $item['course']->m_id ?>" id="course-<?= $item['course']->m_id ?>" class="course-filter" />
+												<strong><?= $item['course']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses) </small>
+											</label>
+										</div>
+										<?php if(($index + 1) % 4 == 0): ?>
+											</div>
+											<div class="row-fluid">
+										<?php endif ?>
+									<?php endforeach ?>
 								</div>
-								<div class="row-fluid">
-							<?php endif ?>
-						<?php endforeach ?>
+							</fieldset>
+							<h5>Start exporting data to file</h5>
+							<p>
+								<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
+									Start Export
+								</button>
+							</p>
+						</form>
 					</div>
-				</fieldset>
-				<h5>Start exporting data to file</h5>
-				<p>
-					<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
-						Start Export
-					</button>
-				</p>
-			</form>
+				</div>
+			</div>
 		</div>
 		<?php return ob_get_clean();
 	}
