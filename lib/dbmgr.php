@@ -140,9 +140,9 @@ class CDbMgr
     return $str;     
 	}
 
-	function dump_stats_table($tablename, $filename)
+	function dump_stats_table($tablename, $filepath)
 	{
-		$cmd = 'mysqldump --user='.$this->m_user.' --password='.$this->m_pswd.' --host='.$this->m_host.' '.$this->m_db.' '.$tablename.' > '.$GLOBALS["DIR_DOWNLOADS"].$filename;
+		$cmd = 'mysqldump --user='.$this->m_user.' --password='.$this->m_pswd.' --host='.$this->m_host.' '.$this->m_db.' '.$tablename.' > '.$filepath;
 		exec($cmd);
 	}
 }

@@ -30,6 +30,7 @@ $researcher = $usrmgr->m_user->researcher;
 if($researcher == 1)
 {
     $json_response = false;
+    $file_response = false;
 
     if (isset($_POST['start_export'])) {
         $terms = NULL;
@@ -51,15 +52,28 @@ if($researcher == 1)
         $file_deleted = MStatsFile::delete_file($filename);
 
         $json_response = array( 'deleted' => $file_deleted );
+    } elseif (isset($_GET['download'])) {
+        $file_response = true;
     }
 
     if($json_response) {
         echo json_encode($json_response);
+    } elseif ($file_response) {
+        $filename = $_GET['download'];
+        error_log("Handling download of file ".$filename);
+        //content type
+        header('Content-type: text/plain');
+        //open/save dialog box
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        //read from server and write to buffer
+        readfile($GLOBALS["DIR_STATS"].$filename);
+        error_log("Done handling download of file ".$filename);
+
     } else {
         $semesters = MSemester::get_semesters_and_response_counts();
         $courses = MCourse::get_courses_and_response_counts();
 
-        $files = array_filter(scandir($GLOBALS["DIR_DOWNLOADS"],  SCANDIR_SORT_DESCENDING), "is_stat_file");
+        $files = array_filter(scandir($GLOBALS["DIR_STATS"],  SCANDIR_SORT_DESCENDING), "is_stat_file");
 
 
         // page construction

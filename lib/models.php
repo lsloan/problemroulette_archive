@@ -1306,7 +1306,7 @@ Class MStatsFile
 
 	public static function delete_file($filename)
 	{
-		return unlink($GLOBALS["DIR_DOWNLOADS"].$filename);
+		return unlink($GLOBALS["DIR_STATS"].$filename);
 	}
 
 
@@ -1342,7 +1342,7 @@ Class MStatsFile
 
 		$dbmgr->exec_query($query, $params);
 
-		$dbmgr->dump_stats_table($tablename, $filename);
+		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
 
 		$query = "drop table ".$tablename;
 		$dbmgr->exec_query($query, array());
