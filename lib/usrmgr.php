@@ -1,5 +1,26 @@
 <?php
 
+// The User class represents people who use ProblemRoulette. 
+// When someone logs in, a User object is created and initialized
+// with information that has been obtained from the campus 
+// directory and/or saved from earlier sessions. As people 
+// are active in PR, information about their activity is 
+// saved in the database through their User object.
+//
+// Simple permissions are enforced based on information saved 
+// about Users.  Permissions can be described as follows:
+//
+// 1) All users can select courses and topics, work
+//    problems and view information about their own 
+//    performance.
+// 2) Users can be designated as "staff", which gives
+//    them permission to create or modify classes, topics
+//    and problems.  People designated as "staff" can also
+//    view information about other users' performance.
+// 3) Users can be designated as "researcher", which gives 
+//    them permission to export statistical information 
+//    about users.
+//
 class MUser
 {
     var $id;
