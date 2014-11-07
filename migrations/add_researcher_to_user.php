@@ -8,7 +8,7 @@ alter table user add column `researcher` int(1) NOT NULL default 0
 SQL;
 
 $this->add_values =<<<SQL
-update user set researcher=1 where username='evrard' or username='meliwu'
+update user set researcher=1 where username='evrard' or username='meliwu' or username='jleasia' or username='botimer' or username='ericeche' or username='jimeng'
 SQL;
 
 $this->verify =<<<SQL
