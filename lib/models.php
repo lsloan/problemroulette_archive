@@ -517,7 +517,7 @@ Class MTabNav
     var $m_selected = 'Home';
 
 	function __construct($selected)
-    {
+   {
         $this->m_selected = $selected;
 
 		global $usrmgr;
@@ -529,8 +529,7 @@ Class MTabNav
 			'Problems' => $GLOBALS["DOMAIN"] . 'problems.php', 
 			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php', 
 			'Problem Library' => $GLOBALS["DOMAIN"] . 'problem_library.php',
-			'Student Performance' => $GLOBALS["DOMAIN"] . 'student_performance.php',
-			'Stats Export' => $GLOBALS["DOMAIN"] . 'stats_export.php'
+			'Student Performance' => $GLOBALS["DOMAIN"] . 'student_performance.php'
 			);
 		}
 		else
@@ -541,7 +540,11 @@ Class MTabNav
 			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php' 
 			);
 		}
-    }
+		if($usrmgr->m_user->researcher == 1)
+		{
+			$this->m_pages['Stats Export'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
+		}
+  }
 }
 Class MCourseTopicNav
 {
