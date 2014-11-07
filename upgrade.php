@@ -7,6 +7,7 @@ $migrations = array(
     array('name' => 'AddAnsCorrectToResponses', 'file' => 'add_ans_correct_to_responses.php'),
     array('name' => 'AddSemestersTable', 'file' => 'add_semesters_table.php'),
     array('name' => 'AddIndexesForStatsExport', 'file' => 'add_indexes_for_stats_export.php'),
+    array('name' => 'AddResearcherToUser', 'file' => 'add_researcher_to_user.php')
 );
 
 // paths
