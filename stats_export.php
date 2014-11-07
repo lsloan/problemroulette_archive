@@ -50,7 +50,7 @@ if($researcher == 1)
         $filename = $_POST['filename'];
         error_log("Deleting file: ".$filename." (probably not an error)");
         $file_deleted = MStatsFile::delete_file($filename);
-
+        
         $json_response = array( 'deleted' => $file_deleted );
     } elseif (isset($_GET['download'])) {
         $file_response = true;
@@ -58,7 +58,7 @@ if($researcher == 1)
 
     if($json_response) {
         echo json_encode($json_response);
-    } elseif ($file_response) {
+    } elseif($file_response) {
         $filename = $_GET['download'];
         error_log("Handling download of file ".$filename);
         //content type
@@ -74,7 +74,6 @@ if($researcher == 1)
         $courses = MCourse::get_courses_and_response_counts();
 
         $files = array_filter(scandir($GLOBALS["DIR_STATS"],  SCANDIR_SORT_DESCENDING), "is_stat_file");
-
 
         // page construction
         $head = new CHeadCSSJavascript("Stats Export", array(), array());

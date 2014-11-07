@@ -989,7 +989,7 @@ class VStatsExport
 					      	<div class="row-fluid">
 										<?php foreach((array)$this->v_semesters as $index => $item): ?>
 											<div class="span3">
-												<label class="checkbox" for="semester-<?= $semester->m_id ?>">
+												<label class="checkbox" for="semester-<?= $item['semester']->m_id ?>">
 													<input type="checkbox" name="semester[]" value="<?= $item['semester']->m_id ?>" id="semester-<?= $item['semester']->m_id ?>" class="semester-filter" />
 													<strong><?= $item['semester']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses)</small>
 												</label>
