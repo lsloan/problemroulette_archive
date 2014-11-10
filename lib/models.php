@@ -335,7 +335,7 @@ Class MCourse
 	public static function get_courses_and_response_counts()
 	{
 		global $dbmgr;
-		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id join 12m_topic_prob t3 on t2.topic_id=t3.topic_id join responses t4 on t3.problem_id=t4.prob_id group by t1.id";
+		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id join 12m_topic_prob t3 on t2.topic_id=t3.topic_id join responses t4 on t3.problem_id=t4.prob_id where t4.answer > 0 group by t1.id";
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_courses = array();
@@ -480,7 +480,7 @@ Class MSemester
 	public static function get_semesters_and_response_counts()
 	{
 		global $dbmgr;
-		$query = "SELECT distinct t1.*, count(t2.id) as response_count FROM semesters t1 join responses t2 on t2.start_time > t1.start_time and t2.end_time < t1.end_time group by t1.id";
+		$query = "SELECT distinct t1.*, count(t2.id) as response_count FROM semesters t1 join responses t2 on t2.start_time > t1.start_time and t2.end_time < t1.end_time where t2.answer > 0 group by t1.id";
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_semesters = array();
