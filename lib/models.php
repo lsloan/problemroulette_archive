@@ -1318,7 +1318,7 @@ Class MStatsFile
 		$filename = "problem_roulette_".date('\_Ymd\_His');
 
 		
-		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, count(t1.id) response_count, count(t1.ans_correct) correct_count, sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site from responses t1 left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) left join user t3 on t1.user_id=t3.id  left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id left join 12m_class_topic t5 on t4.topic_id=t5.topic_id left join class t6 on t5.class_id=t6.id where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null";
+		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, count(t1.id) response_count, sum(t1.ans_correct) correct_count, sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site from responses t1 left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) left join user t3 on t1.user_id=t3.id  left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id left join 12m_class_topic t5 on t4.topic_id=t5.topic_id left join class t6 on t5.class_id=t6.id where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null";
 		if (isset($semester_ids)) {
 			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
 			$query .= ' and t2.id in ('.$bindString.')';
