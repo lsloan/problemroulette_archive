@@ -1,11 +1,33 @@
 <?php
 
+// The User class represents people who use ProblemRoulette. 
+// When someone logs in, a User object is created and initialized
+// with information that has been obtained from the campus 
+// directory and/or saved from earlier sessions. As people 
+// are active in PR, information about their activity is 
+// saved in the database through their User object.
+//
+// Simple permissions are enforced based on information saved 
+// about Users.  Permissions can be described as follows:
+//
+// 1) All users can select courses and topics, work
+//    problems and view information about their own 
+//    performance.
+// 2) Users can be designated as "staff", which gives
+//    them permission to create or modify classes, topics
+//    and problems.  People designated as "staff" can also
+//    view information about other users' performance.
+// 3) Users can be designated as "researcher", which gives 
+//    them permission to export statistical information 
+//    about users.
+//
 class MUser
 {
     var $id;
     var $username;
     var $prefs = null;
     var $staff = 0;
+    var $researcher = 0;
     var $selected_course_id;
     var $page_loads;
     var $last_activity;
@@ -66,7 +88,7 @@ class MUser
     {
         global $dbmgr;
         // $query = "SELECT id, staff, prefs, page_loads, last_activity, selection_id, FROM user WHERE username = :username";
-        $query = "SELECT t1.id id, t1.staff staff, t1.prefs prefs, t1.page_loads page_loads, t1.last_activity last_activity, t1.selection_id selection_id, t2.class_id selected_course_id FROM user t1 left join selections t2 on t1.selection_id=t2.id WHERE t1.username = :username";
+        $query = "SELECT t1.id id, t1.staff staff, t1.researcher researcher, t1.prefs prefs, t1.page_loads page_loads, t1.last_activity last_activity, t1.selection_id selection_id, t2.class_id selected_course_id FROM user t1 left join selections t2 on t1.selection_id=t2.id WHERE t1.username = :username";
         $bindings = array(":username" => $this->username);
         try {
             $res = $dbmgr->fetch_assoc( $query , $bindings );
@@ -79,6 +101,7 @@ class MUser
         {
             $this->id = $res[0]['id'];
             $this->staff = $res[0]['staff'];
+            $this->researcher = $res[0]['researcher'];
             $this->prefs = $this->unpackage($res[0]['prefs']);
             $this->page_loads = $res[0]['page_loads'];
             if ($res[0]['last_activity'] != Null) {

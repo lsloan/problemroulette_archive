@@ -285,6 +285,24 @@ Class MCourse
 		return $course;
 	}
 	
+	public static function get_courses($course_ids)
+	{
+		global $dbmgr;
+		
+		$params = array();
+		$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+
+		$query = 'SELECT * FROM class WHERE id in ('.$bindString.')';
+		$res = $dbmgr->fetch_assoc( $query , $params );
+		$numrows = count($res);
+		$all_courses = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name']);
+		}
+		return $all_courses;
+	}
+
 	public static function get_all_courses()
 	{
 		global $dbmgr;
@@ -310,6 +328,23 @@ Class MCourse
 			$course = new MCourse($res[$i]['id'],$res[$i]['name']);
 			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 			array_push($all_courses, $course);
+		}
+		return $all_courses;
+	}
+
+	public static function get_courses_and_response_counts()
+	{
+		global $dbmgr;
+		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id join 12m_topic_prob t3 on t2.topic_id=t3.topic_id join responses t4 on t3.problem_id=t4.prob_id where t4.answer > 0 group by t1.id";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_courses = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_courses[$i] = array(
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name']),
+				'response_count' => $res[$i]['response_count']
+			);
 		}
 		return $all_courses;
 	}
@@ -410,12 +445,79 @@ Class MTopic
 		return ($a1 > $b1) ? +1 : -1;
 	}
 }
+
+Class MSemester
+{
+	var $m_id;
+	var $m_name;
+	var $m_abbreviation;
+	var $m_start_time;
+	var $m_end_time;
+
+	function __construct($id, $name, $abbreviation, $start_time, $end_time)
+	{
+		$this->m_id = $id;
+		$this->m_name = $name;
+		$this->m_abbreviation = $abbreviation;
+		$this->m_start_time = $start_time;
+		$this->m_end_time = $end_time;
+	}
+
+	public static function get_all_semesters()
+	{
+		global $dbmgr;
+		$query = "SELECT * FROM semesters";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_semesters = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_semesters[$i] = new MSemester($res[$i]['id'],$res[$i]['name'],$res[$i]['abbreviation'],$res[$i]['start_time'],$res[$i]['end_time']);
+		}
+		return $all_semesters;
+	}
+
+	public static function get_semesters_and_response_counts()
+	{
+		global $dbmgr;
+		$query = "SELECT distinct t1.*, count(t2.id) as response_count FROM semesters t1 join responses t2 on t2.start_time > t1.start_time and t2.end_time < t1.end_time where t2.answer > 0 group by t1.id";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_semesters = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_semesters[$i] = array( 
+				'semester' => new MSemester($res[$i]['id'],$res[$i]['name'],$res[$i]['abbreviation'],$res[$i]['start_time'],$res[$i]['end_time']), 
+				'response_count' => $res[$i]['response_count']
+			);
+		}
+		return $all_semesters;
+	}
+
+	public static function get_semesters($semester_ids)
+	{
+		global $dbmgr;
+		$params = array();
+		$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
+		
+		$query = 'SELECT * FROM semesters where id in ('.$bindString.')';
+		$res = $dbmgr->fetch_assoc( $query, $params );
+		$numrows = count($res);
+		$all_semesters = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_semesters[$i] = new MSemester($res[$i]['id'],$res[$i]['name'],$res[$i]['abbreviation'],$res[$i]['start_time'],$res[$i]['end_time']);
+		}
+		return $all_semesters;		
+	}
+}
+
 Class MTabNav
 {
     var $m_selected = 'Home';
 
 	function __construct($selected)
-    {
+   {
         $this->m_selected = $selected;
 
 		global $usrmgr;
@@ -438,7 +540,11 @@ Class MTabNav
 			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php' 
 			);
 		}
-    }
+		if($usrmgr->m_user->researcher == 1)
+		{
+			$this->m_pages['Stats Export'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
+		}
+  }
 }
 Class MCourseTopicNav
 {
@@ -811,14 +917,16 @@ Class MResponse
 	var $m_user_id;//integer (unique) user id
 	var $m_problem_id;//integer (unique) problem id
 	var $m_student_answer;//integer (1=A, 2=B, 3,4,...) student answer value
+	var $m_answer_correct = 0; // boolean (0=false, 1=true)
 	
-	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer)
+	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer, $student_answer_correct)
 	{
 		$this->m_start_time = $start_time;
 		$this->m_end_time = $end_time;
 		$this->m_user_id = $user_id;
 		$this->m_problem_id = $problem_id;
 		$this->m_student_answer = $student_answer;
+		$this->m_student_answer_correct = $student_answer_correct;
 
 		$this->verify_problem_id();
 	}
@@ -829,14 +937,15 @@ Class MResponse
 
 		global $dbmgr;
 		$query =
-			"INSERT INTO responses (start_time,   end_time,  user_id,  prob_id,  answer) ".
-			"VALUES                (:start_time, :end_time, :user_id, :prob_id, :answer)";
+			"INSERT INTO responses (start_time,   end_time,  user_id,  prob_id,  answer, ans_correct) ".
+			"VALUES                (:start_time, :end_time, :user_id, :prob_id, :answer, :ans_correct)";
 		$bindings = array(
 			":start_time" => date('Y-m-d H:i:s',$this->m_start_time),
 			":end_time"   => date('Y-m-d H:i:s',$this->m_end_time),
 			":user_id"    => $this->m_user_id,
 			":prob_id"    => $this->m_problem_id,
-			":answer"     => $this->m_student_answer
+			":answer"     => $this->m_student_answer,
+			":ans_correct" => $this->m_student_answer_correct
 			);
 		$dbmgr->exec_query( $query, $bindings );
 	}
@@ -868,11 +977,6 @@ Class MResponse
 		//determine if student answer is correct
 		$current_problem = new MProblem($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
-		$student_answered_correctly = 0;
-		if ($current_problem_answer == $this->m_student_answer)
-		{
-			$student_answered_correctly = 1;
-		}
 		
 		//update stats table
 		if ($solve_time <= $this->m_maximum_recorded_time)
@@ -884,7 +988,7 @@ Class MResponse
 				"tot_time = tot_time + :solve_time ".
 				"WHERE user_id = :user_id";
 			$bindings = array(
-				":student_answered_correctly" => $student_answered_correctly,
+				":student_answered_correctly" => $this->m_student_answer_correct,
 				":solve_time"                 => $solve_time,
 				":user_id"                    => $this->m_user_id);
 			$dbmgr->exec_query( $query , $bindings );
@@ -900,11 +1004,6 @@ Class MResponse
 		//determine if student answer is correct
 		$current_problem = new MProblem($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
-		$student_answered_correctly = 0;
-		if ($current_problem_answer == $this->m_student_answer)
-		{
-			$student_answered_correctly = 1;
-		}
 		
 		//update stats table
 		if ($solve_time <= $this->m_maximum_recorded_time)
@@ -916,7 +1015,7 @@ Class MResponse
 				"tot_time = tot_time + :solve_time ".
 				"WHERE id = :m_problem_id";
 			$bindings = array(
-				":student_answered_correctly" => $student_answered_correctly,
+				":student_answered_correctly" => $this->m_student_answer_correct,
 				":solve_time"                 => $solve_time,
 				":m_problem_id"               => $this->m_problem_id);
 			$dbmgr->exec_query( $query , $bindings );
@@ -1195,6 +1294,59 @@ class OmittedProblem
 			$query .= implode(' AND ', $conditions);
 			$dbmgr->exec_query($query, $params);
 		}
+	}
+
+}
+
+Class MStatsFile
+{
+	var $m_filename;
+	var $m_courses;
+	var $m_semesters;
+
+	public static function delete_file($filename)
+	{
+		return unlink($GLOBALS["DIR_STATS"].$filename);
+	}
+
+
+	public static function start_export($semester_ids, $course_ids)
+	{
+		global $dbmgr;
+		$tablename = "stats_".date('Ymd\_His');
+		$params = array();
+		$filename = "problem_roulette_".date('\_Ymd\_His');
+
+		
+		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, count(t1.id) response_count, sum(t1.ans_correct) correct_count, sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site from responses t1 left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) left join user t3 on t1.user_id=t3.id  left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id left join 12m_class_topic t5 on t4.topic_id=t5.topic_id left join class t6 on t5.class_id=t6.id where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null";
+		if (isset($semester_ids)) {
+			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
+			$query .= ' and t2.id in ('.$bindString.')';
+
+			$terms = MSemester::get_semesters($semester_ids);
+			foreach ($terms as $key => $value) {
+				$filename .= '_'.$value->m_abbreviation;
+			}
+		}
+		if (isset($course_ids)) {
+			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+			$query .= ' and t5.class_id in ('.$bindString.')';
+
+			$classes = MCourse::get_courses($course_ids);
+			foreach ($classes as $key => $value) {
+				$filename .= '_'.strtolower(str_replace(' ','_',$value->m_name));
+			}
+		}
+		$query .= " group by t1.user_id, t2.id, t5.class_id order by t1.user_id, t2.id, t5.class_id";
+		$filename .= '.sql';
+
+		$dbmgr->exec_query($query, $params);
+
+		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
+
+		$query = "drop table ".$tablename;
+		$dbmgr->exec_query($query, array());
+
 	}
 
 }

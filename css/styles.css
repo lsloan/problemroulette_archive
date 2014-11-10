@@ -495,3 +495,10 @@ background-color: #e5e5e5;
         margin: 5px 0;
         font-size: 11px;
 }
+.marked-deleted {
+	color: darkgrey;
+}
+.export_stats_page {
+	margin-left:  40px;
+	margin-right: 40px;
+}
