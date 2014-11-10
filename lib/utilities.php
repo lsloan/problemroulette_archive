@@ -109,5 +109,21 @@ if (!function_exists('http_response_code')) {
   }
 }
 
+if(! defined("DIRECTORY_SEPARATOR")) {
+  define("DIRECTORY_SEPARATOR", '/');
+}
+if(! defined("PATH_SEPARATOR")) {
+  define("PATH_SEPARATOR", ':');
+}
+if(! defined("SCANDIR_SORT_ASCENDING")) {
+  define("SCANDIR_SORT_ASCENDING", 0);
+}
+if(! defined("SCANDIR_SORT_DESCENDING")) {
+  define("SCANDIR_SORT_DESCENDING", 1);
+}
+if(! defined("SCANDIR_SORT_NONE")) {
+  define("SCANDIR_SORT_NONE", 2);
+}
+
 
 ?>
