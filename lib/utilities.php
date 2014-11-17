@@ -33,6 +33,19 @@ function MakeSelectOptions($array, $curlabel)
   return $str;
 }
 
+// curlabel is array of current topics the problem is in, $array is the entire list of topics
+function MakeSelectTopicOptions($array, $curlabel)
+{
+  foreach ($array as $key => $value)
+  {
+    $str .= "<option";
+    if (in_array($key, $curlabel)) {
+      $str .= " selected='selected' ";
+    }
+    $str .= " value='".$value."'> ".$key." </option>";
+  }
+  return $str;
+}
 // creates an array of key,value to use in creating the options for selecting how many answer choices
 function AnswerNumbers()
 { //set $num_values = to the number of answer number choices allowed

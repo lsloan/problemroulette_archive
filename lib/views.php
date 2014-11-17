@@ -531,9 +531,9 @@ class VProblemLibrary
 			</select>
 			</p>
 			<p>
-			Select a Topic (must select course): 
-			<select disabled='disabled' class='input-error' name='topic_for_new_problem' id='topic_for_new_problem'>
-			<option value='0' selected='selected'>Select One</option>";
+			Select a Topic (must select course):
+			<select multiple disabled='disabled' class='input-error' name='topic_for_new_problem[]' id='topic_for_new_problem'>
+			<option value='0' selected='selected'>Select Topic(s)</option>";
 			for ($i=0; $i<$num_courses; $i++)
 			{
 				$all_topics_in_course = Array();
@@ -1608,10 +1608,10 @@ class VProblemEdit
 
             <p>
             	<label for='topic_for_new_problem' class='span2 text-right'>Topic</label>
-            	<select class='span4' required name='topic_for_new_problem' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
+            	<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
 			";
 
-			$str .= MakeSelectOptions($topic_choices, $this->v_problem->m_prob_topic_name);
+			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_name);
 			$str .= "</select></p>
 
             <p>

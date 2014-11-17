@@ -80,7 +80,16 @@ if (isset($_POST['edit_problem_name']))
     $new_problem_sol_url = str_replace(' ','',$_POST['edit_problem_sol_url']);
     $new_topic_id = $_POST['topic_for_new_problem'];
     MProblem::update_problem($problem_id, $new_problem_name, $new_problem_url, $new_problem_num_ans, $new_problem_cor_ans, $new_problem_sol_url);
-    MTopic::update_problem_topic($problem_id, $new_topic_id);
+    # first remove any problem/topic entries in the 12m_topic_prob table
+    MTopic::remove_problem_topics($problem_id);
+    # now add a row in 12m_topic_prob for each topic selected
+    foreach ($new_topic_id as $id) {
+    # this is where instead we should delete the no longer selected topics, then add
+    # the topics that are newly added, and leave the ones that stay the same alone
+    # rather than deleteing all and readding all
+    MTopic::update_problem_topic($problem_id, $id);
+    }
+    unset($id);
     # header('Location:problem_edit.php?p_id='.$problem_id);
     header('Location:problem_library.php');
 }

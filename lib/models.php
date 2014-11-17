@@ -39,10 +39,13 @@ Class MProblem
 		$query = "SELECT name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
 		$bindings = array(":pid"=>$prob_id);
 		$res = $dbmgr->fetch_assoc($query, $bindings);
-		if (! empty($res[0]))
-		{
-			$this->m_prob_topic_name = $res[0]['name'];
+		$topics = array();
+		if (! empty($res[0] )) {
+			foreach ($res as $val) {
+				$topics[] = $val['name'];
+			}
 		}
+		$this->m_prob_topic_name = $topics;
 	}
 	
 	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')
@@ -145,55 +148,55 @@ Class MProblem
 		#push data to database
 	}
 	
-    public static function update_problem_name($prob_id=Null, $new_prob_name=Null)
-    {
-        global $dbmgr;
-        $query = "UPDATE problems SET name = :name WHERE id = :id";
-        $bindings = array(":name" => $new_prob_name, ":id"   => $prob_id);
-        $dbmgr->exec_query( $query , $bindings );
-    }
+	public static function update_problem_name($prob_id=Null, $new_prob_name=Null)
+	{
+		global $dbmgr;
+		$query = "UPDATE problems SET name = :name WHERE id = :id";
+		$bindings = array(":name" => $new_prob_name, ":id"   => $prob_id);
+		$dbmgr->exec_query( $query , $bindings );
+	}
 
-    public static function update_problem_url($prob_id=Null, $new_prob_url=Null)
-    {
-        global $dbmgr;
-        $query = "UPDATE problems SET url = :url WHERE id = :id";
-        $bindings = array(":url" => $new_prob_url, ":id" => $prob_id);
-        $dbmgr->exec_query( $query, $bindings );
-    }
+	public static function update_problem_url($prob_id=Null, $new_prob_url=Null)
+	{
+		global $dbmgr;
+		$query = "UPDATE problems SET url = :url WHERE id = :id";
+		$bindings = array(":url" => $new_prob_url, ":id" => $prob_id);
+		$dbmgr->exec_query( $query, $bindings );
+	}
 
-    public static function update_problem_num_ans($prob_id=Null, $new_prob_num_ans=Null)
-    {
-        global $dbmgr;
-        $query = "UPDATE problems SET ans_count = :new_prob_num_ans WHERE id = :id";
-        $bindings = array(":new_prob_num_ans" => $new_prob_num_ans, ":id" => $prob_id);
-        $dbmgr->exec_query( $query , $bindings );
-    }
+	public static function update_problem_num_ans($prob_id=Null, $new_prob_num_ans=Null)
+	{
+		global $dbmgr;
+		$query = "UPDATE problems SET ans_count = :new_prob_num_ans WHERE id = :id";
+		$bindings = array(":new_prob_num_ans" => $new_prob_num_ans, ":id" => $prob_id);
+		$dbmgr->exec_query( $query , $bindings );
+	}
 
-    public static function update_problem_cor_ans($prob_id=Null, $new_prob_cor_ans=Null)
-    {
-        global $dbmgr;
-        $query = "UPDATE problems SET correct = :correct WHERE id = :id";
-        $bindings = array(":correct" => $new_prob_cor_ans, ":id" => $prob_id);
-        $dbmgr->exec_query( $query , $bindings );
-    }
+	public static function update_problem_cor_ans($prob_id=Null, $new_prob_cor_ans=Null)
+	{
+		global $dbmgr;
+		$query = "UPDATE problems SET correct = :correct WHERE id = :id";
+		$bindings = array(":correct" => $new_prob_cor_ans, ":id" => $prob_id);
+		$dbmgr->exec_query( $query , $bindings );
+	}
 
-    public static function update_problem_sol_url($prob_id=Null, $new_prob_sol_url=Null)
-    {
-        global $dbmgr;
-        $query = "UPDATE problems SET solution = :solution WHERE id = :id";
-        $bindings = array(":solution" => $new_prob_sol_url, ":id" => $prob_id);
-        $dbmgr->exec_query( $query , $bindings );
-    }
+	public static function update_problem_sol_url($prob_id=Null, $new_prob_sol_url=Null)
+	{
+		global $dbmgr;
+		$query = "UPDATE problems SET solution = :solution WHERE id = :id";
+		$bindings = array(":solution" => $new_prob_sol_url, ":id" => $prob_id);
+		$dbmgr->exec_query( $query , $bindings );
+	}
 
-    public static function update_problem($prob_id, $name, $url, $num_ans, $cor_ans, $sol_url)
-    {
-    	global $dbmgr;
-    	$query = "UPDATE problems SET name = :name, url = :url, correct = :cor_ans, ans_count = :num_ans, solution = :sol_url " .
-    			 " WHERE id = :id";
-    	$bindings = array(":name" => $name, ":url" => $url, ":cor_ans" => $cor_ans,
-    					  ":num_ans" => $num_ans, ":sol_url" => $sol_url, ":id" => $prob_id);
-    	$dbmgr->exec_query($query, $bindings);
-    }
+	public static function update_problem($prob_id, $name, $url, $num_ans, $cor_ans, $sol_url)
+	{
+		global $dbmgr;
+		$query = "UPDATE problems SET name = :name, url = :url, correct = :cor_ans, ans_count = :num_ans, solution = :sol_url " .
+				 " WHERE id = :id";
+		$bindings = array(":name" => $name, ":url" => $url, ":cor_ans" => $cor_ans,
+						  ":num_ans" => $num_ans, ":sol_url" => $sol_url, ":id" => $prob_id);
+		$dbmgr->exec_query($query, $bindings);
+	}
 
 	//for $exclusion: input 0 or nothing for no exclusion; input 1 or true for exclusion
 	//for $by_id: input 0 or nothing to return problem objects; input 1 or true to output problem ids
@@ -360,10 +363,10 @@ Class MCourse
 
 Class MTopic
 {
-    var $m_id;
-    var $m_name;
-    var $m_course;
-    var $m_questions; // Topics have an array of questions
+	var $m_id;
+	var $m_name;
+	var $m_course;
+	var $m_questions; // Topics have an array of questions
 	
 	function __construct($id,$name)
 	{
@@ -430,13 +433,22 @@ Class MTopic
 	}
 
 	public static function update_problem_topic($prob_id, $topic_id)
-    {
-    	global $dbmgr;
-    	$query = "UPDATE 12m_topic_prob SET topic_id = :topic_id WHERE problem_id = :prob_id";
-    	$bindings = array(":topic_id"=>$topic_id, ":prob_id"=>$prob_id);
-    	$dbmgr->exec_query($query, $bindings);
-    }
+	{
+		global $dbmgr;
+		// $query = "UPDATE 12m_topic_prob SET topic_id = :topic_id WHERE problem_id = :prob_id";
+		$query = "INSERT INTO 12m_topic_prob (topic_id, problem_id) VALUES (:topic_id, :prob_id)";
+		$bindings = array(":topic_id"=>$topic_id, ":prob_id"=>$prob_id);
+		$dbmgr->exec_query($query, $bindings);
+	}
 	
+	public static function remove_problem_topics($prob_id)
+	{
+		global $dbmgr;
+		$query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id";
+		$bindings = array(":prob_id"=>$prob_id);
+		$dbmgr->exec_query($query, $bindings);
+	}
+
 	static function alphabetize($a,$b)
 	{
 		$a1 = strtolower($a->m_name);
@@ -514,11 +526,11 @@ Class MSemester
 
 Class MTabNav
 {
-    var $m_selected = 'Home';
+	var $m_selected = 'Home';
 
 	function __construct($selected)
    {
-        $this->m_selected = $selected;
+		$this->m_selected = $selected;
 
 		global $usrmgr;
 		
@@ -552,12 +564,12 @@ Class MTabNav
 }
 Class MCourseTopicNav
 {
-    var $m_courses;
+	var $m_courses;
 
 	function __construct()
-     {
-         $this->m_courses = MCourse::get_all_courses_with_topics();
-     }
+	 {
+		 $this->m_courses = MCourse::get_all_courses_with_topics();
+	 }
 }
 
 //model containing the course and topic selection information
@@ -620,25 +632,25 @@ else
 //use this variable (along with selected course from MCTSelect if topic selector) to display the right page;
 Class MDirector
 {
-    # redirects
-    var $target_page;
+	# redirects
+	var $target_page;
 
-     # selector page
-    var $topic_selected;
-    var $course_selected;
-    # var course_or_topic;
+	 # selector page
+	var $topic_selected;
+	var $course_selected;
+	# var course_or_topic;
 
-    # problems page
-    var $state_response; # 0 = working on problem, 1 = completed problem
+	# problems page
+	var $state_response; # 0 = working on problem, 1 = completed problem
 
-    # stats page
-    var $stats_course_selected;
-    var $stats_topic_selected;
+	# stats page
+	var $stats_course_selected;
+	var $stats_topic_selected;
 
-    function __construct($args)
-    {
-        $this->args = $args;
-    }
+	function __construct($args)
+	{
+		$this->args = $args;
+	}
 
 	public static function safecheck_CT_selected()
 	{
@@ -774,55 +786,53 @@ Class MDirector
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
-    public static function add_problem_to_db($topic_id, $prob_name, $prob_url, $num_ans, $cor_ans, $sol_url="")
-    {
-        global $dbmgr;
-        //CREATE NEW PROBLEM OBJECT
-        $new_prob = new MProblem();
-        $new_prob->create($prob_name, $prob_url, $num_ans, $cor_ans, $sol_url);
+	public static function add_problem_to_db($topic_id, $prob_name, $prob_url, $num_ans, $cor_ans, $sol_url="")
+	{
+		global $dbmgr;
+		//CREATE NEW PROBLEM OBJECT
+		$new_prob = new MProblem();
+		$new_prob->create($prob_name, $prob_url, $num_ans, $cor_ans, $sol_url);
 
-        //GET NEW PROBLEM ID
-        $selectquery = "SELECT * FROM problems ORDER BY id DESC";
-        $res=$dbmgr->fetch_assoc( $selectquery );
-        $problem_id = $res[0]['id'];
+		//GET NEW PROBLEM ID
+		$selectquery = "SELECT * FROM problems ORDER BY id DESC";
+		$res=$dbmgr->fetch_assoc( $selectquery );
+		$problem_id = $res[0]['id'];
 
-        //GENERATE BLANK 12M_PROB_ANS FOR PROBLEM
-        for ($i=0;$i<$num_ans;$i++)
-        {
-            $query =
-                "INSERT INTO 12m_prob_ans (prob_id, ans_num) ".
-                "VALUES (:problem_id, :ans_num)";
-            $bindings = array(":problem_id" => $problem_id, ":ans_num" => ($i+1));
-            $dbmgr->exec_query( $query , $bindings );
-        }
+		//GENERATE BLANK 12M_PROB_ANS FOR PROBLEM
+		for ($i=0;$i<$num_ans;$i++)
+		{
+			$query =
+				"INSERT INTO 12m_prob_ans (prob_id, ans_num) ".
+				"VALUES (:problem_id, :ans_num)";
+			$bindings = array(":problem_id" => $problem_id, ":ans_num" => ($i+1));
+			$dbmgr->exec_query( $query , $bindings );
+		}
 
-        //FILL IN 12M_TOPIC_PROB
-        $query =
-            "INSERT INTO 12m_topic_prob (topic_id, problem_id) ".
-            "VALUES (:topic_id, :problem_id)";
-        $bindings = array(":topic_id" => $topic_id, ":problem_id" => $problem_id);
-        $dbmgr->exec_query( $query , $bindings );
-    }
+		//FILL IN 12M_TOPIC_PROB
+		foreach ($topic_id as $id) {
+			MTopic::update_problem_topic($problem_id, $id);
+		}
+	}
 
-    function init_selector()
-    {
-        # peal out the POST data (course/topic selected)
-        # reset user course/topic if time > X elapsed
-        # user has course?
-        # user has topic?
-        # direct to selector page
-    }
+	function init_selector()
+	{
+		# peal out the POST data (course/topic selected)
+		# reset user course/topic if time > X elapsed
+		# user has course?
+		# user has topic?
+		# direct to selector page
+	}
 
-    function init_problems()
-    {
-        # peal out the POST data (
+	function init_problems()
+	{
+		# peal out the POST data (
 
-    }
+	}
 
-    function init_stats()
-    {
-        
-    }
+	function init_stats()
+	{
+		
+	}
 }
 
 // pick a problem to output based on course and topic selection and omitted problems
@@ -1183,7 +1193,7 @@ Class MUserSummary
 			$this->m_start_time_list[$i] = $res[$i]['start_time'];
 			$this->m_end_time_list[$i] = $res[$i]['end_time'];
 			$this->m_user_id_list[$i] = $res[$i]['user_id'];
-            date_default_timezone_set('America/New_York');
+			date_default_timezone_set('America/New_York');
 			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
 			
 			//$this->m_tot_tries += 1;
