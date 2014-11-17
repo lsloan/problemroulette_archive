@@ -821,6 +821,7 @@ Class MDirector
     }
 }
 
+// pick a problem to output based on course and topic selection and omitted problems
 class MProblemPicker
 {
 	# complete list of selected topics with topid_id, name 
@@ -893,93 +894,6 @@ class MProblemPicker
 				$problem_index = mt_rand(0, $problem_id_count - 1);
 				$this->m_problem_id = $this->m_problem_id_list[$problem_index];
 			}
-		}
-	}
-}
-
-//read in preferences and pick a problem to output based on course and topic selection and omitted problems
-Class MPpicker
-{
-	var $m_selected_topics_list;//one or more topics (by topic_id), get from preferences
-	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
-								//^^^^^Associative array (omitted_problems_list[topic_id] = array of omitted problems in topic)
-	var $m_remaining_problems_in_topic_list;//how many problems are left in a given topic after leaving out omitted problems
-	var $m_total_problems_in_topic_list;//how many problems are in topic before omitting problems
-	var $m_remaining_selected_topics_list = array();//selected_topics_list after removing topics with zero problems left
-	var $m_picked_topic;//topic (by topic ID) picked by Ppicker
-	var $m_picked_problem = Null;//problem (as MProblem object) picked by Ppicker
-	
-	function __construct()
-	{
-		global $usrmgr;
-		$this->m_selected_topics_list = $usrmgr->m_user->selected_topics_list;
-		
-		//get user_id
-		$user_id = $usrmgr->m_user->id;
-
-		if (is_array($this->m_selected_topics_list))
-		{
-			for ($i=0; $i<count($this->m_selected_topics_list); $i++)
-			{
-				$topic_id = $this->m_selected_topics_list[$i];
-				$omitted_problem = new OmittedProblem($user_id, $topic_id);
-				$this->m_omitted_problems_list[$topic_id] = $omitted_problem->find();
-
-				$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
-				$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
-				$this->m_remaining_problems_in_topic_list[$i] = count($remaining_problems);
-				$this->m_total_problems_in_topic_list[$i] = count($total_problems);
-				
-				if ($this->m_remaining_problems_in_topic_list[$i] > 0)
-				{
-					array_push($this->m_remaining_selected_topics_list, $topic_id);
-				}
-			}
-		}
-		else
-		{
-			$topic_id = $this->m_selected_topics_list;
-			$omitted_problem = new OmittedProblem($user_id, $topic_id);
-			$this->m_omitted_problems_list[intval($topic_id)] = $omitted_problem->find();
-			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[intval($topic_id)]);
-			$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
-			$this->m_remaining_problems_in_topic_list = count($remaining_problems);
-			$this->m_total_problems_in_topic_list = count($total_problems);
-		
-			if ($this->m_remaining_problems_in_topic_list > 0)
-			{
-				array_push($this->m_remaining_selected_topics_list, $topic_id);
-			}
-		}
-	}
-	
-	//picks a topic (by ID) and a problem in that topic (as an MProblem object)
-	function pick_problem()
-	{
-		//pick random topic from list
-		$picked_topic_index = 0;
-		$length = count($this->m_remaining_selected_topics_list);
-		if ($length > 0)
-		{
-			if ($length > 1)
-			{
-				$picked_topic_index = mt_rand(0,$length - 1);
-			}
-			$this->m_picked_topic = $this->m_remaining_selected_topics_list[$picked_topic_index];
-			
-			//pick random problem from topic with exclusion
-			$picked_problem_index = 0;
-			$topic_id = $this->m_picked_topic;
-			$all_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[intval($topic_id)]);
-			$num_problems = count($all_problems);
-			if ($num_problems >= 1)
-			{
-				$picked_problem_index = mt_rand(0,$num_problems - 1);
-				$this->m_picked_problem = $all_problems[$picked_problem_index];
-
-			}
-			//echo $picked_problem_index;
-			//$this->m_picked_problem = $all_problems[$picked_problem_index];
 		}
 	}
 }
