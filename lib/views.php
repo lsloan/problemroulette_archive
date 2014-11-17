@@ -1087,74 +1087,29 @@ class VProblems_no_problems
 class VProblems
 {
 	var $v_picked_problem;//picked problem
-	var $v_selected_topics_list;//selected topic list by ID
-	var $v_selected_topics_list_name;//Selected topic list by NAME
-	var $v_remaining_problems_in_topic_list;
-	var $v_total_problems_in_topic_list;
+	var $v_problem_counts_by_topic;
 
-	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list)
+	function __construct($picked_problem, $problem_counts_by_topic)
 	{
 		$this->v_picked_problem = $picked_problem;
-		$selected_topics_list_id = $selected_topics_list;
-		if (! is_array($selected_topics_list_id)) {
-			$selected_topics_list_id = MakeArray($selected_topics_list_id);
-		}
-		$num_topics = count($selected_topics_list_id);
-		for ($i=0; $i<$num_topics; $i++)
-		{
-			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-		}
-		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-		{
-			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-		}
-
-		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
-		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
+		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
 	}
 	
 	function Deliver()
 	{
-		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		$alphabet = range('A', 'Z');
 		$num_answers = $this->v_picked_problem->m_prob_ans_count;
-        global $usrmgr;
-        $str = "
-            <p class='half-line'>&nbsp;</p>
-			<p>
-			Selected Topics/Remaining Problems: ";
-			if (is_array($this->v_selected_topics_list))
-			{
-				for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-				{
-					$topic_depleted_label = " label-inverse";
-					if ($this->v_remaining_problems_in_topic_list[$i] == 0)
-					{
-						$topic_depleted_label = "";
-					}
-					$str .= "<span class='label".$topic_depleted_label."'>
-					".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
-					".$this->v_remaining_problems_in_topic_list[$i]."
-					/
-					".$this->v_total_problems_in_topic_list[$i]."
-					</span>&nbsp;";
-				}
+    
+    $str = "<p class='half-line'>&nbsp;</p>
+			<p>Selected Topics/Remaining Problems: ";
+		foreach ($this->v_problem_counts_by_topic as $key => $value) {
+			if($value['remaining'] > 0) {
+				$str .= "<span class='label label-inverse'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
+			} else {
+				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
-			else
-			{
-				$topic_depleted_label = " label-inverse";
-				if ($this->v_remaining_problems_in_topic_list == 0)
-				{
-					$topic_depleted_label = "";
-				}
-				$str .= "<span class='label".$topic_depleted_label."'>
-				".$this->v_selected_topics_list->m_name.":&nbsp;
-				".$this->v_remaining_problems_in_topic_list."
-				/
-				".$this->v_total_problems_in_topic_list."
-				</span>&nbsp;";
-			}
-			$str .= "
-			</p>
+		}
+		$str .= "</p>
 			<form class='ans-form' name='ans_form' action='' method='POST'>
 			<input type='hidden' id='submit_or_skip' name='tbd' value='0'/>
 			<input type='hidden' name='problem' value='".$this->v_picked_problem->m_prob_id."'>
@@ -1166,11 +1121,9 @@ class VProblems
 				class='ans-choice' 
 				name='student_answer' 
 				value='".($i+1)."'></input> 
-				<font size='4'>".$alphabet[$i]."</font>
-				";
+				<font size='4'>".$alphabet[$i]."</font>";
 			}
-			$str .= "
-			</p>
+		$str .= "</p>
 			<button type='submit' 
 			class='btn btn-submit' 
 			name='submit_answer' 
@@ -1193,46 +1146,28 @@ class VProblems
 			$this->v_picked_problem->m_prob_url
 			."'></iframe>
         ";
-        return $str;
+      return $str;
     }
 }
 
 class VProblems_submitted
 {
 	var $v_picked_problem;
-	var $v_selected_topics_list;
-	var $v_selected_topics_list_name;
-	var $v_remaining_problems_in_topic_list;
-	var $v_total_problems_in_topic_list;
+	var $v_problem_counts_by_topic;
 	var $v_solve_time;
 	var $v_student_answer;
 
-	function __construct($picked_problem, $selected_topics_list, $remaining_problems_in_topic_list, $total_problems_in_topic_list, $student_answer, $solve_time = 0)
+	function __construct($picked_problem, $problem_counts_by_topic, $student_answer, $solve_time = 0)
 	{
 		$this->v_picked_problem = $picked_problem;
-		$selected_topics_list_id = $selected_topics_list;
-		if (! is_array($selected_topics_list_id)) {
-			$selected_topics_list_id = MakeArray($selected_topics_list_id);
-		}
-		$num_topics = count($selected_topics_list_id);
-		for ($i=0; $i<$num_topics; $i++)
-		{
-			$this->v_selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
-		}
-		for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-		{
-			$this->v_selected_topics_list_name[$i] = $this->v_selected_topics_list[$i]->m_name;
-		}
-		$this->v_remaining_problems_in_topic_list = $remaining_problems_in_topic_list;
-		$this->v_total_problems_in_topic_list = $total_problems_in_topic_list;
+		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
 		$this->v_student_answer = $student_answer;
 		$this->v_solve_time = $solve_time;
 	}
 	
 	function Deliver()
 	{
-	    global $usrmgr;
-		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		$alphabet = range('A', 'Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		
 		//green label for correct answer; red label for incorrect answer
@@ -1282,43 +1217,16 @@ class VProblems_submitted
 			$histogram_ans_string .= $alphabet[($i-1)]."|";
 		}
 		
-        $str = "
-            <p class='half-line'>&nbsp;</p>
-			<p>
-			Selected Topics/Remaining Problems: ";
-			if (is_array($this->v_selected_topics_list))
-			{
-				for ($i=0; $i<count($this->v_selected_topics_list); $i++)
-				{
-					$topic_depleted_label = " label-inverse";
-					if ($this->v_remaining_problems_in_topic_list[$i] == 0)
-					{
-						$topic_depleted_label = "";
-					}
-					$str .= "<span class='label".$topic_depleted_label."'>
-					".$this->v_selected_topics_list[$i]->m_name.":&nbsp;
-					".$this->v_remaining_problems_in_topic_list[$i]."
-					/
-					".$this->v_total_problems_in_topic_list[$i]."
-					</span>&nbsp;";
-				}
+    $str = "<p class='half-line'>&nbsp;</p>
+			<p>Selected Topics/Remaining Problems: ";
+		foreach ($this->v_problem_counts_by_topic as $key => $value) {
+			if($value['remaining'] > 0) {
+				$str .= "<span class='label label-inverse'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
+			} else {
+				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
-			else
-			{
-				$topic_depleted_label = " label-inverse";
-				if ($this->v_remaining_problems_in_topic_list == 0)
-				{
-					$topic_depleted_label = "";
-				}
-				$str .= "<span class='label".$topic_depleted_label."'>
-				".$this->v_selected_topics_list->m_name.":&nbsp;
-				".$this->v_remaining_problems_in_topic_list."
-				/
-				".$this->v_total_problems_in_topic_list."
-				</span>&nbsp;";
-			}
-			$str .= "
-			</p>
+		}
+		$str .= "</p>
 			<form class='form-next' action='' method='post'>
 			<button class='btn btn-next' type='submit' name='next' value='1'>
 			Next
@@ -1335,29 +1243,20 @@ class VProblems_submitted
 			</p>
 			<p>
 			<span class='label ".$label_class." student-answer'>
-			Your answer:&nbsp;
-			";
-			
-			$str .= $alphabet[$this->v_student_answer-1];
-			
-			$str .= "
-			</span>
+			Your answer:&nbsp;".$alphabet[$this->v_student_answer-1]."</span>
 			Correct answer: 
-			".$alphabet[$correct_answer-1]."
-			</p>";
+			".$alphabet[$correct_answer-1]."</p>";
 			if ($this->v_picked_problem->m_prob_solution !== '')
 			{
-				$str .= "
-				<p>
+				$str .= "<p>
 				Solution: <a class='link' target='_blank' href='".$this->v_picked_problem->m_prob_solution."'>".$this->v_picked_problem->m_prob_name."</a>
-				</p>
-				";
+				</p>";
 			}
-            $chart_width = 150;
-            if ($this->v_picked_problem->m_prob_ans_count > 3)
-            {
-                $chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
-            }
+      $chart_width = 150;
+      if ($this->v_picked_problem->m_prob_ans_count > 3)
+      {
+          $chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
+      }
 			$str .= "
 			<img class='histogram'
 			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>

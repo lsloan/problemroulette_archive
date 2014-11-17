@@ -821,6 +821,82 @@ Class MDirector
     }
 }
 
+class MProblemPicker
+{
+	# complete list of selected topics with topid_id, name 
+	# and counts of remaining problems and total problems
+	# example: [ { 'topic_id' => 1, 'name' => 'Topic 1', 'total' => 125, 'finished' => 18, 'remaining' => 107 } ]
+	var $m_problem_counts_by_topic = array();
+
+	# the set of id's of selected topics with 
+	# problems remaining 
+	var $m_topic_id_list = array();
+
+	# the selected topic for the next problem
+	var $m_topic_id = 0;
+
+	# the set of id's of remaining problems in the 
+	# selected topic
+	var $m_problem_id_list = array();
+
+	# the id of the next problem
+	var $m_problem_id = 0;
+
+	function __construct()
+	{
+		global $usrmgr;
+		global $dbmgr;
+
+		# populate $m_problem_counts_by_topic
+		if($usrmgr->m_user->selected_topics_list == null) {
+			$problem_counts_query = "select t1.topic_id topic_id, t6.name name, count(t4.id) total, count(t5.id) finished, count(t4.id) - count(t5.id) remaining from 12m_class_topic t1 left join selections t2 on t1.class_id=t2.class_id join user t3 on t2.user_id=t3.id left join 12m_topic_prob t4 on t1.topic_id=t4.topic_id left join omitted_problems t5 on t2.user_id=t5.user_id and t4.problem_id=t5.problem_id left join topic t6 on t1.topic_id=t6.id where t3.id=:user_id and t2.id=t3.selection_id group by t1.topic_id";
+		} else {
+			$problem_counts_query = "select t1.topic_id topic_id, t6.name name, count(t4.id) total, count(t5.id) finished, count(t4.id) - count(t5.id) remaining from selected_topics t1 left join selections t2 on t1.selection_id=t2.id left join user t3 on t2.user_id=t3.id left join 12m_topic_prob t4 on t1.topic_id=t4.topic_id left join omitted_problems t5 on t2.user_id=t5.user_id and t4.problem_id=t5.problem_id left join topic t6 on t1.topic_id=t6.id where t3.id=:user_id and t2.id=t3.selection_id group by t1.topic_id";
+		}
+		$bindings = array(
+			":user_id" => $usrmgr->m_user->id
+		);
+		$this->m_problem_counts_by_topic = $dbmgr->fetch_assoc($problem_counts_query, $bindings);
+
+		if (count($this->m_problem_counts_by_topic) > 0) {
+			# iterate through $m_problem_counts_by_topic and add topic_id's to $m_topic_id_list
+			foreach ($this->m_problem_counts_by_topic as $index => $value) {
+				if($value['remaining'] > 0) {
+					$this->m_topic_id_list[] = $value['topic_id'];
+				}
+			}
+
+			# select $topic_id from $m_topic_id_list
+			$topic_id_count = count($this->m_topic_id_list);
+			if($topic_id_count > 1) {
+				$topic_index = mt_rand(0,$topic_id_count - 1);
+				$this->m_topic_id = $this->m_topic_id_list[$topic_index];
+			} elseif ($topic_id_count > 0) {
+				$this->m_topic_id = $this->m_topic_id_list[0];
+			}
+
+			# populate $m_problem_id_list for $topic_id
+			if ($this->m_topic_id > 0) {
+				# randomly select one problem from the remaining problems in the topic
+				$problem_ids_query = "select problem_id from 12m_topic_prob where topic_id=:topic_id and problem_id not in (select problem_id from omitted_problems where user_id=:user_id and topic_id=:topic_id)";
+				$bindings = array(
+					":user_id" => $usrmgr->m_user->id, 
+					":topic_id" => $this->m_topic_id
+				);
+
+				$this->m_problem_id_list = $dbmgr->fetch_column($problem_ids_query, $bindings, 0);				
+			}
+
+			# select $m_problem_id from $m_problem_id_list
+			$problem_id_count = count($this->m_problem_id_list);
+			if($problem_id_count > 0) {
+				$problem_index = mt_rand(0, $problem_id_count - 1);
+				$this->m_problem_id = $this->m_problem_id_list[$problem_index];
+			}
+		}
+	}
+}
+
 //read in preferences and pick a problem to output based on course and topic selection and omitted problems
 Class MPpicker
 {

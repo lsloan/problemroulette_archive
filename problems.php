@@ -160,30 +160,16 @@ for ($i=0; $i<$num_topics; $i++)
 	$selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
 }
 
-# ask picker for problem using constraints
-$Picker = new MPpicker();
-$Picker->pick_problem();
-$remaining_problems_in_topic_list = $Picker->m_remaining_problems_in_topic_list;
-$total_problems_in_topic_list = $Picker->m_total_problems_in_topic_list;
-//pick either current problem a student is working on OR pick new problem
-if ($c_problem_id !== Null)
-{
-	//use current problem
+$picker = new MProblemPicker();
+if($c_problem_id == null || $c_problem_id < 1) {
+	# use newly picked problem
+	$picked_problem_id = $picker->m_problem_id;
+} else {
+	# use problem student is already working on
 	$picked_problem_id = $c_problem_id;
-	$picked_problem = new MProblem($picked_problem_id);
 }
-else
-{
-	//set current topic and pick random problem
-	$usrmgr->m_user->SetPref('current_topic',$Picker->m_picked_topic);
-	$picked_problem = $Picker->m_picked_problem;
-	$picked_problem_id = Null;
-	if ($picked_problem !== Null)
-	{
-		$picked_problem_id = $picked_problem->m_prob_id;
-	}	
-}
-	
+
+$picked_problem = new MProblem($picked_problem_id);
 	
 ///////////////////////////////////////////////////////////////////////////
 // page construction
@@ -194,11 +180,11 @@ $tab_nav = new VTabNav(new MTabNav('Problems'));
 # decide if problem or histogram showing and get the correct view
 if ($c_answer !== Null)
 {
-	$content = new VProblems_submitted($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list, $c_answer, $c_end_time - $c_start_time);
+	$content = new VProblems_submitted($picked_problem, $picker->m_problem_counts_by_topic, $c_answer, $c_end_time - $c_start_time);
 }
-elseif ($num_topics >= 1)
+elseif ($num_topics > 0)
 {
-	$content = new VProblems($picked_problem, $selected_topics_list_id, $remaining_problems_in_topic_list, $total_problems_in_topic_list);
+	$content = new VProblems($picked_problem, $picker->m_problem_counts_by_topic);
 }
 else
 {
