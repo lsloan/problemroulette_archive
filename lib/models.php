@@ -100,6 +100,19 @@ Class MProblem
 		return $pid;
 	}
 
+	function get_problem_topics($prob_id)
+	{
+		global $dbmgr;
+		$query = "SELECT topic_id from 12m_topic_prob tp WHERE tp.problem_id = :prob_id";
+		$bindings = array( ":prob_id"=>$prob_id);
+		$res = $dbmgr->fetch_assoc( $query , $bindings );
+		$topic_ids = array();
+		foreach ($res as $val) {
+			$topic_ids[] = $val['topic_id'];
+		}
+		return $topic_ids;
+	}
+
 	function get_avg_time()
 	{
 		if ($this->m_prob_id != Null)
@@ -441,12 +454,23 @@ Class MTopic
 		$dbmgr->exec_query($query, $bindings);
 	}
 	
-	public static function remove_problem_topics($prob_id)
+	public static function remove_problem_topics_notworking($prob_id, $topic_ids)
 	{
 		global $dbmgr;
-		$query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id";
-		$bindings = array(":prob_id"=>$prob_id);
+		$tids = implode(',', $topic_ids);
+		$query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id AND topic_id IN (:topic_ids)";
+		$bindings = array(":prob_id"=>$prob_id, ":topic_ids"=>$tids);
 		$dbmgr->exec_query($query, $bindings);
+	}
+
+	public static function remove_problem_topics($prob_id, $topic_ids)
+	{
+		global $dbmgr;
+		foreach ($topic_ids as $val) {
+			$query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id AND topic_id = :tid";
+			$bindings = array(":prob_id"=>$prob_id, ":tid"=>$val);
+			$dbmgr->exec_query($query, $bindings);
+		}
 	}
 
 	static function alphabetize($a,$b)
