@@ -1365,6 +1365,7 @@ class GlobalAlert
 
 	function __construct($id, $message, $priority, $start_time, $end_time)
 	{
+		date_default_timezone_set('America/New_York');
 		$this->m_id = $id;
 		$this->m_message = $message;
 		$this->m_priority = $priority;
@@ -1374,6 +1375,7 @@ class GlobalAlert
 
 	function save() {
 		global $dbmgr;
+		date_default_timezone_set('America/New_York');
 		$query =
 			"INSERT INTO global_alerts (message, priority,start_time,end_time) ".
 			"VALUES (:message,:priority,:start_time,:end_time)";
@@ -1386,8 +1388,21 @@ class GlobalAlert
 		$res = $dbmgr->exec_query( $query , $bindings );
 	}
 
+	public static function expire($id) {
+		global $dbmgr;
+		date_default_timezone_set('America/New_York');
+		$query = "update global_alerts set end_time = :now where id = :id";
+		$bindings = array(
+			":now" => date('Y-m-d H:i:s'),
+			":id"  => $id
+		);
+		$res = $dbmgr->exec_query( $query, $bindings );
+		return $res;
+	}
+
 	public static function get_alerts() {
 		global $dbmgr;
+		date_default_timezone_set('America/New_York');
 		$query = "select * from global_alerts order by start_time desc, end_time desc, message";
 		$bindings = array();
 		$res = $dbmgr->fetch_assoc( $query, $bindings );
@@ -1400,8 +1415,12 @@ class GlobalAlert
 
 	public static function current_alerts() {
 		global $dbmgr;
-		$query = "select * from global_alerts where start_time < now() and end_time > now() order by priority desc, start_time desc";
-		$bindings = array();
+		date_default_timezone_set('America/New_York');
+		$now = date('Y-m-d H:i:s');
+		$query = "select * from global_alerts where start_time < :now and end_time > :now order by priority desc, start_time desc";
+		$bindings = array(
+			":now" => $now
+		);
 		$res = $dbmgr->fetch_assoc( $query, $bindings );
 		$messages = array();
 		foreach ($res as $key => $value) {

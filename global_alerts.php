@@ -19,6 +19,8 @@ $_SESSION['sesstest'] = 1;
 
 global $usrmgr;
 
+date_default_timezone_set('America/New_York');
+
 if($usrmgr->m_user->admin == 1)
 {
     $json_response = false;
@@ -31,10 +33,14 @@ if($usrmgr->m_user->admin == 1)
 
         header('Location:global_alerts.php');
 
+    } elseif (isset($_POST['expire'])) {
+        GlobalAlert::expire( $_POST['expire'] );
+        
+        header('Location:global_alerts.php');
     }
 
     // page construction
-    $head = new CHeadCSSJavascript("Global Alerts Admin", array(), array());
+    $head = new CHeadCSSJavascript("Global Alerts Admin", array('css/bootstrap-datetimepicker.min.css'), array('js/bootstrap-datetimepicker.min.js', 'js/global_alerts.js'));
     $tab_nav = new VTabNav(new MTabNav('Global Alerts'));
     $content = new VGlobalAlertsAdmin();
     $page = new VPageTabs($head, $tab_nav, $content);

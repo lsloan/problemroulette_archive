@@ -28,6 +28,7 @@ class MUser
     var $prefs = null;
     var $staff = 0;
     var $researcher = 0;
+    var $admin = 0;
     var $selected_course_id;
     var $page_loads;
     var $last_activity;
@@ -88,7 +89,7 @@ class MUser
     {
         global $dbmgr;
         // $query = "SELECT id, staff, prefs, page_loads, last_activity, selection_id, FROM user WHERE username = :username";
-        $query = "SELECT t1.id id, t1.staff staff, t1.researcher researcher, t1.prefs prefs, t1.page_loads page_loads, t1.last_activity last_activity, t1.selection_id selection_id, t2.class_id selected_course_id FROM user t1 left join selections t2 on t1.selection_id=t2.id WHERE t1.username = :username";
+        $query = "SELECT t1.id id, t1.staff staff, t1.researcher researcher, t1.admin admin, t1.prefs prefs, t1.page_loads page_loads, t1.last_activity last_activity, t1.selection_id selection_id, t2.class_id selected_course_id FROM user t1 left join selections t2 on t1.selection_id=t2.id WHERE t1.username = :username";
         $bindings = array(":username" => $this->username);
         try {
             $res = $dbmgr->fetch_assoc( $query , $bindings );
@@ -102,6 +103,7 @@ class MUser
             $this->id = $res[0]['id'];
             $this->staff = $res[0]['staff'];
             $this->researcher = $res[0]['researcher'];
+            $this->admin = $res[0]['admin'];
             $this->prefs = $this->unpackage($res[0]['prefs']);
             $this->page_loads = $res[0]['page_loads'];
             if ($res[0]['last_activity'] != Null) {

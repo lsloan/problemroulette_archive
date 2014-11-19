@@ -1853,17 +1853,14 @@ class VGlobalAlertsAdmin
 	
 	function __construct()
 	{
-		$round_numerator = 60 * 60;
-		$one_day = 60 * 60 * 24;
-
-		$this->time_now = ( round ( time() / $round_numerator ) * $round_numerator );
-		$this->time_tomorrow = $this->time_now + $one_day;
-
+		date_default_timezone_set('America/New_York');
+		$this->time_now = new DateTime();
 		$this->alerts = GlobalAlert::get_alerts();
 	}
 	
 	function Deliver()
 	{
+		date_default_timezone_set('America/New_York');
 		ob_start(); ?>
 		<div class="global-alerts-page">
 			<h1>Global Alerts</h1>
@@ -1875,7 +1872,7 @@ class VGlobalAlertsAdmin
 							Message
 						</dt>
 						<dd>
-							<input type="text" name="global_alert[message]" required></input>
+							<input type="text" name="global_alert[message]" maxlength="250" class="input-xxlarge" required></input>
 						</dd>
 						<dt>
 							Priority
@@ -1892,13 +1889,19 @@ class VGlobalAlertsAdmin
 							Start-time
 						</dt>
 						<dd>
-							<input type="datetime-local" name="global_alert[start_time]" value="<?= date("Y-m-d H:i:s O",$this->time_now) ?>" required></input>
+							<input id="global-alerts-start-time" data-format="yyyy-MM-dd hh:mm" type="text" name="global_alert[start_time]" required></input>
+					    <span class="add-on">
+      					<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+					    </span>
 						</dd>
 						<dt>
 							End-time
 						</dt>
 						<dd>
-							<input type="datetime-local" name="global_alert[end_time]" value="<?= date("Y-m-d H:i:s O",$this->time_tomorrow) ?>" required></input>
+							<input id="global-alerts-end-time" data-format="yyyy-MM-dd hh:mm" type="text" name="global_alert[end_time]" required></input>
+					    <span class="add-on">
+      					<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+					    </span>
 						</dd>
 					</dl>
 					<p>
@@ -1917,7 +1920,7 @@ class VGlobalAlertsAdmin
 								<th id="priority">Priority</th>
 								<th id="start-time">Start-time</th>
 								<th id="end-time">End-time</th>
-								<th id="buttons">Buttons</th>
+								<th id="buttons">Expire</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -1939,7 +1942,14 @@ class VGlobalAlertsAdmin
 										<?= $alert->m_end_time ?>
 									</td>
 									<td headers="buttons">
-										edit, extend, expire, delete
+										<?php if(new DateTime($alert->m_end_time) > $this->time_now): ?>
+											<form action="global_alerts.php" method="post">
+												<input type="hidden" name="expire" value="<?= $alert->m_id ?>"></input>
+												<input type="submit" value="Expire" class="btn btn-mini"></input> 
+											</form>
+										<?php else: ?>
+											&nbsp;
+										<?php endif ?>
 									</td>
 								</tr>
 							<?php endforeach ?>
