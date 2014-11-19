@@ -1888,7 +1888,7 @@ class VGlobalAlertsAdmin
 						<dt>
 							Start-time
 						</dt>
-						<dd>
+						<dd class="input-append date">
 							<input id="global-alerts-start-time" data-format="yyyy-MM-dd hh:mm" type="text" name="global_alert[start_time]" required></input>
 					    <span class="add-on">
       					<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
@@ -1897,7 +1897,7 @@ class VGlobalAlertsAdmin
 						<dt>
 							End-time
 						</dt>
-						<dd>
+						<dd class="input-append date">
 							<input id="global-alerts-end-time" data-format="yyyy-MM-dd hh:mm" type="text" name="global_alert[end_time]" required></input>
 					    <span class="add-on">
       					<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
