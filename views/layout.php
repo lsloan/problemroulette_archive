@@ -9,16 +9,25 @@
 <body>
 
 <div id='wrap'>
-    <div class='container'>
-        <?= $this->m_nav->Deliver() ?>
-        <div class='tab-content'>
-            <div class='tab-pane active' id='problems'>
-            <?= $this->m_content->Deliver() ?>
-            </div>
+  <?php if(count($this->m_alerts) > 0): ?>
+    <div class="global-alerts">
+      <?php foreach ($this->m_alerts as $key => $value): ?>
+        <div class="global-alert-priority-<?= $value->m_priority ?>">
+          <?= $value->m_message ?>
+        </div>
+      <?php endforeach ?>
+    </div>
+  <?php endif ?>
+  <div class='container'>
+    <?= $this->m_nav->Deliver() ?>
+    <div class='tab-content'>
+        <div class='tab-pane active' id='problems'>
+        <?= $this->m_content->Deliver() ?>
         </div>
     </div>
-    <div id='push'>
-    </div>
+  </div>
+  <div id='push'>
+  </div>
 </div>
 
 <div id='footer'>

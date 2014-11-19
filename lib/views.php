@@ -46,15 +46,17 @@ class CHeadCSSJavascript{
 class VPageTabs{
 	// properties
 	var $m_head;
-    var $m_nav;
-    var $m_nav2;
-    var $m_content;
+  var $m_nav;
+  var $m_nav2;
+  var $m_content;
+  var $m_alerts;
 
 	// constructor
 	function __construct($head, $nav, $content){
 		$this->m_head = $head;
 		$this->m_nav = $nav;
 		$this->m_content = $content;
+		$this->m_alerts = GlobalAlert::current_alerts();
 	}
 
 	function render($view) {
@@ -1843,4 +1845,113 @@ class VProblemEditReview
 		return $str;
 	}
 }
+
+class VGlobalAlertsAdmin
+{
+	var $time_now;
+	var $time_tomorrow;
+	
+	function __construct()
+	{
+		$round_numerator = 60 * 60;
+		$one_day = 60 * 60 * 24;
+
+		$this->time_now = ( round ( time() / $round_numerator ) * $round_numerator );
+		$this->time_tomorrow = $this->time_now + $one_day;
+
+		$this->alerts = GlobalAlert::get_alerts();
+	}
+	
+	function Deliver()
+	{
+		ob_start(); ?>
+		<div class="global-alerts-page">
+			<h1>Global Alerts</h1>
+			<div class="global-alerts-form">
+				<form action="global_alerts.php" method="post">
+					<h2>New alert</h2>
+					<dl>
+						<dt>
+							Message
+						</dt>
+						<dd>
+							<input type="text" name="global_alert[message]" required></input>
+						</dd>
+						<dt>
+							Priority
+						</dt>
+						<dd>
+							<select name="global_alert[priority]">
+								<option class="global-alert-priority-3" value="3">Urgent</option>
+								<option class="global-alert-priority-2" value="2">Important</option>
+								<option class="global-alert-priority-1" value="1">Low-priority</option>
+								<option class="global-alert-priority-0" value="0">None</option>
+							</select>
+						</dd>
+						<dt>
+							Start-time
+						</dt>
+						<dd>
+							<input type="datetime-local" name="global_alert[start_time]" value="<?= date("Y-m-d H:i:s O",$this->time_now) ?>" required></input>
+						</dd>
+						<dt>
+							End-time
+						</dt>
+						<dd>
+							<input type="datetime-local" name="global_alert[end_time]" value="<?= date("Y-m-d H:i:s O",$this->time_tomorrow) ?>" required></input>
+						</dd>
+					</dl>
+					<p>
+						<input type="submit" value="Create"></input>
+					</p>
+				</form>
+			</div>
+			<div class="global-alerts-list">
+				<h2>Previous alerts</h2>
+				<?php if($this->alerts != NULL): ?>
+					<table class="table">
+						<thead>
+							<tr>
+								<th id="id">ID</th>
+								<th id="message">Message</th>
+								<th id="priority">Priority</th>
+								<th id="start-time">Start-time</th>
+								<th id="end-time">End-time</th>
+								<th id="buttons">Buttons</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach($this->alerts as $alert): ?>
+								<tr>
+									<td headers="id">
+										<?= $alert->m_id ?>
+									</td>
+									<td headers="message">
+										<?= $alert->m_message ?>
+									</td>
+									<td headers="priority">
+										<?= $alert->m_priority ?>
+									</td>
+									<td headers="start-time">
+										<?= $alert->m_start_time ?>
+									</td>
+									<td headers="end-time">
+										<?= $alert->m_end_time ?>
+									</td>
+									<td headers="buttons">
+										edit, extend, expire, delete
+									</td>
+								</tr>
+							<?php endforeach ?>
+						</tbody>
+					</table>
+				<?php else: ?>
+					<p>No previous alerts found</p>
+				<?php endif ?>
+			</div>
+		</div>
+		<? return ob_get_clean();
+	}
+}
+
 ?>

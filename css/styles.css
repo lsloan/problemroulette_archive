@@ -502,3 +502,30 @@ background-color: #e5e5e5;
 	margin-left:  40px;
 	margin-right: 40px;
 }
+.global-alerts-page {
+	padding:20px;
+}
+.global-alert-priority-3 {
+	color: white;
+	background-color: red;
+	padding: 8px 40px;
+	border-bottom: 2px solid white;
+}
+.global-alert-priority-2 {
+	color: white;
+	background-color: blue;
+	padding: 8px 40px;	
+	border-bottom: 2px solid white;	
+}
+.global-alert-priority-1 {
+	color: white;
+	background-color: gray;
+	padding: 8px 40px;	
+	border-bottom: 2px solid white;	
+}
+.global-alert-priority-0 {
+	color: black;
+	background-color: white;
+	padding: 8px 40px;	
+	border-bottom: 2px solid white;	
+}

@@ -544,6 +544,10 @@ Class MTabNav
 		{
 			$this->m_pages['Stats Export'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
 		}
+		if($usrmgr->m_user->admin == 1)
+		{
+			$this->m_pages['Global Alerts'] = $GLOBALS["DOMAIN"] . 'global_alerts.php';
+		}
   }
 }
 Class MCourseTopicNav
@@ -1349,6 +1353,62 @@ Class MStatsFile
 
 	}
 
+}
+
+class GlobalAlert
+{
+	var $m_id;
+	var $m_message;
+	var $m_priority;
+	var $m_start_time;
+	var $m_end_time;
+
+	function __construct($id, $message, $priority, $start_time, $end_time)
+	{
+		$this->m_id = $id;
+		$this->m_message = $message;
+		$this->m_priority = $priority;
+		$this->m_start_time = $start_time;
+		$this->m_end_time = $end_time;
+	}
+
+	function save() {
+		global $dbmgr;
+		$query =
+			"INSERT INTO global_alerts (message, priority,start_time,end_time) ".
+			"VALUES (:message,:priority,:start_time,:end_time)";
+		$bindings = array(
+			":message"      	=> $this->m_message,
+			":priority"       => $this->m_priority,
+			":start_time"   	=> $this->m_start_time,
+			":end_time" 			=> $this->m_end_time
+			);
+		$res = $dbmgr->exec_query( $query , $bindings );
+	}
+
+	public static function get_alerts() {
+		global $dbmgr;
+		$query = "select * from global_alerts order by start_time desc, end_time desc, message";
+		$bindings = array();
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$messages = array();
+		foreach ($res as $key => $value) {
+			$messages[] = new GlobalAlert($value['id'], $value['message'], $value['priority'], $value['start_time'], $value['end_time']);
+		}
+		return $messages;
+	}
+
+	public static function current_alerts() {
+		global $dbmgr;
+		$query = "select * from global_alerts where start_time < now() and end_time > now() order by priority desc, start_time desc";
+		$bindings = array();
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$messages = array();
+		foreach ($res as $key => $value) {
+			$messages[] = new GlobalAlert($value['id'], $value['message'], $value['priority'], $value['start_time'], $value['end_time']);
+		}
+		return $messages;
+	}
 }
 
 ?>
