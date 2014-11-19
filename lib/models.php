@@ -1365,10 +1365,9 @@ class GlobalAlert
 
 	function __construct($id, $message, $priority, $start_time, $end_time)
 	{
-		$whitelist = "<b><em>";
 		date_default_timezone_set('America/New_York');
 		$this->m_id = $id;
-		$this->m_message = strip_tags($message, $whitelist);
+		$this->m_message = strip_tags($message);
 		$this->m_priority = $priority;
 		$this->m_start_time = $start_time;
 		$this->m_end_time = $end_time;
