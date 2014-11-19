@@ -454,23 +454,15 @@ Class MTopic
 		$dbmgr->exec_query($query, $bindings);
 	}
 	
-	public static function remove_problem_topics_notworking($prob_id, $topic_ids)
-	{
+	public static function remove_problem_topics($prob_id, $topic_ids)
+	{ # $topic_ids is an array of ids
 		global $dbmgr;
 		$tids = implode(',', $topic_ids);
-		$query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id AND topic_id IN (:topic_ids)";
-		$bindings = array(":prob_id"=>$prob_id, ":topic_ids"=>$tids);
+		// $query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id AND topic_id IN (:topic_ids)";
+		$query = "DELETE FROM 12m_topic_prob WHERE problem_id = ".$prob_id." AND topic_id in (".$tids.")";
+		// $bindings = array(":prob_id"=>$prob_id, ":topic_ids"=>$tids);
+		$bindings = array();
 		$dbmgr->exec_query($query, $bindings);
-	}
-
-	public static function remove_problem_topics($prob_id, $topic_ids)
-	{
-		global $dbmgr;
-		foreach ($topic_ids as $val) {
-			$query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id AND topic_id = :tid";
-			$bindings = array(":prob_id"=>$prob_id, ":tid"=>$val);
-			$dbmgr->exec_query($query, $bindings);
-		}
 	}
 
 	static function alphabetize($a,$b)
