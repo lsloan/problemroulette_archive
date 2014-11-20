@@ -67,13 +67,12 @@ $selected_topic_id = MDirector::get_selected_topic_history();
 
 //generate array of problem objects
 $problem_library_list = MDirector::get_problem_library_list($selected_course_id,$selected_topic_id);
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // page construction
 $head = new CHeadCSSJavascript("Problem Library", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problem Library'));
-$content = new VProblemLibrary(array_unique($problem_library_list, SORT_REGULAR));
+$content = new VProblemLibrary($problem_library_list);
 $page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html

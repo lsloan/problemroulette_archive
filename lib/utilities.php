@@ -20,7 +20,7 @@ function MakeArray($variable) {
 
 // this creates options for a select input. $array contains  key, value
 // where the key is the option label and the value is the option value
-function MakeSelectOptions($array, $curlabel)
+function MakeSelectOptions($array, $curlabel='')
 {
   foreach ($array as $key => $value)
   {

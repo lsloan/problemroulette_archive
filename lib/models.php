@@ -267,7 +267,35 @@ Class MProblem
 		{
 			return Null;
 		}
-	}	
+	}
+
+	public static function get_unique_problems_in_course($class_id)
+	{
+		global $usrmgr;
+		global $dbmgr;
+		$bindings = array();
+		if (isset($class_id))
+		{
+			$selectquery = "SELECT distinct problem_id ".
+						   "FROM 12m_topic_prob tp, 12m_class_topic ct ".
+ 						   "WHERE ct.class_id = :class_id and ct.topic_id = tp.topic_id ";
+			$bindings[":class_id"]= $class_id;
+			$res = $dbmgr->fetch_assoc($selectquery,$bindings);
+			$numrows = count($res);
+
+			$all_problems_in_topic = array();
+			for ($i=0; $i<$numrows; $i++)
+			{
+				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
+			}
+			usort($all_problems_in_topic, function($a, $b) {return strcasecmp($a->m_prob_name, $b->m_prob_name);});
+			return $all_problems_in_topic;
+		}
+		else
+		{
+			return Null;
+		}
+	}
 }
 
 Class MCourse
@@ -756,14 +784,7 @@ Class MDirector
 				//12m_class_topic -> list of topics -> 12m_topic_prob -> list of probs
 				$topic_list = MTopic::get_all_topics_in_course($selected_course_id);
 				$problem_library_list = array();
-				for ($i=0;$i<count($topic_list);$i++)
-				{
-					$temp = MProblem::get_all_problems_in_topic_with_exclusion($topic_list[$i]->m_id);
-					for ($j=0;$j<count($temp);$j++)
-					{
-						$problem_library_list[] = $temp[$j];
-					}
-				}
+				$problem_library_list = MProblem::get_unique_problems_in_course($selected_course_id);
 			}
 		}
 		else
