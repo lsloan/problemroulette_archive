@@ -14,8 +14,8 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
-if (!extension_loaded('json')) { 
-    dl('json.so'); 
+if (!extension_loaded('json')) {
+    dl('json.so');
 }
 
 session_start();
