@@ -551,7 +551,7 @@ class VProblemLibrary
 					}
 					$str .= "
 				</select>
-				(select course first)
+				<span class='label-addendum'>(select course first)</span>
 			</p>
 			<p>
 				<label for='add_problem_name' class='span3 text-right'>
