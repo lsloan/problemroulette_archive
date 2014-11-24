@@ -1613,19 +1613,19 @@ class VProblemEdit
 				$topic_choices[$all_topics_in_course[$j]->m_name] = $all_topics_in_course[$j]->m_id;
 			}
 
-            $str = 
-            "<p class='half-line'>&nbsp;</p>
-            <h1 class='indent10'>Edit Problem Information</h1>
+			$str =
+			"<p class='half-line'>&nbsp;</p>
+			<h1 class='indent10'>Edit Problem Information</h1>
 
-            <form action='' method='POST' class='indent10' id='edit_problem'>
-            <p>
-                <label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
-                <input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
-            </p>
+			<form action='' method='POST' class='indent10' id='edit_problem'>
+			<p>
+			<label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
+			<input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
+			</p>
 
-            <p>
-            	<label for='topic_for_new_problem' class='span2 text-right'>Topic(s)</label>
-            	<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
+			<p>
+			<label for='topic_for_new_problem' class='span2 text-right'>Topic(s)</label>
+			<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
 			";
 
 			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_name);
