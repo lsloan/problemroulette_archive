@@ -18,7 +18,6 @@ class CHeadCSSJavascript{
 		<link href='css/bootstrap.css' rel='stylesheet' media='screen'>
 		<link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
 		<link href='css/styles.css' rel='stylesheet' media='screen'>
-		<link href='css/jquery.simple-dtpicker.css' rel='stylesheet' media='screen'>
 		<script src='js/trackingcode.js'></script>
 		<script src='js/jquery-1.10.1.js'></script>
 		<script src='js/bootstrap.js'></script>
@@ -29,8 +28,6 @@ class CHeadCSSJavascript{
 		<script type='text/javascript' src='js/mytable.js'></script>
 		<script type='text/javascript' src='js/problem.js'></script>
 		<script type='text/javascript' src='js/stats_export.js'></script>
-		<script type='text/javascript' src='js/jquery.simple-dtpicker.js'></script>
-		<script type='text/javascript' src='js/global_alerts.js'></script>
 		<?php if($this->m_cssfile != NULL): ?>
 			<?php foreach((array)$this->m_cssfile as $css): ?>
 				<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
