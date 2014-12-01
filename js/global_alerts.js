@@ -1,13 +1,5 @@
 $(document).ready(function() {
-  $('#global-alerts-start-time').datetimepicker({
-    language: 'en',
-    pick12HourFormat: false,
-    pickSeconds: false
-  });
-  $('#global-alerts-end-time').datetimepicker({
-    language: 'en',
-    pick12HourFormat: false,
-    pickSeconds: false
-  });
+  $('*[name="global_alert[start_time]"]').appendDtpicker();
+  $('*[name="global_alert[end_time]"]').appendDtpicker();
 });
 
