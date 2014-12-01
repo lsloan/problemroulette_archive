@@ -40,7 +40,7 @@ if($usrmgr->m_user->admin == 1)
     }
 
     // page construction
-    $head = new CHeadCSSJavascript("Global Alerts Admin", array('css/bootstrap-datetimepicker.min.css'), array('js/bootstrap-datetimepicker.min.js', 'js/global_alerts.js'));
+    $head = new CHeadCSSJavascript("Global Alerts Admin", array('css/jquery.simple-dtpicker.css'), array('js/jquery.simple-dtpicker.js', 'js/global_alerts.js'));
     $tab_nav = new VTabNav(new MTabNav('Global Alerts'));
     $content = new VGlobalAlertsAdmin();
     $page = new VPageTabs($head, $tab_nav, $content);
