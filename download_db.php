@@ -1,12 +1,8 @@
 <?php
 
-require_once("./include_all_libs.php");
-
-session_start();
-$_SESSION['sesstest'] = 1;
+require_once("setup.php");
 
 // redirect if not staff!
-global $usrmgr;
 $staff = $usrmgr->m_user->staff;
 if ($staff != 1) 
     header('Location: ' . $GLOBALS["DOMAIN"]);

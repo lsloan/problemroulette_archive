@@ -1,8 +1,6 @@
 <?php
 
-require_once("./include_all_libs.php");
-
-session_start();
+require_once("setup.php");
 
 // error_log("Problems");
 // error_log(print_r($_POST, true));
@@ -17,8 +15,6 @@ $c_problem_id = Null;
 $c_start_time = Null;
 $c_end_time = Null;
 $c_answer = Null;
-
-$_SESSION['sesstest'] = 1;
 
 $selected_topics_list_id = Null;
 

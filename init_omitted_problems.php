@@ -1,8 +1,5 @@
 <?php
-require_once("./include_all_libs.php");
-
-global $dbmgr;
-global $usrmgr;
+require_once("setup.php");
 
 function handle_omitted_problems(&$topic_map, $key, $value) {
 

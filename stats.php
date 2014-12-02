@@ -1,9 +1,6 @@
 <?php
 
-require_once("./include_all_libs.php");
-
-session_start();
-$_SESSION['sesstest'] = 1;
+require_once("setup.php");
 
 //logic for course or topic course selector and shown row number selection
 global $usrmgr;

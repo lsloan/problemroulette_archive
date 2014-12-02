@@ -1,7 +1,6 @@
 <?php
-require_once("./include_all_libs.php");
+require_once("setup.php");
 
-session_start();
 // business logic
 //get problem
 if (isset($_POST['problem_info']))

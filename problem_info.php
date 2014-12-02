@@ -1,8 +1,5 @@
 <?php
-require_once("./include_all_libs.php");
-
-session_start();
-$_SESSION['sesstest'] = 1;
+require_once("setup.php");
 
 //get problem
 if (isset($_POST['problem_info']))

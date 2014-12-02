@@ -1,10 +1,6 @@
 <?php
 
-require_once("./include_all_libs.php");
-
-session_start();
-
-global $usrmgr;
+require_once("setup.php");
 
 //get user_id
 $user_id = $usrmgr->m_user->id;

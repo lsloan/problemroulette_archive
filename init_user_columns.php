@@ -1,10 +1,7 @@
 <?php
 
-require_once("./include_all_libs.php");
+require_once("setup.php");
 
-global $dbmgr;
-global $usrmgr;
- 
 function unpackage($input) {
   return unserialize(stripslashes($input));
 }

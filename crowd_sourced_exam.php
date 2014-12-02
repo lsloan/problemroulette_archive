@@ -1,6 +1,6 @@
 <?php
 
-require_once("./include_all_libs.php");
+require_once("setup.php");
 
 $timestamp = time();
 $usrmgr->m_user->SetSelectedCourseId(10);

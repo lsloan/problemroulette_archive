@@ -1,8 +1,6 @@
 <?php
 
-require_once("./include_all_libs.php");
-
-session_start();
+require_once("setup.php");
 
 // populate and use models for business logic on page
 

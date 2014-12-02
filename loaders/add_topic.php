@@ -1,11 +1,8 @@
 <?php
-// paths
-require_once("./paths.inc.php");
-// database
-require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
-$GLOBALS["dbmgr"] = new CDbMgr();
+require_once("setup.php");
+// These loaders are disabled and should be removed.
+exit(1);
 
-global $dbmgr;
 //COURSE TO ADD TO
 //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW(OPTIONAL)
 $course = "MCDB 310";

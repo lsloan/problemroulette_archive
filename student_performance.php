@@ -1,11 +1,6 @@
 <?php
 
-require_once("./include_all_libs.php");
-
-session_start();
-$_SESSION['sesstest'] = 1;
-
-global $usrmgr;
+require_once("setup.php");
 
 $search_username = Null;
 $display_search = 0;
