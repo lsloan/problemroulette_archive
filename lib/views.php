@@ -705,8 +705,16 @@ class VProblemLibrary
 									<td>".$this->v_problem_library_list[$i]->m_prob_ans_count."</td>
 									<td>".$alphabet[$this->v_problem_library_list[$i]->m_prob_correct-1]."</td>
 									<td>".$this->v_problem_library_list[$i]->m_prob_tot_tries."</td>
-									<td>".round($this->v_problem_library_list[$i]->m_prob_tot_correct/$this->v_problem_library_list[$i]->m_prob_tot_tries,3)."</td>
-									<td>".round($this->v_problem_library_list[$i]->m_prob_tot_time/$this->v_problem_library_list[$i]->m_prob_tot_tries,1)."</td>
+									<td>";
+									$trytime = $this->v_problem_library_list[$i]->m_prob_tot_tries;
+									if ($trytime != 0) {
+										$str .= round($this->v_problem_library_list[$i]->m_prob_tot_correct/$this->v_problem_library_list[$i]->m_prob_tot_tries,3)."</td>
+												<td>".round($this->v_problem_library_list[$i]->m_prob_tot_time/$this->v_problem_library_list[$i]->m_prob_tot_tries,1);
+									}
+									else {
+										$str .= "0</td><td>0";
+									};
+									$str .= "</td>
 									<td><a href='".$this->v_problem_library_list[$i]->m_prob_solution."'>".$this->v_problem_library_list[$i]->m_prob_solution."</a></td>
 								</tr>
 							";
@@ -1595,11 +1603,13 @@ class VProblemEdit
 			{
 				if ($i == $this->v_problem->m_prob_ans_count)
 				{
-					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+					$ans_submit_frac_count_string .=
+						$ans_submit_count_sum != 0 ? ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum : '0';
 				}
 				else
 				{
-					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+					$ans_submit_frac_count_string .=
+						$ans_submit_count_sum != 0 ? ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum : '0' .",";
 				}
 				$histogram_ans_string .= $alphabet[($i-1)]."|";
 			}
@@ -1625,7 +1635,7 @@ class VProblemEdit
 
 			<p>
 			<label for='topic_for_new_problem' class='span2 text-right'>Topic(s)</label>
-			<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
+			<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' >
 			";
 
 			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_name);

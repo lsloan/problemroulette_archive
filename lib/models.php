@@ -89,16 +89,6 @@ Class MProblem
 		}
 	}
 	
-	function get_prob_class_id($prob_id)
-	{
-		global $dbmgr;
-		$query = "SELECT c.id from class c, 12m_topic_prob tp, 12m_class_topic ct ".
-				  "WHERE tp.problem_id = :prob_id AND ct.topic_id = tp.topic_id AND c.id = ct.class_id";
-		$bindings = array( ":prob_id"=>$prob_id);
-		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		$pid = $res[0]['id'];
-		return $pid;
-	}
 
 	function get_problem_topics($prob_id)
 	{
@@ -296,6 +286,17 @@ Class MProblem
 		{
 			return Null;
 		}
+	}
+
+	public static function get_prob_class_id($prob_id)
+	{
+		global $dbmgr;
+		$query = "SELECT c.id from class c, 12m_topic_prob tp, 12m_class_topic ct ".
+				  "WHERE tp.problem_id = :prob_id AND ct.topic_id = tp.topic_id AND c.id = ct.class_id";
+		$bindings = array( ":prob_id"=>$prob_id);
+		$res = $dbmgr->fetch_assoc( $query , $bindings );
+		$pid = $res[0]['id'];
+		return $pid;
 	}
 }
 

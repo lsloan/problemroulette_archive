@@ -21,7 +21,7 @@ function MakeArray($variable) {
 // this creates options for a select input. $array contains  key, value
 // where the key is the option label and the value is the option value
 function MakeSelectOptions($array, $curlabel='')
-{
+{ $str = '';
   foreach ($array as $key => $value)
   {
     $str .= "<option";
@@ -35,7 +35,7 @@ function MakeSelectOptions($array, $curlabel='')
 
 // curlabel is array of current topics the problem is in, $array is the entire list of topics
 function MakeSelectTopicOptions($array, $curlabel)
-{
+{ $str = '';
   foreach ($array as $key => $value)
   {
     $str .= "<option";
