@@ -13,6 +13,7 @@ $migrations = array(
 );
 
 require_once("setup.php");
+require_once($GLOBALS["DIR_LIB"]."migration.php");
 
 $Q = array();
 $Q['setup'] =<<<SQL
