@@ -706,7 +706,7 @@ Class MDirector
 		{
 			$usrmgr->m_user->SetSelectedCourseId(Null);
 		}
-		if (is_array($usrmgr->m_user->selected_topics_list))
+		if (is_array($usrmgr->m_user->selected_topics_list) && count($usrmgr->m_user->selected_topics_list) > 0 )
 		{
 			if (min(array_map("intval",$usrmgr->m_user->selected_topics_list)) == 0)
 			{
