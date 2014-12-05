@@ -1,5 +1,7 @@
 <?php
 error_reporting(E_ALL);
+// Set display_errors in development to view them in browser
+// ini_set('display_errors','1');
 
 // all the global stuff goes hear and gets included on every page
 #$GLOBALS["SQL_SERVER"] = "localhost";

@@ -1,0 +1,2 @@
+# Set this to an appropriate URL for hosting to use the 404 page
+#ErrorDocument 404 /problemroulette/404.php

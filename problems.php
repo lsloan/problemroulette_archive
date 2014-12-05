@@ -1,20 +1,6 @@
 <?php
-// paths
-require_once("./paths.inc.php");
-// database
-require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
-$GLOBALS["dbmgr"] = new CDbMgr();
-// user manager
-require_once( $DIR_LIB."usrmgr.php" );
-$GLOBALS["usrmgr"] = new UserManager();
-// utilities
-require_once($GLOBALS["DIR_LIB"]."utilities.php");
-$args = GrabAllArgs();
-// application objects
-require_once($GLOBALS["DIR_LIB"]."models.php");
-require_once($GLOBALS["DIR_LIB"]."views.php");
 
-session_start();
+require_once("setup.php");
 
 // error_log("Problems");
 // error_log(print_r($_POST, true));
@@ -29,8 +15,6 @@ $c_problem_id = Null;
 $c_start_time = Null;
 $c_end_time = Null;
 $c_answer = Null;
-
-$_SESSION['sesstest'] = 1;
 
 $selected_topics_list_id = Null;
 
