@@ -504,66 +504,84 @@ class VProblemLibrary
 			</form>
 			<form id='add_problem_form' action='' method='POST' class='add-CTP-form'>
 			<p>
-			<h4 class='add-CTP-title'>Add Problem</h4>
+				<h4 class='add-CTP-title'>Add Problem</h4>
 			</p>
 			<p>
-			Select a Course
-			<select id='course_for_new_problem' name='course_for_new_problem' class='input-error'>
-			<option value='0' selected='selected'>Select One</option>";
-			for ($i=0; $i<$num_courses; $i++)
-			{
-				$all_topics_in_course = Array();
-				$all_topics_in_course_id = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
-				$topic_count = count($all_topics_in_course);
-				for($j=0; $j<$topic_count; $j++)
-				{
-					$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
-				}
-				
-				$str .= "<option 
-				value='".$all_courses_with_topics[$i]->m_id."'>
-				".$all_courses_with_topics[$i]->m_name."
-				</option>
+				<label for='course_for_new_problem' class='span3 text-right'>Select a Course</label>
+				<select id='course_for_new_problem' name='course_for_new_problem' class='input-error'>
+					<option value='0' selected='selected'>Select One</option>";
+					for ($i=0; $i<$num_courses; $i++)
+					{
+						$all_topics_in_course = Array();
+						$all_topics_in_course_id = Array();
+						$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+						$topic_count = count($all_topics_in_course);
+						for($j=0; $j<$topic_count; $j++)
+						{
+							$all_topics_in_course_id[$j] = $all_topics_in_course[$j]->m_id;
+						}
+
+						$str .= "<option
+						value='".$all_courses_with_topics[$i]->m_id."'>
+						".$all_courses_with_topics[$i]->m_name."
+						</option>
+						";
+					}
+					$str .= "
+				</select>
+			</p>
+			<p>
+				<label for='topic_for_new_problem' class='span3 text-right'>
+					Select Topic(s)
+				</label>
+				<select multiple disabled='disabled' class='input-error' name='topic_for_new_problem[]' id='topic_for_new_problem'>
+					<option value='0' selected='selected'>Select Topic(s)</option>";
+					for ($i=0; $i<$num_courses; $i++)
+					{
+						$all_topics_in_course = Array();
+						$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+						$num_topics = count($all_topics_in_course);
+						for ($j=0; $j<$num_topics; $j++)
+						{
+							$str .= "<option
+							value='".$all_topics_in_course[$j]->m_id."'>
+							".$all_topics_in_course[$j]->m_name."
+							</option>";
+						}
+					}
+					$str .= "
+				</select>
+				<span class='label-addendum'>(select course first)</span>
+			</p>
+			<p>
+				<label for='add_problem_name' class='span3 text-right'>
+					Problem Name
+				</label>
+				<input type='text' placeholder='Problem Name' id='add_problem_name' name='add_problem_name' class='input-error input-xlarge' maxlength='200'/>
+				 (alphanumeric and spaces only)
+			</p>
+			<p>
+				<label for='add_problem_url' class='span3 text-right'>Problem URL</label>
+				<input type='text' placeholder='Problem URL' id='add_problem_url' name='add_problem_url' class='input-error input-xxlarge'  maxlength='300'/>
+			</p>
+            <p>
+                <label for='add_problem_num_ans' class='span3 text-right'>Number of Answers</label>
+				<select required id='add_problem_num_ans' name='add_problem_num_ans' class='span1 left'>
 				";
-			}
-			$str .= "
-			</select>
+				 $str .= MakeSelectOptions(AnswerNumbers());
+				$str .="</select>
 			</p>
+
 			<p>
-			Select a Topic (must select course): 
-			<select disabled='disabled' class='input-error' name='topic_for_new_problem' id='topic_for_new_problem'>
-			<option value='0' selected='selected'>Select One</option>";
-			for ($i=0; $i<$num_courses; $i++)
-			{
-				$all_topics_in_course = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
-				$num_topics = count($all_topics_in_course);
-				for ($j=0; $j<$num_topics; $j++)
-				{
-					$str .= "<option 
-					value='".$all_topics_in_course[$j]->m_id."'>
-					".$all_topics_in_course[$j]->m_name."
-					</option>";
-				}
-			}
-			$str .= "
-			</select>
-			</p>
+                <label for='add_problem_cor_ans' class='span3 text-right'>Correct Answer Number</label>
+                <select required type='text'  id='add_problem_cor_ans' name='add_problem_cor_ans' class='span1 left'>
+				";
+				$str .= MakeSelectOptions(AnswerNumbers());
+				$str .="</select>
+            </p>
 			<p>
-			Problem Name (alphanumeric and spaces only): <input type='text' placeholder='Problem Name' id='add_problem_name' name='add_problem_name' class='input-error' maxlength='200'/>
-			</p>
-			<p>
-			Problem URL: <input type='text' placeholder='Problem URL' id='add_problem_url' name='add_problem_url' class='input-error' maxlength='300'/>
-			</p>
-			<p>
-			Number of Answer Choices (numeric): <input type='text' placeholder='Number of Answer Choices' id='add_problem_num_ans' name='add_problem_num_ans' class='input-error'/>
-			</p>
-			<p>
-			Correct Answer (numeric, 1 for first answer, 2 for second, etc.): <input type='text' placeholder='Correct Answer' id='add_problem_cor_ans' name='add_problem_cor_ans' class='input-error'/>
-			</p>
-			<p>
-			Solution URL (optional): <input type='text' placeholder='Solution URL' id='add_problem_solution_url' name='add_problem_solution_url' maxlength='300'/>
+				<label for='add_problem_solution_url' class='span3 text-right'>Solution URL (optional)</label>
+			    <input type='text' placeholder='Solution URL' id='add_problem_solution_url' name='add_problem_solution_url' class='input-xxlarge' maxlength='300'/>
 			</p>
 			<p>
 			<button class='btn' type='submit' id='submit_add_problem' disabled='disabled'>Submit</button>
@@ -573,6 +591,7 @@ class VProblemLibrary
 			<h4 class='summary-header'>
 				Problem Library
 			</h4>
+
 			<div class='div-history-dropdown-course-topic'>
 			Filter by Course: 
 			<form name='PL_dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
@@ -657,7 +676,7 @@ class VProblemLibrary
 				</div>
 				<div>
 				<form action='problem_edit.php' method='POST' >
-				<table id='historyTable' class='tablesorter table table-condensed table-striped history'>
+				<table id='historyTable2' class='tablesorter table table-condensed table-striped history'>
 					<thead>
 						<tr>
 							<th>Name (click to edit)</th>
@@ -670,15 +689,14 @@ class VProblemLibrary
 						</tr>
 					</thead>
 					<tbody>
-					<td class='invis'></td>
-					<td class='invis'></td>
-					<td class='invis'></td>
-					<td class='invis'></td>
-					<td class='invis'></td>
-					<td class='invis'></td>
-					<td class='invis'></td>
+						<td class='invis'></td>
+						<td class='invis'></td>
+						<td class='invis'></td>
+						<td class='invis'></td>
+						<td class='invis'></td>
+						<td class='invis'></td>
+						<td class='invis'></td>
 						";
-						//<table body>
 						for ($i=0; $i<count($this->v_problem_library_list); $i++)
 						{
 							$str .= "
@@ -687,13 +705,20 @@ class VProblemLibrary
 									<td>".$this->v_problem_library_list[$i]->m_prob_ans_count."</td>
 									<td>".$alphabet[$this->v_problem_library_list[$i]->m_prob_correct-1]."</td>
 									<td>".$this->v_problem_library_list[$i]->m_prob_tot_tries."</td>
-									<td>".round($this->v_problem_library_list[$i]->m_prob_tot_correct/$this->v_problem_library_list[$i]->m_prob_tot_tries,3)."</td>
-									<td>".round($this->v_problem_library_list[$i]->m_prob_tot_time/$this->v_problem_library_list[$i]->m_prob_tot_tries,1)."</td>
+									<td>";
+									$trytime = $this->v_problem_library_list[$i]->m_prob_tot_tries;
+									if ($trytime != 0) {
+										$str .= round($this->v_problem_library_list[$i]->m_prob_tot_correct/$this->v_problem_library_list[$i]->m_prob_tot_tries,3)."</td>
+												<td>".round($this->v_problem_library_list[$i]->m_prob_tot_time/$this->v_problem_library_list[$i]->m_prob_tot_tries,1);
+									}
+									else {
+										$str .= "0</td><td>0";
+									};
+									$str .= "</td>
 									<td><a href='".$this->v_problem_library_list[$i]->m_prob_solution."'>".$this->v_problem_library_list[$i]->m_prob_solution."</a></td>
 								</tr>
 							";
 						}
-						//</table body>
 						$str .= "
 					</tbody>
 				</table>
@@ -1578,11 +1603,13 @@ class VProblemEdit
 			{
 				if ($i == $this->v_problem->m_prob_ans_count)
 				{
-					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum;
+					$ans_submit_frac_count_string .=
+						$ans_submit_count_sum != 0 ? ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum : '0';
 				}
 				else
 				{
-					$ans_submit_frac_count_string .= ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum.",";
+					$ans_submit_frac_count_string .=
+						$ans_submit_count_sum != 0 ? ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum : '0' .",";
 				}
 				$histogram_ans_string .= $alphabet[($i-1)]."|";
 			}
@@ -1596,22 +1623,22 @@ class VProblemEdit
 				$topic_choices[$all_topics_in_course[$j]->m_name] = $all_topics_in_course[$j]->m_id;
 			}
 
-            $str = 
-            "<p class='half-line'>&nbsp;</p>
-            <h1 class='indent10'>Edit Problem Information</h1>
+			$str =
+			"<p class='half-line'>&nbsp;</p>
+			<h1 class='indent10'>Edit Problem Information</h1>
 
-            <form action='' method='POST' class='indent10' id='edit_problem'>
-            <p>
-                <label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
-                <input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
-            </p>
+			<form action='' method='POST' class='indent10' id='edit_problem'>
+			<p>
+			<label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
+			<input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
+			</p>
 
-            <p>
-            	<label for='topic_for_new_problem' class='span2 text-right'>Topic</label>
-            	<select class='span4' required name='topic_for_new_problem' id='topic_for_new_problem' value='".$this->v_problem->m_prob_topic_name."'>
+			<p>
+			<label for='topic_for_new_problem' class='span2 text-right'>Topic(s)</label>
+			<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' >
 			";
 
-			$str .= MakeSelectOptions($topic_choices, $this->v_problem->m_prob_topic_name);
+			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_name);
 			$str .= "</select></p>
 
             <p>

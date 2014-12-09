@@ -197,7 +197,7 @@ $(document).ready(function()
             var topics_in_course_string = $("#"+course_id+"").val();
             var topics_in_course = topics_in_course_string.split(",");
             var num_topics = topics_in_course.length;
-                        
+            $("#topic_for_new_problem").attr('size', num_topics+1);
             //show all topics in course
             for (var i=0; i<num_topics; i++)
             {

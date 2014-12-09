@@ -52,7 +52,6 @@ $selected_topic_id = MDirector::get_selected_topic_history();
 
 //generate array of problem objects
 $problem_library_list = MDirector::get_problem_library_list($selected_course_id,$selected_topic_id);
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // page construction
