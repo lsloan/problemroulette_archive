@@ -251,7 +251,7 @@ Class MProblem
 			{
 				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
 			}
-			usort($all_problems_in_topic, function($a, $b) {return strcasecmp($a->m_prob_name, $b->m_prob_name);});
+			usort($all_problems_in_topic, "prob_list_sorter");
 			return $all_problems_in_topic;
 		}
 		else
@@ -279,7 +279,7 @@ Class MProblem
 			{
 				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
 			}
-			usort($all_problems_in_topic, function($a, $b) {return strcasecmp($a->m_prob_name, $b->m_prob_name);});
+			usort($all_problems_in_topic, "prob_list_sorter");
 			return $all_problems_in_topic;
 		}
 		else

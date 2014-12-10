@@ -138,5 +138,8 @@ if(! defined("SCANDIR_SORT_NONE")) {
   define("SCANDIR_SORT_NONE", 2);
 }
 
+function prob_list_sorter($a,$b) {
+  return strcasecmp($a->m_prob_name, $b->m_prob_name);
+}
 
 ?>

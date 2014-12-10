@@ -1827,6 +1827,9 @@ class VGlobalAlertsAdmin
 					<p>
 						<input type="submit" value="Create"></input>
 					</p>
+						<small><span class="pull-right">
+							<?php echo 'PHP version: ' . phpversion(); ?>
+						</span></small>
 				</form>
 			</div>
 			<div class="global-alerts-list">
