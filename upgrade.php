@@ -4,13 +4,13 @@
 // Each item should have name and file keys. For example:
 //   array('name' => 'Example', 'file' => 'example.php')
 $migrations = array(
-    array('name' => 'CombineDuplicateProblemData', 'file' => 'combine_duplicate_problem_data.php'),
     array('name' => 'AddAnsCorrectToResponses', 'file' => 'add_ans_correct_to_responses.php'),
     array('name' => 'AddSemestersTable', 'file' => 'add_semesters_table.php'),
     array('name' => 'AddIndexesForStatsExport', 'file' => 'add_indexes_for_stats_export.php'),
     array('name' => 'AddResearcherToUser', 'file' => 'add_researcher_to_user.php'),
     array('name' => 'AddGlobalAlertsTable', 'file' => 'add_global_alerts_table.php'),
-    array('name' => 'AddAdminToUser', 'file' => 'add_admin_to_user.php')
+    array('name' => 'AddAdminToUser', 'file' => 'add_admin_to_user.php'),
+    array('name' => 'CombineDuplicateProblemData', 'file' => 'combine_duplicate_problem_data.php')
 );
 
 require_once("setup.php");
