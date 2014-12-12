@@ -85,7 +85,7 @@ SQL;
 
 $this->find_dupes_in_12m_prob_ans_table =<<<SQL
 create table dup_12m_prob_ans 
-    (select t1.primary_id problem_id, t2.ans_num, sum(count) count  from 
+    (select t1.primary_id problem_id, t2.ans_num, sum(t2.count) count from 
     extra_records t1 join 12m_prob_ans t2 on t2.prob_id=t1.other_id 
     group by t1.primary_id, t2.ans_num)
 SQL;

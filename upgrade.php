@@ -45,6 +45,7 @@ $dbmgr->exec_query($Q['setup']);
 $last_run = $dbmgr->fetch_assoc($Q['last_run']);
 $last_run = $last_run[0];
 $newest = end((array_values($migrations)));
+echo "<pre>\n";
 
 if (!isset($last_run['name']) || $last_run['name'] != $newest['name']) {
 
@@ -66,6 +67,8 @@ if (!isset($last_run['name']) || $last_run['name'] != $newest['name']) {
         sleep(1); //to ensure different timestamps
     }
 }
+
+echo "\n</pre>\n";
 
 ?>
 All migrations have been run.
