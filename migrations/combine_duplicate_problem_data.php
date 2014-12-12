@@ -12,7 +12,7 @@ select count(*) problems_with_duplicates from  (select url, count(*) count from 
 SQL;
 
 $this->count_records_to_be_removed =<<<SQL
-select sum(t1.count) records_to_be_removed from  (select url, count(*) count from problems group by url) t1 where t1.count > 1
+select (sum(t1.count) - count(*)) records_to_be_removed from  (select url, count(*) count from problems group by url) t1 where t1.count > 1
 SQL;
 
 $this->add_dupes_table =<<<SQL
