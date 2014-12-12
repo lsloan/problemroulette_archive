@@ -11,6 +11,10 @@ $this->count_duplicates =<<<SQL
 select count(*) problems_with_duplicates from  (select url, count(*) count from problems group by url) t1 where t1.count > 1
 SQL;
 
+$this->count_records_to_be_removed =<<<SQL
+select sum(t1.count) records_to_be_removed from  (select url, count(*) count from problems group by url) t1 where t1.count > 1
+SQL;
+
 $this->add_dupes_table =<<<SQL
 CREATE TABLE duplicates (problem_id int(11), dupes int(4), url varchar(300), ans_count int(11), tot_tries int(11), tot_correct int(11), tot_time int(11)) select t1.url, t1.problem_id, t1.dupes, t1.ans_count, t1.tot_tries, t1.tot_correct, t1.tot_time from  (select url, min(id) problem_id, count(*) dupes, sum(ans_count) ans_count, sum(tot_tries) tot_tries, sum(tot_correct) tot_correct, sum(tot_time) tot_time from problems group by url) t1 where t1.dupes > 1
 SQL;
@@ -51,6 +55,7 @@ SQL;
     function migrate() {
         $before1 = $this->db->fetch_assoc($this->count_problems);
         $before2 = $this->db->fetch_assoc($this->count_duplicates);
+        $before3 = $this->db->fetch_assoc($this->count_records_to_be_removed);
         $this->db->exec_query($this->add_dupes_table);
         $this->db->exec_query($this->add_extras_table);
         $this->db->exec_query($this->update_12m_topic_prob);
@@ -66,6 +71,7 @@ SQL;
         print "\nbefore:\n";
         print_r($before1);
         print_r($before2);
+        print_r($before3);
         print "after:\n";
         print_r($after1);
         print_r($after2);
