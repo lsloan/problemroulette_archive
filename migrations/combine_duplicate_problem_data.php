@@ -7,6 +7,9 @@ class CombineDuplicateProblemData extends Migration {
         print "  Found ".$records_to_be_removed." records to be removed.\n";
         print "  Ended with ".$summary[1]['problems_count']." records.\n\n";
 
+        print "  Records with duplicates before: ".$summary[0]['records_with_duplicates']."\n";
+        print "   Records with duplicates after: ".$summary[1]['records_with_duplicates']."\n\n";
+
         print "  Comparing responses from before and after:\n\n";
         print "    Total responses with answer A\n";
         print "             Before:   ".$summary[0]['responses_answer_1']."\n";
