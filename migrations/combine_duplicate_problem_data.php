@@ -10,6 +10,20 @@ class CombineDuplicateProblemData extends Migration {
         print "  Records with duplicates before: ".$summary[0]['records_with_duplicates']."\n";
         print "   Records with duplicates after: ".$summary[1]['records_with_duplicates']."\n\n";
 
+        print "  Comparing aggregate stats for all problems from before and after:\n\n";
+        print "    Total number of answers for all problems\n";
+        print "             Before:   ".$summary[0]['problems_ans_count']."\n";
+        print "              After:   ".$summary[1]['problems_ans_count']."\n\n";
+        print "    Total number of tries for all problems\n";
+        print "             Before:   ".$summary[0]['problems_tot_tries']."\n";
+        print "              After:   ".$summary[1]['problems_tot_tries']."\n\n";
+        print "    Total number of correct answers for all problems\n";
+        print "             Before:   ".$summary[0]['problems_tot_correct']."\n";
+        print "              After:   ".$summary[1]['problems_tot_correct']."\n\n";
+        print "    Total time for all problems\n";
+        print "             Before:   ".$summary[0]['problems_tot_time']."\n";
+        print "              After:   ".$summary[1]['problems_tot_time']."\n\n";
+
         print "  Comparing responses from before and after:\n\n";
         print "    Total responses with answer A\n";
         print "             Before:   ".$summary[0]['responses_answer_1']."\n";
@@ -39,7 +53,6 @@ class CombineDuplicateProblemData extends Migration {
         print "             Before:   ".$summary[0]['responses_answer_7']."\n";
         print "              After:   ".$summary[1]['responses_answer_7']."\n";
         print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_7']."\n\n";
-
     }
 
     function init() {
@@ -210,7 +223,6 @@ SQL;
         $after3 = $this->db->fetch_assoc($this->show_check_totals);
         ob_start();
         $this->report_results($after3, $before3[0]['records_to_be_removed']);
-        print_r($after3);
         $msg = ob_get_clean();
         $this->info($msg);
     }
