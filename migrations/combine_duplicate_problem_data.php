@@ -1,6 +1,43 @@
 <?php
 
 class CombineDuplicateProblemData extends Migration {
+    function report_results($summary, $records_to_be_removed) {
+        print "Results of 'CombineDuplicateProblemData' Migration\n\n";
+        print "  Started with ".$summary[0]['problems_count']." records.\n";
+        print "  Found ".$records_to_be_removed." records to be removed.\n";
+        print "  Ended with ".$summary[1]['problems_count']." records.\n\n";
+
+        print "  Comparing responses from before and after:\n\n";
+        print "    Total responses with answer A\n";
+        print "             Before:   ".$summary[0]['responses_answer_1']."\n";
+        print "              After:   ".$summary[1]['responses_answer_1']."\n";
+        print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_1']."\n\n";
+        print "    Total responses with answer B\n";
+        print "             Before:   ".$summary[0]['responses_answer_2']."\n";
+        print "              After:   ".$summary[1]['responses_answer_2']."\n";
+        print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_2']."\n\n";
+        print "    Total responses with answer C\n";
+        print "             Before:   ".$summary[0]['responses_answer_3']."\n";
+        print "              After:   ".$summary[1]['responses_answer_3']."\n";
+        print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_3']."\n\n";
+        print "    Total responses with answer D\n";
+        print "             Before:   ".$summary[0]['responses_answer_4']."\n";
+        print "              After:   ".$summary[1]['responses_answer_4']."\n";
+        print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_4']."\n\n";
+        print "    Total responses with answer E\n";
+        print "             Before:   ".$summary[0]['responses_answer_5']."\n";
+        print "              After:   ".$summary[1]['responses_answer_5']."\n";
+        print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_5']."\n\n";
+        print "    Total responses with answer F\n";
+        print "             Before:   ".$summary[0]['responses_answer_6']."\n";
+        print "              After:   ".$summary[1]['responses_answer_6']."\n";
+        print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_6']."\n\n";
+        print "    Total responses with answer G\n";
+        print "             Before:   ".$summary[0]['responses_answer_7']."\n";
+        print "              After:   ".$summary[1]['responses_answer_7']."\n";
+        print "       12m_prob_ans:   ".$summary[1]['12m_prob_ans_ans_num_7']."\n\n";
+
+    }
 
     function init() {
 $this->drop_migration_tables =<<<SQL
@@ -169,7 +206,7 @@ SQL;
         $this->db->exec_query($this->add_record_to_check_totals, array('name' => 'after'));
         $after3 = $this->db->fetch_assoc($this->show_check_totals);
         ob_start();
-        print_r($before3);
+        $this->report_results($after3, $before3[0]['records_to_be_removed']);
         print_r($after3);
         $msg = ob_get_clean();
         $this->info($msg);
