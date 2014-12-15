@@ -3,6 +3,14 @@
 class CombineDuplicateProblemData extends Migration {
 
     function init() {
+$this->drop_migration_tables =<<<SQL
+drop table if exists check_totals;
+drop table if exists duplicates;
+drop table if exists dup_12m_prob_ans;
+drop table if exists extra_records;
+drop table if exists 12m_prob_ans_backup;
+SQL;
+
 $this->add_check_totals_table =<<<SQL
 create table check_totals (
     name varchar(10), 
@@ -140,6 +148,7 @@ SQL;
     function migrate() {
         $before3 = $this->db->fetch_assoc($this->count_records_to_be_removed);
 
+        $this->db->exec_query($this->drop_migration_tables);
         $this->db->exec_query($this->add_check_totals_table);
         $this->db->exec_query($this->add_record_to_check_totals, array('name' => 'before'));
 
