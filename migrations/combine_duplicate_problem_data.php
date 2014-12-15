@@ -11,9 +11,6 @@ class CombineDuplicateProblemData extends Migration {
         print "   Records with duplicates after: ".$summary[1]['records_with_duplicates']."\n\n";
 
         print "  Comparing aggregate stats for all problems from before and after:\n\n";
-        print "    Total number of answers for all problems\n";
-        print "             Before:   ".$summary[0]['problems_ans_count']."\n";
-        print "              After:   ".$summary[1]['problems_ans_count']."\n\n";
         print "    Total number of tries for all problems\n";
         print "             Before:   ".$summary[0]['problems_tot_tries']."\n";
         print "              After:   ".$summary[1]['problems_tot_tries']."\n\n";
@@ -69,7 +66,6 @@ create table check_totals (
     name varchar(10), 
     problems_count int(11),
     records_with_duplicates int(11),
-    problems_ans_count bigint(21), 
     problems_tot_tries bigint(21), 
     problems_tot_correct bigint(21), 
     problems_tot_time bigint(21),
@@ -91,8 +87,8 @@ create table check_totals (
 SQL;
 
 $this->add_record_to_check_totals =<<<SQL
-insert into check_totals (name, problems_ans_count, problems_tot_tries, problems_tot_correct, problems_tot_time) 
-    select :name, sum(ans_count) problems_ans_count, sum(tot_tries) problems_tot_tries, 
+insert into check_totals (name, problems_tot_tries, problems_tot_correct, problems_tot_time) 
+    select :name, sum(tot_tries) problems_tot_tries, 
     sum(tot_correct) problems_tot_correct, sum(tot_time) problems_tot_time 
     from problems;
 update check_totals set problems_count=(select count(*) from problems) where name=:name;
@@ -142,13 +138,12 @@ CREATE TABLE duplicates (
     problem_id int(11), 
     dupes int(11), 
     url varchar(300), 
-    ans_count int(11), 
     tot_tries int(11), 
     tot_correct int(11), 
     tot_time int(11)
-) select t1.problem_id, t1.url, t1.dupes, t1.ans_count, t1.tot_tries, t1.tot_correct, t1.tot_time from  
-    (select url, min(id) problem_id, count(*) dupes, sum(ans_count) ans_count, 
-        sum(tot_tries) tot_tries, sum(tot_correct) tot_correct, sum(tot_time) tot_time 
+) select t1.problem_id, t1.url, t1.dupes, t1.tot_tries, t1.tot_correct, t1.tot_time from  
+    (select url, min(id) problem_id, count(*) dupes, sum(tot_tries) tot_tries, 
+        sum(tot_correct) tot_correct, sum(tot_time) tot_time 
         from problems group by url) t1 
 where t1.dupes > 1
 SQL;
@@ -186,7 +181,7 @@ SQL;
 
 $this->update_problems_table =<<<SQL
 update problems t1 join duplicates t2 on t1.id=t2.problem_id 
-    set t1.ans_count=t2.ans_count, t1.tot_tries=t2.tot_tries, t1.tot_correct=t2.tot_correct, t1.tot_time=t2.tot_time
+    set t1.tot_tries=t2.tot_tries, t1.tot_correct=t2.tot_correct, t1.tot_time=t2.tot_time
 SQL;
 
 $this->remove_duplicate_records_from_12m_prob_ans =<<<SQL
