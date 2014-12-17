@@ -9,7 +9,8 @@ $migrations = array(
     array('name' => 'AddIndexesForStatsExport', 'file' => 'add_indexes_for_stats_export.php'),
     array('name' => 'AddResearcherToUser', 'file' => 'add_researcher_to_user.php'),
     array('name' => 'AddGlobalAlertsTable', 'file' => 'add_global_alerts_table.php'),
-    array('name' => 'AddAdminToUser', 'file' => 'add_admin_to_user.php')
+    array('name' => 'AddAdminToUser', 'file' => 'add_admin_to_user.php'),
+    array('name' => 'CombineDuplicateProblemData', 'file' => 'combine_duplicate_problem_data.php')
 );
 
 require_once("setup.php");
@@ -44,6 +45,7 @@ $dbmgr->exec_query($Q['setup']);
 $last_run = $dbmgr->fetch_assoc($Q['last_run']);
 $last_run = $last_run[0];
 $newest = end((array_values($migrations)));
+echo "<pre>\n";
 
 if (!isset($last_run['name']) || $last_run['name'] != $newest['name']) {
 
@@ -65,6 +67,8 @@ if (!isset($last_run['name']) || $last_run['name'] != $newest['name']) {
         sleep(1); //to ensure different timestamps
     }
 }
+
+echo "\n</pre>\n";
 
 ?>
 All migrations have been run.
