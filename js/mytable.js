@@ -72,8 +72,7 @@ $(document).ready(function()
 	//when page loads
 	//logic to display the appropriate topics for course selection on stats.php
 	var dropdown_history_course = $("select.dropdown-course").val();
-	
-    if (dropdown_history_course)
+    if (dropdown_history_course && (dropdown_history_course != '-1'))
     {
         if ($('select.dropdown-course').val() == 'all' || $('select.dropdown-course').val() == 0)//if 'all courses is selected'
         {

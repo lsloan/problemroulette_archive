@@ -1128,7 +1128,7 @@ Class MUserSummary
 		$num_problems_in_selection = count($this->m_problems_list_id);
 
 		$user_id = $usrmgr->m_user->id;
-		
+
 		//<GET RESPONSES>
 		if ($this->m_problems_list_id == 'blank')
 		{
@@ -1214,37 +1214,37 @@ Class MUserSummary
 			}
 			$res = $dbmgr->fetch_num($whole_thing["select"][$type].$additional_clause,$bindings);
 			$num_res = count($res);
-		}
+		// }
 
-		$res = $dbmgr->fetch_assoc($whole_thing["select"][$type].$additional_clause,$bindings);
+			$res = $dbmgr->fetch_assoc($whole_thing["select"][$type].$additional_clause,$bindings);
 
-		if ($num_res < 1)
-		{
-			//$this->m_tot_tries = 0;
-			$this->m_tot_time = 0;
-			$this->m_tot_correct = 0;
-		}
-		
-		for ($i=0;$i<$num_res;$i++)
-		{
-			$this->m_problem_list[$i] = new MProblem($res[$i]['prob_id']);
-			$this->m_student_answer_list[$i] = $res[$i]['answer'];
-			$this->m_start_time_list[$i] = $res[$i]['start_time'];
-			$this->m_end_time_list[$i] = $res[$i]['end_time'];
-			$this->m_user_id_list[$i] = $res[$i]['user_id'];
-			date_default_timezone_set('America/New_York');
-			$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
-			
-			//$this->m_tot_tries += 1;
-			$this->m_tot_time += $this->m_solve_time_list[$i];
-			if ($this->m_student_answer_list[$i] == $this->m_problem_list[$i]->m_prob_correct)
+			if ($num_res < 1)
 			{
-				$this->m_tot_correct += 1;
+				//$this->m_tot_tries = 0;
+				$this->m_tot_time = 0;
+				$this->m_tot_correct = 0;
 			}
-		}	
-		//</GET RESPONSES>
+			
+			for ($i=0;$i<$num_res;$i++)
+			{
+				$this->m_problem_list[$i] = new MProblem($res[$i]['prob_id']);
+				$this->m_student_answer_list[$i] = $res[$i]['answer'];
+				$this->m_start_time_list[$i] = $res[$i]['start_time'];
+				$this->m_end_time_list[$i] = $res[$i]['end_time'];
+				$this->m_user_id_list[$i] = $res[$i]['user_id'];
+				date_default_timezone_set('America/New_York');
+				$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
+
+				//$this->m_tot_tries += 1;
+				$this->m_tot_time += $this->m_solve_time_list[$i];
+				if ($this->m_student_answer_list[$i] == $this->m_problem_list[$i]->m_prob_correct)
+				{
+					$this->m_tot_correct += 1;
+				}
+			}
+			//</GET RESPONSES>
+		}
 	}
-	
 }
 
 /**
