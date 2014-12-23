@@ -771,10 +771,17 @@ class VStats
             ".$usrmgr->m_user->username."'s Summary
         </h4>
 		<div class='div-history-dropdown-course-topic'>
-		Filter by Course: 
+		Filter by Course:
 		<form name='dropdown_course_form' action='' method='POST' class='dropdown-course-topic-form'>
 		<select class='dropdown-course' name='dropdown_course'>
-		<option value='all' selected='selected'>All Courses</option>";
+		<option value='-1'>Select a Course</option>
+		<option value='all'";
+
+		if (! isset($_SESSION['dropdown_history_course']) || ($_SESSION['dropdown_history_course'] == 'all')) {
+		$str .= " selected='selected'";
+		}
+		$str .=  ">All Courses</option>";
+
 		for ($i=0; $i<$num_courses; $i++)
 		{
 			$all_topics_in_course = Array();
@@ -1601,15 +1608,12 @@ class VProblemEdit
 			$histogram_ans_string = "|";
 			for ($i=1;$i<($this->v_problem->m_prob_ans_count+1);$i++)
 			{
-				if ($i == $this->v_problem->m_prob_ans_count)
+				$ans_submit_frac_count_string .=
+					($ans_submit_count_sum != 0 ? ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum : 0);
+
+				if ($i != $this->v_problem->m_prob_ans_count)
 				{
-					$ans_submit_frac_count_string .=
-						$ans_submit_count_sum != 0 ? ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum : '0';
-				}
-				else
-				{
-					$ans_submit_frac_count_string .=
-						$ans_submit_count_sum != 0 ? ($this->v_problem->get_ans_submit_count($i))/$ans_submit_count_sum : '0' .",";
+					$ans_submit_frac_count_string .= ",";
 				}
 				$histogram_ans_string .= $alphabet[($i-1)]."|";
 			}
