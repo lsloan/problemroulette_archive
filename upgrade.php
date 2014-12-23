@@ -10,7 +10,9 @@ $migrations = array(
     array('name' => 'AddResearcherToUser', 'file' => 'add_researcher_to_user.php'),
     array('name' => 'AddGlobalAlertsTable', 'file' => 'add_global_alerts_table.php'),
     array('name' => 'AddAdminToUser', 'file' => 'add_admin_to_user.php'),
-    array('name' => 'CombineDuplicateProblemData', 'file' => 'combine_duplicate_problem_data.php')
+    array('name' => 'CombineDuplicateProblemData', 'file' => 'combine_duplicate_problem_data.php'),
+    array('name' => 'DropTempTables', 'file' => 'drop_Temp_tables.php'),
+    array('name' => 'FixStatsInProblemsTable', 'file' => 'fix_stats_in_problems_table.php')
 );
 
 require_once("setup.php");
