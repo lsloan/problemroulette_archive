@@ -943,6 +943,117 @@ class VStats
     }
 }
 
+class VQuestionsForm
+{
+	function __construct()
+	{
+
+	}
+
+	function Deliver()
+	{
+		global $usrmgr;
+
+		if ($usrmgr->m_user->staff == 1)
+		{
+			ob_start(); ?>
+				<div class="question-editor">
+				  <h1>New Question</h1>
+
+				  <form class='question-form' name='question_form' action='questions.php' method='POST'>
+				  	<input type="hidden" name="question_status" value="new"/>
+						<div>
+						  <label for="question_title">Title</label>
+						  <input type="text" name="question[title]" id="question_title" />
+						</div>
+						<div>
+						  <label for="question_body">Question</label>
+						  <textarea name="question[body]" id="question_body"></textarea>
+						</div>
+						<h2>Answers</h2>
+						<table>
+							<thead>
+								<tr>
+									<td id="question_answer_correct" width="10%">
+										Correct
+									</td>
+									<td class="question_answer_text">
+						  			Text
+						  		</td>
+								</tr>
+							</thead>
+							<tbody id="question_answers">
+								<tr class="question_answer">
+									<td class="question_answer_correct" width="10%">
+										<input type="radio" name="question[answers][][correct]" class="question_answers_correct"/>
+									</td>
+									<td class="question_answer_body">
+						  			<textarea name="question[answers][][body]" id="question_answer_body_0"></textarea>
+						  		</td>
+								</tr>
+							</tbody>
+
+						</table>
+						<div>
+							<button id="add-answer" class="add-answer">Add another answer</button>
+						</div>
+						<div>
+							<button id="save-question" class="save-question" type="submit">Save</button>
+						</div>
+
+				  </form>
+					<table style="display:none;">
+						<tbody  id="question_answer_template">
+							<tr class="question_answer">
+								<td class="question_answer_correct">
+									<input type="radio" name="question[answers][][correct]" class="question_answers_correct"/>
+								</td>
+								<td class="question_answer_body">
+					  			<textarea name="question[answers][][body]" class="next_question_answer_body"></textarea>
+					  		</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			<?php return ob_get_clean();
+		}
+
+	}
+}
+
+class VQuestionsShow
+{
+	var $params;
+
+	function __construct($params)
+	{
+		$this->params = $params;
+	}
+
+	function Deliver()
+	{
+		global $usrmgr;
+
+		if ($usrmgr->m_user->staff == 1)
+		{
+			ob_start(); ?>
+				<div class="question-viewer">
+				  <h1>Question Viewer</h1>
+				  <dl>
+					  <?php foreach((array)$this->params as $key => $value): ?>
+					  	<dt><?= $key ?></dt>
+					  	<dt><?= print_r($value, true) ?></dt>
+					  <?php endforeach ?>
+					</dl>
+				</div>
+
+			<?php return ob_get_clean();
+		}
+
+	}
+}
+
 class VStatsExport
 {
 	var $v_semesters;
