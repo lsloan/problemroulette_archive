@@ -20,6 +20,8 @@ require_once( $GLOBALS["DIR_LIB"]."logger.php" );
 
 if (isset($GLOBALS['DIR_LOGGER']))
 {
+  # TODO: Verify that php_uname('n') gives server name in production.
+  #       For php v5.3+ could use gethostname().
   $hostname = php_uname('n');
   $log_file = $GLOBALS['DIR_LOGGER']."problem_roulette_".$hostname.".log";
 } else {
