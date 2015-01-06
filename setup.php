@@ -17,9 +17,15 @@ require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
 require_once( $GLOBALS["DIR_LIB"]."logger.php" );
-# TODO: add server name to name of app-logger file
-# $GLOBALS['app_log'] = new AppLogger($GLOBALS['DIR_LOGGER']."probroul_".$server_name.".log");
-$GLOBALS['app_log'] = new AppLogger($GLOBALS['DIR_LOGGER']."problem_roulette.log");
+
+if (isset($GLOBALS['DIR_LOGGER']))
+{
+  $hostname = php_uname('n');
+  $log_file = $GLOBALS['DIR_LOGGER']."problem_roulette_".$hostname.".log";
+} else {
+  $log_file = "/var/tmp/problem_roulette.log";
+}
+$GLOBALS['app_log'] = new AppLogger($log_file);
 
 if (!extension_loaded('json')) {
     dl('json.so');
