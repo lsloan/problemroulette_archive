@@ -15,6 +15,7 @@ class CHeadCSSJavascript{
 	function Deliver(){
 		ob_start(); ?>
 		<title><?= $this->m_title ?> - Problem Roulette</title>
+                <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
 		<link href='css/bootstrap.css' rel='stylesheet' media='screen'>
 		<link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
 		<link href='css/styles.css' rel='stylesheet' media='screen'>
