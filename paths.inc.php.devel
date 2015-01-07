@@ -19,5 +19,7 @@ $GLOBALS["DIR_LIB"] = $GLOBALS["DIR"]."lib/";
 
 $GLOBALS["SEND_MIGRATION_MAIL"] = false;
 
-$GLOBALS['DIR_LOGGER'] = $GLOBALS["DIR"]."log/";
+$GLOBALS["INSTANCE"] = "Dev";
+$GLOBALS['DIR_LOGGER'] = $GLOBALS["DIR"]."log/".$GLOBALS["INSTANCE"]."/";
+
 ?>
