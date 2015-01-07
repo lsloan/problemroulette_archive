@@ -75,7 +75,7 @@ class Migration {
     function mailLog() {
         $this->flushlog();
         $to = 'ltig-staff@umich.edu';
-        $subject = "Problem Roulette Migration Log - " . $this->name();
+        $subject = "Problem Roulette Migration Log - " . $this->name() . " - " . $GLOBALS["INSTANCE"];
         $headers =<<<EOF
 From: PR Migrations <ltig-staff@umich.edu>
 Reply-To: ltig-staff@umich.edu
@@ -95,9 +95,9 @@ EOF;
     }
 
     function run() {
-        $this->info("Starting Migration '". $this->name() ."'");
+        $this->info("Starting Migration '". $this->name() ."' on ".$GLOBALS["INSTANCE"]);
         $this->migrate();
-        $message = "Migration '" . $this->name() . "' completed";
+        $message = "Migration '" . $this->name() . "' completed on ".$GLOBALS["INSTANCE"]);
         $this->info($message);
         $this->mailLog();
     }
