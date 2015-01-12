@@ -175,7 +175,7 @@ else
 	$content = new VProblems_no_topics();
 }
 
-if ($picked_problem == Null)
+if ($picked_problem == Null || $c_problem_id == Null)
 {
 	$content = new Vproblems_no_problems();
 }
