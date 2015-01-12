@@ -15,6 +15,7 @@ $c_problem_id = Null;
 $c_start_time = Null;
 $c_end_time = Null;
 $c_answer = Null;
+$c_topic_id = Null;
 
 $selected_topics_list_id = Null;
 
@@ -118,7 +119,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$response->update_problems();
 		$response->update_12m_prob_ans();
 		
-		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time);
+		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time."&tp.".$current_topic_id);
 	}
 } elseif (isset($_POST['next'])) {
 	// handle next event
@@ -128,6 +129,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$c_answer = $_GET['an'];
 	$c_start_time = intval($_GET['st']);
 	$c_end_time = intval($_GET['et']);
+	$c_topic_id = intval($_GET['tp']);
 }
 
 # translate ids to list of topic objects
@@ -152,6 +154,7 @@ if($c_problem_id == null || $c_problem_id < 1) {
 } else {
 	# use problem student is already working on
 	$picked_problem_id = $c_problem_id;
+	$topic = $c_topic_id;
 }
 
 $picked_problem = new MProblem($picked_problem_id);
