@@ -1123,11 +1123,13 @@ class VProblems
 {
 	var $v_picked_problem;//picked problem
 	var $v_problem_counts_by_topic;
+	var $v_topic;
 
-	function __construct($picked_problem, $problem_counts_by_topic)
+	function __construct($picked_problem, $problem_counts_by_topic, $topic)
 	{
 		$this->v_picked_problem = $picked_problem;
 		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
+		$this->v_topic = $topic;
 	}
 	
 	function Deliver()
@@ -1148,6 +1150,7 @@ class VProblems
 			<form class='ans-form' name='ans_form' action='' method='POST'>
 			<input type='hidden' id='submit_or_skip' name='tbd' value='0'/>
 			<input type='hidden' name='problem' value='".$this->v_picked_problem->m_prob_id."'>
+			<input type='hidden' name='topic' value='".$this->v_topic."'>
 			<input type='hidden' name='started' value='".date("U")."'>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)

@@ -92,7 +92,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$current_problem_answer = $current_problem->m_prob_correct;
 
 		//get current topic_id and omitted problems list for given topic
-		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+		$current_topic_id = intval($_POST['topic']);
 		
 		//get user_id
 		$user_id = $usrmgr->m_user->id;
@@ -148,6 +148,7 @@ $picker = new MProblemPicker();
 if($c_problem_id == null || $c_problem_id < 1) {
 	# use newly picked problem
 	$picked_problem_id = $picker->m_problem_id;
+	$topic = $picker->m_topic_id;
 } else {
 	# use problem student is already working on
 	$picked_problem_id = $c_problem_id;
@@ -168,7 +169,7 @@ if ($c_answer !== Null)
 }
 elseif ($num_topics > 0)
 {
-	$content = new VProblems($picked_problem, $picker->m_problem_counts_by_topic);
+	$content = new VProblems($picked_problem, $picker->m_problem_counts_by_topic, $topic);
 }
 else
 {
