@@ -905,7 +905,7 @@ class MProblemPicker
 		if($usrmgr->m_user->selected_topics_list == null) {
 			$problem_counts_query = "select t1.topic_id topic_id, t6.name name, count(t4.id) total, count(t5.id) finished, count(t4.id) - count(t5.id) remaining from 12m_class_topic t1 left join selections t2 on t1.class_id=t2.class_id join user t3 on t2.user_id=t3.id left join 12m_topic_prob t4 on t1.topic_id=t4.topic_id left join omitted_problems t5 on t2.user_id=t5.user_id and t4.problem_id=t5.problem_id left join topic t6 on t1.topic_id=t6.id where t3.id=:user_id and t2.id=t3.selection_id group by t1.topic_id";
 		} else {
-			$problem_counts_query = "select t1.topic_id topic_id, t6.name name, count(t4.id) total, count(t5.id) finished, count(t4.id) - count(t5.id) remaining from selected_topics t1 left join selections t2 on t1.selection_id=t2.id left join user t3 on t2.user_id=t3.id left join 12m_topic_prob t4 on t1.topic_id=t4.topic_id left join omitted_problems t5 on t2.user_id=t5.user_id and t4.problem_id=t5.problem_id left join topic t6 on t1.topic_id=t6.id where t3.id=:user_id and t2.id=t3.selection_id group by t1.topic_id";
+			$problem_counts_query = "select t1.topic_id topic_id, t6.name name, count(t4.id) total, count(t5.id) finished, count(t4.id) - count(t5.id) remaining from selected_topics t1 left join selections t2 on t1.selection_id=t2.id left join user t3 on t2.user_id=t3.id left join 12m_topic_prob t4 on t1.topic_id=t4.topic_id left join omitted_problems t5 on t2.user_id=t5.user_id and t4.problem_id=t5.problem_id and t5.topic_id=t4.topic_id left join topic t6 on t1.topic_id=t6.id where t3.id=:user_id and t2.id=t3.selection_id  group by t1.topic_id";
 		}
 		$bindings = array(
 			":user_id" => $usrmgr->m_user->id
