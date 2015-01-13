@@ -15,6 +15,7 @@ $c_problem_id = Null;
 $c_start_time = Null;
 $c_end_time = Null;
 $c_answer = Null;
+$c_topic_id = Null;
 
 $selected_topics_list_id = Null;
 
@@ -92,7 +93,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$current_problem_answer = $current_problem->m_prob_correct;
 
 		//get current topic_id and omitted problems list for given topic
-		$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+		$current_topic_id = intval($_POST['topic']);
 		
 		//get user_id
 		$user_id = $usrmgr->m_user->id;
@@ -118,7 +119,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$response->update_problems();
 		$response->update_12m_prob_ans();
 		
-		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time);
+		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time."&tp=".$current_topic_id);
 	}
 } elseif (isset($_POST['next'])) {
 	// handle next event
@@ -128,6 +129,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$c_answer = $_GET['an'];
 	$c_start_time = intval($_GET['st']);
 	$c_end_time = intval($_GET['et']);
+	$c_topic_id = intval($_GET['tp']);
 }
 
 # translate ids to list of topic objects
@@ -148,9 +150,11 @@ $picker = new MProblemPicker();
 if($c_problem_id == null || $c_problem_id < 1) {
 	# use newly picked problem
 	$picked_problem_id = $picker->m_problem_id;
+	$topic = $picker->m_topic_id;
 } else {
 	# use problem student is already working on
 	$picked_problem_id = $c_problem_id;
+	$topic = $c_topic_id;
 }
 
 $picked_problem = new MProblem($picked_problem_id);
@@ -168,7 +172,7 @@ if ($c_answer !== Null)
 }
 elseif ($num_topics > 0)
 {
-	$content = new VProblems($picked_problem, $picker->m_problem_counts_by_topic);
+	$content = new VProblems($picked_problem, $picker->m_problem_counts_by_topic, $topic);
 }
 else
 {
