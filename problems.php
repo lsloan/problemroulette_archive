@@ -119,7 +119,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$response->update_problems();
 		$response->update_12m_prob_ans();
 		
-		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time."&tp.".$current_topic_id);
+		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time."&tp=".$current_topic_id);
 	}
 } elseif (isset($_POST['next'])) {
 	// handle next event
