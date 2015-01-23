@@ -97,7 +97,7 @@ EOF;
     function run() {
         $this->info("Starting Migration '". $this->name() ."' on ".$GLOBALS["INSTANCE"]);
         $this->migrate();
-        $message = "Migration '" . $this->name() . "' completed on ".$GLOBALS["INSTANCE"]);
+        $message = "Migration '" . $this->name() . "' completed on ".$GLOBALS["INSTANCE"];
         $this->info($message);
         $this->mailLog();
     }
