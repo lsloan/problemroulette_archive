@@ -47,9 +47,9 @@ function MakeSelectTopicOptions($array, $curlabel)
   return $str;
 }
 // creates an array of key,value to use in creating the options for selecting how many answer choices
-function AnswerNumbers()
+function AnswerNumbers($num_values = NULL)
 { //set $num_values = to the number of answer number choices allowed
-  $num_values = 10;
+  if ($num_values == NULL) { $num_values = 10; }
   $array = array();
   for ($i=1; $i<$num_values+1; $i++) {
     $array[$i] = $i;
