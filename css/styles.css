@@ -551,3 +551,25 @@ background-color: #e5e5e5;
 .timelist_item {
 	color: black;
 }
+
+.problem-name-bar {
+	background-color:	#f0f0f0;
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+	padding-left: 30px;
+	border-bottom-width: 1px;
+	border-bottom-color: #d0d0d0;
+	border-bottom-style: solid;
+}
+
+.problem-footer-bar {
+	background-color:	#f0f0f0;
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+	padding-left: 30px;
+	border-top-width: 1px;
+	border-top-color: #d0d0d0;
+	border-top-style: solid;
+}

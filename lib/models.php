@@ -118,7 +118,48 @@ Class MProblem
 			return round($avg_time,1);
 		}
 	}
+
+	function get_edit_url()
+	{
+		$edit_url = "";
+		$base_url = $this->get_base_url();
+		if (strlen($base_url) > 0) 
+		{
+			$edit_url = $base_url."/edit";
+		}
+		return $edit_url;
+	}
 	
+	function get_embed_url()
+	{
+		$embed_url = "";
+		$base_url = $this->get_base_url();
+		if (strlen($base_url) > 0) 
+		{
+			$embed_url = $base_url."/pub?embedded=true";
+		}
+		return $embed_url;
+	}
+
+	function get_base_url()
+	{
+		$base_url = "";
+		if ($this->m_prob_url != Null) 
+		{
+			$pattern1 = '/^(.+)\/pub$/';
+			$pattern2 = '/^(.+)\/pub\?/';
+			if (preg_match($pattern1, $this->m_prob_url, $matches))
+			{
+				$base_url = $matches[1];
+			} 
+			elseif (preg_match($pattern2, $this->m_prob_url, $matches)) 
+			{
+				$base_url = $matches[1];
+			}
+		}
+		return $base_url;	
+	}
+
 	function Get_GD_info()
 	{
 	#call GD API
