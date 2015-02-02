@@ -19,27 +19,33 @@ function MakeArray($variable) {
 }
 
 // this creates options for a select input. $array contains  key, value
-// where the key is the option label and the value is the option value
-function MakeSelectOptions($array, $curlabel='')
+// where the key is the option label and the value is the option value.
+function MakeSelectOptions($array, $curvalue='', $letters=false)
 { $str = '';
+  $alphabet = Array('0', 'A','B','C','D','E','F','G','H','I','J');
   foreach ($array as $key => $value)
   {
     $str .= "<option";
-    if ($key == $curlabel) {
+    if ($key == $curvalue || $key == $alphabet[$curvalue]) {
       $str .= " selected='selected' ";
     }
-    $str .= " value='".$value."'> ".$key." </option>";
+    if ($letters == 'letters') {
+      $str .= " value='".$value."'> ". $alphabet[$value]." </option>";
+    }
+    else {
+      $str .= " value='".$value."'> ".$key." </option>";
+    }
   }
   return $str;
 }
 
 // curlabel is array of current topics the problem is in, $array is the entire list of topics
-function MakeSelectTopicOptions($array, $curlabel)
+function MakeSelectTopicOptions($array, $curvalue)
 { $str = '';
   foreach ($array as $key => $value)
   {
     $str .= "<option";
-    if (in_array($key, $curlabel)) {
+    if (in_array($key, $curvalue)) {
       $str .= " selected='selected' ";
     }
     $str .= " value='".$value."'> ".$key." </option>";

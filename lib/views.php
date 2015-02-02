@@ -577,7 +577,7 @@ class VProblemLibrary
                 <label for='add_problem_cor_ans' class='span3 text-right'>Correct Answer Number</label>
                 <select required type='text'  id='add_problem_cor_ans' name='add_problem_cor_ans' class='span1 left'>
 				";
-				$str .= MakeSelectOptions(AnswerNumbers());
+				$str .= MakeSelectOptions(AnswerNumbers(), '', 'letters');
 				$str .="</select>
             </p>
 			<p>
@@ -1666,7 +1666,7 @@ class VProblemEdit
                 <label for='edit_problem_cor_ans' class='span2 text-right'>Correct Answer Number</label>
                 <select required type='text'  id='edit_problem_cor_ans' value='".$this->v_problem->m_prob_correct."' name='edit_problem_cor_ans' class='span1 left'>
 				";
-				$str .= MakeSelectOptions(AnswerNumbers($this->v_problem->m_prob_ans_count), $this->v_problem->m_prob_correct);
+				$str .= MakeSelectOptions(AnswerNumbers($this->v_problem->m_prob_ans_count), $this->v_problem->m_prob_correct, 'letters');
 				$str .="</select>
             </p>
 
