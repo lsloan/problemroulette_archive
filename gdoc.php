@@ -3,6 +3,7 @@
 if (isset($_GET['url']))
 {
   $prob_url = $_GET['url'];
+  header('Access-Control-Allow-Origin: *');
   ob_start(); ?>
   <!DOCTYPE html>
     <html lang="en">
@@ -56,7 +57,13 @@ if (isset($_GET['url']))
 
       <script type="text/javascript">
       $(document).ready(function(){
-        $('div#problem').load("<?= $prob_url ?> div#contents");
+        $('div#problem').load("<?= $prob_url ?> div#contents", function( response, status, xhr ) {
+          if ( status == "error" ) {
+            var msg = "Sorry but there was an error: ";
+            alert(msg + xhr.status + " " + xhr.statusText);
+            // $( "#error" ).html( msg + xhr.status + " " + xhr.statusText );
+          }
+        });
       });
       </script>
     </body>
