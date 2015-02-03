@@ -127,10 +127,16 @@ Class MProblem
 	function get_edit_url()
 	{
 		$edit_url = "";
-		$base_url = $this->get_base_url();
-		if (strlen($base_url) > 0) 
+		$parts = $this->get_base_url();
+		if (strlen($parts[0]) > 0) 
 		{
-			$edit_url = $base_url."/edit";
+			$base_url = $parts[0];
+			if (strlen($parts[1]) > 0) {
+				$params = '?'.$parts[1];
+			} else {
+				$params = '';
+			}
+			$edit_url = $base_url.'/edit'.$params;
 		}
 		return $edit_url;
 	}
@@ -138,10 +144,16 @@ Class MProblem
 	function get_embed_url()
 	{
 		$embed_url = "";
-		$base_url = $this->get_base_url();
-		if (strlen($base_url) > 0) 
+		$parts = $this->get_base_url();
+		if (strlen($parts[0]) > 0) 
 		{
-			$embed_url = $base_url."/pub?embedded=true";
+			$base_url = $parts[0];
+			if (strlen($parts[1]) > 0) {
+				$params = '?'.$parts[1].'&embedded=true';
+			} else {
+				$params = '?embedded=true';
+			}
+			$embed_url = $base_url.'/pub'.$params;
 		}
 		return $embed_url;
 	}
@@ -152,17 +164,30 @@ Class MProblem
 		if ($this->m_prob_url != Null) 
 		{
 			$pattern1 = '/^(.+)\/pub$/';
-			$pattern2 = '/^(.+)\/pub\?/';
+			$pattern2 = '/^(.+)\/pub\?(.+)$/';
+			$pattern3 = '/^(.+)\?(.+)$/'
 			if (preg_match($pattern1, $this->m_prob_url, $matches))
 			{
 				$base_url = $matches[1];
+				$params = '';
 			} 
 			elseif (preg_match($pattern2, $this->m_prob_url, $matches)) 
 			{
 				$base_url = $matches[1];
+				$params = $matches[2];
+			}
+			elsif (preg_match($pattern3, $this->m_prob_url, $matches))
+			{
+				$base_url = $matches[1];
+				$params = $matches[2];
+			}
+			else
+			{
+				$base_url = $this->m_prob_url;
+				$params = '';
 			}
 		}
-		return $base_url;	
+		return [$base_url, $params];	
 	}
 
 	function Get_GD_info()
