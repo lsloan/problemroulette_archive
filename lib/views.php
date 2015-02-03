@@ -1153,9 +1153,7 @@ class VProblems
 			<input type='hidden' name='problem' value='".$this->v_picked_problem->m_prob_id."'>
 			<input type='hidden' name='topic' value='".$this->v_topic."'>
 			<input type='hidden' name='started' value='".date("U")."'>
-			<div class='problem-name-bar'>".
-			$this->v_picked_problem->m_prob_name.
-			"</div><br>
+			<br>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)
 			{
@@ -1182,9 +1180,11 @@ class VProblems
 			value='1'>
 				Skip
 			</button>
-			</form>
+			</form><div class='problem-name-bar'>".
+			$this->v_picked_problem->m_prob_name.
+			"</div>
 			<iframe class='problemIframe' id='problemIframe' src='".
-			$this->v_picked_problem->m_prob_url
+			$this->v_picked_problem->get_gdoc_url()
 			."'></iframe>
       <div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
         ";
@@ -1274,7 +1274,6 @@ class VProblems_submitted
 			Next
 			</button>
 			</form>
-			<div class='problem-name-bar'>".$this->v_picked_problem->m_prob_name."</div><br>
 			<p>
 			<span class='label student-answer'>
 			Your time:&nbsp;
@@ -1303,10 +1302,12 @@ class VProblems_submitted
 			$str .= "
 			<img class='histogram'
 			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-			</img>
+			</img><div class='problem-name-bar'>".
+			$this->v_picked_problem->m_prob_name.
+			"</div>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
-			$this->v_picked_problem->m_prob_url
+			$this->v_picked_problem->get_gdoc_url()
 			."'></iframe>
 			<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
         ";
@@ -1545,7 +1546,6 @@ class VProblemInfo
 			//problem info and histogram
 			$str = "
             <p class='half-line'>&nbsp;</p>
-            <div class='problem-name-bar'>".$this->v_picked_problem->m_prob_name."</div>
             <p>
             Average user time: 
             ".$this->v_problem->get_avg_time()." seconds
@@ -1567,10 +1567,12 @@ class VProblemInfo
             $str .= "
             <img class='histogram'
             src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-            </img>
+            </img><div class='problem-name-bar'>".
+						$this->v_problem->m_prob_name.
+						"</div>
             <iframe class='problemIframe' id='problemIframe' src='
             ".
-            $this->v_problem->get_embed_url()
+            $this->v_problem->get_gdoc_url()
             ."'></iframe>
             <div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
             <p align='center'>
@@ -1705,10 +1707,12 @@ class VProblemEdit
             $str .= "
             <img class='histogram'
             src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-            </img>
+            </img><div class='problem-name-bar'>".
+						$this->v_problem->m_prob_name.
+						"</div>
             <iframe class='problemIframe' id='problemIframe' src='
             ".
-            $this->v_problem->m_prob_url
+            $this->v_problem->get_gdoc_url()
             ."'></iframe>
             <p align='center'>
             <font color='blue'>".$this->v_problem->m_prob_url."</font>

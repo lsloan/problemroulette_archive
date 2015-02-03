@@ -63,6 +63,11 @@ Class MProblem
 			);
 		$res = $dbmgr->exec_query( $query , $bindings );
 	}
+
+	function get_gdoc_url()
+	{
+		return "gdoc.php?url=".urlencode($this->m_prob_url);
+	}
 	
 	function get_ans_submit_count($ans_num)
 	{
