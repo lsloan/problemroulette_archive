@@ -172,6 +172,30 @@ $(document).ready(function()
 		}
 	});
     
+    // change the correct answer dropdown to have only as many values as possible answers
+    $('#edit_problem_num_ans').change(function() {
+    	var alphabet = Array('0','A','B','C','D','E','F','G','H','I','J');
+    	var old_ans = $('#edit_problem_cor_ans').val();
+    	$('#edit_problem_cor_ans').empty();
+    	for (var i=1; i<=$('#edit_problem_num_ans').val(); i++) {
+    		if (old_ans != i) {
+    			$('#edit_problem_cor_ans').append($("<option></option>").val(i, alphabet[i]).text(alphabet[i]));
+    		}
+    		else {
+			$('#edit_problem_cor_ans').append($("<option selected='selected'></option>").val(i, alphabet[i]).text(alphabet[i]));
+			}
+    	}
+	});
+
+	 $('#add_problem_num_ans').change(function() {
+	 	var alphabet = Array('0','A','B','C','D','E','F','G','H','I','J');
+    	$('#add_problem_cor_ans').empty();
+    	for (var i=1; i<=$('#add_problem_num_ans').val(); i++) {
+    		$('#add_problem_cor_ans').append($("<option></option>").val(i, alphabet[i]).text(alphabet[i]));
+    	}
+		// $('#edit_problem_cor_ans').attr('size', $('#edit_problem_num_ans').val());
+	});
+
 	//CHANGE CORRECT ANSWER//Set Submit button to disabled by default
 	$('#edit_problem_cor_ans_submit').attr("disabled","disabled");
 	// $('#edit_problem_cor_ans').addClass('input-error');
