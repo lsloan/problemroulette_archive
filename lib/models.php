@@ -122,16 +122,18 @@ Class MProblem
 	function get_edit_url()
 	{
 		$edit_url = "";
+		$edit = "/edit";
 		$parts = $this->get_base_url();
 		if (strlen($parts[0]) > 0) 
 		{
 			$base_url = $parts[0];
 			if (strlen($parts[1]) > 0) {
 				$params = '?'.$parts[1];
+				$edit = '';
 			} else {
 				$params = '';
 			}
-			$edit_url = $base_url.'/edit'.$params;
+			$edit_url = $base_url.$edit.$params;
 		}
 		return $edit_url;
 	}
