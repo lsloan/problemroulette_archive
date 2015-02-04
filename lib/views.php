@@ -1180,11 +1180,9 @@ class VProblems
 			value='1'>
 				Skip
 			</button>
-			</form><div class='problem-name-bar'>".
-			$this->v_picked_problem->m_prob_name.
-			"</div>
+			</form>
 			<iframe class='problemIframe' id='problemIframe' src='".
-			$this->v_picked_problem->get_gdoc_url()
+			$this->v_picked_problem->m_prob_url
 			."'></iframe>
       <div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
         ";
@@ -1302,12 +1300,10 @@ class VProblems_submitted
 			$str .= "
 			<img class='histogram'
 			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-			</img><div class='problem-name-bar'>".
-			$this->v_picked_problem->m_prob_name.
-			"</div>
+			</img>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
-			$this->v_picked_problem->get_gdoc_url()
+			$this->v_picked_problem->m_prob_url
 			."'></iframe>
 			<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
         ";
@@ -1567,12 +1563,10 @@ class VProblemInfo
             $str .= "
             <img class='histogram'
             src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-            </img><div class='problem-name-bar'>".
-						$this->v_problem->m_prob_name.
-						"</div>
+            </img>
             <iframe class='problemIframe' id='problemIframe' src='
             ".
-            $this->v_problem->get_gdoc_url()
+            $this->v_problem->m_prob_url
             ."'></iframe>
             <div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
             <p align='center'>
@@ -1707,12 +1701,10 @@ class VProblemEdit
             $str .= "
             <img class='histogram'
             src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-            </img><div class='problem-name-bar'>".
-						$this->v_problem->m_prob_name.
-						"</div>
+            </img>
             <iframe class='problemIframe' id='problemIframe' src='
             ".
-            $this->v_problem->get_gdoc_url()
+            $this->v_problem->m_prob_url
             ."'></iframe>
             <p align='center'>
             <font color='blue'>".$this->v_problem->m_prob_url."</font>
