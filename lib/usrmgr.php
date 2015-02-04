@@ -49,15 +49,15 @@ class MUser
     {
         try 
         {
-    		global $dbmgr;
+            global $dbmgr;
             date_default_timezone_set('America/New_York');
-    		$query =
-    			"INSERT INTO user(username, staff, prefs, created_at) ".
-    			"VALUES ( :username, :staff, :prefs, :created_at )";
-    		$bindings = array(
-    			":username" => $this->username,
-    			":staff"    => $this->staff,
-    			":prefs"    => $this->package(Array()),
+            $query =
+                "INSERT INTO user(username, staff, prefs, created_at) ".
+                "VALUES ( :username, :staff, :prefs, :created_at )";
+            $bindings = array(
+                ":username" => $this->username,
+                ":staff"    => $this->staff,
+                ":prefs"    => $this->package(Array()),
                 ":created_at" => date('Y-m-d H:i:s'));
 
             $dbmgr->exec_query( $query, $bindings );
@@ -83,17 +83,17 @@ class MUser
         return unserialize(stripslashes($input));
     }
  
-	function get_id()
-	{
-		global $dbmgr;
-		$username = $this->username;
-		$query = "SELECT id FROM user WHERE username = :username order by id asc";
-		$bindings = array(':username' => $username);
-		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		// populate user (if found)
-		if(count($res) > 0)
-		{
-			$this->id = $res[0]['id'];
+    function get_id()
+    {
+        global $dbmgr;
+        $username = $this->username;
+        $query = "SELECT id FROM user WHERE username = :username order by id asc";
+        $bindings = array(':username' => $username);
+        $res = $dbmgr->fetch_assoc( $query , $bindings );
+        // populate user (if found)
+        if(count($res) > 0)
+        {
+            $this->id = $res[0]['id'];
 
             if(count($res) > 1)
             {
@@ -106,11 +106,11 @@ class MUser
                     print_r(debug_backtrace(), true));
             }
 
-			return True;
-		}
+            return True;
+        }
 
-		return False;
-	}
+        return False;
+    }
  
     function read()
     {
@@ -173,15 +173,15 @@ class MUser
     function GetPref($key)
     {
         // return specific requested pref
-		if ($this->prefs != Null) {
-			if (array_key_exists($key, $this->prefs)) {
+        if ($this->prefs != Null) {
+            if (array_key_exists($key, $this->prefs)) {
                 $this->verifyPrefsValues($key, $this->prefs[$key]);
-				return $this->prefs[$key];
-			}
-			return Null;
-		} else {
-			return Null;
-		}
+                return $this->prefs[$key];
+            }
+            return Null;
+        } else {
+            return Null;
+        }
     }
 
     function SetPref($key, $val)
@@ -420,18 +420,18 @@ class UserManager{
     }
 
     function GetAccess(){ return isset($this->m_user->staff); }
-	function GetUserId(){ return $this->m_user->username; }
+    function GetUserId(){ return $this->m_user->username; }
 
-	function Login()
+    function Login()
     {
-        // set any default (in deveopement this will be the active user_id)		
+        // set any default (in deveopement this will be the active user_id)        
         //$username = 'test_user8';
         $username = 'jtritz';
         // check if the user just logged in through cosign
         if(isset($_SERVER['REMOTE_USER']))
             $username = $_SERVER["REMOTE_USER"];
         $this->m_user = new MUser($username);
-	}
+    }
 }
 
 ?>
