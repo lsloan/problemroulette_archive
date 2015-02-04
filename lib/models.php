@@ -63,7 +63,7 @@ Class MProblem
 			);
 		$res = $dbmgr->exec_query( $query , $bindings );
 	}
-	
+
 	function get_ans_submit_count($ans_num)
 	{
 		if ($this->m_prob_id != Null)
@@ -118,7 +118,73 @@ Class MProblem
 			return round($avg_time,1);
 		}
 	}
+
+	function get_edit_url()
+	{
+		$edit_url = "";
+		$parts = $this->get_base_url();
+		if (strlen($parts[0]) > 0) 
+		{
+			$base_url = $parts[0];
+			if (strlen($parts[1]) > 0) {
+				$params = '?'.$parts[1];
+			} else {
+				$params = '';
+			}
+			$edit_url = $base_url.'/edit'.$params;
+		}
+		return $edit_url;
+	}
 	
+	function get_embed_url()
+	{
+		$embed_url = "";
+		$parts = $this->get_base_url();
+		if (strlen($parts[0]) > 0) 
+		{
+			$base_url = $parts[0];
+			if (strlen($parts[1]) > 0) {
+				$params = '?'.$parts[1].'&embedded=true';
+			} else {
+				$params = '?embedded=true';
+			}
+			$embed_url = $base_url.'/pub'.$params;
+		}
+		return $embed_url;
+	}
+
+	function get_base_url()
+	{
+		$base_url = "";
+		if ($this->m_prob_url != Null) 
+		{
+			$pattern1 = '/^(.+)\/pub$/';
+			$pattern2 = '/^(.+)\/pub\?(.+)$/';
+			$pattern3 = '/^(.+)\?(.+)$/';
+			if (preg_match($pattern1, $this->m_prob_url, $matches))
+			{
+				$base_url = $matches[1];
+				$params = '';
+			} 
+			elseif (preg_match($pattern2, $this->m_prob_url, $matches)) 
+			{
+				$base_url = $matches[1];
+				$params = $matches[2];
+			}
+			elseif (preg_match($pattern3, $this->m_prob_url, $matches))
+			{
+				$base_url = $matches[1];
+				$params = $matches[2];
+			}
+			else
+			{
+				$base_url = $this->m_prob_url;
+				$params = '';
+			}
+		}
+		return [$base_url, $params];	
+	}
+
 	function Get_GD_info()
 	{
 	#call GD API
