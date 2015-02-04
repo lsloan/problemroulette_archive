@@ -1146,12 +1146,14 @@ class VProblems
 				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
 		}
+
 		$str .= "</p>
 			<form class='ans-form' name='ans_form' action='' method='POST'>
 			<input type='hidden' id='submit_or_skip' name='tbd' value='0'/>
 			<input type='hidden' name='problem' value='".$this->v_picked_problem->m_prob_id."'>
 			<input type='hidden' name='topic' value='".$this->v_topic."'>
 			<input type='hidden' name='started' value='".date("U")."'>
+			<br>
 			<p>";
 			for ($i=0; $i<$num_answers; $i++)
 			{
@@ -1179,10 +1181,10 @@ class VProblems
 				Skip
 			</button>
 			</form>
-			<iframe class='problemIframe' id='problemIframe' src='
-			".
+			<iframe class='problemIframe' id='problemIframe' src='".
 			$this->v_picked_problem->m_prob_url
 			."'></iframe>
+      <div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
         ";
       return $str;
     }
@@ -1303,6 +1305,7 @@ class VProblems_submitted
 			".
 			$this->v_picked_problem->m_prob_url
 			."'></iframe>
+			<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
         ";
         return $str;
     }
@@ -1565,6 +1568,7 @@ class VProblemInfo
             ".
             $this->v_problem->m_prob_url
             ."'></iframe>
+            <div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
             <p align='center'>
             <font color='blue'>".$this->v_problem->m_prob_url."</font>
             </p>
@@ -1684,6 +1688,9 @@ class VProblemEdit
             </div>
             </form>
             <hr>
+            <p align='center'><a href='".$this->v_problem->get_edit_url()."' target='_blank'>Edit the Google Doc</a>
+            (Only works if you have permission to edit the Google Doc, and may require login to Google)
+            </p>
             ";
 
             $chart_width = 150;
