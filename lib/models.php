@@ -165,7 +165,7 @@ Class MProblem
 		{
 			$pattern1 = '/^(.+)\/pub$/';
 			$pattern2 = '/^(.+)\/pub\?(.+)$/';
-			$pattern3 = '/^(.+)\?(.+)$/'
+			$pattern3 = '/^(.+)\?(.+)$/';
 			if (preg_match($pattern1, $this->m_prob_url, $matches))
 			{
 				$base_url = $matches[1];
@@ -176,7 +176,7 @@ Class MProblem
 				$base_url = $matches[1];
 				$params = $matches[2];
 			}
-			elsif (preg_match($pattern3, $this->m_prob_url, $matches))
+			elseif (preg_match($pattern3, $this->m_prob_url, $matches))
 			{
 				$base_url = $matches[1];
 				$params = $matches[2];
