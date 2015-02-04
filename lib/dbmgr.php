@@ -53,30 +53,60 @@ class CDbMgr
 	}
 
 	//	Primitives
-	function exec_query( $query, $bindings = array() )
+	function exec_query( $query, $bindings = null )
 	{
-		$result = $this->m_link->prepare($query);
-		if (!$result)
+		try
 		{
-			echo "query failed: " .$query. "(" . $this->m_link->errno . ") " . $this->m_link->error;
+			$result = $this->m_link->prepare($query);
+			if ($result && ($this->m_link->errorCode() == '00000'))
+			{
+				// success! keep going
+			}
+			else
+			{
+				echo "query failed: " .$query. "(" . $this->m_link->errorCode() . ") \n" . print_r($this->m_link->errorInfo(), true);
+
+				log_error("CDbMgr->exec_query() Call to PDO prepare failed");
+			}
 		}
-		$result->execute($bindings);
+		catch(PDOException $e)
+		{
+			log_error("CDbMgr->exec_query() PDOException thrown preparing statement", $e);
+		}
+
+		try
+		{
+			$res = $result->execute($bindings);
+			if ($res && ($this->m_link->errorCode() == '00000'))
+			{
+				// success! keep going
+			}
+			else
+			{
+				log_error("CDbMgr->exec_query() Call to PDO execute failed");
+			}
+		}
+		catch(PDOException $e)
+		{
+			log_error("CDbMgr->exec_query() PDOException thrown executing statement", $e);
+		}
+
 		return $result;
 	}
 
-	function fetch_num( $query , $bindings = array() )
+	function fetch_num( $query , $bindings = null )
 	{
 		$res = $this->exec_query($query, $bindings);
 		return $res->fetchAll(PDO::FETCH_NUM);
 	}
 
-	function fetch_assoc( $query, $bindings = array() )
+	function fetch_assoc( $query, $bindings = null )
 	{
 		$res = $this->exec_query($query,$bindings);
 		return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	function fetch_column( $query, $bindings = array(), $column = 0 )
+	function fetch_column( $query, $bindings = null, $column = 0 )
 	{
 		$res = $this->exec_query($query, $bindings);
 		return $res->fetchAll(PDO::FETCH_COLUMN, $column);
@@ -145,5 +175,19 @@ class CDbMgr
 		$cmd = 'mysqldump --user='.$this->m_user.' --password='.$this->m_pswd.' --host='.$this->m_host.' '.$this->m_db.' '.$tablename.' > '.$filepath;
 		exec($cmd);
 	}
+
+	function log_error($message, $exception = null)
+	{
+		global $app_log;
+    $app_log->msg($message);
+    if ($exception)
+    {
+    	$app_log->msg("  Exception: \n".print_r($e, true));
+    }
+    $app_log->msg("  errorCode: ".$this->m_link->errorCode());
+    $app_log->msg("  errorInfo: \n".print_r($this->m_link->errorInfo(), true));
+		$app_log->msg("  backtrace: \n".print_r(debug_backtrace(), true));
+	}
+
 }
 ?>
