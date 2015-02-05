@@ -55,8 +55,6 @@ class CDbMgr
 	//	Primitives
 	function exec_query( $query, $bindings = null )
 	{
-
-		$this->log_error("TESTING", null);
 		try
 		{
 			$result = $this->m_link->prepare($query);
@@ -182,13 +180,13 @@ class CDbMgr
 	{
 		global $app_log;
 		$app_log->msg($message);
+		$app_log->msg("  errorCode: ".$this->m_link->errorCode());
+		$app_log->msg("  errorInfo: \n".print_r($this->m_link->errorInfo(), true));
 		if ($exception)
 		{
 			$app_log->msg("  Exception: \n".print_r($e, true));
+			$app_log->msg("  backtrace: \n".print_r(debug_backtrace(), true));
 		}
-		$app_log->msg("  errorCode: ".$this->m_link->errorCode());
-		$app_log->msg("  errorInfo: \n".print_r($this->m_link->errorInfo(), true));
-		$app_log->msg("  backtrace: \n".print_r(debug_backtrace(), true));
 	}
 
 }
