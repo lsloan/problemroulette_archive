@@ -47,16 +47,30 @@ class MUser
 
     function create()
     {
-		global $dbmgr;
-		$query =
-			"INSERT INTO user(username, staff, prefs) ".
-			"VALUES ( :username, :staff, :prefs )";
-		$bindings = array(
-			":username" => $this->username,
-			":staff"    => $this->staff,
-			":prefs"    => $this->package(Array()));
-		$dbmgr->exec_query( $query , $bindings );
-        $this->get_id();
+        try 
+        {
+            global $dbmgr;
+            date_default_timezone_set('America/New_York');
+            $query =
+                "INSERT INTO user(username, staff, prefs, created_at) ".
+                "VALUES ( :username, :staff, :prefs, :created_at )";
+            $bindings = array(
+                ":username" => $this->username,
+                ":staff"    => $this->staff,
+                ":prefs"    => $this->package(Array()),
+                ":created_at" => date('Y-m-d H:i:s'));
+
+            $dbmgr->exec_query( $query, $bindings );
+            
+            $this->get_id();
+        } 
+        catch(Exception $e)
+        {
+            global $app_log;
+            $app_log->msg("MUser->create() ERROR while attempting to create user record for ".$this->username);
+            $app_log->msg("MUser->create() Exception:\n".print_r($e, true));
+            $app_log->msg("MUser->create() backtrace: \n".print_r(debug_backtrace(), true));
+        }
     }
   
     function package($input)
@@ -69,27 +83,46 @@ class MUser
         return unserialize(stripslashes($input));
     }
  
-	function get_id()
-	{
-		global $dbmgr;
-		$username = $this->username;
-		$query = "SELECT id FROM user WHERE username = :username";
-		$bindings = array(':username' => $username);
-		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		// populate user (if found)
-		if(count($res) == 1)
-		{
-			$this->id = $res[0]['id'];
-			return True;
-		}
-		return False;
-	}
+    function get_id()
+    {
+        global $dbmgr;
+        $username = $this->username;
+        $query = "SELECT id FROM user WHERE username = :username order by id asc";
+        $bindings = array(':username' => $username);
+        $res = $dbmgr->fetch_assoc( $query , $bindings );
+        // populate user (if found)
+        if(count($res) > 0)
+        {
+            $this->id = $res[0]['id'];
+
+            if(count($res) > 1)
+            {
+                global $app_log;
+                $app_log->msg("MUser->get_id() ERROR: More than one user ID found for ".
+                    $this->username.
+                    ". IDs found:\n".
+                    print_r($res, true));
+                $app_log->msg("MUser->get_id() backtrace: \n".
+                    print_r(debug_backtrace(), true));
+            }
+
+            return True;
+        }
+
+        return False;
+    }
  
     function read()
     {
         global $dbmgr;
         // $query = "SELECT id, staff, prefs, page_loads, last_activity, selection_id, FROM user WHERE username = :username";
-        $query = "SELECT t1.id id, t1.staff staff, t1.researcher researcher, t1.admin admin, t1.prefs prefs, t1.page_loads page_loads, t1.last_activity last_activity, t1.selection_id selection_id, t2.class_id selected_course_id FROM user t1 left join selections t2 on t1.selection_id=t2.id WHERE t1.username = :username";
+        $query = "SELECT t1.id id, t1.staff staff, t1.researcher researcher, t1.admin admin, 
+            t1.prefs prefs, t1.page_loads page_loads, t1.last_activity last_activity, 
+            t1.selection_id selection_id, t2.class_id selected_course_id 
+            FROM user t1 left join selections t2 
+            on t1.selection_id=t2.id 
+            WHERE t1.username = :username 
+            order by t1.id asc";
         $bindings = array(":username" => $this->username);
         try {
             $res = $dbmgr->fetch_assoc( $query , $bindings );
@@ -98,7 +131,7 @@ class MUser
             var_dump($e->getTrace());
         }
         // populate user (if found)
-        if(count($res) == 1)
+        if(count($res) > 0)
         {
             $this->id = $res[0]['id'];
             $this->staff = $res[0]['staff'];
@@ -113,8 +146,16 @@ class MUser
             $this->selected_course_id = $res[0]['selected_course_id'];
             $this->LoadSelectedTopics();
 
+            if(count($res) > 1)
+            {
+                global $app_log;
+                $app_log->msg("MUser->read() ERROR: More than one user record found for ".$this->username.". Records found:\n".print_r($res, true));
+                $app_log->msg("MUser->read() backtrace: \n".print_r(debug_backtrace(), true));
+            }
+
             return True;
         }
+
         return False;
 
     }
@@ -132,15 +173,15 @@ class MUser
     function GetPref($key)
     {
         // return specific requested pref
-		if ($this->prefs != Null) {
-			if (array_key_exists($key, $this->prefs)) {
+        if ($this->prefs != Null) {
+            if (array_key_exists($key, $this->prefs)) {
                 $this->verifyPrefsValues($key, $this->prefs[$key]);
-				return $this->prefs[$key];
-			}
-			return Null;
-		} else {
-			return Null;
-		}
+                return $this->prefs[$key];
+            }
+            return Null;
+        } else {
+            return Null;
+        }
     }
 
     function SetPref($key, $val)
@@ -379,18 +420,18 @@ class UserManager{
     }
 
     function GetAccess(){ return isset($this->m_user->staff); }
-	function GetUserId(){ return $this->m_user->username; }
+    function GetUserId(){ return $this->m_user->username; }
 
-	function Login()
+    function Login()
     {
-        // set any default (in deveopement this will be the active user_id)		
+        // set any default (in deveopement this will be the active user_id)        
         //$username = 'test_user8';
         $username = 'jtritz';
         // check if the user just logged in through cosign
         if(isset($_SERVER['REMOTE_USER']))
             $username = $_SERVER["REMOTE_USER"];
         $this->m_user = new MUser($username);
-	}
+    }
 }
 
 ?>

@@ -13,7 +13,9 @@ $migrations = array(
     array('name' => 'CombineDuplicateProblemData', 'file' => 'combine_duplicate_problem_data.php'),
     array('name' => 'DropTempTables', 'file' => 'drop_temp_tables.php'),
     array('name' => 'FixStatsInProblemsTable', 'file' => 'fix_stats_in_problems_table.php'),
-    array('name' => 'FixTotTimeInProblemsTable', 'file' => 'fix_tot_time_in_problems_table.php')
+    array('name' => 'FixTotTimeInProblemsTable', 'file' => 'fix_tot_time_in_problems_table.php'),
+    array('name' => 'AddCreatedAtToUser', 'file' => 'add_created_at_to_user.php'),
+    array('name' => 'AddUniqueIndexForUserUsername', 'file' => 'add_unique_index_for_user_username.php')
 );
 
 require_once("setup.php");
