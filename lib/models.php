@@ -182,7 +182,7 @@ Class MProblem
 				$params = '';
 			}
 		}
-		return [$base_url, $params];	
+		return array($base_url, $params);	
 	}
 
 	function Get_GD_info()
