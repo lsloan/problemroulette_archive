@@ -1568,7 +1568,7 @@ class VProblemInfo
             ".
             $this->v_problem->m_prob_url
             ."'></iframe>
-            <div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
+            <div class='problem-footer-bar'>".$this->v_problem->m_prob_name."</div>
             <p align='center'>
             <font color='blue'>".$this->v_problem->m_prob_url."</font>
             </p>
