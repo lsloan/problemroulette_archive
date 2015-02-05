@@ -55,6 +55,8 @@ class CDbMgr
 	//	Primitives
 	function exec_query( $query, $bindings = null )
 	{
+
+		$this->log_error("TESTING", null);
 		try
 		{
 			$result = $this->m_link->prepare($query);
@@ -66,12 +68,12 @@ class CDbMgr
 			{
 				echo "query failed: " .$query. "(" . $this->m_link->errorCode() . ") \n" . print_r($this->m_link->errorInfo(), true);
 
-				log_error("CDbMgr->exec_query() Call to PDO prepare failed");
+				$this->log_error("CDbMgr->exec_query() Call to PDO prepare failed");
 			}
 		}
 		catch(PDOException $e)
 		{
-			log_error("CDbMgr->exec_query() PDOException thrown preparing statement", $e);
+			$this->log_error("CDbMgr->exec_query() PDOException thrown preparing statement", $e);
 		}
 
 		try
@@ -83,12 +85,12 @@ class CDbMgr
 			}
 			else
 			{
-				log_error("CDbMgr->exec_query() Call to PDO execute failed");
+				$this->log_error("CDbMgr->exec_query() Call to PDO execute failed");
 			}
 		}
 		catch(PDOException $e)
 		{
-			log_error("CDbMgr->exec_query() PDOException thrown executing statement", $e);
+			$this->log_error("CDbMgr->exec_query() PDOException thrown executing statement", $e);
 		}
 
 		return $result;
