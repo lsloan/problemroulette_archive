@@ -58,7 +58,7 @@ if (!isset($last_run['name']) || $last_run['name'] != $newest['name']) {
     $remaining = array();
 
     foreach($migrations as $m) {
-        if (false == array_search($m['name'], $all_run)) {
+        if (false === array_search($m['name'], $all_run)) {
             $remaining[] = $m;
         }
     }
