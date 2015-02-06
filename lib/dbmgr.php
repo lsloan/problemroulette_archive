@@ -83,7 +83,7 @@ class CDbMgr
 			}
 			else
 			{
-				$this->log_error("CDbMgr->exec_query() Call to PDO execute failed");
+				$this->log_error("CDbMgr->exec_query() Call to PDO execute failed\n   query: ".$query."\n    bindings:\n".print_r($bindings, true));
 			}
 		}
 		catch(PDOException $e)
