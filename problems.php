@@ -115,7 +115,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$response = new MResponse($c_start_time,$c_end_time,$user_id,$c_problem_id,$c_answer,$c_student_answered_correctly);
 		
 		$response->update_responses();
-		$response->update_stats();
+		// $response->update_stats();
 		$response->update_problems();
 		$response->update_12m_prob_ans();
 		
