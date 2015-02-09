@@ -83,7 +83,7 @@ if ($CTprefs->m_selected_topics_list != Null)
 // page construction
 if (isset($_POST['course_submission'])) {
 	$head = new CHeadCSSJavascript("Selections", array(), array());
-	$tab_nav = new VTabNavProbDisabled(new MTabNav('Selections'));
+	$tab_nav = new VTabNav(new MTabNav('Selections'));
 }
 else {
 	$head = new CHeadCSSJavascript("Selections", array(), array());
