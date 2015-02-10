@@ -38,6 +38,12 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$usrmgr->m_user->SetSelectedTopicsForClass($usrmgr->m_user->selected_course_id,$array);
 	}
 	header('Location:problems.php');
+} elseif (count($usrmgr->m_user->GetSelectedTopics()) < 1) {
+	
+	# redirect to selections
+	header('Location:selections.php');
+	exit;
+
 } elseif (isset($_POST['skip'])) {
 	//check to see if user hit "skip" button
 

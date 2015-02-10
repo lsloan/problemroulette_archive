@@ -79,37 +79,19 @@ class VTabNav
 
 	function Deliver()
 	{
-        $selected = 'Problems';
+        global $usrmgr;
+        $problems_tab_disabled = count($usrmgr->m_user->GetSelectedTopics()) < 1;
         $str = "<ul class='nav nav-tabs'>";
-		foreach($this->m_nav->m_pages as $tab=>$url)
+        foreach($this->m_nav->m_pages as $tab=>$url)
         {
             $tabStyle = '';
             if($this->m_nav->m_selected == $tab)
                 $tabStyle = 'active';
-            $str .= "<li  class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
-        }
-        $str .= "</ul>";
-        return $str;
-    }
-}
-
-class VTabNavProbDisabled extends VTabNav
-{
-	function Deliver()
-	{
-        $selected = 'Problems';
-        $str = "<ul class='nav nav-tabs'>";
-		foreach($this->m_nav->m_pages as $tab=>$url)
-        {
-            $tabStyle = '';
-            if($this->m_nav->m_selected == $tab)
-                $tabStyle = 'active';
-            if ($tab == 'Problems')
-                $str .= "<li  class='problem_tab disabled' ".
-            			$tabStyle."onclick='return false'>
-            			<a href='".$url."'>".$tab."</a></li>";
-            else
-            	$str .= "<li  class='".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+            if ($tab == 'Problems' && $problems_tab_disabled) {
+            		$str .= "<li class='primary-nav-tab disabled_problem_tab problem_tab disabled ".$tabStyle."'><a href='#' disabled='disabled'>".$tab."</a></li>";
+            } else {
+            		$str .= "<li class='primary-nav-tab ".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+            }
         }
         $str .= "</ul>";
         return $str;

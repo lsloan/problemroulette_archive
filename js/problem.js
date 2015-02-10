@@ -18,5 +18,11 @@ $(document).ready(function()
       $('#submit_answer').attr('disabled', true);
     }
   });
-
+  $('body').on('click', 'li.disabled_problem_tab', function(eventObj){
+    return false;
+  });
+  $('body').on('click', 'li.disabled_problem_tab a', function(){
+    eventObj.preventDefault();
+    return false;
+  });
 });

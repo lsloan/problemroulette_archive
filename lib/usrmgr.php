@@ -286,6 +286,13 @@ class MUser
         }
     }
 
+    function GetSelectedTopics() {
+        if ($this->selected_topics_list == Null || count($this->selected_topics_list) < 1 ) {
+            $this->LoadSelectedTopics();
+        }
+        return $this->selected_topics_list;
+    }
+
     // This function persists certain prefs in a new way --
     // either in their own columns in the user table or in 
     // the new selected_topics table. It returns true if 
