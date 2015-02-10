@@ -971,11 +971,11 @@ class MProblemPicker
 		if($usrmgr->m_user->selected_topics_list == null) {
 			$problem_counts_query =
 				"select 12mct.topic_id topic_id, t.name name, count(12mtp.id) total, ".
-				        "count(op.id) finished, count(12mtp.id) - count(op.id) remaining ".
+				 "count(op.id) finished, count(12mtp.id) - count(op.id) remaining ".
 				 "from 12m_class_topic 12mct ".
 				 "left join selections sel on 12mct.class_id=sel.class_id ".
 				 "join user u on sel.user_id=u.id ".
-				 "left join 12m_topic_prob 12mtp on ct.topic_id=12mtp.topic_id ".
+				 "left join 12m_topic_prob 12mtp on 12mct.topic_id=12mtp.topic_id ".
 				 "left join omitted_problems op on sel.user_id=op.user_id and 12mtp.problem_id=op.problem_id ".
 				 "left join topic t on 12mct.topic_id=t.id ".
 				 "where u.id=:user_id and sel.id=u.selection_id ".
@@ -983,7 +983,7 @@ class MProblemPicker
 		} else {
 			$problem_counts_query =
 				"select st.topic_id topic_id, t.name name, count(12mtp.id) total, ".
-				        "count(op.id) finished, count(12mtp.id) - count(op.id) remaining ".
+				 "count(op.id) finished, count(12mtp.id) - count(op.id) remaining ".
 				 "from selected_topics st ".
 				 "left join selections sel on st.selection_id=sel.id ".
 				 "left join user u on sel.user_id=u.id ".
