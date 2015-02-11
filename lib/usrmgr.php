@@ -39,10 +39,13 @@ class MUser
     {
         $this->username = $username;
         // look up user - create user (if not found)
-        if($this->read())
+        if($this->read()) {
             return;
-        else
+        } elseif ($this->read()) {
+            return;
+        } else {
             $this->create();
+        }
     }
 
     function create()
