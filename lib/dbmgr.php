@@ -57,16 +57,16 @@ class CDbMgr
 	{
 		try
 		{
-			$result = $this->m_link->prepare($query);
-			if ($result && ($this->m_link->errorCode() == '00000'))
+			$prepared_statement = $this->m_link->prepare($query);
+			if ($prepared_statement)
 			{
 				// success! keep going
 			}
 			else
 			{
-				echo "query failed: " .$query. "(" . $this->m_link->errorCode() . ") \n" . print_r($this->m_link->errorInfo(), true);
+				$this->log_error("CDbMgr->exec_query() Call to PDO prepare failed: " .$query. "\nps->errorCode: " . $prepared_statement->errorCode() . "\nps->errorInfo: " . print_r($prepared_statement->errorInfo(), true));
 
-				$this->log_error("CDbMgr->exec_query() Call to PDO prepare failed");
+				# $this->log_error("CDbMgr->exec_query() Call to PDO prepare failed");
 			}
 		}
 		catch(PDOException $e)
@@ -76,14 +76,14 @@ class CDbMgr
 
 		try
 		{
-			$res = $result->execute($bindings);
-			if ($res && ($this->m_link->errorCode() == '00000'))
+			$res = $prepared_statement->execute($bindings);
+			if ($res && ($prepared_statement->errorCode() == '00000'))
 			{
 				// success! keep going
 			}
 			else
 			{
-				$this->log_error("CDbMgr->exec_query() Call to PDO execute failed\n   query: ".$query."\n    bindings:\n".print_r($bindings, true));
+				$this->log_error("CDbMgr->exec_query() Call to PDO execute failed\n   query: ".$query."\n    bindings:\n".print_r($bindings, true). "\nps->errorCode: " . $prepared_statement->errorCode() . "\nps->errorInfo: " . print_r($prepared_statement->errorInfo(), true));
 			}
 		}
 		catch(PDOException $e)
@@ -91,7 +91,7 @@ class CDbMgr
 			$this->log_error("CDbMgr->exec_query() PDOException thrown executing statement", $e);
 		}
 
-		return $result;
+		return $prepared_statement;
 	}
 
 	function fetch_num( $query , $bindings = null )
