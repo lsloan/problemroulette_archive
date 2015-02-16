@@ -72,9 +72,11 @@ if (isset($_POST['edit_problem_name']))
     $old_topics = MProblem::get_problem_topics($problem_id);
     $to_add = array_diff($new_topic_id, $old_topics);
     $to_delete = array_diff($old_topics, $new_topic_id);
-    MTopic::remove_problem_topics($problem_id, $to_delete);
+    if(count($to_delete) > 0) {
+        MTopic::remove_problem_topics($problem_id, $to_delete);
+    }
     foreach ($to_add as $id) {
-    MTopic::update_problem_topic($problem_id, $id);
+        MTopic::update_problem_topic($problem_id, $id);
     }
     unset($id);
     # header('Location:problem_edit.php?p_id='.$problem_id);
