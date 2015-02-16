@@ -553,11 +553,22 @@ Class MTopic
 	public static function remove_problem_topics($prob_id, $topic_ids)
 	{ # $topic_ids is an array of ids
 		global $dbmgr;
-		$tids = implode(',', $topic_ids);
-		// $query = "DELETE FROM 12m_topic_prob WHERE problem_id = :prob_id AND topic_id IN (:topic_ids)";
-		$query = "DELETE FROM 12m_topic_prob WHERE problem_id = ".$prob_id." AND topic_id in (".$tids.")";
-		// $bindings = array(":prob_id"=>$prob_id, ":topic_ids"=>$tids);
-		$bindings = array();
+		$query = "DELETE FROM 12m_topic_prob WHERE problem_id = ? AND topic_id in (?,?,?,?,?,?,?,?,?,?)";
+		$bindings = array($prob_id);
+		$j = 0;
+		foreach($topic_ids as &$topic_id) {
+			$j++;
+			if($j > 9) {
+				$query .= " or topic_id in (?,?,?,?,?,?,?,?,?,?)";
+				$j = 0;
+			}
+			$bindings[] = $topic_id;
+		}
+		for(; $j < 10; $j++) {
+			$bindings[] = 0;
+		}
+		unset($topic_id);
+		unset($j);
 		$dbmgr->exec_query($query, $bindings);
 	}
 
