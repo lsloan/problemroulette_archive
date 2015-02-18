@@ -1,42 +1,22 @@
 $(document).ready(function() 
 {
 	// control of the add |problem,topic,class| related buttons, forms
-	// form should have id #add_x
-	// x button should have id add_x_form_remove
-	// cancel button should have id add_x_form_remove_cancel
-	$('#add_course, #add_topic, #add_problem').click(function(){
+	$('button#add_course, button#add_topic, button#add_problem').click(function(){
 		// show the form
-		eval('$("#'+$(this).attr('id')+'_form").show()');
-		// show the x and cancel form buttons to be able to hide the form
-		eval('$("#'+$(this).attr('id')+'_form_remove").show()');
+		document.getElementById($(this).attr('data-form')).style.display = "block";
+		// show the x and cancel buttons to be able to hide the form
+		document.getElementById($(this).attr('data-remove')).style.display = "inline"
+		document.getElementById($(this).attr('data-cancel')).style.display = "compact";
 	});
 
-	$('[id^=add_problem_form], [id^=add_topic_form], [id^=add_course_form]').click(function(){
-		var formid = $(this).attr('id');
-		var formid = formid.substring(0, formid.indexOf('_remove'));
-		// hide the form
-		eval('$("#'+formid+'").hide()');
+	$('a.hide_add_form, button.remove-add-CTP-form').click(function(){
+		// hide the form (which also hides the cancel button)
+		document.getElementById($(this).attr('data-form')).style.display = "none";
 		// hide the x button
-		eval('$("#'+formid+'_remove").hide()');
+		document.getElementById($(this).attr('data-remove')).style.display = "none";
 	});
 
-	// $('#add_topic').click(function(){
-	// 	$("#add_topic_form").show();
-	// 	$('.remove_add_topic_form').show();
-	// });
-	// $('.remove_add_topic_form').click(function(){
-	// 	$("#add_topic_form").hide();
-	// 	$('.remove_add_topic_form').hide();
-	// });
 	
-	// $('#add_problem').click(function(){
-	// 	$("#add_problem_form").show();
-	// 	$(".remove_add_problem_form").show();
-	// });
-	// $('.remove_add_problem_form').click(function(){
-	// 	$("#add_problem_form").hide();
-	// 	$('.remove_add_problem_form').hide();
-	// });
     //ADD PROBLEM//store all topic options in elem_init and determine length
     var elem_init = $("#topic_for_new_problem option");
     var PL_elem_init = $("#PL_dropdown_topic option");
