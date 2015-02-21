@@ -1,25 +1,21 @@
 $(document).ready(function() 
 {
-	$('#add_course').click(function(){
-		$("#add_course_form").show();
-	});
-	$('#remove_add_course_form').click(function(){
-		$("#add_course_form").hide();
+	// control of the add |problem,topic,class| related buttons, forms
+	$('button#add_course, button#add_topic, button#add_problem').click(function(){
+		// show the form
+		$($(this).data('form')).show();
+		// show the x and cancel buttons to be able to hide the form
+		$($(this).data('remove')).show();
+		$($(this).data('cancel')).show();
 	});
 
-	$('#add_topic').click(function(){
-		$("#add_topic_form").show();
+	$('a.hide_add_form, button.remove-add-CTP-form').click(function(){
+		// hide the form (which also hides the cancel button)
+		$($(this).data('form')).hide();
+		// hide the x button
+		$($(this).data('remove')).hide();
 	});
-	$('#remove_add_topic_form').click(function(){
-		$("#add_topic_form").hide();
-	});
-	
-	$('#add_problem').click(function(){
-		$("#add_problem_form").show();
-	});
-	$('#remove_add_problem_form').click(function(){
-		$("#add_problem_form").hide();
-	});
+
 	
     //ADD PROBLEM//store all topic options in elem_init and determine length
     var elem_init = $("#topic_for_new_problem option");

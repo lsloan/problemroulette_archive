@@ -430,12 +430,33 @@ class VProblemLibrary
 			<h4 class='summary-header'>
 				Update Problem Library
 			</h4>
-			<button class='btn btn-primary add-CTP' id='add_problem'>Add Problem</button>
-			<button class='btn remove-add-CTP-form' id='remove_add_problem_form'><i class='icon-remove'></i></button>
-			<button class='btn btn-primary add-CTP' id='add_topic'>Add Topic</button>
-			<button class='btn remove-add-CTP-form' id='remove_add_topic_form'><i class='icon-remove'></i></button>
-			<button class='btn btn-primary add-CTP' id='add_course'>Add Course</button>
-			<button class='btn remove-add-CTP-form' id='remove_add_course_form'><i class='icon-remove'></i></button>
+			<button class='btn btn-primary add-CTP' id='add_problem'
+				data-form='#add_problem_form' data-remove='#add_problem_form_remove' data-cancel='#add_problem_form_cancel'>
+				Add Problem
+			</button>
+			<button class='btn remove-add-CTP-form hide' id='add_problem_form_remove' title='Hide the Add Problem section'
+				data-form='#add_problem_form' data-cancel='#add_problem_form_cancel' data-remove='#add_problem_form_remove'>
+				<i class='icon-remove' aria-hidden='true'></i>
+				<span class='offscreen'>Hide add problem section</span>
+			</button>
+			<button class='btn btn-primary add-CTP' id='add_topic'
+				data-form='#add_topic_form' data-remove='#add_topic_form_remove' data-cancel='#add_topic_form_cancel'>
+				Add Topic
+			</button>
+			<button class='btn remove-add-CTP-form hide' id='add_topic_form_remove' title='Hide the Add Topic section'
+				data-form='#add_topic_form' data-cancel='#add_topic_form_cancel' data-remove='#add_topic_form_remove'>
+				<i class='icon-remove' aria-hidden='true'></i>
+				</i><span class='offscreen'>Hide add topic section</span>
+			</button>
+			<button class='btn btn-primary add-CTP' id='add_course'
+				data-form='#add_course_form' data-remove='#add_course_form_remove' data-cancel='#add_course_form_cancel'>
+				Add Course
+			</button>
+			<button class='btn remove-add-CTP-form hide' id='add_course_form_remove' title='Hide the Add Course section'
+				data-form='#add_course_form' data-cancel='#add_course_form_cancel' data-remove='#add_course_form_remove'>
+				<i class='icon-remove' aria-hidden='true'></i>
+				</i><span class='offscreen'>Hide add course section</span>
+			</button>
 			<div class='div-update-problem-library'>
 			<form id='add_course_form' action='' method='POST' class='add-CTP-form'>
 			<p>
@@ -446,7 +467,12 @@ class VProblemLibrary
 			<input type='text' placeholder='Course Name' id='add_course_name' name='add_course_name' class='input-error'/>
 			</p>
 			<p>
-			<button class='btn' type='submit' id='submit_add_course'>Submit</button>
+			<button class='btn btn-inverse' type='submit' id='submit_add_course'>Create Course</button>
+
+			<a class='btn btn-inverse hide_add_form' id='add_course_form_cancel'
+				data-form='#add_course_form' data-cancel='#add_course_form_cancel' data-remove='#add_course_form_remove'>
+				Cancel Create Course
+			</a>
 			</p>
 			</form>
 			<form id='add_topic_form' action='' method='POST' class='add-CTP-form'>
@@ -482,7 +508,11 @@ class VProblemLibrary
 			<input type='text' placeholder='Topic Name' id='add_topic_name' name='add_topic_name' class='input-error'/>
 			</p>
 			<p>
-			<button class='btn' type='submit' id='submit_add_topic'>Submit</button>
+			<button class='btn btn-inverse' type='submit' id='submit_add_topic'>Create Topic</button>
+			<a class='btn btn-inverse hide_add_form' id='add_topic_form_cancel'
+				data-form='#add_topic_form' data-cancel='#add_topic_form_cancel' data-remove='#add_topic_form_remove'>
+				Cancel Create Topic
+			</a>
 			</p>
 			</form>
 			<form id='add_problem_form' action='' method='POST' class='add-CTP-form'>
@@ -567,7 +597,11 @@ class VProblemLibrary
 			    <input type='text' placeholder='Solution URL' id='add_problem_solution_url' name='add_problem_solution_url' class='input-xxlarge' maxlength='300'/>
 			</p>
 			<p>
-			<button class='btn' type='submit' id='submit_add_problem' disabled='disabled'>Submit</button>
+			<button class='btn btn-inverse' type='submit' id='submit_add_problem' disabled='disabled'>Create Problem</button>
+			<a class='btn btn-inverse hide_add_form' id='add_problem_form_cancel'
+				data-form='#add_problem_form' data-cancel='#add_problem_form_cancel' data-remove='#add_problem_form_remove'>
+				Cancel Create Problem
+			</a>
 			</p>
             </form>
 			</div>
