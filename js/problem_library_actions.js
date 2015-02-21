@@ -3,17 +3,17 @@ $(document).ready(function()
 	// control of the add |problem,topic,class| related buttons, forms
 	$('button#add_course, button#add_topic, button#add_problem').click(function(){
 		// show the form
-		document.getElementById($(this).attr('data-form')).style.display = "block";
+		$($(this).data('form')).show();
 		// show the x and cancel buttons to be able to hide the form
-		document.getElementById($(this).attr('data-remove')).style.display = "inline"
-		document.getElementById($(this).attr('data-cancel')).style.display = "compact";
+		$($(this).data('remove')).show();
+		$($(this).data('cancel')).show();
 	});
 
 	$('a.hide_add_form, button.remove-add-CTP-form').click(function(){
 		// hide the form (which also hides the cancel button)
-		document.getElementById($(this).attr('data-form')).style.display = "none";
+		$($(this).data('form')).hide();
 		// hide the x button
-		document.getElementById($(this).attr('data-remove')).style.display = "none";
+		$($(this).data('remove')).hide();
 	});
 
 	

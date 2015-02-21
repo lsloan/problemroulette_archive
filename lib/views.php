@@ -431,29 +431,29 @@ class VProblemLibrary
 				Update Problem Library
 			</h4>
 			<button class='btn btn-primary add-CTP' id='add_problem'
-				data-form='add_problem_form' data-remove='add_problem_form_remove' data-cancel='add_problem_form_cancel'>
+				data-form='#add_problem_form' data-remove='#add_problem_form_remove' data-cancel='#add_problem_form_cancel'>
 				Add Problem
 			</button>
 			<button class='btn remove-add-CTP-form hide' id='add_problem_form_remove' title='Hide the Add Problem section'
-				data-form='add_problem_form' data-cancel='add_problem_form_cancel' data-remove='add_problem_form_remove'>
+				data-form='#add_problem_form' data-cancel='#add_problem_form_cancel' data-remove='#add_problem_form_remove'>
 				<i class='icon-remove' aria-hidden='true'></i>
 				<span class='offscreen'>Hide add problem section</span>
 			</button>
 			<button class='btn btn-primary add-CTP' id='add_topic'
-				data-form='add_topic_form' data-remove='add_topic_form_remove' data-cancel='add_topic_form_cancel'>
+				data-form='#add_topic_form' data-remove='#add_topic_form_remove' data-cancel='#add_topic_form_cancel'>
 				Add Topic
 			</button>
 			<button class='btn remove-add-CTP-form hide' id='add_topic_form_remove' title='Hide the Add Topic section'
-				data-form='add_topic_form' data-cancel='add_topic_form_cancel' data-remove='add_topic_form_remove'>
+				data-form='#add_topic_form' data-cancel='#add_topic_form_cancel' data-remove='#add_topic_form_remove'>
 				<i class='icon-remove' aria-hidden='true'></i>
 				</i><span class='offscreen'>Hide add topic section</span>
 			</button>
 			<button class='btn btn-primary add-CTP' id='add_course'
-				data-form='add_course_form' data-remove='add_course_form_remove' data-cancel='add_course_form_cancel'>
+				data-form='#add_course_form' data-remove='#add_course_form_remove' data-cancel='#add_course_form_cancel'>
 				Add Course
 			</button>
 			<button class='btn remove-add-CTP-form hide' id='add_course_form_remove' title='Hide the Add Course section'
-				data-form='add_course_form' data-cancel='add_course_form_cancel' data-remove='add_course_form_remove'>
+				data-form='#add_course_form' data-cancel='#add_course_form_cancel' data-remove='#add_course_form_remove'>
 				<i class='icon-remove' aria-hidden='true'></i>
 				</i><span class='offscreen'>Hide add course section</span>
 			</button>
@@ -470,7 +470,7 @@ class VProblemLibrary
 			<button class='btn btn-inverse' type='submit' id='submit_add_course'>Create Course</button>
 
 			<a class='btn btn-inverse hide_add_form' id='add_course_form_cancel'
-				data-form='add_course_form' data-cancel='add_course_form_cancel' data-remove='add_course_form_remove'>
+				data-form='#add_course_form' data-cancel='#add_course_form_cancel' data-remove='#add_course_form_remove'>
 				Cancel Create Course
 			</a>
 			</p>
@@ -510,7 +510,7 @@ class VProblemLibrary
 			<p>
 			<button class='btn btn-inverse' type='submit' id='submit_add_topic'>Create Topic</button>
 			<a class='btn btn-inverse hide_add_form' id='add_topic_form_cancel'
-				data-form='add_topic_form' data-cancel='add_topic_form_cancel' data-remove='add_topic_form_remove'>
+				data-form='#add_topic_form' data-cancel='#add_topic_form_cancel' data-remove='#add_topic_form_remove'>
 				Cancel Create Topic
 			</a>
 			</p>
@@ -599,7 +599,7 @@ class VProblemLibrary
 			<p>
 			<button class='btn btn-inverse' type='submit' id='submit_add_problem' disabled='disabled'>Create Problem</button>
 			<a class='btn btn-inverse hide_add_form' id='add_problem_form_cancel'
-				data-form='add_problem_form' data-cancel='add_problem_form_cancel' data-remove='add_problem_form_remove'>
+				data-form='#add_problem_form' data-cancel='#add_problem_form_cancel' data-remove='#add_problem_form_remove'>
 				Cancel Create Problem
 			</a>
 			</p>
