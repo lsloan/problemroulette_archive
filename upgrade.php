@@ -20,6 +20,8 @@ $migrations = array(
     array('name' => 'AddRatingScalesTable', 'file' => 'add_rating_scales_table.php'),
     array('name' => 'AddRatingsTable', 'file' => 'add_ratings_table.php'),
     array('name' => 'AddDisableRatingToClass', 'file' => 'add_disable_rating_to_class.php')
+    array('name' => 'AddUniqueIndexForResponses', 'file' => 'add_unique_index_for_responses.php')
+    array('name' => 'AddDelaySolutionToClass', 'file' => 'add_delay_solution_to_class.php')
 );
 
 require_once("setup.php");

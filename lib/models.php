@@ -371,20 +371,25 @@ Class MCourse
 		var $m_id;
 		var $m_name;
 		var $m_disable_rating;
+		var $m_delay_solution;
 		var $m_topics = Array(); // Courses have an array of topics
 
-	function __construct($id,$name,$disable_rating)
+	function __construct($id,$name,$disable_rating,$delay_solution)
 	{
 		$this->m_id = $id;
 		$this->m_name = $name;
 		$this->m_disable_rating = $disable_rating;
+		$this->m_delay_solution = $delay_solution;
 	}
-	
-	function create($name, $disable_rating = false)
+
+	function create($name, $disable_rating = false, $delay_solution = false)
 	{
 		global $dbmgr;
-		$query = "INSERT INTO class(name, disable_rating) VALUES (:name, :disable_rating)";
-		$bindings = array(":name" => $name, ":disable_rating" => $disable_rating);
+		$query = "INSERT INTO class(name, disable_rating, :delay_solution)
+		VALUES (:name, :disable_rating, :delay_solution)";
+		$bindings = array(":name" => $name,
+						  ":disable_rating" => $disable_rating,
+						  ":delay_solution" => $delay_solution);
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
@@ -394,11 +399,25 @@ Class MCourse
 		$query = "SELECT * FROM class WHERE id = :id";
 		$bindings = array(":id" => $id);
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		$course = new MCourse($res[0]['id'],$res[0]['name'],$res[0]['disable_rating']);
-		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
-		return $course;
+		if ($res) {
+			$course = new MCourse($res[0]['id'],$res[0]['name'],$res[0]['disable_rating'],$res[0]['delay_solution']);
+			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
+			return $course;
+		}
+		else return Null;
 	}
-	
+
+
+	public static function get_delay_solution($course_id)
+	{
+		global $dbmgr;
+		$query = "SELECT delay_solution FROM class WHERE id = :id";
+		$bindings = array(":id" => $course_id);
+		$res = $dbmgr->fetch_assoc( $query , $bindings );
+		$delay_solution = $res[0]['delay_solution'];
+		return $delay_solution;
+	}
+
 	public static function get_courses($course_ids)
 	{
 		global $dbmgr;
@@ -426,7 +445,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']);
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating'],$res[$i]['delay_solution']);
 		}
 		return $all_courses;
 	}
@@ -439,7 +458,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$course = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']);
+			$course = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating'],$res[$i]['delay_solution']);
 			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 			array_push($all_courses, $course);
 		}
@@ -548,7 +567,8 @@ Class MTopic
 		}
 		else
 		{
-			echo "Error! please contact mcmills@umich.edu.";
+			global $app_log;
+            $app_log->msg("ERROR in get_all_topics_in_course - course_id: ".$course_id);
 		}
 
 		// TODO: Handle missing course case possibly as distinct from the zero-topic case
@@ -733,6 +753,7 @@ Class MCourseTopicNav
 Class MCTSelect
 {
 	var $m_selected_course;//get from preferences
+	var $m_delay_solution; //number of attempts by student for a problem befoere they get the solution
 	var $m_selected_topics_list;//one or more topics (By ID), get from preferences
 	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
 								//^^^^^Associative array (omitted_problems_list[topic_id] = array of omitted problems in topic)
@@ -745,6 +766,7 @@ Class MCTSelect
 	{
 		global $usrmgr;
 		$this->m_selected_course = $usrmgr->m_user->selected_course_id;
+		$this->m_delay_solution = MCourse::get_course_by_id($this->m_selected_course);
 		$this->m_selected_topics_list = $usrmgr->m_user->selected_topics_list;
 		$num_selected_topics = count($this->m_selected_topics_list);
 
@@ -911,8 +933,8 @@ Class MDirector
 	public static function add_course_to_db($course_name)
 	{
 		global $dbmgr;
-		$query = "INSERT INTO class (name) VALUES (:name)";
-		$bindings = array(":name" => $course_name);
+		$query = "INSERT INTO class (name, delay_solution) VALUES (:name, :delay_solution)";
+		$bindings = array(":name" => $course_name, ":delay_solution" => 0);
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
@@ -1234,7 +1256,7 @@ Class MResponse
 			error_log($backtrace);
 		}
 	}
-	
+
 }
 
 Class MUserSummary
