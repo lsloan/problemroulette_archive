@@ -15,7 +15,8 @@ $migrations = array(
     array('name' => 'FixStatsInProblemsTable', 'file' => 'fix_stats_in_problems_table.php'),
     array('name' => 'FixTotTimeInProblemsTable', 'file' => 'fix_tot_time_in_problems_table.php'),
     array('name' => 'AddCreatedAtToUser', 'file' => 'add_created_at_to_user.php'),
-    array('name' => 'AddUniqueIndexForUserUsername', 'file' => 'add_unique_index_for_user_username.php')
+    array('name' => 'AddUniqueIndexForUserUsername', 'file' => 'add_unique_index_for_user_username.php'),
+    array('name' => 'AddUniqueIndexForResponses', 'file' => 'add_unique_index_for_responses.php')
 );
 
 require_once("setup.php");
