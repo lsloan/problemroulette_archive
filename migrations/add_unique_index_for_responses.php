@@ -33,7 +33,8 @@ delete from responses where id in (select id from records_to_remove order by id)
 SQL;
 
 $this->add_responses_uniqueness_idx =<<<SQL
-create unique index responses_uniqueness_idx on responses(user_id, prob_id, start_time)
+create unique index responses_uniqueness_idx on responses(user_id, prob_id, start_time);
+create index responses_answer_idx on responses(answer);
 SQL;
 
 # =========== QUERIES TO FIX STATS =============================================
@@ -60,13 +61,20 @@ delete from 12m_prob_ans
 SQL;
 
 $this->rebuild_12m_prob_ans_table =<<<SQL
-insert into 12m_prob_ans (prob_id, ans_num, count) (select prob_id, answer ans_num, count(*) count from responses where answer > 0 group by prob_id, answer)
+insert into 12m_prob_ans (prob_id, ans_num, count) (
+    select prob_id, answer ans_num, count(*) count 
+    from responses where answer > 0 group by prob_id, answer)
+create index 12m_prob_ans_ans_num_idx on 12m_prob_ans(ans_num);
 SQL;
 
 # =========== QUERIES TO COUNT RECORDS =================================================\
 
 $this->count_responses =<<<SQL
-select count(*) num_responses from responses
+select count(*) num_non_skip_responses from responses where answer > 0
+SQL;
+
+$this->count_sum_of_12m_prob_ans_count =<<<SQL
+select sum(count) counts_from_12m_prob_ans from 12m_prob_ans
 SQL;
 
 $this->count_records_with_duplicates =<<<SQL
@@ -85,32 +93,86 @@ $this->count_records_to_remove =<<<SQL
 select count(*) num_records_to_remove from records_to_remove
 SQL;
 
+$this->count_errors_in_tot_tries =<<<SQL
+select count(*) errors_in_tot_tries from (
+    select t1.id, t1.tot_tries-count(t2.id) diff 
+    from problems t1 join responses t2 on t1.id=t2.prob_id 
+    where t2.answer > 0 group by t2.prob_id
+) t3 where t3.diff <> 0
+SQL;
+
+$this->count_errors_in_tot_correct =<<<SQL
+select count(*) errors_in_tot_correct from (
+    select t1.id, t1.tot_correct-count(t2.id) diff 
+    from problems t1 join responses t2 on t1.id=t2.prob_id 
+    where t2.answer=t1.correct group by t2.prob_id
+) t3 where t3.diff <> 0
+SQL;
+
+$this->count_errors_in_tot_time =<<<SQL
+select count(*) errors_in_tot_time from (
+    select t1.id, t1.tot_time-sum(timestampdiff(SECOND, t2.start_time,t2.end_time)) diff 
+    from problems t1 join responses t2 on t1.id=t2.prob_id 
+    where t2.answer > 0 group by t2.prob_id
+) t3 where t3.diff <> 0
+SQL;
+
+$this->count_responses_by_answer =<<<SQL
+select answer,count(*) response_count_by_ans from responses where answer > 0 group by answer
+SQL;
+
+$this->count_sum_of_12m_prob_ans_count_by_ans_num =<<<SQL
+select ans_num, sum(count) sum_count_by_ans from 12m_prob_ans group by ans_num
+SQL;
 
     }
 
     function migrate() {
+        global $app_log;
+        $app_log->msg("AddUniqueIndexForResponses starting migration");
         $num_responses_before = $this->db->fetch_assoc($this->count_responses);
         $num_records_with_duplicates_before = $this->db->fetch_assoc($this->count_records_with_duplicates);
+        $app_log->msg("AddUniqueIndexForResponses collected initial record counts");
 
         $this->db->exec_query($this->create_duplicate_responses_table);
+        $app_log->msg("AddUniqueIndexForResponses created duplicate_responses table");
         $this->db->exec_query($this->create_records_to_remove_table);
+        $app_log->msg("AddUniqueIndexForResponses created records_to_remove table");
 
         $num_duplicates_to_remove = $this->db->fetch_assoc($this->count_duplicates_to_remove);
         $num_records_to_remove = $this->db->fetch_assoc($this->count_records_to_remove);
 
         $this->db->exec_query($this->delete_duplicate_responses);
+        $app_log->msg("AddUniqueIndexForResponses deleted duplicate responses");
         $this->db->exec_query($this->add_responses_uniqueness_idx);
+        $app_log->msg("AddUniqueIndexForResponses added responses_uniqueness_idx index");
         $this->db->exec_query($this->drop_temp_tables);
+        $app_log->msg("AddUniqueIndexForResponses dropped temp tables");
 
         $num_responses_after = $this->db->fetch_assoc($this->count_responses);
         $num_records_with_duplicates_after = $this->db->fetch_assoc($this->count_records_with_duplicates);
 
         $update1 = $this->db->exec_query($this->update_problems_tot_time_and_tot_tries);
+        $app_log->msg("AddUniqueIndexForResponses updated tot_time and tot_tries");
         $update2 = $this->db->exec_query($this->update_problems_tot_correct);
+        $app_log->msg("AddUniqueIndexForResponses updated tot_correct");
 
         $this->db->exec_query($this->backup_12m_prob_ans_table);
         $this->db->exec_query($this->clear_12m_prob_ans_table);
         $update3 = $this->db->exec_query($this->rebuild_12m_prob_ans_table);
+        $app_log->msg("AddUniqueIndexForResponses rebuilt 12m_prob_ans table");
+
+        $num_errors_in_tot_tries = $this->db->fetch_assoc($this->count_errors_in_tot_tries);
+        $num_errors_in_tot_correct = $this->db->fetch_assoc($this->count_errors_in_tot_correct);
+        $num_errors_in_tot_time = $this->db->fetch_assoc($this->count_errors_in_tot_time);
+        $app_log->msg("AddUniqueIndexForResponses retrieved status of responses updates");
+
+        $responses_by_answer = $this->db->fetch_assoc($this->count_responses_by_answer);
+        $sum_of_12m_prob_ans_count_by_ans_num = $this->db->fetch_assoc($this->count_sum_of_12m_prob_ans_count_by_ans_num);
+
+        $sum_of_12m_prob_ans_count = $this->db->fetch_assoc($this->count_sum_of_12m_prob_ans_count);
+        $app_log->msg("AddUniqueIndexForResponses retrieved status of 12m_prob_ans updates");
+
 
 
         ob_start();
@@ -123,9 +185,16 @@ SQL;
         print_r($num_responses_after[0]);
         print_r($num_records_with_duplicates_after[0]);
         print("\n=========== FIX STATS =============================================\n");
-        print_r($update1);
-        print_r($update2);
-        print_r($update3);
+        print_r($num_errors_in_tot_tries[0]);
+        print_r($num_errors_in_tot_correct[0]);
+        print_r($num_errors_in_tot_time[0]);
+
+        for ($i = 0; $i <= 6; $i++) {
+            print("  answer ".$responses_by_answer[$i]['answer']."  responses table: ".$responses_by_answer[$i]['response_count_by_ans']."  12m_prob_ans table: ".$sum_of_12m_prob_ans_count_by_ans_num[$i]['sum_count_by_ans']."\n");
+        }
+        print_r($num_responses_after[0]);
+        print_r($sum_of_12m_prob_ans_count[0]);
+
         $msg = ob_get_clean();
         $this->info($msg);
     }
