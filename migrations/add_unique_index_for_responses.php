@@ -189,7 +189,7 @@ SQL;
         print_r($num_errors_in_tot_correct[0]);
         print_r($num_errors_in_tot_time[0]);
 
-        for ($i = 0; $i <= 6; $i++) {
+        for ($i = 0; $i < count($responses_by_answer); $i++) {
             print("  answer ".$responses_by_answer[$i]['answer']."  responses table: ".$responses_by_answer[$i]['response_count_by_ans']."  12m_prob_ans table: ".$sum_of_12m_prob_ans_count_by_ans_num[$i]['sum_count_by_ans']."\n");
         }
         print_r($num_responses_after[0]);
