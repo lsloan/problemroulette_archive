@@ -63,7 +63,7 @@ SQL;
 $this->rebuild_12m_prob_ans_table =<<<SQL
 insert into 12m_prob_ans (prob_id, ans_num, count) (
     select prob_id, answer ans_num, count(*) count 
-    from responses where answer > 0 group by prob_id, answer)
+    from responses where answer > 0 group by prob_id, answer);
 create index 12m_prob_ans_ans_num_idx on 12m_prob_ans(ans_num);
 SQL;
 
