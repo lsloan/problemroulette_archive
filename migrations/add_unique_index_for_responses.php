@@ -64,6 +64,9 @@ $this->rebuild_12m_prob_ans_table =<<<SQL
 insert into 12m_prob_ans (prob_id, ans_num, count) (
     select prob_id, answer ans_num, count(*) count 
     from responses where answer > 0 group by prob_id, answer);
+SQL;
+
+$this->create_12m_prob_ans_ans_num_idx =<<<SQL
 create index 12m_prob_ans_ans_num_idx on 12m_prob_ans(ans_num);
 SQL;
 
@@ -152,14 +155,15 @@ SQL;
         $num_responses_after = $this->db->fetch_assoc($this->count_responses);
         $num_records_with_duplicates_after = $this->db->fetch_assoc($this->count_records_with_duplicates);
 
-        $update1 = $this->db->exec_query($this->update_problems_tot_time_and_tot_tries);
+        $this->db->exec_query($this->update_problems_tot_time_and_tot_tries);
         $app_log->msg("AddUniqueIndexForResponses updated tot_time and tot_tries");
-        $update2 = $this->db->exec_query($this->update_problems_tot_correct);
+        $this->db->exec_query($this->update_problems_tot_correct);
         $app_log->msg("AddUniqueIndexForResponses updated tot_correct");
 
         $this->db->exec_query($this->backup_12m_prob_ans_table);
         $this->db->exec_query($this->clear_12m_prob_ans_table);
-        $update3 = $this->db->exec_query($this->rebuild_12m_prob_ans_table);
+        $this->db->exec_query($this->rebuild_12m_prob_ans_table);
+        $this->db->exec_query($this->create_12m_prob_ans_ans_num_idx);
         $app_log->msg("AddUniqueIndexForResponses rebuilt 12m_prob_ans table");
 
         $num_errors_in_tot_tries = $this->db->fetch_assoc($this->count_errors_in_tot_tries);
@@ -185,9 +189,9 @@ SQL;
         print_r($num_responses_after[0]);
         print_r($num_records_with_duplicates_after[0]);
         print("\n=========== FIX STATS =============================================\n");
-        print_r($num_errors_in_tot_tries[0]);
-        print_r($num_errors_in_tot_correct[0]);
-        print_r($num_errors_in_tot_time[0]);
+        print_r($num_errors_in_tot_tries);
+        print_r($num_errors_in_tot_correct);
+        print_r($num_errors_in_tot_time);
 
         for ($i = 0; $i < count($responses_by_answer); $i++) {
             print("  answer ".$responses_by_answer[$i]['answer']."  responses table: ".$responses_by_answer[$i]['response_count_by_ans']."  12m_prob_ans table: ".$sum_of_12m_prob_ans_count_by_ans_num[$i]['sum_count_by_ans']."\n");
