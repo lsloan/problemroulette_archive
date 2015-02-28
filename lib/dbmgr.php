@@ -81,6 +81,11 @@ class CDbMgr
 			{
 				// success! keep going
 			}
+			elseif ($prepared_statement->errorCode() == '23000')
+			{
+				// uniqueness constraint violation -- log a backtrace!
+				$this->log_error("CDbMgr->exec_query() Call to PDO execute failed\n   query: ".$query."\n    bindings:\n".print_r($bindings, true). "\nps->errorCode: " . $prepared_statement->errorCode() . "\nps->errorInfo: " . print_r($prepared_statement->errorInfo(), true)."\nback_trace:\n".print_r(debug_backtrace(), true));
+			}
 			else
 			{
 				$this->log_error("CDbMgr->exec_query() Call to PDO execute failed\n   query: ".$query."\n    bindings:\n".print_r($bindings, true). "\nps->errorCode: " . $prepared_statement->errorCode() . "\nps->errorInfo: " . print_r($prepared_statement->errorInfo(), true));
