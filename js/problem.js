@@ -21,8 +21,25 @@ $(document).ready(function()
   $('body').on('click', 'li.disabled_problem_tab', function(eventObj){
     return false;
   });
-  $('body').on('click', 'li.disabled_problem_tab a', function(){
+  $('body').on('click', 'li.disabled_problem_tab a', function(eventObj){
     eventObj.preventDefault();
     return false;
+  });
+  $('body').on('click', 'input#ratings-form-submit', function(eventObj){
+    eventObj.preventDefault();
+    var params = $(this).closest('form').serializeArray();
+    var url = $(this).closest('form').attr('action');
+    $.ajax(url, {
+      type: 'POST',
+      dataType: 'json',
+      data: params,
+      success: function(data){
+        alert('data');
+      },
+      error : function(jqXHR, textStatus, errorThrown){
+        alert("An unknown error occurred while trying to remove the file.  Please refresh your browser and try again.");
+      }
+    });
+
   });
 });

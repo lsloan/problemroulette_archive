@@ -1566,4 +1566,98 @@ class GlobalAlert
 	}
 }
 
+class RatingScale
+{
+	var $m_id;
+	var $m_name;
+	var $m_min_value;
+	var $m_max_value;
+	var $m_step;
+	var $m_min_label;
+	var $m_max_label;
+	var $m_min_icon;
+	var $m_max_icon;
+
+	function __construct($id, $name, $min_value, $max_value, $step, $min_label, $max_label, $min_icon, $max_icon)
+	{
+		$this->m_id = $id;
+		$this->m_name = $name;
+		$this->m_min_value = $min_value;
+		$this->m_max_value = $max_value;
+		$this->m_step = $step;
+		$this->m_min_label = $min_label;
+		$this->m_max_label = $max_label;
+		$this->m_min_icon = $min_icon;
+		$this->m_max_icon = $max_icon;
+	}
+
+	public static function rating_scales() {
+		global $dbmgr;
+		$query = "select * from rating_scales";
+		$bindings = array();
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$rating_scales = array();
+		foreach ($res as $key => $value) {
+			$rating_scales[] = new RatingScale(
+				$value['id'], $value['name'], $value['min_value'], $value['max_value'], $value['step'],
+				$value['min_label'], $value['max_label'], $value['min_icon'], $value['max_icon']
+			);
+		}
+		return $rating_scales;
+	}
+
+
+}
+
+class Rating
+{
+	var $m_id;
+	var $m_problem_id;
+	var $m_rating_scale_id;
+	var $m_user_id;
+	var $m_rating;
+
+	function __construct($id, $problem_id, $rating_scale_id, $user_id, $rating)
+	{
+		$this->m_id = $id;
+		$this->m_problem_id = $problem_id;
+		$this->m_rating_scale_id = $rating_scale_id;
+		$this->m_user_id = $user_id;
+		$this->m_rating = $rating;
+	}
+
+	function save() {
+		global $dbmgr;
+		$query =
+			"INSERT INTO ratings (problem_id, rating_scale_id, user_id, rating) ".
+			"VALUES (:problem_id, :rating_scale_id, :user_id, :rating)";
+		$bindings = array(
+			":problem_id"      	=> $this->m_problem_id,
+			":rating_scale_id"  => $this->m_rating_scale_id,
+			":user_id"   				=> $this->m_user_id,
+			":rating" 					=> $this->m_rating
+			);
+		$rating_id = $dbmgr->handle_insert( $query , $bindings );
+		$this->m_id = $rating_id;
+	}
+
+
+
+	public static function ratings() {
+		global $dbmgr;
+		$query = "select * from ratings";
+		$bindings = array();
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$ratings = array();
+		foreach ($res as $key => $value) {
+			$ratings[] = new Rating(
+				$value['id'], $value['problem_id'], $value['rating_scale_id'], $value['user_id'], $value['rating']
+			);
+		}
+		return $ratings;
+	}
+
+
+}
+
 ?>

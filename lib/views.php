@@ -1212,6 +1212,8 @@ class VProblems_submitted
 	var $v_problem_counts_by_topic;
 	var $v_solve_time;
 	var $v_student_answer;
+	var $v_rating_scales;
+
 
 	function __construct($picked_problem, $problem_counts_by_topic, $student_answer, $solve_time = 0)
 	{
@@ -1219,6 +1221,7 @@ class VProblems_submitted
 		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
 		$this->v_student_answer = $student_answer;
 		$this->v_solve_time = $solve_time;
+		$this->v_rating_scales = RatingScale::rating_scales();
 	}
 	
 	function Deliver()
@@ -1272,6 +1275,67 @@ class VProblems_submitted
 			}
 			$histogram_ans_string .= $alphabet[($i-1)]."|";
 		}
+
+		$ratings_div = '';
+		if ($this->v_rating_scales)
+		{
+			$ratings_div .= "<div class='problem-ratings container'>
+			<form method='post' action='ratings.php' id='problem-rating-form'>
+			<input type='hidden' name='problem_id' value='".$this->v_picked_problem->m_prob_id."'/>
+			";
+			foreach ($this->v_rating_scales as $key => $value) {
+				$ratings_div .= "
+				<div class='ratings-form problem-rating ".$value->m_name."'>
+					<div class='row'>
+						<div class='offset1 span9 text-left'>
+							Optional: Please rate the <em>".$value->m_name."</em> of this problem
+						</div>
+					</div>
+					<div class='row'>
+						<div class='span3 text-center'>
+							<img src='img/".$value->m_min_icon."'></img>
+						</div>
+						<div class='offset5 span3 text-center'>
+							<img src='img/".$value->m_max_icon."'></img>
+						</div>
+					</div>
+					<div class='row'>
+						<div class='offset1 span1 text-center'>
+							<input type='radio' name='rating-".$value->m_name."' value='1'>
+						</div>
+						<div class='offset1 span1 text-center'>
+							<input type='radio' name='rating-".$value->m_name."' value='2'>
+						</div>
+						<div class='offset1 span1 text-center'>
+							<input type='radio' name='rating-".$value->m_name."' value='3'>
+						</div>
+						<div class='offset1 span1 text-center'>
+							<input type='radio' name='rating-".$value->m_name."' value='4'>
+						</div>
+						<div class='offset1 span1 text-center'>
+							<input type='radio' name='rating-".$value->m_name."' value='5'>
+						</div>
+					</div>
+					<div class='row'>
+						<div class='span3 text-center'>".$value->m_min_label."</div>
+						<div class='span5 text-center'>
+							------- line goes here -------
+						</div>
+						<div class='span3 text-center'>".$value->m_max_label."</div>
+					</div>
+				</div>
+				";
+			}
+			$ratings_div .= "
+				<div class='row'>
+					<div class='text-center'>
+						<input type='submit' value='Submit Rating' id='ratings-form-submit'/>
+					</div>
+				</div>
+			</form>
+			</div>";
+		}
+
 		
     $str = "<p class='half-line'>&nbsp;</p>
 			<p>Selected Topics/Remaining Problems: ";
@@ -1317,6 +1381,8 @@ class VProblems_submitted
 			<img class='histogram'
 			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
 			</img>
+			".$ratings_div.
+			"
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
