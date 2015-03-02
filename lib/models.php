@@ -1657,7 +1657,24 @@ class Rating
 		return $ratings;
 	}
 
-
+	public static function rating_stats($problem_ids = array()){
+		global $dbmgr;
+		$ratings = array();
+		$bindings = array();
+		if (count($problem_ids) > 0) {
+			$bindString = $dbmgr->bindParamArray("prob_id", $problem_ids, $bindings);
+			$query = 'select problem_id, count(rating) count, AVG(rating) average from ratings where problem_id in ('.$bindString.') group by problem_id order by problem_id';
+			$res = $dbmgr->fetch_assoc( $query, $bindings );
+			foreach ($res as $value) {
+				$ratings[(string)$value['problem_id']] = array(
+					'problem_id' => $value['problem_id'],
+					'count' => $value['count'],
+					'average' => $value['average']
+				);
+			}
+		}
+		return $ratings;
+	}
 }
 
 ?>

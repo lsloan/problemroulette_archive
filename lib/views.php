@@ -689,6 +689,12 @@ class VProblemLibrary
 					
 			if (count($this->v_problem_library_list)>0)
 			{
+				$problem_ids = array();
+				foreach ($this->v_problem_library_list as $problem) {
+					$problem_ids[] = $problem->m_prob_id;
+				}
+				$ratings = Rating::rating_stats($problem_ids);
+
 				$str .= "
 				</div>
 				<div>
@@ -702,6 +708,8 @@ class VProblemLibrary
 							<th>Total Tries</th>
 							<th>Accuracy&nbsp;&nbsp;&nbsp;</th>
 							<th>Average Time (seconds)</th>
+							<th>Number of Ratings</th>
+							<th>Average Rating</th>
 							<th>Solution</th>
 						</tr>
 					</thead>
@@ -731,8 +739,21 @@ class VProblemLibrary
 									else {
 										$str .= "0</td><td>0";
 									};
-									$str .= "</td>
-									<td><a href='".$this->v_problem_library_list[$i]->m_prob_solution."'>".$this->v_problem_library_list[$i]->m_prob_solution."</a></td>
+									$str .= "</td>";
+									$problem_id = $this->v_problem_library_list[$i]->m_prob_id;
+									if (array_key_exists($problem_id, $ratings)) {
+										if ($ratings[$problem_id]['count'] > 0) {
+											$str .= "<td>".$ratings[$problem_id]['count']."</td><td>".
+												number_format(round($ratings[$problem_id]['average'],2),2)."</td>";
+										} else {
+											$str .= "<td>0</td><td></td>";
+										}
+
+									} else {
+										$str .= "<td>0</td><td></td>";
+									}
+
+									$str .= "<td><a href='".$this->v_problem_library_list[$i]->m_prob_solution."'>".$this->v_problem_library_list[$i]->m_prob_solution."</a></td>
 								</tr>
 							";
 						}
