@@ -466,8 +466,9 @@ class VProblemLibrary
 			<h4 class='add-CTP-title'>Add Course</h4>
 			</p>
 			<p>
-			Course Name (alphanumeric and spaces only):
+			<label for='add_course_name' class='span3 text-right'>Course Name</label>
 			<input type='text' placeholder='Course Name' id='add_course_name' name='add_course_name' class='input-error'/>
+			<span class='label-addendum'>(alphanumeric and spaces only)</span>
 			</p>
 			<p>
 			<button class='btn btn-inverse' type='submit' id='submit_add_course'>Create Course</button>
@@ -483,7 +484,7 @@ class VProblemLibrary
 			<h4 class='add-CTP-title'>Add Topic</h4>
 			</p>
 			<p>
-			Select a Course
+			<label for='course_for_new_topic' class='span3 text-right'>Select a Course</label>
 			<select id='course_for_new_topic' name='course_for_new_topic' class='input-error'>
 			<option value='0' selected='selected'>Select One</option>";
 			for ($i=0; $i<$num_courses; $i++)
@@ -507,8 +508,9 @@ class VProblemLibrary
 			</select>
 			</p>
 			<p>
-			Topic Name (alphanumeric and spaces only):
+			<label for='add_topic_name' class='span3 text-right'>Topic Name </label>
 			<input type='text' placeholder='Topic Name' id='add_topic_name' name='add_topic_name' class='input-error'/>
+			<span class='label-addendum'>(alphanumeric and spaces only)</span>
 			</p>
 			<p>
 			<button class='btn btn-inverse' type='submit' id='submit_add_topic'>Create Topic</button>
@@ -1514,21 +1516,29 @@ class VProblems_submitted
 				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
 		}
-		$soln_ok = ok_to_show_soln($this->v_picked_problem->m_prob_id, $usrmgr->m_user->id);
+		$soln_ok = $this->v_picked_problem->m_ok_to_show_soln;
 
 		$str .= "</p>
 			<form class='form-next' action='' method='post'>
 			<button class='btn btn-next' type='submit' name='next' value='1'>
 			Next
 			</button>
-			</form>
+			";
+			if (! $soln_ok) {
+				$str .= "
+				<button class='btn btn-next' type='submit' name='retry' value='".$this->v_picked_problem->m_prob_id."'>
+					Retry this problem
+				</button>
+				";
+			}
+			$str .= "</form>
 			<p>
 			<span class='span2 label student-answer'>
 			Your time:&nbsp;
 			".$this->v_solve_time."
 			 seconds
 			</span>
-			Average user time: 
+			Average user time:
 			".$this->v_picked_problem->get_avg_time()." seconds
 			</p>
 			<p>

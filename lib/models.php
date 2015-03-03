@@ -13,6 +13,7 @@ Class MProblem
 	var $m_prob_tot_time;	#Cumulative time spent working on this problem
 	var $m_prob_solution;	#URL of solution, if supplied
 	var $m_prob_topic_name;	#topic name the problem is in (NOTE: what to do when problem can be in multiple topics?)
+	var $m_ok_to_show_soln; #whether it's ok to show the solution after an incorrect submission
 
 	function __construct($prob_id = Null)
 	{
@@ -21,6 +22,7 @@ Class MProblem
 			return;
 		}
 		global $dbmgr;
+		global $usrmgr;
 		$query = "SELECT * FROM problems WHERE id = :id";
 		$bindings =array(":id"=>$prob_id);
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
@@ -46,8 +48,26 @@ Class MProblem
 			}
 		}
 		$this->m_prob_topic_name = $topics;
+		$this->m_ok_to_show_soln = $this->get_ok_to_show_soln($usrmgr->m_user->id);
 	}
-	
+
+	function get_ok_to_show_soln($user_id)
+	{
+		global $dbmgr;
+	    $course_id = MProblem::get_prob_class_id($this->m_prob_id);
+	    $delay_solution = MCourse::get_delay_solution($course_id);
+	    if ($delay_solution == 0) return true;  //this class isn't participating in delaying the solution, no further check needed
+    	$query = "SELECT sum(ans_correct) num_correct, count(*) tries FROM responses where prob_id=:prob_id and user_id=:user_id ";
+    	$bindings = array(
+	      ":user_id"    => $user_id,
+	      ":prob_id"    => $this->m_prob_id
+    	);
+	    $res = $dbmgr->fetch_assoc( $query, $bindings );
+	    if ($res[0]["num_correct"] > 0) return true; //they've answered correctly at some point - ok to show
+    	elseif ($res[0]['tries'] >= $delay_solution) return true; //they've tried enough - ok to show
+    	else return false; //havent tried enough times, havent answered correctly - dont show
+	}
+
 	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')
 	{
 		global $dbmgr;
@@ -88,7 +108,6 @@ Class MProblem
 			return $count;
 		}
 	}
-	
 
 	function get_problem_topics($prob_id)
 	{

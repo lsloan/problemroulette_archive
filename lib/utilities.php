@@ -148,24 +148,4 @@ function prob_list_sorter($a,$b) {
   return strcasecmp($a->m_prob_name, $b->m_prob_name);
 }
 
-function ok_to_show_soln($prob_id, $user_id)
-  {
-    global $dbmgr;
-    $course_id = MProblem::get_prob_class_id($prob_id);
-    $delay_solution = MCourse::get_delay_solution($course_id);
-    if ($delay_solution == 0) return true;  //this class isn't participating in delaying the solution, no further check needed
-
-    $query = "SELECT sum(ans_correct) num_correct, count(*) tries FROM responses where prob_id=:prob_id and user_id=:user_id ";
-    $bindings = array(
-      ":user_id"    => $user_id,
-      ":prob_id"    => $prob_id
-    );
-    $res = $dbmgr->fetch_assoc( $query, $bindings );
-// take this out before merge!!!!!
-    print_r(array_values($res));
-    if ($res[0]["num_correct"] > 0) return true; //they've answered correctly at some point - ok to show
-    elseif ($res[0]['tries'] >= $delay_solution) return true;  //they've tried enough - ok to show
-    else return false; //havent tried enough times, havent answered correctly - cont show
-  }
-
 ?>
