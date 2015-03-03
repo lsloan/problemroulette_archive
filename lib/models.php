@@ -370,19 +370,21 @@ Class MCourse
 {
 		var $m_id;
 		var $m_name;
+		var $m_disable_rating;
 		var $m_topics = Array(); // Courses have an array of topics
 
-	function __construct($id,$name)
+	function __construct($id,$name,$disable_rating)
 	{
 		$this->m_id = $id;
 		$this->m_name = $name;
+		$this->m_disable_rating = $disable_rating;
 	}
 	
-	function create($name)
+	function create($name, $disable_rating = false)
 	{
 		global $dbmgr;
-		$query = "INSERT INTO class(name) VALUES (:name)";
-		$bindings = array(":name" => $name);
+		$query = "INSERT INTO class(name, disable_rating) VALUES (:name, :disable_rating)";
+		$bindings = array(":name" => $name, ":disable_rating" => $disable_rating);
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
@@ -392,7 +394,7 @@ Class MCourse
 		$query = "SELECT * FROM class WHERE id = :id";
 		$bindings = array(":id" => $id);
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		$course = new MCourse($res[0]['id'],$res[0]['name']);
+		$course = new MCourse($res[0]['id'],$res[0]['name'],$res[0]['disable_rating']);
 		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 		return $course;
 	}
@@ -410,7 +412,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name']);
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'], $res[$i]['disable_rating']);
 		}
 		return $all_courses;
 	}
@@ -424,7 +426,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name']);
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']);
 		}
 		return $all_courses;
 	}
@@ -437,7 +439,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$course = new MCourse($res[$i]['id'],$res[$i]['name']);
+			$course = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']);
 			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 			array_push($all_courses, $course);
 		}
@@ -454,7 +456,7 @@ Class MCourse
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_courses[$i] = array(
-				'course' => new MCourse($res[$i]['id'],$res[$i]['name']),
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']),
 				'response_count' => $res[$i]['response_count']
 			);
 		}
