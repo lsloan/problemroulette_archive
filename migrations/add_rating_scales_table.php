@@ -7,9 +7,6 @@ $this->add_table =<<<SQL
 create table if not exists rating_scales (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30),
-  `min_value` int(4),
-  `max_value` int(4),
-  `step` int(4),
   `min_label` varchar(16),
   `max_label` varchar(16),
   `min_icon` varchar(128),
@@ -20,8 +17,8 @@ create table if not exists rating_scales (
 SQL;
 
 $this->add_values =<<<SQL
-insert into rating_scales (name, min_value, max_value, step, min_label, max_label, min_icon, max_icon) 
-  values ('clarity', 1, 5, 1, 'opaque', 'transparent', 'delete_16.png', 'delete_16.png');
+insert into rating_scales (name, min_label, max_label, min_icon, max_icon) 
+  values ('clarity', 'opaque', 'transparent', 'delete_16.png', 'delete_16.png');
 SQL;
 
 $this->verify =<<<SQL

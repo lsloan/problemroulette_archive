@@ -1584,21 +1584,15 @@ class RatingScale
 {
 	var $m_id;
 	var $m_name;
-	var $m_min_value;
-	var $m_max_value;
-	var $m_step;
 	var $m_min_label;
 	var $m_max_label;
 	var $m_min_icon;
 	var $m_max_icon;
 
-	function __construct($id, $name, $min_value, $max_value, $step, $min_label, $max_label, $min_icon, $max_icon)
+	function __construct($id, $name, $min_label, $max_label, $min_icon, $max_icon)
 	{
 		$this->m_id = $id;
 		$this->m_name = $name;
-		$this->m_min_value = $min_value;
-		$this->m_max_value = $max_value;
-		$this->m_step = $step;
 		$this->m_min_label = $min_label;
 		$this->m_max_label = $max_label;
 		$this->m_min_icon = $min_icon;
@@ -1613,8 +1607,9 @@ class RatingScale
 		$rating_scales = array();
 		foreach ($res as $key => $value) {
 			$rating_scales[] = new RatingScale(
-				$value['id'], $value['name'], $value['min_value'], $value['max_value'], $value['step'],
-				$value['min_label'], $value['max_label'], $value['min_icon'], $value['max_icon']
+				$value['id'], $value['name'], 
+				$value['min_label'], $value['max_label'], 
+				$value['min_icon'], $value['max_icon']
 			);
 		}
 		return $rating_scales;
