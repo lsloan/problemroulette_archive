@@ -463,6 +463,26 @@ Class MCourse
 		return $all_courses;
 	}
 	
+	public static function get_courses_and_problem_counts()
+	{
+		global $dbmgr;
+		$query = "SELECT t1.*, count(t3.id) as problem_count ".
+				"FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id ".
+				"join 12m_topic_prob t3 on t2.topic_id=t3.topic_id ".
+				"group by t1.id";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_courses = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_courses[$i] = array(
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']),
+				'problem_count' => $res[$i]['problem_count']
+			);
+		}
+		return $all_courses;
+	}
+	
 	static function alphabetize($a,$b)
 	{
 		$a1 = strtolower($a->m_name);
@@ -679,7 +699,11 @@ Class MTabNav
 		}
 		if($usrmgr->m_user->researcher == 1)
 		{
-			$this->m_pages['Stats Export'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
+			$this->m_pages['Export User Stats'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
+		}
+		if($usrmgr->m_user->researcher == 1 || $usrmgr->m_user->staff == 1)
+		{
+			$this->m_pages['Export Problem Stats'] = $GLOBALS["DOMAIN"] . 'problems_export.php';
 		}
 		if($usrmgr->m_user->admin == 1)
 		{
@@ -1493,6 +1517,50 @@ Class MStatsFile
 		$filename .= '.sql';
 
 		$dbmgr->exec_query($query, $params);
+
+		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
+
+		$query = "drop table ".$tablename;
+		$dbmgr->exec_query($query, array());
+
+	}
+
+	public static function export_problems($course_ids)
+	{
+		global $dbmgr;
+		$tablename = "problems_".date('Ymd\_His');
+		$params = array();
+		$filename = "problems_".date('\_Ymd\_His');
+
+		
+		$query = "create table ".$tablename." select ".
+				"select t1.id, t1.name, t1.url, t1.correct, t1.ans_count, ".
+				"t1.tot_tries, t1.tot_correct, t1.tot_time, t1.solution, ".
+				"t2.topic_id topic_id, t3.class_id class_id, t4.name class_name, ".
+				"t4.disable_rating ratings_disabled ".
+				"from problems t1 ".
+				"join 12m_topic_prob t2 on t1.id=t2.problem_id ".
+				"join 12m_class_topic t3 on t2.topic_id=t3.topic_id ".
+				"join class t4 on t3.class_id=t4.id";
+
+
+		if (isset($course_ids)) {
+			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+			$query .= ' and t3.class_id in ('.$bindString.')';
+
+			$classes = MCourse::get_courses($course_ids);
+			foreach ($classes as $key => $value) {
+				$filename .= '_'.strtolower(str_replace(' ','_',$value->m_name));
+			}
+		}
+		$dbmgr->exec_query($query, $params);
+
+
+
+		# $ratings_fields = ", count(t5.id) clarity_count, avg(t5.rating) ";
+
+		$filename .= '.sql';
+
 
 		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
 

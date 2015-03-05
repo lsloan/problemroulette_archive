@@ -1029,7 +1029,7 @@ class VStatsExport
 					<div class="row-fluid">
 						<div class="span12">
 							<p class='half-line'>&nbsp;</p>
-							<h4 class='summary-header'>Export summary data</h4>
+							<h4 class='summary-header'>Export summary data about students</h4>
 							<div class="row-fluid">
 								<div class="span8">
 									<div class="well well-large">
@@ -1107,6 +1107,102 @@ class VStatsExport
 												<label class="checkbox" for="course-<?= $item['course']->m_id ?>">
 													<input type="checkbox" name="course[]" value="<?= $item['course']->m_id ?>" id="course-<?= $item['course']->m_id ?>" class="course-filter" />
 													<strong><?= $item['course']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses) </small>
+												</label>
+											</div>
+											<?php if(($index + 1) % 4 == 0): ?>
+												</div>
+												<div class="row-fluid">
+											<?php endif ?>
+										<?php endforeach ?>
+									</div>
+								</fieldset>
+								<h5>Start exporting data to file</h5>
+								<p>
+									<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
+										Start Export
+									</button>
+								</p>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php return ob_get_clean();
+		}
+	}
+		
+}
+
+class VProblemsExport
+{
+	var $v_courses;
+	var $v_files;
+	
+	function __construct($courses, $files)
+	{
+		$this->v_courses   = $courses;
+		$this->v_files     = $files;
+	}
+	
+	function Deliver()
+	{
+		global $usrmgr;
+
+		$researcher = $usrmgr->m_user->researcher;
+		$staff = $usrmgr->m_user->staff;
+
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
+		{	
+			// show sql dumps available to download (by date, description).
+			// show choices of semesters and classes and enable start of an sql dump.
+			ob_start(); ?>
+			<div class='tab-pane active' id='export-problems'>
+				<div class="export_stats_page">
+					<div class="row-fluid">
+						<div class="span12">
+							<p class='half-line'>&nbsp;</p>
+							<h4 class='summary-header'>Export summary data about problems</h4>
+				      <h5>
+				      	Options in this page:
+				      </h5>
+				      <ul>
+				      	<li>Download an existing export file</li>
+				      	<li>Generate a new export file of all problems</li>
+				      	<li>Generate a new export file filtered by class</li>
+				      </ul>
+				      <h5>Download existing export file</h5>
+				      <?php if($this->v_files == NULL): ?>
+				      	<p>No files to download</p>
+				      <?php else: ?>
+				      	<ul>
+									<?php foreach((array)$this->v_files as $file): ?>
+										<li class="export_file_for_download">
+											<a href='<?= $GLOBALS["DOMAIN"] . 'problems_export.php?download='.$file ?>' class="stats_file" title="Download the file (<?= $file ?>)"><?= $file ?></a>
+											<a href='#' class="delete_problems_file" data-url="<?= $GLOBALS["DOMAIN"] . 'problems_export.php' ?>" data-filename="<?= $file ?>" title="Permanently delete the file (<?= $file ?>)">
+												<img src="img/delete_16.png"></img>
+											</a>
+										</li>
+									<?php endforeach ?>
+								</ul>
+				      <?php endif ?>
+				      <h5>Generate a new export file</h5>
+				      <form action='' method='post'>
+					      <h6>Specify filters (if any)</h6>
+								<fieldset>
+						      <legend>Course(s)</legend>
+						      <div class="row-fluid">
+						      	<p class="span8">
+							      	Checking one or more courses will filter the problems included in the export, 
+							      	eliminating any problems that do not relate to the selected courses.  To 
+							      	export data about all courses, leave all courses unchecked.
+							      </p>
+							    </div>
+						      <div class="row-fluid">
+										<?php foreach((array)$this->v_courses as $index => $item): ?>
+											<div class="span3">
+												<label class="checkbox" for="course-<?= $item['course']->m_id ?>">
+													<input type="checkbox" name="course[]" value="<?= $item['course']->m_id ?>" id="course-<?= $item['course']->m_id ?>" class="course-filter" />
+													<strong><?= $item['course']->m_name ?></strong> <small>(<?= number_format($item['problem_count']) ?> problems) </small>
 												</label>
 											</div>
 											<?php if(($index + 1) % 4 == 0): ?>
@@ -1716,7 +1812,8 @@ class VProblemEdit
     //constructor
     function __construct($problem)
     {
-		$this->v_problem = $problem;
+			$this->v_problem = $problem;
+			$this->v_ratings = Rating::rating_stats(array($problem->m_prob_id));
     }
     
     //page construction
@@ -1832,6 +1929,25 @@ class VProblemEdit
             <img class='histogram'
             src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
             </img>
+            ";
+
+            if (count($this->v_rating) > 0) {
+            	foreach ($this->v_rating as $rating) {
+		            $str .= "
+		            <h2>Clarity</h2>
+		            <div class='row'>
+		            	<span class='span2 text-right'>Average Rating</span>
+		            	<span class='span9 text-left'>".$rating['count']."</span>
+		            </div>
+		            <div class='row'>
+		            	<span class='span2 text-right'>Number of Ratings</span>
+		            	<span class='span9 text-left'>".$rating[0]['average']."</span>
+		            </div>
+		            ";
+            	}
+
+            }
+           $str .= "
             <iframe class='problemIframe' id='problemIframe' src='
             ".
             $this->v_problem->m_prob_url
