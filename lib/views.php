@@ -515,6 +515,26 @@ class VProblemLibrary
 			</a>
 			</p>
 			</form>
+
+
+			<form id='edit_topic_form' action='' method='POST' class='add-CTP-form'>
+			<p>
+				<h4 class='add-CTP-title'>Edit Topic</h4>
+			</p>
+			<p>
+			Topic Name (alphanumeric and spaces only):
+			<input type='text' placeholder='Topic Name' id='edit_topic_name' name='edit_topic_name' class='input-error'/>
+			</p>
+			<p>
+			<input type='hidden' id='edit_topic_id' name='edit_topic_id' value='' />
+			<button class='btn btn-inverse' type='submit' id='submit_edit_topic'>Save Topic</button>
+			<a class='btn btn-inverse hide_add_form' id='edit_topic_form_cancel'
+				data-form='#edit_topic_form' data-cancel='#edit_topic_form_cancel' data-remove='#edit_topic_form_remove'>
+				Cancel Edit Topic
+			</a>
+			</p>
+			</form>
+
 			<form id='add_problem_form' action='' method='POST' class='add-CTP-form'>
 			<p>
 				<h4 class='add-CTP-title'>Add Problem</h4>
@@ -685,6 +705,7 @@ class VProblemLibrary
 			$str .= "
 			</select>
 			</form>
+			<button id='edit_topic' class='btn btn-small'>Edit Topic</button>
 			";
 					
 			if (count($this->v_problem_library_list)>0)

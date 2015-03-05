@@ -334,6 +334,10 @@ th.headerSortDown{
     margin-left: 5px;
 }
 
+button#edit_topic {
+    display: none;
+}
+
 .div-history-dropdown-course-topic{
 	margin: 5px 10px;
 }
