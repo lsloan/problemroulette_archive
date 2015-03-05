@@ -18,7 +18,7 @@ SQL;
 
 $this->add_values =<<<SQL
 insert into rating_scales (name, min_label, max_label, min_icon, max_icon) 
-  values ('clarity', 'opaque', 'transparent', 'delete_16.png', 'delete_16.png');
+  values ('Clarity', 'Opaque', 'Transparent', 'unclear.svg', 'clear.svg');
 SQL;
 
 $this->verify =<<<SQL
