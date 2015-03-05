@@ -35,7 +35,7 @@ $(document).ready(function()
       dataType: 'json',
       data: params,
       success: function(data){
-        $(rating_form).closest('div').html("<p>Your rating of the problem has been saved.</p>");
+        $(rating_form).closest('div').html("<p>Thanks! Your rating of the problem has been saved.</p>");
       },
       error : function(jqXHR, textStatus, errorThrown){
         alert("An unknown error occurred while trying to remove the file.  Please refresh your browser and try again.");
