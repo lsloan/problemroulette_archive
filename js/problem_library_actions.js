@@ -9,6 +9,19 @@ $(document).ready(function()
 		$($(this).data('cancel')).show();
 	});
 
+    $('button#edit_topic').click(function() {
+        var $option = $('#PL_dropdown_topic option:selected');
+        var id = $option.val();
+        var name = $option.text().trim();
+        $('#edit_topic_id').val(id);
+        $('#edit_topic_name').val(name);
+        $('#edit_topic_form').show();
+    });
+
+    if ($('#PL_dropdown_topic').val() != 'all') {
+        $('#edit_topic').show();
+    }
+
 	$('a.hide_add_form, button.remove-add-CTP-form').click(function(){
 		// hide the form (which also hides the cancel button)
 		$($(this).data('form')).hide();
@@ -97,34 +110,38 @@ $(document).ready(function()
 	$('#submit_add_topic').attr("disabled","disabled");
 	$('#add_topic_name').addClass('input-error');
 	//Enable Submit button if input is valid (alphanumeric + spaces)
-	$('#add_topic_name').keyup(function(){
+	$('#add_topic_name, #edit_topic_name').keyup(function(){
 		var validation = true;
-		if(jQuery.trim($('#add_topic_name').val()).length == 0) 
+		var submit = '#submit_add_topic';
+		if (this.is('#edit_topic_name')) {
+			submit = '#submit_edit_topic';
+		}
+		if(jQuery.trim($(this).val()).length == 0)
 		{
 			validation = false;
-			$('#add_topic_name').addClass('input-error');
+			$(this).addClass('input-error');
 		}
 		var regx = /^[A-Za-z0-9]+$/;
-		if (!regx.test($('#add_topic_name').val().replace(/\s/g, ''))) 
+		if (!regx.test($(this).val().replace(/\s/g, '')))
 		{
 			validation = false;
-			$('#add_topic_name').addClass('input-error');
+			$(this).addClass('input-error');
 		}
 		if(validation)
 		{
-			$('#add_topic_name').removeClass('input-error');
+			$(this).removeClass('input-error');
 		}
-		if ($('#course_for_new_topic').val() == 0) 
+		if (this.is('#add_topic_name') && $('#course_for_new_topic').val() == 0)
 		{
 			validation = false;
 		}
 		if(validation) 
 		{
-			$("#submit_add_topic").removeAttr("disabled");
+			$(submit).removeAttr("disabled");
 		}
 		else 
 		{
-			$('#submit_add_topic').attr("disabled","disabled");
+			$(submit).attr("disabled","disabled");
 		}
 	});
 	$('#course_for_new_topic').change(function(){

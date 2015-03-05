@@ -549,6 +549,13 @@ Class MTopic
 		$bindings = array(":topic_id"=>$topic_id, ":prob_id"=>$prob_id);
 		$dbmgr->exec_query($query, $bindings);
 	}
+
+    public static function edit_topic($topic_id, $topic_name)
+    {
+        global $dbmgr;
+        $query = "UPDATE topic SET name = ? WHERE id = ?";
+        $dbmgr->exec_query($query, array($topic_name, $topic_id));
+    }
 	
 	public static function remove_problem_topics($prob_id, $topic_ids)
 	{ # $topic_ids is an array of ids
@@ -901,6 +908,14 @@ Class MDirector
 		$bindings = array(":course_id" => $course_id, ":topic_id" => $topic_id);
 		$dbmgr->exec_query( $query , $bindings );
 	}
+
+    public static function edit_topic($topic_id, $topic_name)
+    {
+        if (intval($topic_id) > 0 && strlen($topic_name) > 0)
+        {
+            MTopic::edit_topic($topic_id, $topic_name);
+        }
+    }
 	
 	public static function add_problem_to_db($topic_id, $prob_name, $prob_url, $num_ans, $cor_ans, $sol_url="")
 	{
