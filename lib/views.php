@@ -1178,7 +1178,7 @@ class VProblemsExport
 									<?php foreach((array)$this->v_files as $file): ?>
 										<li class="export_file_for_download">
 											<a href='<?= $GLOBALS["DOMAIN"] . 'problems_export.php?download='.$file ?>' class="stats_file" title="Download the file (<?= $file ?>)"><?= $file ?></a>
-											<a href='#' class="delete_problems_file" data-url="<?= $GLOBALS["DOMAIN"] . 'problems_export.php' ?>" data-filename="<?= $file ?>" title="Permanently delete the file (<?= $file ?>)">
+											<a href='#' class="delete_stats_file" data-url="<?= $GLOBALS["DOMAIN"] . 'problems_export.php' ?>" data-filename="<?= $file ?>" title="Permanently delete the file (<?= $file ?>)">
 												<img src="img/delete_16.png"></img>
 											</a>
 										</li>
