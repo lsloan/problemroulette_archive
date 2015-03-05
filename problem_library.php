@@ -26,6 +26,12 @@ if (isset($_POST['add_topic_name']))
 	header('Location:problem_library.php');//necessary so user does not refresh and resubmit form
 }
 
+if (isset($_POST['edit_topic_name']))
+{
+    MDirector::edit_topic($_POST['edit_topic_id'], $_POST['edit_topic_name']);
+    header('Location:problem_library.php');//necessary so user does not refresh and resubmit form
+}
+
 if (isset($_POST['add_problem_name']))
 {
     //Add a problem to Database
