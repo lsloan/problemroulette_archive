@@ -1533,11 +1533,11 @@ Class MStatsFile
 		$filename = "problems_".date('\_Ymd\_His');
 
 		
-		$query = "create table ".$tablename." select ".
-				"select t1.id, t1.name, t1.url, t1.correct, t1.ans_count, ".
-				"t1.tot_tries, t1.tot_correct, t1.tot_time, t1.solution, ".
-				"t2.topic_id topic_id, t3.class_id class_id, t4.name class_name, ".
-				"t4.disable_rating ratings_disabled ".
+		$query = "create table ".$tablename." select t1.id problem_id, ".
+				"t1.name, t1.url, t1.correct, t1.ans_count, t1.tot_tries, ".
+				"t1.tot_correct, t1.tot_time, t1.solution, ".
+				"t2.topic_id topic_id, t3.class_id class_id, ".
+				"t4.name class_name, t4.disable_rating ratings_disabled ".
 				"from problems t1 ".
 				"join 12m_topic_prob t2 on t1.id=t2.problem_id ".
 				"join 12m_class_topic t3 on t2.topic_id=t3.topic_id ".
@@ -1555,7 +1555,23 @@ Class MStatsFile
 		}
 		$dbmgr->exec_query($query, $params);
 
+		$rating_scales = RatingScale::rating_scales();
 
+		foreach ($rating_scales as $key => $scale) {
+			$prefix = MStatsFile::column_prefix($scale->m_name);
+
+			$add_columns_query = "alter table ".$tablename." add column ".$prefix."_count int(11) default 0, ".
+				"add column ".$prefix."_rating decimal(6,4)";
+			$dbmgr->exec_query($add_columns_query, array());
+
+			$update_stats_query = "update ".$tablename." t1 join (".
+					"select problem_id, count(id) r_count, avg(rating) r_rating ".
+					"from ratings group by problem_id) t2 ".
+					"on t1.problem_id=t2.problem_id ".
+					"set t1.".$prefix."_count = t2.r_count, ".
+					"t1.".$prefix."_rating =  t2.r_count";
+			$dbmgr->exec_query($update_stats_query, array());
+		}
 
 		# $ratings_fields = ", count(t5.id) clarity_count, avg(t5.rating) ";
 
@@ -1564,9 +1580,15 @@ Class MStatsFile
 
 		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
 
-		$query = "drop table ".$tablename;
-		$dbmgr->exec_query($query, array());
+		#$query = "drop table ".$tablename;
+		#$dbmgr->exec_query($query, array());
 
+	}
+
+	static function column_prefix($name) {
+		$name = strtolower($name);
+		$pieces = preg_split("/[^A-Za-z0-9]+/", $name);
+		return implode('_', $pieces);
 	}
 
 }
