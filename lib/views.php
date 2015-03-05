@@ -705,7 +705,7 @@ class VProblemLibrary
 			$str .= "
 			</select>
 			</form>
-			<button id='edit_topic' class='btn btn-small'>Edit</button>
+			<button id='edit_topic' class='btn btn-small'>Edit Topic</button>
 			";
 					
 			if (count($this->v_problem_library_list)>0)
