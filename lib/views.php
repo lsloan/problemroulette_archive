@@ -1325,59 +1325,62 @@ class VProblems_submitted
 		} else {
 			if ($this->v_rating_scales)
 			{
-				$ratings_div .= "<div class='problem-ratings container'>
+				$ratings_div .= "<div class='problem-ratings'>
 				<form method='post' action='ratings.php' id='problem-rating-form'>
 				<input type='hidden' name='problem_id' value='".$this->v_picked_problem->m_prob_id."'/>
 				<input type='hidden' name='course_id' value='".$this->v_course->m_id."'/>
 				";
 				foreach ($this->v_rating_scales as $key => $value) {
 					$ratings_div .= "
-					<div class='ratings-form problem-rating ".$value->m_name."'>
+					<div class='ratings-form problem-rating control-group span7".$value->m_name."'>
 						<div class='row'>
-							<div class='offset1 span9 text-left'>
-								Optional: Please rate the <em>".$value->m_name."</em> of this problem
+							<div class='offset1 span9 text-left rating_label'>
+								<strong>Optional:</strong> Please rate the <strong><em>".$value->m_name."</em></strong> of this problem
 							</div>
 						</div>
 						<div class='row'>
-							<div class='span3 text-center'>
-								<img src='img/".$value->m_min_icon."'></img>
+							<div class='span1 offset1 text-left'>
+								<img class='rating_img' src='img/".$value->m_min_icon."'></img>
 							</div>
-							<div class='offset5 span3 text-center'>
-								<img src='img/".$value->m_max_icon."'></img>
+							<div class='offset1 span1 text-right'>
+								<img class='rating_img' src='img/".$value->m_max_icon."'></img>
 							</div>
 						</div>
-						<div class='row'>
-							<div class='offset1 span1 text-center'>
+						<div class='row offset1 span7'>
+							<div class='rating_radio inline text-center'>
 								<input type='radio' name='rating-".$value->m_name."' value='1'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>".$value->m_min_label."</label>
 							</div>
-							<div class='offset1 span1 text-center'>
+							<div class='rating_radio inline'>
 								<input type='radio' name='rating-".$value->m_name."' value='2'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>slightly ".$value->m_min_label."</label>
 							</div>
-							<div class='offset1 span1 text-center'>
+							<div class='rating_radio inline'>
 								<input type='radio' name='rating-".$value->m_name."' value='3'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>neutral</label>
 							</div>
-							<div class='offset1 span1 text-center'>
+							<div class='rating_radio inline'>
 								<input type='radio' name='rating-".$value->m_name."' value='4'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>".$value->m_max_label."</label>
 							</div>
-							<div class='offset1 span1 text-center'>
+							<div class='rating_radio inline'>
 								<input type='radio' name='rating-".$value->m_name."' value='5'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>somewhat".$value->m_max_label."</label>
 							</div>
 						</div>
-						<div class='row'>
-							<div class='span3 text-center'>".$value->m_min_label."</div>
-							<div class='span5 text-center'>
-								------- line goes here -------
-							</div>
-							<div class='span3 text-center'>".$value->m_max_label."</div>
+						<div class='row span7' aria-hidden='true'>
+							<span class=' span2 text-center'>".$value->m_min_label."</span>
+							<span class='span1 rating_line'> </span>
+							<span class='text-left'>".$value->m_max_label."</dspan>
 						</div>
 					</div>
 					";
 				}
 				$ratings_div .= "
 					<div class='row'>
-						<div class='text-center'>
-							<input type='submit' value='Submit Rating' id='ratings-form-submit'/>
-						</div>
+						<span class='offset2 span2 text-center'>
+						<input type='submit' value='Submit Rating'  id='ratings-form-submit'/>
+						</span>
 					</div>
 				</form>
 				</div>";
@@ -1426,11 +1429,11 @@ class VProblems_submitted
           $chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
       }
 			$str .= "
-			<img class='histogram'
+			<img class='histogram span4'
 			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
 			</img>
-			".$ratings_div.
-			"
+			<span class=span7>".$ratings_div.
+			"</span>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
