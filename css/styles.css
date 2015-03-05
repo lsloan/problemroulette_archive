@@ -216,8 +216,7 @@ input.ans-choice{
 }
 
 .histogram{
-	margin: 0px 20px 10px;
-	width: 300px;
+	margin: 0px 20px 10px 4em;
 }
 
 .form-next{

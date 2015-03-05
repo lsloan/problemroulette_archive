@@ -1525,11 +1525,15 @@ class VProblems_submitted
           $chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
       }
 			$str .= "
-			<img class='histogram span4'
-			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-			</img>
-			<span class=span7>".$ratings_div.
-			"</span>
+			<div class='row'>
+				<span class='span4'>
+					<img class='histogram'
+					src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
+					</img>
+				</span>
+				<span class=span7>".$ratings_div."
+				</span>
+			</div>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
