@@ -21,8 +21,26 @@ $(document).ready(function()
   $('body').on('click', 'li.disabled_problem_tab', function(eventObj){
     return false;
   });
-  $('body').on('click', 'li.disabled_problem_tab a', function(){
+  $('body').on('click', 'li.disabled_problem_tab a', function(eventObj){
     eventObj.preventDefault();
     return false;
+  });
+  $('body').on('click', 'input#ratings-form-submit', function(eventObj){
+    eventObj.preventDefault();
+    var params = $(this).closest('form').serializeArray();
+    var rating_form = $(this).closest('form');
+    var url = $(rating_form).attr('action');
+    $.ajax(url, {
+      type: 'POST',
+      dataType: 'json',
+      data: params,
+      success: function(data){
+        $(rating_form).closest('div').html("<p>Thanks! Your rating of the problem has been saved.</p>");
+      },
+      error : function(jqXHR, textStatus, errorThrown){
+        alert("An unknown error occurred while trying to remove the file.  Please refresh your browser and try again.");
+      }
+    });
+
   });
 });

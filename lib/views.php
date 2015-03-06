@@ -405,10 +405,13 @@ class VStudentPerformance
 
 class VProblemLibrary
 {
+	var $v_problem_library_list;
+	var $v_selected_course;
 	
-	function __construct($v_problem_library_list)
+	function __construct($problem_library_list, $selected_course_id)
 	{
-		$this->v_problem_library_list = $v_problem_library_list;
+		$this->v_problem_library_list = $problem_library_list;
+		$this->v_selected_course = MCourse::get_course_by_id($selected_course_id);
 	}
 	
 	function Deliver()
@@ -710,6 +713,17 @@ class VProblemLibrary
 					
 			if (count($this->v_problem_library_list)>0)
 			{
+				$ratings = array();
+				if ($this->v_selected_course->m_disable_rating) {
+
+				} else {
+					$problem_ids = array();
+					foreach ($this->v_problem_library_list as $problem) {
+						$problem_ids[] = $problem->m_prob_id;
+					}
+					$ratings = Rating::rating_stats($problem_ids);
+				}
+
 				$str .= "
 				</div>
 				<div>
@@ -723,6 +737,15 @@ class VProblemLibrary
 							<th>Total Tries</th>
 							<th>Accuracy&nbsp;&nbsp;&nbsp;</th>
 							<th>Average Time (seconds)</th>
+							";
+				if ($this->v_selected_course->m_disable_rating) {
+
+				} else {
+					$str .= "<th>Number of Ratings</th>
+							<th>Average Rating</th>
+							";					
+				}
+				$str .= "
 							<th>Solution</th>
 						</tr>
 					</thead>
@@ -752,8 +775,25 @@ class VProblemLibrary
 									else {
 										$str .= "0</td><td>0";
 									};
-									$str .= "</td>
-									<td><a href='".$this->v_problem_library_list[$i]->m_prob_solution."'>".$this->v_problem_library_list[$i]->m_prob_solution."</a></td>
+									$str .= "</td>";
+									if ($this->v_selected_course->m_disable_rating) {
+
+									} else {
+										$problem_id = $this->v_problem_library_list[$i]->m_prob_id;
+										if (array_key_exists($problem_id, $ratings)) {
+											if ($ratings[$problem_id]['count'] > 0) {
+												$str .= "<td>".$ratings[$problem_id]['count']."</td><td>".
+													number_format(round($ratings[$problem_id]['average'],2),2)."</td>";
+											} else {
+												$str .= "<td>0</td><td></td>";
+											}
+
+										} else {
+											$str .= "<td>0</td><td></td>";
+										}
+									}
+	
+									$str .= "<td><a href='".$this->v_problem_library_list[$i]->m_prob_solution."'>".$this->v_problem_library_list[$i]->m_prob_solution."</a></td>
 								</tr>
 							";
 						}
@@ -1010,7 +1050,7 @@ class VStatsExport
 					<div class="row-fluid">
 						<div class="span12">
 							<p class='half-line'>&nbsp;</p>
-							<h4 class='summary-header'>Export summary data</h4>
+							<h4 class='summary-header'>Export summary data about students</h4>
 							<div class="row-fluid">
 								<div class="span8">
 									<div class="well well-large">
@@ -1088,6 +1128,102 @@ class VStatsExport
 												<label class="checkbox" for="course-<?= $item['course']->m_id ?>">
 													<input type="checkbox" name="course[]" value="<?= $item['course']->m_id ?>" id="course-<?= $item['course']->m_id ?>" class="course-filter" />
 													<strong><?= $item['course']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses) </small>
+												</label>
+											</div>
+											<?php if(($index + 1) % 4 == 0): ?>
+												</div>
+												<div class="row-fluid">
+											<?php endif ?>
+										<?php endforeach ?>
+									</div>
+								</fieldset>
+								<h5>Start exporting data to file</h5>
+								<p>
+									<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
+										Start Export
+									</button>
+								</p>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php return ob_get_clean();
+		}
+	}
+		
+}
+
+class VProblemsExport
+{
+	var $v_courses;
+	var $v_files;
+	
+	function __construct($courses, $files)
+	{
+		$this->v_courses   = $courses;
+		$this->v_files     = $files;
+	}
+	
+	function Deliver()
+	{
+		global $usrmgr;
+
+		$researcher = $usrmgr->m_user->researcher;
+		$staff = $usrmgr->m_user->staff;
+
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
+		{	
+			// show sql dumps available to download (by date, description).
+			// show choices of semesters and classes and enable start of an sql dump.
+			ob_start(); ?>
+			<div class='tab-pane active' id='export-problems'>
+				<div class="export_stats_page">
+					<div class="row-fluid">
+						<div class="span12">
+							<p class='half-line'>&nbsp;</p>
+							<h4 class='summary-header'>Export summary data about problems</h4>
+				      <h5>
+				      	Options in this page:
+				      </h5>
+				      <ul>
+				      	<li>Download an existing export file</li>
+				      	<li>Generate a new export file of all problems</li>
+				      	<li>Generate a new export file filtered by class</li>
+				      </ul>
+				      <h5>Download existing export file</h5>
+				      <?php if($this->v_files == NULL): ?>
+				      	<p>No files to download</p>
+				      <?php else: ?>
+				      	<ul>
+									<?php foreach((array)$this->v_files as $file): ?>
+										<li class="export_file_for_download">
+											<a href='<?= $GLOBALS["DOMAIN"] . 'problems_export.php?download='.$file ?>' class="stats_file" title="Download the file (<?= $file ?>)"><?= $file ?></a>
+											<a href='#' class="delete_stats_file" data-url="<?= $GLOBALS["DOMAIN"] . 'problems_export.php' ?>" data-filename="<?= $file ?>" title="Permanently delete the file (<?= $file ?>)">
+												<img src="img/delete_16.png"></img>
+											</a>
+										</li>
+									<?php endforeach ?>
+								</ul>
+				      <?php endif ?>
+				      <h5>Generate a new export file</h5>
+				      <form action='' method='post'>
+					      <h6>Specify filters (if any)</h6>
+								<fieldset>
+						      <legend>Course(s)</legend>
+						      <div class="row-fluid">
+						      	<p class="span8">
+							      	Checking one or more courses will filter the problems included in the export, 
+							      	eliminating any problems that do not relate to the selected courses.  To 
+							      	export data about all courses, leave all courses unchecked.
+							      </p>
+							    </div>
+						      <div class="row-fluid">
+										<?php foreach((array)$this->v_courses as $index => $item): ?>
+											<div class="span3">
+												<label class="checkbox" for="course-<?= $item['course']->m_id ?>">
+													<input type="checkbox" name="course[]" value="<?= $item['course']->m_id ?>" id="course-<?= $item['course']->m_id ?>" class="course-filter" />
+													<strong><?= $item['course']->m_name ?></strong> <small>(<?= number_format($item['problem_count']) ?> problems) </small>
 												</label>
 											</div>
 											<?php if(($index + 1) % 4 == 0): ?>
@@ -1233,6 +1369,8 @@ class VProblems_submitted
 	var $v_problem_counts_by_topic;
 	var $v_solve_time;
 	var $v_student_answer;
+	var $v_rating_scales;
+	var $v_course;
 
 	function __construct($picked_problem, $problem_counts_by_topic, $student_answer, $solve_time = 0)
 	{
@@ -1240,6 +1378,10 @@ class VProblems_submitted
 		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
 		$this->v_student_answer = $student_answer;
 		$this->v_solve_time = $solve_time;
+		$this->v_rating_scales = RatingScale::rating_scales();
+		
+		global $usrmgr;
+		$this->v_course = MCourse::get_course_by_id($usrmgr->m_user->selected_course_id);
 	}
 	
 	function Deliver()
@@ -1293,6 +1435,75 @@ class VProblems_submitted
 			}
 			$histogram_ans_string .= $alphabet[($i-1)]."|";
 		}
+
+		$ratings_div = '';
+		if ($this->v_course->m_disable_rating) {
+
+		} else {
+			if ($this->v_rating_scales)
+			{
+				$ratings_div .= "<div class='problem-ratings'>
+				<form method='post' action='ratings.php' id='problem-rating-form'>
+				<input type='hidden' name='problem_id' value='".$this->v_picked_problem->m_prob_id."'/>
+				<input type='hidden' name='course_id' value='".$this->v_course->m_id."'/>
+				";
+				foreach ($this->v_rating_scales as $key => $value) {
+					$ratings_div .= "
+					<div class='ratings-form problem-rating control-group span7".$value->m_name."'>
+						<div class='row'>
+							<div class='offset1 span9 text-left rating_label'>
+								<strong>Optional:</strong> Please rate the <strong><em>".$value->m_name."</em></strong> of this problem
+							</div>
+						</div>
+						<div class='row'>
+							<div class='span1 offset1 text-left'>
+								<img class='rating_img' src='img/".$value->m_min_icon."'></img>
+							</div>
+							<div class='offset1 span1 text-right'>
+								<img class='rating_img' src='img/".$value->m_max_icon."'></img>
+							</div>
+						</div>
+						<div class='row offset1 span7'>
+							<div class='rating_radio inline text-center'>
+								<input type='radio' name='rating-".$value->m_name."' value='1'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>".$value->m_min_label."</label>
+							</div>
+							<div class='rating_radio inline'>
+								<input type='radio' name='rating-".$value->m_name."' value='2'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>slightly ".$value->m_min_label."</label>
+							</div>
+							<div class='rating_radio inline'>
+								<input type='radio' name='rating-".$value->m_name."' value='3'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>neutral</label>
+							</div>
+							<div class='rating_radio inline'>
+								<input type='radio' name='rating-".$value->m_name."' value='4'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>".$value->m_max_label."</label>
+							</div>
+							<div class='rating_radio inline'>
+								<input type='radio' name='rating-".$value->m_name."' value='5'>
+								<label class='offscreen' for='rating-".$value->m_name."' value='1'>somewhat".$value->m_max_label."</label>
+							</div>
+						</div>
+						<div class='row span7' aria-hidden='true'>
+							<span class=' span2 text-center'>".$value->m_min_label."</span>
+							<span class='span1 rating_line'> </span>
+							<span class='text-left'>".$value->m_max_label."</dspan>
+						</div>
+					</div>
+					";
+				}
+				$ratings_div .= "
+					<div class='row'>
+						<span class='offset2 span2 text-center'>
+						<input type='submit' value='Submit Rating'  id='ratings-form-submit'/>
+						</span>
+					</div>
+				</form>
+				</div>";
+			}
+		}
+
 		
     $str = "<p class='half-line'>&nbsp;</p>
 			<p>Selected Topics/Remaining Problems: ";
@@ -1335,9 +1546,15 @@ class VProblems_submitted
           $chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
       }
 			$str .= "
-			<img class='histogram'
-			src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-			</img>
+			<div class='row'>
+				<span class='span4'>
+					<img class='histogram'
+					src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
+					</img>
+				</span>
+				<span class=span7>".$ratings_div."
+				</span>
+			</div>
 			<iframe class='problemIframe' id='problemIframe' src='
 			".
 			$this->v_picked_problem->m_prob_url
@@ -1623,7 +1840,8 @@ class VProblemEdit
     //constructor
     function __construct($problem)
     {
-		$this->v_problem = $problem;
+			$this->v_problem = $problem;
+			$this->v_ratings = Rating::rating_stats(array($problem->m_prob_id));
     }
     
     //page construction
@@ -1739,6 +1957,25 @@ class VProblemEdit
             <img class='histogram'
             src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
             </img>
+            ";
+
+            if (count($this->v_rating) > 0) {
+            	foreach ($this->v_rating as $rating) {
+		            $str .= "
+		            <h2>Clarity</h2>
+		            <div class='row'>
+		            	<span class='span2 text-right'>Average Rating</span>
+		            	<span class='span9 text-left'>".$rating['count']."</span>
+		            </div>
+		            <div class='row'>
+		            	<span class='span2 text-right'>Number of Ratings</span>
+		            	<span class='span9 text-left'>".$rating[0]['average']."</span>
+		            </div>
+		            ";
+            	}
+
+            }
+           $str .= "
             <iframe class='problemIframe' id='problemIframe' src='
             ".
             $this->v_problem->m_prob_url

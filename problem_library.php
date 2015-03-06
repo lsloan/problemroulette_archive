@@ -63,7 +63,7 @@ $problem_library_list = MDirector::get_problem_library_list($selected_course_id,
 // page construction
 $head = new CHeadCSSJavascript("Problem Library", array(), array());
 $tab_nav = new VTabNav(new MTabNav('Problem Library'));
-$content = new VProblemLibrary($problem_library_list);
+$content = new VProblemLibrary($problem_library_list, $selected_course_id);
 $page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html

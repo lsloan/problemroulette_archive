@@ -370,19 +370,21 @@ Class MCourse
 {
 		var $m_id;
 		var $m_name;
+		var $m_disable_rating;
 		var $m_topics = Array(); // Courses have an array of topics
 
-	function __construct($id,$name)
+	function __construct($id,$name,$disable_rating)
 	{
 		$this->m_id = $id;
 		$this->m_name = $name;
+		$this->m_disable_rating = $disable_rating;
 	}
 	
-	function create($name)
+	function create($name, $disable_rating = false)
 	{
 		global $dbmgr;
-		$query = "INSERT INTO class(name) VALUES (:name)";
-		$bindings = array(":name" => $name);
+		$query = "INSERT INTO class(name, disable_rating) VALUES (:name, :disable_rating)";
+		$bindings = array(":name" => $name, ":disable_rating" => $disable_rating);
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
@@ -392,7 +394,7 @@ Class MCourse
 		$query = "SELECT * FROM class WHERE id = :id";
 		$bindings = array(":id" => $id);
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		$course = new MCourse($res[0]['id'],$res[0]['name']);
+		$course = new MCourse($res[0]['id'],$res[0]['name'],$res[0]['disable_rating']);
 		$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 		return $course;
 	}
@@ -410,7 +412,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name']);
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'], $res[$i]['disable_rating']);
 		}
 		return $all_courses;
 	}
@@ -424,7 +426,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name']);
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']);
 		}
 		return $all_courses;
 	}
@@ -437,7 +439,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$course = new MCourse($res[$i]['id'],$res[$i]['name']);
+			$course = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']);
 			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
 			array_push($all_courses, $course);
 		}
@@ -454,8 +456,28 @@ Class MCourse
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_courses[$i] = array(
-				'course' => new MCourse($res[$i]['id'],$res[$i]['name']),
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']),
 				'response_count' => $res[$i]['response_count']
+			);
+		}
+		return $all_courses;
+	}
+	
+	public static function get_courses_and_problem_counts()
+	{
+		global $dbmgr;
+		$query = "SELECT t1.*, count(t3.id) as problem_count ".
+				"FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id ".
+				"join 12m_topic_prob t3 on t2.topic_id=t3.topic_id ".
+				"group by t1.id";
+		$res = $dbmgr->fetch_assoc( $query );
+		$numrows = count($res);
+		$all_courses = array();
+		for ($i=0; $i<$numrows; $i++)
+		{
+			$all_courses[$i] = array(
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']),
+				'problem_count' => $res[$i]['problem_count']
 			);
 		}
 		return $all_courses;
@@ -684,7 +706,11 @@ Class MTabNav
 		}
 		if($usrmgr->m_user->researcher == 1)
 		{
-			$this->m_pages['Stats Export'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
+			$this->m_pages['Export User Stats'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
+		}
+		if($usrmgr->m_user->researcher == 1 || $usrmgr->m_user->staff == 1)
+		{
+			$this->m_pages['Export Problem Stats'] = $GLOBALS["DOMAIN"] . 'problems_export.php';
 		}
 		if($usrmgr->m_user->admin == 1)
 		{
@@ -1473,7 +1499,17 @@ Class MStatsFile
 		$filename = "problem_roulette_".date('\_Ymd\_His');
 
 		
-		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, count(t1.id) response_count, sum(t1.ans_correct) correct_count, sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site from responses t1 left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) left join user t3 on t1.user_id=t3.id  left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id left join 12m_class_topic t5 on t4.topic_id=t5.topic_id left join class t6 on t5.class_id=t6.id where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null";
+		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, ".
+			"t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, ".
+			"count(t1.id) response_count, sum(t1.ans_correct) correct_count, ".
+			"sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site ".
+			"from responses t1 ".
+			"left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) ".
+			"left join user t3 on t1.user_id=t3.id ".
+			"left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id ".
+			"left join 12m_class_topic t5 on t4.topic_id=t5.topic_id ".
+			"left join class t6 on t5.class_id=t6.id ".
+			"where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null ";
 		if (isset($semester_ids)) {
 			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
 			$query .= ' and t2.id in ('.$bindString.')';
@@ -1502,6 +1538,72 @@ Class MStatsFile
 		$query = "drop table ".$tablename;
 		$dbmgr->exec_query($query, array());
 
+	}
+
+	public static function export_problems($course_ids)
+	{
+		global $dbmgr;
+		$tablename = "problems_".date('Ymd\_His');
+		$params = array();
+		$filename = "problems_".date('\_Ymd\_His');
+
+		
+		$query = "create table ".$tablename." select t1.id problem_id, ".
+				"t1.name, t1.url, t1.correct, t1.ans_count, t1.tot_tries, ".
+				"t1.tot_correct, t1.tot_time, t1.solution, ".
+				"t2.topic_id topic_id, t3.class_id class_id, ".
+				"t4.name class_name, t4.disable_rating ratings_disabled ".
+				"from problems t1 ".
+				"join 12m_topic_prob t2 on t1.id=t2.problem_id ".
+				"join 12m_class_topic t3 on t2.topic_id=t3.topic_id ".
+				"join class t4 on t3.class_id=t4.id";
+
+
+		if (isset($course_ids)) {
+			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+			$query .= ' and t3.class_id in ('.$bindString.')';
+
+			$classes = MCourse::get_courses($course_ids);
+			foreach ($classes as $key => $value) {
+				$filename .= '_'.strtolower(str_replace(' ','_',$value->m_name));
+			}
+		}
+		$dbmgr->exec_query($query, $params);
+
+		$rating_scales = RatingScale::rating_scales();
+
+		foreach ($rating_scales as $key => $scale) {
+			$prefix = MStatsFile::column_prefix($scale->m_name);
+
+			$add_columns_query = "alter table ".$tablename." add column ".$prefix."_count int(11) default 0, ".
+				"add column ".$prefix."_rating decimal(6,4)";
+			$dbmgr->exec_query($add_columns_query, array());
+
+			$update_stats_query = "update ".$tablename." t1 join (".
+					"select problem_id, count(id) r_count, avg(rating) r_rating ".
+					"from ratings group by problem_id) t2 ".
+					"on t1.problem_id=t2.problem_id ".
+					"set t1.".$prefix."_count = t2.r_count, ".
+					"t1.".$prefix."_rating =  t2.r_rating";
+			$dbmgr->exec_query($update_stats_query, array());
+		}
+
+		# $ratings_fields = ", count(t5.id) clarity_count, avg(t5.rating) ";
+
+		$filename .= '.sql';
+
+
+		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
+
+		#$query = "drop table ".$tablename;
+		#$dbmgr->exec_query($query, array());
+
+	}
+
+	static function column_prefix($name) {
+		$name = strtolower($name);
+		$pieces = preg_split("/[^A-Za-z0-9]+/", $name);
+		return implode('_', $pieces);
 	}
 
 }
@@ -1578,6 +1680,112 @@ class GlobalAlert
 			$messages[] = new GlobalAlert($value['id'], $value['message'], $value['priority'], $value['start_time'], $value['end_time']);
 		}
 		return $messages;
+	}
+}
+
+class RatingScale
+{
+	var $m_id;
+	var $m_name;
+	var $m_min_label;
+	var $m_max_label;
+	var $m_min_icon;
+	var $m_max_icon;
+
+	function __construct($id, $name, $min_label, $max_label, $min_icon, $max_icon)
+	{
+		$this->m_id = $id;
+		$this->m_name = $name;
+		$this->m_min_label = $min_label;
+		$this->m_max_label = $max_label;
+		$this->m_min_icon = $min_icon;
+		$this->m_max_icon = $max_icon;
+	}
+
+	public static function rating_scales() {
+		global $dbmgr;
+		$query = "select * from rating_scales";
+		$bindings = array();
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$rating_scales = array();
+		foreach ($res as $key => $value) {
+			$rating_scales[] = new RatingScale(
+				$value['id'], $value['name'], 
+				$value['min_label'], $value['max_label'], 
+				$value['min_icon'], $value['max_icon']
+			);
+		}
+		return $rating_scales;
+	}
+
+
+}
+
+class Rating
+{
+	var $m_id;
+	var $m_problem_id;
+	var $m_rating_scale_id;
+	var $m_user_id;
+	var $m_rating;
+
+	function __construct($id, $problem_id, $rating_scale_id, $user_id, $rating)
+	{
+		$this->m_id = $id;
+		$this->m_problem_id = $problem_id;
+		$this->m_rating_scale_id = $rating_scale_id;
+		$this->m_user_id = $user_id;
+		$this->m_rating = $rating;
+	}
+
+	function save() {
+		global $dbmgr;
+		$query =
+			"INSERT INTO ratings (problem_id, rating_scale_id, user_id, rating) ".
+			"VALUES (:problem_id, :rating_scale_id, :user_id, :rating)";
+		$bindings = array(
+			":problem_id"      	=> $this->m_problem_id,
+			":rating_scale_id"  => $this->m_rating_scale_id,
+			":user_id"   				=> $this->m_user_id,
+			":rating" 					=> $this->m_rating
+			);
+		$rating_id = $dbmgr->handle_insert( $query , $bindings );
+		$this->m_id = $rating_id;
+	}
+
+
+
+	public static function ratings() {
+		global $dbmgr;
+		$query = "select * from ratings";
+		$bindings = array();
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$ratings = array();
+		foreach ($res as $key => $value) {
+			$ratings[] = new Rating(
+				$value['id'], $value['problem_id'], $value['rating_scale_id'], $value['user_id'], $value['rating']
+			);
+		}
+		return $ratings;
+	}
+
+	public static function rating_stats($problem_ids = array()){
+		global $dbmgr;
+		$ratings = array();
+		$bindings = array();
+		if (count($problem_ids) > 0) {
+			$bindString = $dbmgr->bindParamArray("prob_id", $problem_ids, $bindings);
+			$query = 'select problem_id, count(rating) count, AVG(rating) average from ratings where problem_id in ('.$bindString.') group by problem_id order by problem_id';
+			$res = $dbmgr->fetch_assoc( $query, $bindings );
+			foreach ($res as $value) {
+				$ratings[(string)$value['problem_id']] = array(
+					'problem_id' => $value['problem_id'],
+					'count' => $value['count'],
+					'average' => $value['average']
+				);
+			}
+		}
+		return $ratings;
 	}
 }
 

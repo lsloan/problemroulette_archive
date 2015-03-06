@@ -216,7 +216,7 @@ input.ans-choice{
 }
 
 .histogram{
-	margin: 0px 20px 10px;
+	margin: 0px 20px 10px 4em;
 }
 
 .form-next{
@@ -586,4 +586,40 @@ background-color: #e5e5e5;
     position: absolute;
     text-indent: -9000px;
     width: 1px;
+}
+
+/* Rating choice styling
+-------------------------------------------------- */
+.rating_img {
+	height: 3em;
+	margin-left: 15px;
+}
+
+.rating_label {
+	margin-bottom:1em;
+}
+
+.rating_radio {
+	margin-right: 35px;
+}
+
+.rating_radio input[type=radio] {
+  	/* Double-sized Checkboxes */
+	-ms-transform: scale(1.5); /* IE */
+	-moz-transform: scale(1.5); /* FF */
+	-webkit-transform: scale(1.5); /* Safari and Chrome */
+	-o-transform: scale(1.5); /* Opera */
+	margin-bottom: .5em;
+}
+
+.rating_line {
+	border-bottom: 3px solid;
+	width: 130px;
+	margin-left: -55px;
+	margin-top: 10px;
+}
+
+.problem-ratings p {
+	width: 500px;
+	text-align: right;
 }
