@@ -117,6 +117,14 @@ class CDbMgr
 		return $res->fetchAll(PDO::FETCH_COLUMN, $column);
 	}
 
+	function handle_insert($insert_query, $bindings = null) {
+		$this->m_link->beginTransaction();
+		$this->exec_query($insert_query, $bindings);
+		$last_id = $this->fetch_assoc('SELECT LAST_INSERT_ID() last_id');
+		$this->m_link->commit();
+		return intval($last_id[0]['last_id']);
+	}
+
 	function db_addslashes( $x ) { return addslashes( $x ); }
 	function db_stripslashes( $x ) { return stripslashes( $x ); }
 

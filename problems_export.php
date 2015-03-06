@@ -1,34 +1,31 @@
 <?php
 require_once("setup.php");
 
-function is_stat_file($var)
+function is_problems_file($var)
 {
-    return preg_match('/problem_roulette_[A-Za-z0-9_]+\.sql/', $var);
+    return preg_match('/problems_[A-Za-z0-9_]+\.sql/', $var);
 }
 
 global $usrmgr;
 global $dbmgr;
 
 $researcher = $usrmgr->m_user->researcher;
+$staff = $usrmgr->m_user->staff;
 
-if($researcher == 1)
+if($researcher == 1 || $staff == 1)
 {
     $json_response = false;
     $file_response = false;
 
     if (isset($_POST['start_export'])) {
-        $terms = NULL;
         $classes = NULL;
-        if(isset($_POST['semester'])) {
-            $terms = $_POST['semester'];
-        }
         if(isset($_POST['course'])) {
             $classes = $_POST['course'];
         }
 
-        MStatsFile::start_export($terms, $classes);
+        MStatsFile::export_problems($classes);
 
-        header('Location:stats_export.php');
+        header('Location:problems_export.php');
 
     } elseif (isset($_POST['delete_file'])) {
         $filename = $_POST['filename'];
@@ -54,15 +51,14 @@ if($researcher == 1)
         error_log("Done handling download of file ".$filename);
 
     } else {
-        $semesters = MSemester::get_semesters_and_response_counts();
-        $courses = MCourse::get_courses_and_response_counts();
+        $courses = MCourse::get_courses_and_problem_counts();
 
-        $files = array_filter(scandir($GLOBALS["DIR_STATS"],  SCANDIR_SORT_DESCENDING), "is_stat_file");
+        $files = array_filter(scandir($GLOBALS["DIR_STATS"],  SCANDIR_SORT_DESCENDING), "is_problems_file");
 
         // page construction
-        $head = new CHeadCSSJavascript("Export User Stats", array(), array());
-        $tab_nav = new VTabNav(new MTabNav('Export User Stats'));
-        $content = new VStatsExport($semesters, $courses, $files);
+        $head = new CHeadCSSJavascript("Export Problem Stats", array(), array());
+        $tab_nav = new VTabNav(new MTabNav('Export Problem Stats'));
+        $content = new VProblemsExport($courses, $files);
         $page = new VPageTabs($head, $tab_nav, $content);
 
         # delivery the html
