@@ -1569,7 +1569,7 @@ Class MStatsFile
 					"from ratings group by problem_id) t2 ".
 					"on t1.problem_id=t2.problem_id ".
 					"set t1.".$prefix."_count = t2.r_count, ".
-					"t1.".$prefix."_rating =  t2.r_count";
+					"t1.".$prefix."_rating =  t2.r_rating";
 			$dbmgr->exec_query($update_stats_query, array());
 		}
 

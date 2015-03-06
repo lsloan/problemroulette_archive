@@ -12,7 +12,7 @@ global $dbmgr;
 $researcher = $usrmgr->m_user->researcher;
 $staff = $usrmgr->m_user->staff;
 
-if($researcher == 1 || $stafs == 1)
+if($researcher == 1 || $staff == 1)
 {
     $json_response = false;
     $file_response = false;
