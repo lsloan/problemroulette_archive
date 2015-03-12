@@ -15,7 +15,7 @@ class CHeadCSSJavascript{
 	function Deliver(){
 		ob_start(); ?>
 		<title><?= $this->m_title ?> - Problem Roulette</title>
-                <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+		<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
 		<link href='css/bootstrap.css' rel='stylesheet' media='screen'>
 		<link href='css/bootstrap-responsive.css' rel='stylesheet' media='screen'>
 		<link href='css/styles.css' rel='stylesheet' media='screen'>
@@ -47,10 +47,10 @@ class CHeadCSSJavascript{
 class VPageTabs{
 	// properties
 	var $m_head;
-  var $m_nav;
-  var $m_nav2;
-  var $m_content;
-  var $m_alerts;
+	var $m_nav;
+	var $m_nav2;
+	var $m_content;
+	var $m_alerts;
 
 	// constructor
 	function __construct($head, $nav, $content){
@@ -74,35 +74,35 @@ class VTabNav
 {
 	function __construct($nav)
 	{
-        $this->m_nav = $nav;
+		$this->m_nav = $nav;
 	}
 
 	function Deliver()
 	{
-        global $usrmgr;
-        $problems_tab_disabled = count($usrmgr->m_user->GetSelectedTopics()) < 1;
-        $str = "<ul class='nav nav-tabs'>";
-        foreach($this->m_nav->m_pages as $tab=>$url)
-        {
-            $tabStyle = '';
-            if($this->m_nav->m_selected == $tab)
-                $tabStyle = 'active';
-            if ($tab == 'Problems' && $problems_tab_disabled) {
-            		$str .= "<li class='primary-nav-tab disabled_problem_tab problem_tab disabled ".$tabStyle."'><a href='#' disabled='disabled'>".$tab."</a></li>";
-            } else {
-            		$str .= "<li class='primary-nav-tab ".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
-            }
-        }
-        $str .= "</ul>";
-        return $str;
-    }
+		global $usrmgr;
+		$problems_tab_disabled = count($usrmgr->m_user->GetSelectedTopics()) < 1;
+		$str = "<ul class='nav nav-tabs'>";
+		foreach($this->m_nav->m_pages as $tab=>$url)
+		{
+			$tabStyle = '';
+			if($this->m_nav->m_selected == $tab)
+				$tabStyle = 'active';
+			if ($tab == 'Problems' && $problems_tab_disabled) {
+				$str .= "<li class='primary-nav-tab disabled_problem_tab problem_tab disabled ".$tabStyle."'><a href='#' disabled='disabled'>".$tab."</a></li>";
+			} else {
+					$str .= "<li class='primary-nav-tab ".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+			}
+		}
+		$str .= "</ul>";
+		return $str;
+	}
 }
 
 class VNoTabNav
 {	
 	function __construct($nav)
 	{
-        $this->m_nav = $nav;
+		$this->m_nav = $nav;
 	}
 	
 	function Deliver()
@@ -116,24 +116,24 @@ class VCourseTopicNav
 {	
 	function __construct($nav)
 	{
-        $this->m_nav = $nav;
+		$this->m_nav = $nav;
 	}
 	
 	function Deliver()
 	{
-        $str = "<div id='accordion'>";
-        foreach($this->m_nav->m_courses as $cc)
-        {
-            $str .= "<h3>". $cc->m_name ."</h3><div>";
-            foreach($cc->m_topics as $tt) 
-            {
-                $str .= "<input type='checkbox' name='".$tt->m_id."' value='".$tt->m_id."'>".$tt->m_name."<br>";
-            }
-            $str .= "</div>";
-        }
-        $str .= "</div>";
-        return $str;
-    }
+		$str = "<div id='accordion'>";
+		foreach($this->m_nav->m_courses as $cc)
+		{
+			$str .= "<h3>". $cc->m_name ."</h3><div>";
+			foreach($cc->m_topics as $tt)
+			{
+			    $str .= "<input type='checkbox' name='".$tt->m_id."' value='".$tt->m_id."'>".$tt->m_name."<br>";
+			}
+			$str .= "</div>";
+		}
+		$str .= "</div>";
+		return $str;
+	}
 }
 
 class VStaff
@@ -466,8 +466,9 @@ class VProblemLibrary
 			<h4 class='add-CTP-title'>Add Course</h4>
 			</p>
 			<p>
-			Course Name (alphanumeric and spaces only):
+			<label for='add_course_name' class='span3 text-right'>Course Name</label>
 			<input type='text' placeholder='Course Name' id='add_course_name' name='add_course_name' class='input-error'/>
+			<span class='label-addendum'>(alphanumeric and spaces only)</span>
 			</p>
 			<p>
 			<button class='btn btn-inverse' type='submit' id='submit_add_course'>Create Course</button>
@@ -483,7 +484,7 @@ class VProblemLibrary
 			<h4 class='add-CTP-title'>Add Topic</h4>
 			</p>
 			<p>
-			Select a Course
+			<label for='course_for_new_topic' class='span3 text-right'>Select a Course</label>
 			<select id='course_for_new_topic' name='course_for_new_topic' class='input-error'>
 			<option value='0' selected='selected'>Select One</option>";
 			for ($i=0; $i<$num_courses; $i++)
@@ -507,8 +508,9 @@ class VProblemLibrary
 			</select>
 			</p>
 			<p>
-			Topic Name (alphanumeric and spaces only):
+			<label for='add_topic_name' class='span3 text-right'>Topic Name </label>
 			<input type='text' placeholder='Topic Name' id='add_topic_name' name='add_topic_name' class='input-error'/>
+			<span class='label-addendum'>(alphanumeric and spaces only)</span>
 			</p>
 			<p>
 			<button class='btn btn-inverse' type='submit' id='submit_add_topic'>Create Topic</button>
@@ -661,7 +663,7 @@ class VProblemLibrary
 			}
 						
 			$str .= "</select>
-            </form>";
+			</form>";
 			
 			for ($i=0; $i<$num_courses; $i++)
 			{
@@ -1386,6 +1388,7 @@ class VProblems_submitted
 	
 	function Deliver()
 	{
+		global $usrmgr;
 		$alphabet = range('A', 'Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		
@@ -1505,7 +1508,7 @@ class VProblems_submitted
 		}
 
 		
-    $str = "<p class='half-line'>&nbsp;</p>
+    	$str = "<p class='half-line'>&nbsp;</p>
 			<p>Selected Topics/Remaining Problems: ";
 		foreach ($this->v_problem_counts_by_topic as $key => $value) {
 			if($value['remaining'] > 0) {
@@ -1514,55 +1517,73 @@ class VProblems_submitted
 				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
 		}
+		$soln_ok = $this->v_picked_problem->m_ok_to_show_soln;
+
 		$str .= "</p>
 			<form class='form-next' action='' method='post'>
 			<button class='btn btn-next' type='submit' name='next' value='1'>
 			Next
 			</button>
-			</form>
+			";
+			if (! $soln_ok) {
+				$str .= "
+				<button class='btn btn-next' type='submit' name='retry' value='".$this->v_picked_problem->m_prob_id."'>
+					Retry this problem
+				</button>
+				";
+			}
+			$str .= "</form>
 			<p>
-			<span class='label student-answer'>
+			<span class='span2 label student-answer'>
 			Your time:&nbsp;
 			".$this->v_solve_time."
 			 seconds
 			</span>
-			Average user time: 
+			Average user time:
 			".$this->v_picked_problem->get_avg_time()." seconds
 			</p>
 			<p>
-			<span class='label ".$label_class." student-answer'>
+			<span class='span2 label ".$label_class." student-answer'>
 			Your answer:&nbsp;".$alphabet[$this->v_student_answer-1]."</span>
-			Correct answer: 
-			".$alphabet[$correct_answer-1]."</p>";
+		";
+		if ($soln_ok) { // show the correct answer, solution url, histogram
+			$str .= "Correct answer: ".$alphabet[$correct_answer-1]."</p>";
 			if ($this->v_picked_problem->m_prob_solution !== '')
 			{
-				$str .= "<p>
-				Solution: <a class='link' target='_blank' href='".$this->v_picked_problem->m_prob_solution."'>".$this->v_picked_problem->m_prob_name."</a>
-				</p>";
+				$str .= "
+					<p>
+						Solution: <a class='link' target='_blank' href='".
+						$this->v_picked_problem->m_prob_solution."'>".$this->v_picked_problem->m_prob_name."</a>
+					</p>";
 			}
-      $chart_width = 150;
-      if ($this->v_picked_problem->m_prob_ans_count > 3)
-      {
-          $chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
-      }
+			$chart_width = 150;
+			if ($this->v_picked_problem->m_prob_ans_count > 3)
+			{
+				$chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
+			}
 			$str .= "
-			<div class='row'>
-				<span class='span4'>
-					<img class='histogram'
-					src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-					</img>
-				</span>
-				<span class=span7>".$ratings_div."
-				</span>
-			</div>
-			<iframe class='problemIframe' id='problemIframe' src='
-			".
-			$this->v_picked_problem->m_prob_url
-			."'></iframe>
-			<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>
-        ";
-        return $str;
-    }
+				<div class='row'>
+					<span class='span4'>
+						<img class='histogram'
+						src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
+						</img>
+					</span>
+					<span class=span7>".$ratings_div."
+					</span>
+				</div>
+				<iframe class='problemIframe' id='problemIframe' src='
+				".
+				$this->v_picked_problem->m_prob_url
+				."'></iframe>
+				";
+		} else {
+			$str .= "Your answer is incorrect.</p>
+				<div  class='span12 text-center'><strong>You can <u>Retry this problem</u>, or go to the <u>Next</u> random problem using the buttons above</strong></div>
+				";
+		}
+		$str .= "<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>";
+		return $str;
+	}
 }
 
 class VSpecialExam

@@ -220,7 +220,7 @@ input.ans-choice{
 }
 
 .form-next{
-	margin-bottom: 0px;
+	margin-bottom: 1.5em;
 }
 
 .btn-next{
@@ -428,7 +428,8 @@ hr {
 	border: 1px solid;
 	margin: 0 10px 0 10px;
 }
-form#edit_problem label, form#add_problem_form label {
+form#edit_problem label, form#add_problem_form label,
+form#add_topic_form label, form#add_course_form label{
 	padding-top: 5px;
 	margin-right: 8px;
 	font-weight: bold;
@@ -578,10 +579,11 @@ background-color: #e5e5e5;
 	border-top-width: 1px;
 	border-top-color: #d0d0d0;
 	border-top-style: solid;
+	margin-top: 3em;
 }
 
 .offscreen {
-	line-height: 1px;
+    line-height: 1px;
     overflow: hidden;
     position: absolute;
     text-indent: -9000px;
