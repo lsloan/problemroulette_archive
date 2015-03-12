@@ -54,18 +54,17 @@ Class MProblem
 	function get_ok_to_show_soln($user_id)
 	{
 		global $dbmgr;
-	    $course_id = MProblem::get_prob_class_id($this->m_prob_id);
-	    $delay_solution = MCourse::get_delay_solution($course_id);
-	    if ($delay_solution == 0) return true;  //this class isn't participating in delaying the solution, no further check needed
-    	$query = "SELECT sum(ans_correct) num_correct, count(*) tries FROM responses where prob_id=:prob_id and user_id=:user_id ";
-    	$bindings = array(
-	      ":user_id"    => $user_id,
-	      ":prob_id"    => $this->m_prob_id
-    	);
-	    $res = $dbmgr->fetch_assoc( $query, $bindings );
-	    if ($res[0]["num_correct"] > 0) return true; //they've answered correctly at some point - ok to show
-    	elseif ($res[0]['tries'] >= $delay_solution) return true; //they've tried enough - ok to show
-    	else return false; //havent tried enough times, havent answered correctly - dont show
+		$course_id = MProblem::get_prob_class_id($this->m_prob_id);
+		$delay_solution = MCourse::get_delay_solution($course_id);
+		if ($delay_solution == 0) return true;  //this class isn't participating in delaying the solution, no further check needed
+		$query = "SELECT sum(ans_correct) num_correct, count(*) tries FROM responses where prob_id=:prob_id and user_id=:user_id ";
+		$bindings = array(
+			":user_id"    => $user_id,
+			":prob_id"    => $this->m_prob_id
+		);
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		if ($res[0]["num_correct"] > 0) return true; //they've answered correctly at some point - ok to show
+		else return false; //havent tried enough times, havent answered correctly - dont show
 	}
 
 	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')
@@ -407,8 +406,8 @@ Class MCourse
 		$query = "INSERT INTO class(name, disable_rating, :delay_solution)
 		VALUES (:name, :disable_rating, :delay_solution)";
 		$bindings = array(":name" => $name,
-						  ":disable_rating" => $disable_rating,
-						  ":delay_solution" => $delay_solution);
+					":disable_rating" => $disable_rating,
+					":delay_solution" => $delay_solution);
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
@@ -587,7 +586,7 @@ Class MTopic
 		else
 		{
 			global $app_log;
-            $app_log->msg("ERROR in get_all_topics_in_course - course_id: ".$course_id);
+			$app_log->msg("ERROR in get_all_topics_in_course - course_id: ".$course_id);
 		}
 
 		// TODO: Handle missing course case possibly as distinct from the zero-topic case

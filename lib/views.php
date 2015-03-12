@@ -84,13 +84,13 @@ class VTabNav
 		$str = "<ul class='nav nav-tabs'>";
 		foreach($this->m_nav->m_pages as $tab=>$url)
 		{
-		$tabStyle = '';
-		if($this->m_nav->m_selected == $tab)
-			$tabStyle = 'active';
-		if ($tab == 'Problems' && $problems_tab_disabled) {
+			$tabStyle = '';
+			if($this->m_nav->m_selected == $tab)
+				$tabStyle = 'active';
+			if ($tab == 'Problems' && $problems_tab_disabled) {
 				$str .= "<li class='primary-nav-tab disabled_problem_tab problem_tab disabled ".$tabStyle."'><a href='#' disabled='disabled'>".$tab."</a></li>";
-		} else {
-				$str .= "<li class='primary-nav-tab ".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
+			} else {
+					$str .= "<li class='primary-nav-tab ".$tabStyle."'><a href='".$url."'>".$tab."</a></li>";
 			}
 		}
 		$str .= "</ul>";
@@ -1387,7 +1387,8 @@ class VProblems_submitted
 	}
 	
 	function Deliver()
-	{	global $usrmgr;
+	{
+		global $usrmgr;
 		$alphabet = range('A', 'Z');
 		$correct_answer = $this->v_picked_problem->m_prob_correct;
 		
@@ -1550,41 +1551,39 @@ class VProblems_submitted
 			if ($this->v_picked_problem->m_prob_solution !== '')
 			{
 				$str .= "
-				<p>
-					Solution: <a class='link' target='_blank' href='".
-					$this->v_picked_problem->m_prob_solution."'>".$this->v_picked_problem->m_prob_name."</a>
-				</p>";
+					<p>
+						Solution: <a class='link' target='_blank' href='".
+						$this->v_picked_problem->m_prob_solution."'>".$this->v_picked_problem->m_prob_name."</a>
+					</p>";
 			}
-	      	$chart_width = 150;
-	      	if ($this->v_picked_problem->m_prob_ans_count > 3)
-	      	{
-	          	$chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
-	      	}
+			$chart_width = 150;
+			if ($this->v_picked_problem->m_prob_ans_count > 3)
+			{
+				$chart_width = 50*$this->v_picked_problem->m_prob_ans_count;
+			}
 			$str .= "
-
-			<div class='row'>
-				<span class='span4'>
-					<img class='histogram'
-					src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-					</img>
-				</span>
-				<span class=span7>".$ratings_div."
-				</span>
-			</div>
-			<iframe class='problemIframe' id='problemIframe' src='
-			".
-			$this->v_picked_problem->m_prob_url
-			."'></iframe>
-			";
-    	}
-    	else {
-    		$str .= "Your answer is incorrect.</p>
-    		<div  class='span12 text-center'><strong>You can <u>Retry this problem</u>, or go to the <u>Next</u> random problem using the buttons above</strong></div>
-    		";
-    	}
-    	$str .= "<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>";
-    	return $str;
-    }
+				<div class='row'>
+					<span class='span4'>
+						<img class='histogram'
+						src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
+						</img>
+					</span>
+					<span class=span7>".$ratings_div."
+					</span>
+				</div>
+				<iframe class='problemIframe' id='problemIframe' src='
+				".
+				$this->v_picked_problem->m_prob_url
+				."'></iframe>
+				";
+		} else {
+			$str .= "Your answer is incorrect.</p>
+				<div  class='span12 text-center'><strong>You can <u>Retry this problem</u>, or go to the <u>Next</u> random problem using the buttons above</strong></div>
+				";
+		}
+		$str .= "<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>";
+		return $str;
+	}
 }
 
 class VSpecialExam
