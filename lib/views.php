@@ -1445,9 +1445,9 @@ class VProblems_submitted
 		} else {
 			if ($this->v_rating_scales)
 			{
-				$ratings_div .= "<div class='problem-ratings'>
-				<form method='post' action='ratings.php' id='problem-rating-form'>
-				<input type='hidden' name='problem_id' value='".$this->v_picked_problem->m_prob_id."'/>
+				$ratings_div .= "<div class='problem-ratings'>";
+				// <form method='post' action='ratings.php' id='problem-rating-form'>
+				$ratings_div .= "<input type='hidden' name='problem_id' value='".$this->v_picked_problem->m_prob_id."'/>
 				<input type='hidden' name='course_id' value='".$this->v_course->m_id."'/>
 				";
 				foreach ($this->v_rating_scales as $key => $value) {
@@ -1497,13 +1497,11 @@ class VProblems_submitted
 					";
 				}
 				$ratings_div .= "
-					<div class='row'>
-						<span class='offset2 span2 text-center'>
-						<input type='submit' value='Submit Rating'  id='ratings-form-submit'/>
-						</span>
-					</div>
-				</form>
-				</div>";
+					<div class='row offset1' >
+						<span class='span3'><em><small>Your rating will be submitted when you click Next</small></em></span>
+					</div>";
+				// </form>
+				$ratings_div .= "</div>";
 			}
 		}
 
@@ -1532,7 +1530,8 @@ class VProblems_submitted
 				</button>
 				";
 			}
-			$str .= "</form>
+
+			$str .=  "
 			<p>
 			<span class='span2 label student-answer'>
 			Your time:&nbsp;
@@ -1582,6 +1581,7 @@ class VProblems_submitted
 				";
 		}
 		$str .= "<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>";
+		$str .="</form>";
 		return $str;
 	}
 }
@@ -1974,27 +1974,26 @@ class VProblemEdit
             {
                 $chart_width = 50*$this->v_problem->m_prob_ans_count;
             }
-            $str .= "
+            $str .= "<div class='span6'>
             <img class='histogram'
             src='https://chart.googleapis.com/chart?cht=bvs&chd=t:".$ans_submit_frac_count_string."&chs=".$chart_width."x150&chbh=30,12,20&chxt=x,y&chxl=0:".$histogram_ans_string."&chds=a&chm=N*p1,000055,0,-1,13&chco=FFCC33&chtt=Responses%20(N=".$ans_submit_count_sum.")'>
-            </img>
+            </img></div>
             ";
 
-            if (count($this->v_rating) > 0) {
-            	foreach ($this->v_rating as $rating) {
+            if (count($this->v_ratings) > 0) {
+            	foreach ($this->v_ratings as $rating) {
 		            $str .= "
-		            <h2>Clarity</h2>
-		            <div class='row'>
-		            	<span class='span2 text-right'>Average Rating</span>
-		            	<span class='span9 text-left'>".$rating['count']."</span>
-		            </div>
-		            <div class='row'>
-		            	<span class='span2 text-right'>Number of Ratings</span>
-		            	<span class='span9 text-left'>".$rating[0]['average']."</span>
+		            <div class='span5 clarity'>
+		            	<span class='offset1 span2 text-center clarity'>Clarity</span>
+		            	<span class='span10'>
+			            	<span class='span2 text-right'>Average Rating</span>
+			            	<span class='span1 text-left'>".$rating['average']."</span><br>
+			            	<span class='span2 text-right '>Number of Ratings</span>
+			            	<span class='span1 text-left'>".$rating['count']."</span>
+		            	</span>
 		            </div>
 		            ";
             	}
-
             }
            $str .= "
             <iframe class='problemIframe' id='problemIframe' src='

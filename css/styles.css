@@ -625,3 +625,13 @@ background-color: #e5e5e5;
 	width: 500px;
 	text-align: right;
 }
+
+div.clarity {
+	margin-left: -130px;
+	margin-top: 1em;
+}
+
+span.clarity {
+	font-size: 1.5em;
+	font-weight: bold;
+}
