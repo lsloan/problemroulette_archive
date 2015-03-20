@@ -64,6 +64,7 @@ Class MProblem
 		);
 		$res = $dbmgr->fetch_assoc( $query, $bindings );
 		if ($res[0]["num_correct"] > 0) return true; //they've answered correctly at some point - ok to show
+		if ($res[0]["tries"] >= $delay_solution) { return true; }
 		else return false; //havent tried enough times, havent answered correctly - dont show
 	}
 
