@@ -113,7 +113,7 @@ $(document).ready(function()
 	$('#add_topic_name, #edit_topic_name').keyup(function(){
 		var validation = true;
 		var submit = '#submit_add_topic';
-		if (this.is('#edit_topic_name')) {
+		if ($(this).is('#edit_topic_name')) {
 			submit = '#submit_edit_topic';
 		}
 		if(jQuery.trim($(this).val()).length == 0)
@@ -131,11 +131,11 @@ $(document).ready(function()
 		{
 			$(this).removeClass('input-error');
 		}
-		if (this.is('#add_topic_name') && $('#course_for_new_topic').val() == 0)
+		if ($(this).is('#add_topic_name') && $('#course_for_new_topic').val() == 0)
 		{
 			validation = false;
 		}
-		if(validation) 
+		if(validation)
 		{
 			$(submit).removeAttr("disabled");
 		}
