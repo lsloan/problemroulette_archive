@@ -593,8 +593,13 @@ background-color: #e5e5e5;
 /* Rating choice styling
 -------------------------------------------------- */
 .rating_img {
-	height: 3em;
+	height: 2.25em;
 	margin-left: 15px;
+	margin-bottom: 5px;
+}
+
+.rating_img.max {
+	margin-right: 10px;
 }
 
 .rating_label {

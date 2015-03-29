@@ -1460,10 +1460,10 @@ class VProblems_submitted
 						</div>
 						<div class='row'>
 							<div class='span1 offset1 text-left'>
-								<img class='rating_img' src='img/".$value->m_min_icon."'></img>
+								<img class='rating_img min' src='img/".$value->m_min_icon."'></img>
 							</div>
 							<div class='offset1 span1 text-right'>
-								<img class='rating_img' src='img/".$value->m_max_icon."'></img>
+								<img class='rating_img max' src='img/".$value->m_max_icon."'></img>
 							</div>
 						</div>
 						<div class='row offset1 span7'>
