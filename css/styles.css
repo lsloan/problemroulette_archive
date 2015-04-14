@@ -319,6 +319,10 @@ th.headerSortDown{
 	margin: 5px 10px;
 }
 
+span.add_prob_info {
+	font-size: .8em;
+
+}
 .add-CTP-form{
 	display: none;
 	background-color: #D3D3D3;
