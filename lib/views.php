@@ -432,6 +432,9 @@ class VProblemLibrary
 			<p class='half-line'>&nbsp;</p>
 			<h4 class='summary-header'>
 				Update Problem Library
+				<span class='add_prob_info'>
+					<a href='https://docs.google.com/document/d/1T8NccOVprB7P9r2-q4GEBSdz4tJ-bAe5AJtVHOtSjLs/view?usp=sharing'>How to add a problem</a>
+				</span>
 			</h4>
 			<button class='btn btn-primary add-CTP' id='add_problem'
 				data-form='#add_problem_form' data-remove='#add_problem_form_remove' data-cancel='#add_problem_form_cancel'>
@@ -1144,6 +1147,7 @@ class VStatsExport
 									<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
 										Start Export
 									</button>
+									<a href="https://docs.google.com/a/umich.edu/document/d/1an___FgYKRLgGvozu0jZV1pmcYe6TbpmdFdrcYwGje8/view?usp=sharing">Information about the Export</a>
 								</p>
 							</form>
 						</div>
@@ -1240,6 +1244,7 @@ class VProblemsExport
 									<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
 										Start Export
 									</button>
+									<a href="https://docs.google.com/a/umich.edu/document/d/1uxT_irF_w6aX8-bhXHBUGjkSeDOfWXUDxKMy9Lkc_5s/view?usp=sharing">Information about the Export</a>
 								</p>
 							</form>
 						</div>
@@ -1577,7 +1582,7 @@ class VProblems_submitted
 				";
 		} else {
 			$str .= "Your answer is incorrect.</p>
-				<div  class='span12 text-center'><strong>You can <u>Retry this problem</u>, or go to the <u>Next</u> random problem using the buttons above</strong></div>
+				<div  class='span12 text-center'><strong>You can Retry this problem, or go to the Next random problem using the buttons above</strong></div>
 				";
 		}
 		$str .= "<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>";
