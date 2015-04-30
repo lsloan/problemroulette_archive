@@ -158,8 +158,12 @@ if (! is_array($selected_topics_list_id))
 
 for ($i=0; $i<$num_topics; $i++)
 {
-	$selected_topics_list[$i] = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
+	$one_topic = MTopic::get_topic_by_id($selected_topics_list_id[$i]);
+	if($usrmgr->m_user->staff == 1 || $one_topic->m_inactive == 0) {
+		$selected_topics_list[] = $one_topic;
+	}
 }
+$num_topics = count($selected_topics_list);
 
 $picker = new MProblemPicker();
 if($c_problem_id == null || $c_problem_id < 1) {

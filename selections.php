@@ -20,6 +20,7 @@ $user_id = $usrmgr->m_user->id;
 // }
 
 $pre_fill_topics = 1;
+$include_inactive_topics = ($usrmgr->m_user->staff == 1);
 
 if (isset($_POST['topic_checkbox_submission'])) {
 	// user reset topics
@@ -97,7 +98,7 @@ if ($course_or_topic == 1)
 }
 else
 {
-	$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+	$all_courses_with_topics = MCourse::get_all_courses_with_topics($include_inactive_topics);
 	$content = new VCourse_Selections($all_courses_with_topics);
 }
 
