@@ -1364,7 +1364,7 @@ class VProblems
 			<iframe class='problemIframe' id='problemIframe' src='".
 			$this->v_picked_problem->m_prob_url
 			."'></iframe>
-      <div class='problem-footer-bar'>Problem <strong>". $this->v_picked_problem->m_prob_name. "</strong> in topic <strong>" . $this->v_picked_problem->m_prob_topic_name[0] . "</strong></div>
+      <div class='problem-footer-bar'>Problem <strong>". $this->v_picked_problem->m_prob_name. "</strong> in topic <strong>" . MTopic::get_topic_by_id($this->v_topic)->m_name . "</strong></div>
         ";
       return $str;
     }
@@ -1931,7 +1931,7 @@ class VProblemEdit
 			<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' >
 			";
 
-			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_name);
+			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_names);
 			$str .= "</select></p>
 
             <p>
