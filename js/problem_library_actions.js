@@ -13,8 +13,11 @@ $(document).ready(function()
         var $option = $('#PL_dropdown_topic option:selected');
         var id = $option.val();
         var name = $option.text().trim();
+        var inactive = $option.data('inactive');
         $('#edit_topic_id').val(id);
         $('#edit_topic_name').val(name);
+        $('#edit_topic_inactive').prop("checked", inactive);
+        
         $('#edit_topic_form').show();
     });
 

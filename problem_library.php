@@ -28,7 +28,7 @@ if (isset($_POST['add_topic_name']))
 
 if (isset($_POST['edit_topic_name']))
 {
-    MDirector::edit_topic($_POST['edit_topic_id'], $_POST['edit_topic_name']);
+    MDirector::edit_topic($_POST['edit_topic_id'], $_POST['edit_topic_name'], $_POST['edit_topic_inactive']);
     header('Location:problem_library.php');//necessary so user does not refresh and resubmit form
 }
 

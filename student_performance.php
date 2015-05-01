@@ -105,7 +105,7 @@ else
 	//<DISPLAY ALL PROBLEMS IN GIVEN COURSE>
 		//$problems_list = Array();
 		$problem_id_list = Array();
-		$all_topics_in_course = MTopic::get_all_topics_in_course($selected_course_id);//topic objects
+		$all_topics_in_course = MTopic::get_all_topics_in_course($selected_course_id, $usrmgr->m_user->staff == 1);//topic objects
 		$num_topics = count($all_topics_in_course);
 		
 		for ($i=0; $i<$num_topics; $i++)

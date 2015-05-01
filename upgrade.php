@@ -21,7 +21,8 @@ $migrations = array(
     array('name' => 'AddRatingsTable', 'file' => 'add_ratings_table.php'),
     array('name' => 'AddDisableRatingToClass', 'file' => 'add_disable_rating_to_class.php'),
     array('name' => 'AddUniqueIndexForResponses', 'file' => 'add_unique_index_for_responses.php'),
-    array('name' => 'AddDelaySolutionToClass', 'file' => 'add_delay_solution_to_class.php')
+    array('name' => 'AddDelaySolutionToClass', 'file' => 'add_delay_solution_to_class.php'),
+    array('name' => 'AddInactiveToTopic', 'file' => 'add_inactive_to_topic.php')
 );
 
 require_once("setup.php");

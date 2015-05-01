@@ -412,7 +412,7 @@ Class MCourse
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
-	public static function get_course_by_id($id)
+	public static function get_course_by_id($id, $incude_inactive_topics=1)
 	{
 		global $dbmgr;
 		$query = "SELECT * FROM class WHERE id = :id";
@@ -420,7 +420,7 @@ Class MCourse
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
 		if ($res) {
 			$course = new MCourse($res[0]['id'],$res[0]['name'],$res[0]['disable_rating'],$res[0]['delay_solution']);
-			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
+			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id, $incude_inactive_topics);
 			return $course;
 		}
 		else return Null;
@@ -469,16 +469,17 @@ Class MCourse
 		return $all_courses;
 	}
 
-	public static function get_all_courses_with_topics()
+	public static function get_all_courses_with_topics($include_inactive_topics=false)
 	{
 		global $dbmgr;
+		global $usrmgr;
 		$res = $dbmgr->fetch_assoc("SELECT * FROM class");
 		$numrows = count($res);
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$course = new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating'],$res[$i]['delay_solution']);
-			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id);
+			$course->m_topics = MTopic::get_all_topics_in_course($course->m_id, $include_inactive_topics);
 			array_push($all_courses, $course);
 		}
 		return $all_courses;
@@ -535,12 +536,14 @@ Class MTopic
 	var $m_id;
 	var $m_name;
 	var $m_course;
+	var $m_inactive;
 	var $m_questions; // Topics have an array of questions
 	
-	function __construct($id,$name)
+	function __construct($id,$name,$inactive=false)
 	{
 		$this->m_id = $id;
 		$this->m_name = $name;
+		$this->m_inactive = $inactive;
 	}
 	
 	public static function get_topic_by_id($id)
@@ -553,26 +556,31 @@ Class MTopic
 		$query = "SELECT * FROM topic WHERE id = :id";
 		$bindings = array(":id" => $id);
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		$topic = new MTopic($res[0]['id'],$res[0]['name']);
+		$topic = new MTopic($res[0]['id'],$res[0]['name'],$res[0]['inactive']);
 		//$topic->m_questions = MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id);
 		return $topic;
 	}
 	
-	public static function get_all_topics()
+	public static function get_all_topics($include_inactive=false)
 	{
 		global $dbmgr;
 		$query = "SELECT * FROM topic";
+		if($include_inactive) {
+
+		} else {
+				$query .= " where inactive=0";
+		}
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_topics = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_topics[$i] = new MTopic($res[$i]['id'],$res[$i]['name']);
+			$all_topics[$i] = new MTopic($res[$i]['id'],$res[$i]['name'],$res[$i]['inactive']);
 		}
 		return $all_topics;
 	}
 	
-	public static function get_all_topics_in_course($course_id)
+	public static function get_all_topics_in_course($course_id, $include_inactive=false)
 	{
 		global $dbmgr;
 		if ($course_id !== Null)
@@ -581,6 +589,11 @@ Class MTopic
 				"SELECT t.* FROM topic t ".
 				"INNER JOIN 12m_class_topic tc ON t.id = tc.topic_id ".
 				"WHERE tc.class_id = :course_id";
+			if($include_inactive) {
+
+			} else {
+				$query .= " and inactive=0";
+			}
 			$bindings = array(":course_id" => $course_id);
 			$res = $dbmgr->fetch_assoc( $query , $bindings );
 		}
@@ -595,7 +608,7 @@ Class MTopic
 		$all_topics_in_course = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_topics_in_course[$i] = new MTopic($res[$i]['id'],$res[$i]['name']);
+			$all_topics_in_course[$i] = new MTopic($res[$i]['id'],$res[$i]['name'],$res[$i]['inactive']);
 		}
 		//UNCOMMENT TO ALPHABETIZE TOPICS
 		//usort($all_topics_in_course, array('MTopic','alphabetize'));
@@ -611,11 +624,11 @@ Class MTopic
 		$dbmgr->exec_query($query, $bindings);
 	}
 
-    public static function edit_topic($topic_id, $topic_name)
+    public static function edit_topic($topic_id, $topic_name, $inactive=false)
     {
         global $dbmgr;
-        $query = "UPDATE topic SET name = ? WHERE id = ?";
-        $dbmgr->exec_query($query, array($topic_name, $topic_id));
+        $query = "UPDATE topic SET name = ?, inactive = ? WHERE id = ?";
+        $dbmgr->exec_query($query, array($topic_name, ($inactive ? 1 : 0), $topic_id));
     }
 	
 	public static function remove_problem_topics($prob_id, $topic_ids)
@@ -762,9 +775,11 @@ Class MCourseTopicNav
 	var $m_courses;
 
 	function __construct()
-	 {
-		 $this->m_courses = MCourse::get_all_courses_with_topics();
-	 }
+	{
+		global $usrmgr;
+		$include_inactive_topics = ($usrmgr->m_user->staff == 1);
+		$this->m_courses = MCourse::get_all_courses_with_topics($include_inactive_topics);
+	}
 }
 
 //model containing the course and topic selection information
@@ -976,11 +991,11 @@ Class MDirector
 		$dbmgr->exec_query( $query , $bindings );
 	}
 
-    public static function edit_topic($topic_id, $topic_name)
+    public static function edit_topic($topic_id, $topic_name, $inactive=false)
     {
         if (intval($topic_id) > 0 && strlen($topic_name) > 0)
         {
-            MTopic::edit_topic($topic_id, $topic_name);
+            MTopic::edit_topic($topic_id, $topic_name, $inactive);
         }
     }
 	
@@ -1060,6 +1075,8 @@ class MProblemPicker
 		global $usrmgr;
 		global $dbmgr;
 
+		$exclude_inactive_topics = ($usrmgr->m_user->staff == 1 ? '' : 'and t.inactive=0 ');
+
 		# populate $m_problem_counts_by_topic
 		if($usrmgr->m_user->selected_topics_list == null) {
 			$problem_counts_query =
@@ -1071,7 +1088,7 @@ class MProblemPicker
 				 "left join 12m_topic_prob 12mtp on 12mct.topic_id=12mtp.topic_id ".
 				 "left join omitted_problems op on sel.user_id=op.user_id and 12mtp.problem_id=op.problem_id ".
 				 "left join topic t on 12mct.topic_id=t.id ".
-				 "where u.id=:user_id and sel.id=u.selection_id ".
+				 "where u.id=:user_id and sel.id=u.selection_id ".$exclude_inactive_topics.
 				 "group by 12mct.topic_id";
 		} else {
 			$problem_counts_query =
@@ -1083,7 +1100,7 @@ class MProblemPicker
 				 "left join 12m_topic_prob 12mtp on st.topic_id=12mtp.topic_id ".
 				 "left join omitted_problems op on sel.user_id=op.user_id and 12mtp.problem_id=op.problem_id and op.topic_id=12mtp.topic_id ".
 				 "left join topic t on st.topic_id=t.id ".
-				 "where u.id=:user_id and sel.id=u.selection_id ".
+				 "where u.id=:user_id and sel.id=u.selection_id ".$exclude_inactive_topics.
 				 "group by st.topic_id";
 		}
 		$bindings = array(
@@ -1348,7 +1365,6 @@ Class MUserSummary
 				if (count($res) > 0)
 				{
 					$bindings[":user_id"]=$res[0]["id"];
-
 				}
 				else
 				{

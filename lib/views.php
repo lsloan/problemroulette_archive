@@ -174,7 +174,7 @@ class VStudentPerformance
 		{
 			$num_responses = $this->v_summary->m_tot_tries;
 			
-			$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+			$all_courses_with_topics = MCourse::get_all_courses_with_topics(true);
 			usort($all_courses_with_topics, array('MCourse', 'alphabetize'));
 			$num_courses = count($all_courses_with_topics);
 			
@@ -183,6 +183,8 @@ class VStudentPerformance
 			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 			
 			global $usrmgr;
+			$include_inactive_topics = ($usrmgr->m_user->staff == 1);
+
 			$str = "
 			<p class='half-line'>&nbsp;</p>
 			<h4 class='summary-header'>
@@ -197,7 +199,7 @@ class VStudentPerformance
 			{
 				$all_topics_in_course = Array();
 				$all_topics_in_course_id = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 				$topic_count = count($all_topics_in_course);
 				for($j=0; $j<$topic_count; $j++)
 				{
@@ -237,7 +239,7 @@ class VStudentPerformance
 			{
 				$all_topics_in_course = Array();
 				$all_topics_in_course_id = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 				$topic_count = count($all_topics_in_course);
 				for($j=0; $j<$topic_count; $j++)
 				{
@@ -260,7 +262,7 @@ class VStudentPerformance
 			for ($i=0; $i<$num_courses; $i++)
 			{
 				$all_topics_in_course = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 				$num_topics = count($all_topics_in_course);
 				for ($j=0; $j<$num_topics; $j++)
 				{
@@ -410,8 +412,11 @@ class VProblemLibrary
 	
 	function __construct($problem_library_list, $selected_course_id)
 	{
+		global $usrmgr;
+		$staff = $usrmgr->m_user->staff;
+
 		$this->v_problem_library_list = $problem_library_list;
-		$this->v_selected_course = MCourse::get_course_by_id($selected_course_id);
+		$this->v_selected_course = MCourse::get_course_by_id($selected_course_id, $staff);
 	}
 	
 	function Deliver()
@@ -421,13 +426,14 @@ class VProblemLibrary
 
 		if ($staff == 1)
 		{
-			$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+			$all_courses_with_topics = MCourse::get_all_courses_with_topics(true);
 			usort($all_courses_with_topics, array('MCourse', 'alphabetize'));
 			$num_courses = count($all_courses_with_topics);
 						
 			$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 			
 			global $usrmgr;
+			$include_inactive_topics = ($usrmgr->m_user->staff == 1);
 			$str = "
 			<p class='half-line'>&nbsp;</p>
 			<h4 class='summary-header'>
@@ -494,7 +500,7 @@ class VProblemLibrary
 			{
 				$all_topics_in_course = Array();
 				$all_topics_in_course_id = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 				$topic_count = count($all_topics_in_course);
 				for($j=0; $j<$topic_count; $j++)
 				{
@@ -530,8 +536,12 @@ class VProblemLibrary
 				<h4 class='add-CTP-title'>Edit Topic</h4>
 			</p>
 			<p>
-			Topic Name (alphanumeric and spaces only):
+			<label>Topic Name (alphanumeric and spaces only):
 			<input type='text' placeholder='Topic Name' id='edit_topic_name' name='edit_topic_name' class='input-error'/>
+			</label>
+			</p>
+			<p>
+			<label>Inactive: <input type=checkbox name='edit_topic_inactive' id='edit_topic_inactive' value='true'></label>
 			</p>
 			<p>
 			<input type='hidden' id='edit_topic_id' name='edit_topic_id' value='' />
@@ -555,7 +565,7 @@ class VProblemLibrary
 					{
 						$all_topics_in_course = Array();
 						$all_topics_in_course_id = Array();
-						$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+						$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 						$topic_count = count($all_topics_in_course);
 						for($j=0; $j<$topic_count; $j++)
 						{
@@ -580,7 +590,7 @@ class VProblemLibrary
 					for ($i=0; $i<$num_courses; $i++)
 					{
 						$all_topics_in_course = Array();
-						$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+						$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 						$num_topics = count($all_topics_in_course);
 						for ($j=0; $j<$num_topics; $j++)
 						{
@@ -646,7 +656,7 @@ class VProblemLibrary
 			{
 				$all_topics_in_course = Array();
 				$all_topics_in_course_id = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 				$topic_count = count($all_topics_in_course);
 				for($j=0; $j<$topic_count; $j++)
 				{
@@ -672,7 +682,7 @@ class VProblemLibrary
 			{
 				$all_topics_in_course = Array();
 				$all_topics_in_course_id = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 				$topic_count = count($all_topics_in_course);
 				for($j=0; $j<$topic_count; $j++)
 				{
@@ -695,12 +705,12 @@ class VProblemLibrary
 			for ($i=0; $i<$num_courses; $i++)
 			{
 				$all_topics_in_course = Array();
-				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+				$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 				$num_topics = count($all_topics_in_course);
 				for ($j=0; $j<$num_topics; $j++)
 				{
 					$str .= "<option 
-					value='".$all_topics_in_course[$j]->m_id."'";
+					value='".$all_topics_in_course[$j]->m_id."' data-inactive='".($all_topics_in_course[$j]->m_inactive == 1 ? 'true' : 'false')."' ";
 					if (isset($_SESSION['dropdown_history_topic']) && $_SESSION['dropdown_history_topic'] == $all_topics_in_course[$j]->m_id)
 					{
 						$str .= " selected='selected'";
@@ -838,17 +848,19 @@ class VStats
 	}
 	
 	function Deliver()
-	{		
+	{
+		global $usrmgr;
+		$include_inactive_topics = ($usrmgr->m_user->staff == 1);
+
 		$num_responses = count($this->v_summary->m_problem_list);
 		
-		$all_courses_with_topics = MCourse::get_all_courses_with_topics();
+		$all_courses_with_topics = MCourse::get_all_courses_with_topics($include_inactive_topics);
 		usort($all_courses_with_topics, array('MCourse','alphabetize'));
 		$num_courses = count($all_courses_with_topics);
 		
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		
-		global $usrmgr;
-        $str = "
+    $str = "
         <p class='half-line'>&nbsp;</p>
         <h4 class='summary-header'>
             ".$usrmgr->m_user->username."'s Summary
@@ -869,7 +881,7 @@ class VStats
 		{
 			$all_topics_in_course = Array();
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -903,7 +915,7 @@ class VStats
 		{
 			$all_topics_in_course = Array();
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -926,7 +938,7 @@ class VStats
 		for ($i=0; $i<$num_courses; $i++)
 		{
 			$all_topics_in_course = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id);
+			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$num_topics = count($all_topics_in_course);
 			for ($j=0; $j<$num_topics; $j++)
 			{
@@ -1388,7 +1400,7 @@ class VProblems_submitted
 		$this->v_rating_scales = RatingScale::rating_scales();
 		
 		global $usrmgr;
-		$this->v_course = MCourse::get_course_by_id($usrmgr->m_user->selected_course_id);
+		$this->v_course = MCourse::get_course_by_id($usrmgr->m_user->selected_course_id, $usrmgr->m_user->staff);
 	}
 	
 	function Deliver()
@@ -1616,14 +1628,20 @@ class VTopic_Selections
 	var $v_selected_course;//selected course (course object)
 	var $v_pre_fill_topics = 0;//0 for DO NOT pre-fill. 1 for DO pre-fill
 	var $v_selected_topics_list_id;//list of topic IDs (ints)
+	var $v_show_whether_topic_inactive = 0;
 	
 	function __construct($CTprefs,$pre_fill_topics)
 	{
+		global $usrmgr;
+		$staff = $usrmgr->m_user->staff;
+
+		$this->v_show_whether_topic_inactive = $staff;
+
 		$this->v_CTprefs = $CTprefs;
 		if ($this->v_CTprefs->m_selected_course != Null)
 		{
 			$selected_course_id = $this->v_CTprefs->m_selected_course;
-			$selected_course = MCourse::get_course_by_id($selected_course_id);
+			$selected_course = MCourse::get_course_by_id($selected_course_id, $staff);
 		}
 		if ($this->v_CTprefs->m_selected_topics_list != Null)
 		{
@@ -1659,7 +1677,12 @@ class VTopic_Selections
 			<td class='cell-checkbox'><input class='checkbox' type='checkbox' id='select_all_checkboxes' onClick='toggle(this)' /></td>
 			<td class='cell-topic'><span class='select-all'>Select All</span></td>
 			<td class='cell-remaining'><span class='remaining-problems'>Remaining Problems</span></td>
-			</tr>";
+			";
+			if($this->v_show_whether_topic_inactive) {
+				$str .= "<td class='cell-inactive'><span class='topic-inactive'>Inactive?</span></td>
+				";
+			}
+			$str .= "</tr>";
 			$num_topics_in_course = count($this->v_selected_course->m_topics);
 			if ($num_topics_in_course > 0)
 			{
@@ -1702,7 +1725,12 @@ class VTopic_Selections
 					Reset
 					</a>
 					</span></td>
-					</tr>";
+					";
+					if($this->v_show_whether_topic_inactive) {
+						$str .= "<td class='cell-inactive'><span class='topic-inactive-value'>".($topic->m_inactive == 1 ? 'Inactive' : 'Active')."</span></td>
+						";
+					}
+					$str .= "</tr>";
 				}
 			}
 			$str .= "
@@ -1873,6 +1901,9 @@ class VProblemEdit
     //page construction
     function Deliver()
     {
+    	global $usrmgr;
+    	$include_inactive_topics = ($usrmgr->m_user->staff == 1);
+
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		
 		if ($this->v_problem == Null)
@@ -1909,7 +1940,7 @@ class VProblemEdit
 			// make an array of the topic names
 			$topic_choices = array();
 			$class_id = MProblem::get_prob_class_id($this->v_problem->m_prob_id);
-			$all_topics_in_course = MTopic::get_all_topics_in_course($class_id);
+			$all_topics_in_course = MTopic::get_all_topics_in_course($class_id, $include_inactive_topics);
 			$num_topics = count($all_topics_in_course);
 			for ($j=0; $j<$num_topics; $j++)
 			{
