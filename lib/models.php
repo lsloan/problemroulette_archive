@@ -12,7 +12,7 @@ Class MProblem
 	var $m_prob_tot_correct;#Number of times this problem was correctly answered
 	var $m_prob_tot_time;	#Cumulative time spent working on this problem
 	var $m_prob_solution;	#URL of solution, if supplied
-	var $m_prob_topic_name;	#topic name the problem is in (NOTE: what to do when problem can be in multiple topics?)
+	var $m_prob_topic_names;	#topic names the problem is in (NOTE: could be multiple names)
 	var $m_ok_to_show_soln; #whether it's ok to show the solution after an incorrect submission
 
 	function __construct($prob_id = Null)
@@ -47,7 +47,7 @@ Class MProblem
 				$topics[] = $val['name'];
 			}
 		}
-		$this->m_prob_topic_name = $topics;
+		$this->m_prob_topic_names = $topics;
 		$this->m_ok_to_show_soln = $this->get_ok_to_show_soln($usrmgr->m_user->id);
 	}
 
