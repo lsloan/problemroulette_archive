@@ -450,7 +450,7 @@ Class MCourse
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
-			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'], $res[$i]['disable_rating']);
+			$all_courses[$i] = new MCourse($res[$i]['id'],$res[$i]['name'], $res[$i]['disable_rating'], $res[$i]['delay_solution']);
 		}
 		return $all_courses;
 	}
@@ -495,7 +495,7 @@ Class MCourse
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_courses[$i] = array(
-				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']),
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating'],$res[$i]['delay_solution']),
 				'response_count' => $res[$i]['response_count']
 			);
 		}
@@ -515,7 +515,7 @@ Class MCourse
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_courses[$i] = array(
-				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating']),
+				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating'],$res[$i]['delay_solution']),
 				'problem_count' => $res[$i]['problem_count']
 			);
 		}
