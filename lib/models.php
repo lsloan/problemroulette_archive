@@ -122,6 +122,16 @@ Class MProblem
 		return $topic_ids;
 	}
 
+	function get_ans_count($prob_id)
+		{
+		global $dbmgr;
+		$query = "SELECT ans_count from problems WHERE id = :prob_id";
+		$bindings = array( ":prob_id"=>$prob_id);
+		$res = $dbmgr->fetch_assoc( $query , $bindings );
+		$ans_count = $res[0]['ans_count'];
+		return $ans_count;
+	}
+
 	function get_avg_time()
 	{
 		if ($this->m_prob_id != Null)
@@ -556,7 +566,10 @@ Class MTopic
 		$query = "SELECT * FROM topic WHERE id = :id";
 		$bindings = array(":id" => $id);
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
-		$topic = new MTopic($res[0]['id'],$res[0]['name'],$res[0]['inactive']);
+		$topic = new stdClass();
+		if (! empty($res[0] )) {
+			$topic = new MTopic($res[0]['id'],$res[0]['name'],$res[0]['inactive']);
+		}
 		//$topic->m_questions = MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id);
 		return $topic;
 	}
@@ -1157,8 +1170,9 @@ Class MResponse
 	var $m_problem_id;//integer (unique) problem id
 	var $m_student_answer;//integer (1=A, 2=B, 3,4,...) student answer value
 	var $m_answer_correct = 0; // boolean (0=false, 1=true)
+	var $m_topic_id; //integer topic id
 	
-	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer, $student_answer_correct)
+	function __construct($start_time, $end_time, $user_id, $problem_id, $student_answer, $student_answer_correct, $topic_id)
 	{
 		$this->m_start_time = $start_time;
 		$this->m_end_time = $end_time;
@@ -1166,6 +1180,7 @@ Class MResponse
 		$this->m_problem_id = $problem_id;
 		$this->m_student_answer = $student_answer;
 		$this->m_student_answer_correct = $student_answer_correct;
+		$this->m_topic_id = $topic_id;
 
 		$this->verify_problem_id();
 	}
@@ -1176,15 +1191,16 @@ Class MResponse
 
 		global $dbmgr;
 		$query =
-			"INSERT INTO responses (start_time,   end_time,  user_id,  prob_id,  answer, ans_correct) ".
-			"VALUES                (:start_time, :end_time, :user_id, :prob_id, :answer, :ans_correct)";
+			"INSERT INTO responses (start_time,   end_time,  user_id,  prob_id,  answer, ans_correct, topic_id) ".
+			"VALUES                (:start_time, :end_time, :user_id, :prob_id, :answer, :ans_correct, :topic_id)";
 		$bindings = array(
 			":start_time" => date('Y-m-d H:i:s',$this->m_start_time),
 			":end_time"   => date('Y-m-d H:i:s',$this->m_end_time),
 			":user_id"    => $this->m_user_id,
 			":prob_id"    => $this->m_problem_id,
 			":answer"     => $this->m_student_answer,
-			":ans_correct" => $this->m_student_answer_correct
+			":ans_correct" => $this->m_student_answer_correct,
+			":topic_id"   => $this->m_topic_id
 			);
 		$dbmgr->exec_query( $query, $bindings );
 	}
@@ -1195,19 +1211,22 @@ Class MResponse
 
 		global $dbmgr;
 		$query =
-			"INSERT INTO responses (  start_time,  end_time,  user_id,  prob_id,  answer) ".
-			"VALUES                ( :start_time, :end_time, :user_id, :prob_id, :answer)";
+			"INSERT INTO responses (  start_time,  end_time,  user_id,  prob_id,  answer, ans_correct, topic_id) ".
+			"VALUES                ( :start_time, :end_time, :user_id, :prob_id, :answer, :ans_correct, :topic_id)";
 		$bindings = array(
 			":start_time" => date('Y-m-d H:i:s',$this->m_start_time),
 			":end_time"   => date('Y-m-d H:i:s',$this->m_end_time),
 			":user_id"    => $this->m_user_id,
 			":prob_id"    => $this->m_problem_id,
-			"answer"      => '0'
+			":answer"      => '0',
+			":ans_correct" => '0',
+			":topic_id"   => $this->m_topic_id
 			);
 		$dbmgr->exec_query( $query , $bindings );
 	}
 	
 	function update_stats()
+	// no longer used - there is no stats table
 	{
 		global $dbmgr;
 		
@@ -1265,10 +1284,24 @@ Class MResponse
 	{
 		global $dbmgr;
 		$query =
-			"UPDATE 12m_prob_ans SET count = count + 1 ".
-			"WHERE prob_id = :prob_id AND ans_num = :ans_num ";
-		$bindings = array(":prob_id" => $this->m_problem_id, "ans_num" => $this->m_student_answer);
+			"INSERT INTO 12m_prob_ans (prob_id, ans_num, count) VALUES (:prob_id, :ans_num, '1')".
+			"ON DUPLICATE KEY UPDATE count = count + 1";
+		$bindings = array(":prob_id" => $this->m_problem_id, ":ans_num" => $this->m_student_answer);
 		$dbmgr->exec_query( $query , $bindings );
+	}
+
+	function update_12m_prob_ans_rows($prob_id, $old_ans_count)
+	{
+		global $dbmgr;
+		$cur_ans_count = MProblem::get_ans_count($prob_id);
+		for ($i=0;$i<$cur_ans_count-$old_ans_count;$i++)
+		{
+			$query =
+				"INSERT IGNORE INTO 12m_prob_ans (prob_id, ans_num) ".
+				"VALUES (:problem_id, :ans_num)";
+			$bindings = array(":problem_id" => $prob_id, ":ans_num" => ($old_ans_count+$i+1));
+			$dbmgr->exec_query( $query , $bindings );
+		}
 	}
 
 	function verify_problem_id()
@@ -1311,6 +1344,7 @@ Class MUserSummary
 	var $m_end_time_list = Array(); //datetime format
 	var $m_solve_time_list = Array(); //solve time (in seconds)
 	var $m_user_id_list = Array(); //list of user ids
+	var $m_topic_id_list = Array(); //list of the problem's topic
 	//</HISTORY>
 	
 	var $m_problems_list_id;//array of problem IDs (only use these IDs)
@@ -1387,6 +1421,13 @@ Class MUserSummary
 					$bindings[":prob_id_$i"]= $this->m_problems_list_id[$i];
 				}
 				$additional_clause = " AND ( " . implode( " OR " , $additional_clause ) . " ) ";
+				// now that problems are associated with topic, add extra filter if a topic is selected
+				$sel_topic = $usrmgr->m_user->GetPref('dropdown_history_topic');
+				if  ($sel_topic != 'all')
+				{
+					$additional_clause .= " AND topic_id=:topic_id ";
+					$bindings[":topic_id"] = $sel_topic;
+				}
 			}
 			else
 			{
@@ -1429,6 +1470,13 @@ Class MUserSummary
 				$this->m_user_id_list[$i] = $res[$i]['user_id'];
 				date_default_timezone_set('America/New_York');
 				$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
+				// topic_id_list stores topic_id and name. Some responses might not have associated topic though
+				$topic_name = '';
+				if (property_exists(MTopic::get_topic_by_id($res[$i]['topic_id']), 'm_name'))
+				{
+					$topic_name =  MTopic::get_topic_by_id($res[$i]['topic_id'])->m_name;
+				}
+				$this->m_topic_id_list[$i] = [$res[$i]['topic_id'], $topic_name];
 
 				//$this->m_tot_tries += 1;
 				$this->m_tot_time += $this->m_solve_time_list[$i];
