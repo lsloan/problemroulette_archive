@@ -59,6 +59,7 @@ else
 // }
 if (isset($_POST['edit_problem_name']))
 {
+    $old_ans_count = MProblem::get_ans_count($problem_id);
     $new_problem_name = $_POST['edit_problem_name'];
     $new_problem_url = str_replace(' ','',$_POST['edit_problem_url']);
     $new_problem_num_ans = str_replace(' ','',$_POST['edit_problem_num_ans']);
@@ -66,6 +67,11 @@ if (isset($_POST['edit_problem_name']))
     $new_problem_sol_url = str_replace(' ','',$_POST['edit_problem_sol_url']);
     $new_topic_id = $_POST['topic_for_new_problem'];
     MProblem::update_problem($problem_id, $new_problem_name, $new_problem_url, $new_problem_num_ans, $new_problem_cor_ans, $new_problem_sol_url);
+    // if number of answers increased, add rows to the 12m_prob_ans table
+    if ($new_problem_num_ans > $old_ans_count)
+    {
+        MResponse::update_12m_prob_ans_rows($problem_id, $old_ans_count);
+    }
     # old_topics are the ids of the problem's current topics
     # new_topic_id are the new set of topic ids
     # delete what's in old and not in new, then add whats in new and not in old

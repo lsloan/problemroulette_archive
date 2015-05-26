@@ -352,6 +352,7 @@ class VStudentPerformance
 					<thead>
 						<tr>
 							<th>Name</th>
+							<th>Topic</th>
 							<th>Date</th>
 							<th>Your Answer&nbsp;&nbsp;&nbsp;</th>
 							<th>Correct Answer&nbsp;&nbsp;&nbsp;</th>
@@ -359,6 +360,7 @@ class VStudentPerformance
 						</tr>
 					</thead>
 					<tbody>
+					<td class='invis'></td>
 					<td class='invis'></td>
 					<td class='invis'></td>
 					<td class='invis'></td>
@@ -374,6 +376,7 @@ class VStudentPerformance
 									<button class='btn btn-link btn-link-history' type='submit' name='problem_info' value='".$this->v_summary->m_problem_list[$i]->m_prob_id."'>
 									".$this->v_summary->m_problem_list[$i]->m_prob_name."
 									</button></td>
+									<td>".$this->v_summary->m_topic_id_list[$i][1]."</td>
 									<td>".$this->v_summary->m_end_time_list[$i]."</td>
 									<td class='cell-student-answer'>".$alphabet[$this->v_summary->m_student_answer_list[$i]-1]."</td>
 									<td class='cell-correct-answer'>".$alphabet[$this->v_summary->m_problem_list[$i]->m_prob_correct-1]."</td>
@@ -999,6 +1002,7 @@ class VStats
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th>Topic</th>
 					<th>Date</th>
 					<th>Your Answer&nbsp;&nbsp;&nbsp;</th>
 					<th>Correct Answer&nbsp;&nbsp;&nbsp;</th>
@@ -1006,6 +1010,7 @@ class VStats
 				</tr>
 			</thead>
 			<tbody>
+			<td class='invis'></td>
 			<td class='invis'></td>
 			<td class='invis'></td>
 			<td class='invis'></td>
@@ -1021,6 +1026,7 @@ class VStats
 							<button class='btn btn-link btn-link-history' type='submit' name='problem_info' value='".$this->v_summary->m_problem_list[$i]->m_prob_id."'>
 							".$this->v_summary->m_problem_list[$i]->m_prob_name."
 							</button></td>
+							<td>".$this->v_summary->m_topic_id_list[$i][1]."</td>
 							<td>".$this->v_summary->m_end_time_list[$i]."</td>
 							<td class='cell-student-answer'>".$alphabet[$this->v_summary->m_student_answer_list[$i]-1]."</td>
 							<td class='cell-correct-answer'>".$alphabet[$this->v_summary->m_problem_list[$i]->m_prob_correct-1]."</td>
@@ -1316,12 +1322,14 @@ class VProblems
 	var $v_picked_problem;//picked problem
 	var $v_problem_counts_by_topic;
 	var $v_topic;
+	var $v_topic_name;
 
 	function __construct($picked_problem, $problem_counts_by_topic, $topic)
 	{
 		$this->v_picked_problem = $picked_problem;
 		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
 		$this->v_topic = $topic;
+		$this->v_topic_name = MTopic::get_topic_by_id($this->v_topic)->m_name;
 	}
 	
 	function Deliver()
@@ -1376,7 +1384,7 @@ class VProblems
 			<iframe class='problemIframe' id='problemIframe' src='".
 			$this->v_picked_problem->m_prob_url
 			."'></iframe>
-      <div class='problem-footer-bar'>Problem <strong>". $this->v_picked_problem->m_prob_name. "</strong> in topic <strong>" . MTopic::get_topic_by_id($this->v_topic)->m_name . "</strong></div>
+      <div class='problem-footer-bar'>Problem <strong>". $this->v_picked_problem->m_prob_name . "</strong> in topic <strong>" . $this->v_topic_name . "</strong></div>
         ";
       return $str;
     }
@@ -1390,15 +1398,19 @@ class VProblems_submitted
 	var $v_student_answer;
 	var $v_rating_scales;
 	var $v_course;
+	var $v_topic;
+	var $v_topic_name;
 
-	function __construct($picked_problem, $problem_counts_by_topic, $student_answer, $solve_time = 0)
+	function __construct($picked_problem, $problem_counts_by_topic, $student_answer, $solve_time = 0, $topic)
 	{
 		$this->v_picked_problem = $picked_problem;
 		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
 		$this->v_student_answer = $student_answer;
 		$this->v_solve_time = $solve_time;
 		$this->v_rating_scales = RatingScale::rating_scales();
-		
+		$this->v_topic = $topic;
+		$this->v_topic_name = MTopic::get_topic_by_id($this->v_topic)->m_name;
+
 		global $usrmgr;
 		$this->v_course = MCourse::get_course_by_id($usrmgr->m_user->selected_course_id, $usrmgr->m_user->staff);
 	}
@@ -1597,7 +1609,7 @@ class VProblems_submitted
 				<div  class='span12 text-center'><strong>You can Retry this problem, or go to the Next random problem using the buttons above</strong></div>
 				";
 		}
-		$str .= "<div class='problem-footer-bar'>".$this->v_picked_problem->m_prob_name."</div>";
+		$str .= "<div class='problem-footer-bar'>Problem: <strong>".$this->v_picked_problem->m_prob_name. "</strong> in topic <strong>" . $this->v_topic_name . "</strong></div>";
 		$str .="</form>";
 		return $str;
 	}
@@ -1876,7 +1888,8 @@ class VProblemInfo
             ".
             $this->v_problem->m_prob_url
             ."'></iframe>
-            <div class='problem-footer-bar'>".$this->v_problem->m_prob_name."</div>
+            <div class='problem-footer-bar'>
+            Problem: <strong>".$this->v_problem->m_prob_name." </strong>in topic(s): <strong> ".implode(';  ', $this->v_problem->m_prob_topic_names) ."</strong></div>
             <p align='center'>
             <font color='blue'>".$this->v_problem->m_prob_url."</font>
             </p>

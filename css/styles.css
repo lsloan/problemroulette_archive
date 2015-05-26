@@ -597,13 +597,13 @@ background-color: #e5e5e5;
 /* Rating choice styling
 -------------------------------------------------- */
 .rating_img {
-	height: 2.25em;
-	margin-left: 15px;
+	height: 1.8em;
+	margin-left: 25px;
 	margin-bottom: 5px;
 }
 
 .rating_img.max {
-	margin-right: 10px;
+	margin-right: 1px;
 }
 
 .rating_label {

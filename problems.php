@@ -59,12 +59,12 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$user_id = $usrmgr->m_user->id;
 
 	//get current topic_id and omitted problems list for given topic
-	$current_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+	$current_topic_id = intval($_POST['topic']);
 	$omitted_problem = new OmittedProblem($user_id, $current_topic_id);
 	$current_omitted_problems_list = $omitted_problem->find();
 			
 	//update tables upon response
-	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,Null,false);
+	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,Null,false,$current_topic_id);
 	
 	$response->update_skips();
 	
@@ -118,7 +118,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		}
 		
 		//update tables upon response
-		$response = new MResponse($c_start_time,$c_end_time,$user_id,$c_problem_id,$c_answer,$c_student_answered_correctly);
+		$response = new MResponse($c_start_time,$c_end_time,$user_id,$c_problem_id,$c_answer,$c_student_answered_correctly,$current_topic_id);
 		
 		$response->update_responses();
 		// $response->update_stats();
@@ -187,7 +187,7 @@ $tab_nav = new VTabNav(new MTabNav('Problems'));
 # decide if problem or histogram showing and get the correct view
 if ($c_answer !== Null)
 {
-	$content = new VProblems_submitted($picked_problem, $picker->m_problem_counts_by_topic, $c_answer, $c_end_time - $c_start_time);
+	$content = new VProblems_submitted($picked_problem, $picker->m_problem_counts_by_topic, $c_answer, $c_end_time - $c_start_time, $topic);
 }
 elseif ($num_topics > 0)
 {
