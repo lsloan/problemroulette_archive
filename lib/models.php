@@ -1476,7 +1476,7 @@ Class MUserSummary
 				{
 					$topic_name =  MTopic::get_topic_by_id($res[$i]['topic_id'])->m_name;
 				}
-				$this->m_topic_id_list[$i] = [$res[$i]['topic_id'], $topic_name];
+				$this->m_topic_id_list[$i] = array($res[$i]['topic_id'], $topic_name);
 
 				//$this->m_tot_tries += 1;
 				$this->m_tot_time += $this->m_solve_time_list[$i];
