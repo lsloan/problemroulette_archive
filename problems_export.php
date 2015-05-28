@@ -3,7 +3,7 @@ require_once("setup.php");
 
 function is_problems_file($var)
 {
-    return preg_match('/problems_[A-Za-z0-9_]+\.sql/', $var);
+    return preg_match('/problems_[A-Za-z0-9_]+\.(sql|csv)/', $var);
 }
 
 global $usrmgr;
@@ -16,14 +16,18 @@ if($researcher == 1 || $staff == 1)
 {
     $json_response = false;
     $file_response = false;
+    $format = 'sql';
 
     if (isset($_POST['start_export'])) {
         $classes = NULL;
         if(isset($_POST['course'])) {
             $classes = $_POST['course'];
         }
+        if(isset($_POST['format'])) {
+            $format = $_POST['format'];
+        }
 
-        MStatsFile::export_problems($classes);
+        MStatsFile::export_problems($classes, $format);
 
         header('Location:problems_export.php');
 

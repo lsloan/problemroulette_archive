@@ -189,6 +189,21 @@ class CDbMgr
 		exec($cmd);
 	}
 
+	function dump_csv_file($tablename, $filepath, $column_names = null)
+	{
+		$handle = fopen($filepath, 'x');
+		if(isset($column_names)) {
+			fputcsv($handle, $column_names);
+		}
+		$query = "select * from ".$tablename;
+		$res = $this->fetch_num($query, array());
+
+		foreach ($res as $key => $value) { 
+			fputcsv($handle, $value);
+		}
+		fclose($handle);
+	}
+
 	function log_error($message, $exception = null)
 	{
 		global $app_log;

@@ -3,7 +3,7 @@ require_once("setup.php");
 
 function is_stat_file($var)
 {
-    return preg_match('/problem_roulette_[A-Za-z0-9_]+\.sql/', $var);
+    return preg_match('/problem_roulette_[A-Za-z0-9_]+\.(sql|csv)/', $var);
 }
 
 global $usrmgr;
@@ -19,14 +19,18 @@ if($researcher == 1)
     if (isset($_POST['start_export'])) {
         $terms = NULL;
         $classes = NULL;
+        $format = 'sql';
         if(isset($_POST['semester'])) {
             $terms = $_POST['semester'];
         }
         if(isset($_POST['course'])) {
             $classes = $_POST['course'];
         }
+        if(isset($_POST['format'])) {
+            $format = $_POST['format'];
+        }
 
-        MStatsFile::start_export($terms, $classes);
+        MStatsFile::start_export($terms, $classes, $format);
 
         header('Location:stats_export.php');
 
