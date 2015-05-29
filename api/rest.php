@@ -19,13 +19,18 @@ abstract class Resource {
     function __construct() {
         global $dbmgr;
         $this->db = $dbmgr;
+        $this->init();
     }
 
-    function get($params) {
+    function init() {
+        return;
+    }
+
+    function get($path, $params) {
         $this->error(500);
     }
 
-    function post($params) {
+    function post($path, $params) {
         $this->error(500);
     }
 
@@ -42,12 +47,14 @@ abstract class Resource {
         echo $this->encode($result);
     }
 
-    function error($code = 500, $headers = array(), $body = "", $message = "") {
+    function error($code = 500, $details = "", $message = "", $headers = array()) {
+        $message = $this->response_message($code, $message);
         $this->set_response_code($code, $message);
         foreach ($headers as $header) {
             header($header);
         }
-        $this->render($body);
+        $error = array('error' => array('code' => $code, 'message' => $message, 'details' => $details));
+        $this->render($error);
         exit;
     }
 
@@ -62,7 +69,7 @@ abstract class Resource {
         return $message;
     }
 
-    function set_response_code($code, $message) {
+    function set_response_code($code, $message = "") {
         $message = $this->response_message($code, $message);
         if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
             http_response_code($code);
@@ -72,13 +79,19 @@ abstract class Resource {
         }
     }
 
+    function pathInfo() {
+        $path = explode('/', $_SERVER['PATH_INFO']);
+        return array_values(array_filter($path));
+    }
+
     function expose() {
+        $path = $this->pathInfo();
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $params = $_GET;
-            $result = $this->get($params);
+            $result = $this->get($path, $params);
         } else {
             $params = $_POST;
-            $result = $this->post($params);
+            $result = $this->post($path, $params);
         }
 
         $this->render($result);
