@@ -1329,7 +1329,11 @@ class VProblems
 		$this->v_picked_problem = $picked_problem;
 		$this->v_problem_counts_by_topic = $problem_counts_by_topic;
 		$this->v_topic = $topic;
-		$this->v_topic_name = MTopic::get_topic_by_id($this->v_topic)->m_name;
+		$this->v_topic_name = '';
+		if (property_exists(MTopic::get_topic_by_id($this->v_topic), 'm_name'))
+		{
+			$this->v_topic_name = MTopic::get_topic_by_id($this->v_topic)->m_name;
+		}
 	}
 	
 	function Deliver()
