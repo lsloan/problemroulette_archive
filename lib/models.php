@@ -1704,7 +1704,7 @@ Class MStatsFile
 		$filename .= '.'.$format;
 		
 		if($format == 'csv') {
-			$column_names = array('problem_id','name','url','correct','ans_count','tot_tries','tot_correct','tot_time','solution','topic_id','class_id','class_name','clarity_count','clarity_rating');
+			$column_names = array('problem_id','name','url','correct','ans_count','tot_tries','tot_correct','tot_time','solution','topic_id','class_id','class_name','ratings_disabled','clarity_count','clarity_rating');
 			$dbmgr->dump_csv_file($tablename, $filename, $column_names);
 		} else {
 			$dbmgr->dump_stats_table($tablename, $filename);
