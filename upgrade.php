@@ -23,10 +23,10 @@ $migrations = array(
     array('name' => 'AddUniqueIndexForResponses', 'file' => 'add_unique_index_for_responses.php'),
     array('name' => 'AddDelaySolutionToClass', 'file' => 'add_delay_solution_to_class.php'),
     array('name' => 'AddInactiveToTopic', 'file' => 'add_inactive_to_topic.php'),
+    array('name' => 'EnsureTalliesForAllPossibleAnswers', 'file' => 'ensure_tallies_for_all_possible_answers.php'),
     array('name' => 'AddTopicToResponses', 'file' => 'add_topic_to_responses.php'),
-    array('name' => 'EnsureTalliesForAllPossibleAnswers', 'file' => 'ensure_tallies_for_all_possible_answers.php')
+    array('name' => 'SetTopicIdInOldResponses', 'file' => 'set_topic_id_in_old_responses.php')
 );
-
 require_once("setup.php");
 require_once($GLOBALS["DIR_LIB"]."migration.php");
 
