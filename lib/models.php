@@ -1596,12 +1596,12 @@ Class MStatsFile
 	}
 
 
-	public static function start_export($semester_ids, $course_ids)
+	public static function start_export($semester_ids, $course_ids, $format = 'sql')
 	{
 		global $dbmgr;
 		$tablename = "stats_".date('Ymd\_His');
 		$params = array();
-		$filename = "problem_roulette_".date('\_Ymd\_His');
+		$filename = $GLOBALS['DIR_STATS']."problem_roulette_".date('\_Ymd\_His');
 
 		
 		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, ".
@@ -1634,23 +1634,29 @@ Class MStatsFile
 			}
 		}
 		$query .= " group by t1.user_id, t2.id, t5.class_id order by t1.user_id, t2.id, t5.class_id";
-		$filename .= '.sql';
+		$filename .= '.'.$format;
 
 		$dbmgr->exec_query($query, $params);
 
-		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
+		if($format == 'csv') {
+			$column_names = array('term_id','term_name','class_id','class_name','user_id','username','response_count', 'correct_count','time_on_site');
+			$dbmgr->dump_csv_file($tablename, $filename, $column_names);
+		} else {
+			$dbmgr->dump_stats_table($tablename, $filename);
+		}
+		
 
 		$query = "drop table ".$tablename;
 		$dbmgr->exec_query($query, array());
 
 	}
 
-	public static function export_problems($course_ids)
+	public static function export_problems($course_ids, $format = 'sql')
 	{
 		global $dbmgr;
 		$tablename = "problems_".date('Ymd\_His');
 		$params = array();
-		$filename = "problems_".date('\_Ymd\_His');
+		$filename = $GLOBALS['DIR_STATS']."problems_".date('\_Ymd\_His');
 
 		
 		$query = "create table ".$tablename." select t1.id problem_id, ".
@@ -1695,13 +1701,17 @@ Class MStatsFile
 
 		# $ratings_fields = ", count(t5.id) clarity_count, avg(t5.rating) ";
 
-		$filename .= '.sql';
+		$filename .= '.'.$format;
+		
+		if($format == 'csv') {
+			$column_names = array('problem_id','name','url','correct','ans_count','tot_tries','tot_correct','tot_time','solution','topic_id','class_id','class_name','clarity_count','clarity_rating');
+			$dbmgr->dump_csv_file($tablename, $filename, $column_names);
+		} else {
+			$dbmgr->dump_stats_table($tablename, $filename);
+		}
 
-
-		$dbmgr->dump_stats_table($tablename, $GLOBALS["DIR_STATS"].$filename);
-
-		#$query = "drop table ".$tablename;
-		#$dbmgr->exec_query($query, array());
+		$query = "drop table ".$tablename;
+		$dbmgr->exec_query($query, array());
 
 	}
 

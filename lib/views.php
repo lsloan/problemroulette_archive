@@ -1160,6 +1160,24 @@ class VStatsExport
 										<?php endforeach ?>
 									</div>
 								</fieldset>
+								<fieldset>
+									<legend>File Format</legend>
+									<div class="row-fluid">
+										<div class="span3">
+											<label class="checkbox" for="format-sql">
+												<input type="radio" name="format" value="sql" id="format-sql" class="format-choice" checked='checked' />
+												<strong>SQL</strong>
+											</label>
+										</div>
+										<div class="span3">
+											<label class="checkbox" for="format-csv">
+												<input type="radio" name="format" value="csv" id="format-csv" class="format-choice" />
+												<strong>CSV</strong>
+											</label>
+										</div>
+									</div>
+								</fieldset>
+
 								<h5>Start exporting data to file</h5>
 								<p>
 									<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
@@ -1255,6 +1273,23 @@ class VProblemsExport
 												<div class="row-fluid">
 											<?php endif ?>
 										<?php endforeach ?>
+									</div>
+								</fieldset>
+								<fieldset>
+									<legend>File Format</legend>
+									<div class="row-fluid">
+										<div class="span3">
+											<label class="checkbox" for="format-sql">
+												<input type="radio" name="format" value="sql" id="format-sql" class="format-choice" checked='checked' />
+												<strong>SQL</strong>
+											</label>
+										</div>
+										<div class="span3">
+											<label class="checkbox" for="format-csv">
+												<input type="radio" name="format" value="csv" id="format-csv" class="format-choice" />
+												<strong>CSV</strong>
+											</label>
+										</div>
 									</div>
 								</fieldset>
 								<h5>Start exporting data to file</h5>
