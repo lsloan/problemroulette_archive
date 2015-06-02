@@ -60,6 +60,7 @@ where r.prob_id = t2.problem_id
 SQL;
 }
     function migrate() {
+        ob_start();
         $sql = $this->db->fetch_assoc($this->number_of_problems);
         print_r($sql);
         $sql = $this->db->fetch_assoc($this->number_of_problems_in_multi_topics);
@@ -88,7 +89,6 @@ SQL;
         $sql = $this->db->fetch_assoc($this->responses_without_topic);
         print_r($sql);
         $sql = $this->db->fetch_assoc($this->responses_with_topic);
-        ob_start();
         print_r($sql);
         $msg = ob_get_clean();
         $this->info($msg);
