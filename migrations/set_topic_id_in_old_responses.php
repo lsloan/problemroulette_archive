@@ -88,8 +88,8 @@ SQL;
         $sql = $this->db->fetch_assoc($this->responses_without_topic);
         print_r($sql);
         $sql = $this->db->fetch_assoc($this->responses_with_topic);
-        print_r($sql);
         ob_start();
+        print_r($sql);
         $msg = ob_get_clean();
         $this->info($msg);
     }
