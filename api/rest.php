@@ -17,8 +17,10 @@ abstract class Resource {
     var $db;
 
     function __construct() {
-        global $dbmgr;
+        global $dbmgr, $usrmgr;
         $this->db = $dbmgr;
+        $this->usrmgr = $usrmgr;
+        $this->current_user = $usrmgr->m_user;
         $this->init();
     }
 
@@ -32,6 +34,14 @@ abstract class Resource {
 
     function post($path, $params) {
         $this->error(500);
+    }
+
+    function collectParams($params, $fields) {
+        $return = array();
+        foreach ($fields as $field) {
+            $return[] = $params[$field];
+        }
+        return $return;
     }
 
     function encode($result) {
@@ -80,7 +90,8 @@ abstract class Resource {
     }
 
     function pathInfo() {
-        $path = explode('/', $_SERVER['PATH_INFO']);
+        $pathInfo = (isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '');
+        $path = explode('/', $pathInfo);
         return array_values(array_filter($path));
     }
 
