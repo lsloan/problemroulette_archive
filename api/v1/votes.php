@@ -5,7 +5,8 @@ class VotesResource extends Resource {
 
     function init() {
 $this->votes_in_course =<<<SQL
-SELECT v.id, v.problem_id, v.user_id, v.topics, v.created_at, v.updated_at
+SELECT v.id, v.problem_id, v.user_id, v.topics,
+DATE_FORMAT(v.created_at, '%Y-%m-%dT%TZ') created_at, DATE_FORMAT(v.updated_at, '%Y-%m-%dT%TZ') updated_at
 FROM votes v
 INNER JOIN 12m_topic_prob tp ON v.problem_id = tp.problem_id
 INNER JOIN 12m_class_topic ct ON tp.topic_id = ct.topic_id
