@@ -55,7 +55,7 @@ SQL;
         $topics = json_encode($topics);
 
         $this->db->exec_query($this->save_vote, array($problem_id, $user_id, $topics, $topics));
-        return null;
+        return array('success' => true);
     }
 
     function checkPath($path) {

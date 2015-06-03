@@ -124,19 +124,19 @@ var PRApi = (function($, endpoint) {
     var HttpApi = function(endpoint) {
         return {
             getCourses: function() {
-                return Promise.resolve($.ajax(endpoint + "/courses.php"));
+                return Promise.resolve($.get(endpoint + "/courses.php"));
             },
 
             getProblems: function(course_id) {
-                return Promise.resolve($.ajax(endpoint + "/problems.php", { data: { course_id: course_id } }));
+                return Promise.resolve($.get(endpoint + "/problems.php", { course_id: course_id }));
             },
 
             getVotes: function(course_id) {
-                return Promise.resolve($.ajax(endpoint + "/votes.php", { data: { course_id: course_id } }));
+                return Promise.resolve($.get(endpoint + "/votes.php", { course_id: course_id }));
             },
 
-            saveVotes: function(problem_id, topics) {
-                return Promise.resolve($.ajax(endpoint + "/votes.php", { data: { problem_id: problem_id, topics: topics } }));
+            saveVote: function(problem_id, topics) {
+                return Promise.resolve($.post(endpoint + "/votes.php", { problem_id: problem_id, topics: topics }));
             }
         };
     };
