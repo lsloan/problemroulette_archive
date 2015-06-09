@@ -1,6 +1,6 @@
 <?php
 // paths
-require_once("./paths.inc.php");
+require_once(__DIR__."/paths.inc.php");
 // error
 require_once($GLOBALS["DIR_LIB"]."errors.php");
 
