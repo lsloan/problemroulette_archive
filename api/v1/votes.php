@@ -26,6 +26,7 @@ SQL;
     }
 
     function get($path, $params) {
+        $this->checkAuth();
         $this->checkPath($path);
         $this->checkParams($params);
 
@@ -56,6 +57,7 @@ SQL;
     }
 
     function post($path, $params) {
+        $this->checkAuth();
         $this->checkPath($path);
         $this->checkPostParams($params);
 
@@ -100,6 +102,12 @@ SQL;
 
         if (!isset($params['topics'])) {
             $this->error(400, "The `topics[]` parameter is required.");
+        }
+    }
+
+    function checkAuth() {
+        if (!($this->current_user->voter || $this->current_user->admin)) {
+            $this->error(403, "You do not have permission to vote on topics.");
         }
     }
 
