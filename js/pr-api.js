@@ -37,7 +37,7 @@ var PRApi = (function($, endpoint) {
         };
 
         var VOTES = {
-            course_id: "5",
+            course_id: "4",
             votes: [{
                 id: "35",
                 problem_id: "289",
@@ -55,6 +55,16 @@ var PRApi = (function($, endpoint) {
             }]
         };
 
+        var TOPICS = {
+            course_id: "4",
+            topics: [
+                { value: "kinetics", label: "Kinetic and Potential Energy" },
+                { value: "conservation", label: "Energy Conservation" },
+                { value: "thermodynamic-laws", label: "Laws of Thermodynamics" },
+                { value: "fluid-mechanics", label: "Fluid Mechanics" }
+            ]
+        };
+
         var vote_id = 36;
 
         return {
@@ -69,6 +79,17 @@ var PRApi = (function($, endpoint) {
                     if (course_id) {
                         PROBLEMS.course_id = course_id.toString();
                         fulfill(PROBLEMS);
+                    } else {
+                        reject(new Error("The course_id parameter is required."));
+                    }
+                });
+            },
+
+            getTopics: function(course_id) {
+                return new Promise(function(fulfill, reject) {
+                    if (course_id) {
+                        TOPICS.course_id = course_id.toString();
+                        fulfill(TOPICS);
                     } else {
                         reject(new Error("The course_id parameter is required."));
                     }
@@ -129,6 +150,10 @@ var PRApi = (function($, endpoint) {
 
             getProblems: function(course_id) {
                 return Promise.resolve($.get(endpoint + "/problems.php", { course_id: course_id }));
+            },
+
+            getTopics: function(course_id) {
+                return Promise.resolve($.get(endpoint + "/topics.php", { course_id: course_id }));
             },
 
             getVotes: function(course_id) {
