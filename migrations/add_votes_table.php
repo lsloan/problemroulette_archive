@@ -4,15 +4,14 @@ class AddVotesTable extends Migration {
 
     function init() {
 $this->add_table =<<<SQL
-CREATE TABLE IF NOT EXISTS votes (
+CREATE TABLE IF NOT EXISTS `votes` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `problem_id` int(11) NOT NULL,
     `user_id` int(11) NOT NULL,
-    `topics` TEXT NOT NULL DEFAULT '',
-    `created_at` timestamp DEFAULT '0000-00-00 00:00:00',
-    `updated_at` timestamp ON UPDATE current_timestamp,
+    `topic` varchar(255) NOT NULL,
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX (`problem_id`, `user_id`)
+    UNIQUE INDEX `vote_key` (`problem_id`, `user_id`, `topic`)
 )
 SQL;
 
