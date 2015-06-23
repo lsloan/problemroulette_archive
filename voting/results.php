@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__.'/../setup.php');
+require_once(dirname(__FILE__).'/../setup.php');
 if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
     // TODO: Extract the error handling from the REST utility to standalone
     $protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0';
@@ -21,7 +21,7 @@ EOQ;
 
 $stdout = fopen('php://output', 'w');
 
-if (!($_GET['download'] == 0)) {
+if (!isset($_GET['inline'])) {
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename=voting-results.csv');
 }

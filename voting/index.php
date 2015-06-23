@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__.'/../setup.php');
+require_once(dirname(__FILE__).'/../setup.php');
 if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
     // TODO: Extract the error handling from the REST utility to standalone
     $protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0';
@@ -42,53 +42,11 @@ if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					  <ul class="nav navbar-nav">
-                        <li class="active"><a class="changeTopics" data-course="6" href="#">Physics 135</a></li>
-                        <li><a class="changeTopics" data-course="4"href="#">Physics 140</a></li>
-                        <li><a class="changeTopics" data-course="7"href="#">Physics 235</a></li>
-                        <li><a class="changeTopics" data-course="5"href="#">Physics 240</a></li>
-
-                        <!--
-						<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-						<li><a href="#">Link</a></li>
-                        -->
-                        <!--
-						<li class="dropdown">
-						  <a href="#" class="dropdown-toggle" data-toggle="dropdown" 
-						  role="button" aria-expanded="false">Subjects <span 
-						  class="caret"></span></a>
-						  <ul class="dropdown-menu" role="menu">
-						  	<li><a href="#">Chemistry 130</a></li>
-						  	<li class="divider"></li>
-						  	<li><a hred"#">EECS 314</a></li>
-						  	<li class="divider"></li>
-						  	<li><a hred"#">MCDB 310</a></li>
-						  	<li class="divider"></li>
-							<li class="divider"></li>
-							<li><a href="#">Statistics 250</a></li>
-						  </ul>
-						</li>
-                        -->
+                        <li><a class="changeTopics" data-course="6" href="#">Physics 135</a></li>
+                        <li><a class="changeTopics" data-course="4" href="#">Physics 140</a></li>
+                        <li><a class="changeTopics" data-course="7" href="#">Physics 235</a></li>
+                        <li><a class="changeTopics" data-course="5" href="#">Physics 240</a></li>
 					  </ul>
-					  
-                      <!--
-					  <ul class="nav navbar-nav navbar-right">
-						<li><a href="#">Link</a></li>
-						<li class="dropdown">
-						
-						  <a href="#" class="dropdown-toggle" data-toggle="dropdown" 
-						  role="button" aria-expanded="false">Dropdown <span 
-						  class="caret"></span></a>
-						  
-						  <ul class="dropdown-menu" role="menu">
-							<li><a href="#">Action</a></li>
-							<li><a href="#">Another action</a></li>
-							<li><a href="#">Something else here</a></li>
-							<li class="divider"></li>
-							<li><a href="#">Separated link</a></li>
-						  </ul>
-						</li>
-					  </ul>
-                      -->
 					</div><!-- /.navbar-collapse -->
 				  </div><!-- /.container-fluid -->
 				</nav>
@@ -99,11 +57,13 @@ if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
 		<div class="container">
 			<div class="row">
 				
-				<!-- <button class="changeTopics" data-course="4">Course 4</button>
-				<button class="changeTopics" data-course="5">Course 5</button>
-				<button class="changeTopics" data-course="6">Course 6</button> -->
+                <div id="select-course">
+                    <h2>Thank you for voting on problem topics.</h1>
+                    <h4>Select a course from above to begin.</h1>
+                </div>
+
 				<!-- Left Side -->
-				<div class="col-lg-9 col-md-8 col-sm-7 col-xs-12">
+				<div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 hidden">
 					<div class="panel panel-primary">
 						<!-- <div class="panel-heading">
 							<h3 class="titles">Question</h3>
@@ -116,93 +76,13 @@ if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
 				</div>
 				
 				<!-- Right Size -->
-				<div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+				<div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 hidden">
 					<form class="form-horizontal" id="frmTopics">
 						<div class="panel panel-primary">
 							<div class="panel-heading">
 								<h3 id="topics-title" class="titles">Select All That Apply</h3>
 							</div>
 							<div class="panel-body panel-text rightFrame">
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic01"> Interactions and Motion
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic02"> The Momentum Principle
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic03"> The Fundamental Interactions
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic04"> Contact Interactions
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic05"> Rate of Change of Momentum
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic06"> The Energy Principle
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic07"> Internal Energy
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic08"> Multiparticle Systems
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic09"> Collisions
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic10"> Angular Momentum
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic11"> Electric Fields
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic12"> Electric Potential
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic13"> Magnetic Fields
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic14"> Circuits
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic15"> Magnetic Force
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input class="checkbox" type="checkbox" value="topic16"> Faraday's Law
-									</label>
-								</div>
 							</div>
 							<div class="panel-footer">
 								<div class="btn-group btn-group-sm">

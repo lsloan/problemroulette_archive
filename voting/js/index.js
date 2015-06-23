@@ -59,6 +59,8 @@ function logVotes(data) {
 }
 
 function selectCourse(course_id) {
+    $('#select-course').remove();
+    $('.hidden').removeClass('hidden');
     course = course_id;
     loadTopics(course_id);
     loadProblems(course_id);
@@ -66,10 +68,10 @@ function selectCourse(course_id) {
 
 
 $(document).ready(function() {
-    selectCourse($('.changeTopics:first').data('course'));
 
 	// Changes topics for different courses
-	$('.changeTopics').click(function() {
+	$('.changeTopics').click(function(evt) {
+        evt.preventDefault();
 		var course_id = $(this).data('course');
         $li = $(this).parent('li');
         $('li', $li.parent('ul')).removeClass('active');
