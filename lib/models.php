@@ -781,6 +781,10 @@ Class MTabNav
 		{
 			$this->m_pages['Global Alerts'] = $GLOBALS["DOMAIN"] . 'global_alerts.php';
 		}
+		if($usrmgr->m_user->voter == 1 || $usrmgr->m_user->admin == 1)
+		{
+			$this->m_pages['Topic Voting'] = $GLOBALS["DOMAIN"] . 'voting/';
+		}
   }
 }
 Class MCourseTopicNav

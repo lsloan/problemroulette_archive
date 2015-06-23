@@ -5,43 +5,59 @@ class VotesResource extends Resource {
 
     function init() {
 $this->votes_in_course =<<<SQL
-SELECT v.id, v.problem_id, v.user_id, v.topics,
-DATE_FORMAT(v.created_at, '%Y-%m-%dT%TZ') created_at, DATE_FORMAT(v.updated_at, '%Y-%m-%dT%TZ') updated_at
+SELECT v.id, v.problem_id, v.user_id, v.topic,
+DATE_FORMAT(v.created_at, '%Y-%m-%dT%TZ') created_at
 FROM votes v
 INNER JOIN 12m_topic_prob tp ON v.problem_id = tp.problem_id
 INNER JOIN 12m_class_topic ct ON tp.topic_id = ct.topic_id
 WHERE ct.class_id = ? AND v.user_id = ?
 SQL;
 
-// With the ON DUPLICATE KEY syntax, the topics must be supplied both as
-// the initial value and the update value, the 3rd and 4th parameters.
 $this->save_vote =<<<SQL
 INSERT INTO votes
-(problem_id, user_id, topics, created_at, updated_at)
-VALUES(?, ?, ?, NULL, NULL)
-ON DUPLICATE KEY UPDATE
-created_at=created_at, updated_at = now(), topics = ?
+(problem_id, user_id, topic)
+VALUES(?, ?, ?)
+SQL;
+
+$this->clear_vote =<<<SQL
+DELETE FROM votes
+WHERE problem_id = ? AND user_id = ?
 SQL;
     }
 
     function get($path, $params) {
+        $this->checkAuth();
         $this->checkPath($path);
         $this->checkParams($params);
 
         $course_id = $params['course_id'];
         $user_id = $this->current_user->id;
-        $votes = $this->db->fetch_assoc($this->votes_in_course, array($course_id, $user_id));
-        foreach ($votes as $k => $vote) {
-            $topics = json_decode($vote['topics']);
-            if ($topics === null) {
-                $topics = array();
-            }
-            $votes[$k]['topics'] = $topics;
-        }
+        $votes = $this->getVotes($course_id, $user_id);
+
         return array('course_id' => $course_id, 'votes' => $votes);
     }
 
+    function getVotes($course_id, $user_id) {
+        $rs = $this->db->fetch_assoc($this->votes_in_course, array($course_id, $user_id));
+
+        $votes = array();
+        foreach ($rs as $k => $vote) {
+            $problem_id = $vote['problem_id'];
+            if (!isset($votes[$problem_id])) {
+                $votes[$problem_id] = array(
+                    'problem_id' => $problem_id,
+                    'user_id'    => $vote['user_id'],
+                    'topics'     => array(),
+                    'created_at' => $vote['created_at']
+                );
+            }
+            $votes[$problem_id]['topics'][] = $vote['topic'];
+        }
+        return array_values($votes);
+    }
+
     function post($path, $params) {
+        $this->checkAuth();
         $this->checkPath($path);
         $this->checkPostParams($params);
 
@@ -52,10 +68,17 @@ SQL;
         if (!is_array($topics)) {
             $topics = array($topics);
         }
-        $topics = json_encode($topics);
 
-        $this->db->exec_query($this->save_vote, array($problem_id, $user_id, $topics, $topics));
+        $this->saveVote($problem_id, $user_id, $topics);
         return array('success' => true);
+    }
+
+    function saveVote($problem_id, $user_id, $topics) {
+        $this->db->exec_query($this->clear_vote, array($problem_id, $user_id));
+
+        foreach ($topics as $topic) {
+            $this->db->exec_query($this->save_vote, array($problem_id, $user_id, $topic));
+        }
     }
 
     function checkPath($path) {
@@ -79,6 +102,12 @@ SQL;
 
         if (!isset($params['topics'])) {
             $this->error(400, "The `topics[]` parameter is required.");
+        }
+    }
+
+    function checkAuth() {
+        if (!($this->current_user->voter || $this->current_user->admin)) {
+            $this->error(403, "You do not have permission to vote on topics.");
         }
     }
 

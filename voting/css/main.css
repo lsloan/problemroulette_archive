@@ -1,0 +1,50 @@
+.border {
+	border: 1px solid black;
+}
+
+.btn {
+	border-radius: 0px;
+}
+
+.container {
+    text-align: center;
+}
+
+.image {
+	margin: 15px 15px;
+}
+
+.next-btn {
+	text-align: right;
+	margin: 15px 15px;
+}
+
+.panel-text {
+	text-align: left;
+	
+}
+.prev-next {
+	text-align: right;
+	margin: 15px 15px;
+}
+
+.row.red-btns {
+	btn-size: large;
+}
+
+.titles {
+	text-align: center;
+}
+
+.topics {
+	text-align: left;
+	text-style: strong;
+}
+
+
+
+
+
+
+
+
