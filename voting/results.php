@@ -27,9 +27,13 @@ if (!isset($_GET['inline'])) {
 }
 
 $rows = $dbmgr->fetch_assoc($sql);
-fputcsv($stdout, array_keys($rows[0]));
-foreach ($rows as $row) {
-    fputcsv($stdout, array_values($row));
+if (count($rows) > 0) {
+    fputcsv($stdout, array_keys($rows[0]));
+    foreach ($rows as $row) {
+        fputcsv($stdout, array_values($row));
+    }
+} else {
+    echo "No votes recorded yet.";
 }
 
 ?>
