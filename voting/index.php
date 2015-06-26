@@ -74,8 +74,6 @@ if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
 							<h3 class="titles">Question</h3>
 						</div> -->
 						<div class="panel-body leftFrame">
-							<iframe src="" 
-							width="100%" height="540px"></iframe>
 						</div>	
 					</div>
 				</div>

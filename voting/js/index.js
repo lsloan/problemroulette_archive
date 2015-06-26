@@ -28,11 +28,11 @@ function showNext() {
 
         $('input:checkbox').prop('checked',false); // Resets checkboxes after submission		      	
 
+        $('.leftFrame').empty();
         if (nextproblem) {
             currentProblem = nextproblem;
-            $("iframe").prop("src", problem.url);
+            $('<iframe width="100%" height="540px" src="' + problem.url + '"></iframe>').appendTo('.leftFrame');
         } else {
-            $("iframe").prop("src", "");
             $('.voting-ui').addClass('hidden');
             $('#no-problems').removeClass('hidden');
         }
