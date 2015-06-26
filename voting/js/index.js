@@ -33,7 +33,8 @@ function showNext() {
             $("iframe").prop("src", problem.url);
         } else {
             $("iframe").prop("src", "");
-            alert('No unanswered problems for this course.');
+            $('.voting-ui').addClass('hidden');
+            $('#no-problems').removeClass('hidden');
         }
 
     });
@@ -44,11 +45,33 @@ function loadTopics(course_id) {
         var topics = data.topics;
         allTopics = topics;
         $('.rightFrame').empty();
-        $.each(topics, function(idx, t) {
-            $('<div class="checkbox"><label><input type="checkbox" value="' + t.value +
-            '">' + t.label + '</label></div>').appendTo('.rightFrame');
-        });
+
+        var mid = Math.floor(topics.length / 2);
+        if (topics.length % 2 == 1) {
+            mid += 1;
+        }
+        var leftcol = topics.slice(0, mid)
+        var rightcol = topics.slice(mid, topics.length);
+
+        var markup = '<div class="row">' +
+        '<div class="col-lg-6">' +
+        makeTopicChoices(leftcol) +
+        '</div>' +
+        '<div class="col-lg-6">' +
+        makeTopicChoices(rightcol) +
+        '</div>' +
+        '</div>';
+
+        $(markup).appendTo('.rightFrame');
     });
+}
+
+function makeTopicChoices(topics) {
+    var markup = ''
+    $.each(topics, function(idx, t) {
+        markup += '<div class="checkbox"><label><input type="checkbox" value="' + t.value + '">' + t.label + '</label></div>';
+    });
+    return markup;
 }
 
 // Logs selected topics
@@ -59,8 +82,9 @@ function logVotes(data) {
 }
 
 function selectCourse(course_id) {
-    $('#select-course').remove();
-    $('.hidden').removeClass('hidden');
+    $('#select-course').addClass('hidden');
+    $('#no-problems').addClass('hidden');
+    $('.voting-ui').removeClass('hidden');
     course = course_id;
     loadTopics(course_id);
     loadProblems(course_id);
@@ -81,6 +105,7 @@ $(document).ready(function() {
 	
 	// On click function for Next button
 	$("#btnNext").on('click', function(e) {
+        e.preventDefault();
 	
         var selectedTopics = {};
 
@@ -88,8 +113,6 @@ $(document).ready(function() {
         var topics = $('input:checkbox:checked').map(function() {
         	return $(this).val();
         }).toArray();
-        
-        console.log(topics);
         
         // Saves selected topics
         PRApi.saveVote(currentProblem.id, topics).then(showNext);

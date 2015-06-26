@@ -58,12 +58,17 @@ if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
 			<div class="row">
 				
                 <div id="select-course">
-                    <h2>Thank you for voting on problem topics.</h1>
-                    <h4>Select a course from above to begin.</h1>
+                    <h2>Thank you for voting on problem topics.</h2>
+                    <h4>Select a course from above to begin.</h4>
+                </div>
+
+                <div id="no-problems" class="hidden">
+                    <h2>You have voted on all problems in this course.</h2>
+                    <h4>Select a different course from above to continue.</h4>
                 </div>
 
 				<!-- Left Side -->
-				<div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 hidden">
+				<div class="col-lg-8 col-md-8 col-sm-7 col-xs-12 hidden voting-ui">
 					<div class="panel panel-primary">
 						<!-- <div class="panel-heading">
 							<h3 class="titles">Question</h3>
@@ -76,7 +81,7 @@ if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
 				</div>
 				
 				<!-- Right Size -->
-				<div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 hidden">
+				<div class="col-lg-4 col-md-4 col-sm-5 col-xs-12 hidden voting-ui">
 					<form class="form-horizontal" id="frmTopics">
 						<div class="panel panel-primary">
 							<div class="panel-heading">
