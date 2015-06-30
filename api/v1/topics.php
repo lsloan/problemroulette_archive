@@ -50,6 +50,7 @@ $TOPICS =<<<EOF
         {"value": "capacitance", "label": "Capacitance"},
         {"value": "currResistPower", "label": "Current, resistance, and power"},
         {"value": "dcCircuits", "label": "DC circuits"},
+        {"value": "rcCircuits", "label": "RC circuits"},
         {"value": "magForce", "label": "Magnetic force"},
         {"value": "hallEffect", "label": "Hall effect"},
         {"value": "biotSavartLaw", "label": "Biot-Savart law"},
@@ -68,6 +69,8 @@ $TOPICS =<<<EOF
         {"value": "radEnergyMomentum", "label": "Radiation energy and momentum"},
         {"value": "polarization", "label": "Polarization"},
         {"value": "refractionReflection", "label": "Refraction and reflection"},
+        {"value": "lensMirrors", "label": "Lenses and mirrors"},
+        {"value": "optInstrmt", "label": "Optical instruments"},
         {"value": "flagged", "label": "Flag this"}
     ],
     "6": [
