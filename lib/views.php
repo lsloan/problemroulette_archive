@@ -1593,6 +1593,7 @@ class VProblems_submitted
 			";
 			if (! $soln_ok) {
 				$str .= "
+				<input type='hidden' name='topic'  value='" . $this->v_topic. "'>
 				<button class='btn btn-next' type='submit' name='retry' value='".$this->v_picked_problem->m_prob_id."'>
 					Retry this problem
 				</button>
