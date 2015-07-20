@@ -134,7 +134,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 } elseif (isset($_POST['retry'])) {
 	$user_id = $usrmgr->m_user->id;
 	$c_problem_id = $_POST['retry'];
-	$c_topic_id = intval($usrmgr->m_user->GetPref('current_topic'));
+	$c_topic_id = $_POST['topic'];
 	header('Location:problems.php?pretry=1&pr='.$c_problem_id.'&tp='.$c_topic_id);
 } elseif (isset($_GET['ps'])) {
 	$c_problem_id = $_GET['pr'];
