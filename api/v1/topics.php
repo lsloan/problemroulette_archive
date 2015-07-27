@@ -134,6 +134,20 @@ $TOPICS =<<<EOF
         {"value": "cosmologyAstrobiology", "label": "Cosmology and astrobiology "},
         {"value": "atomsQuantumMech", "label": "Atoms and quantum mechanics"},
         {"value": "flagged", "label": "Flag this"}
+    ],
+    "10": [
+        {"value": "measureCalc", "label": "Measurements and Calculations"},
+        {"value": "chemFound", "label": "Chemical Foundations"},
+        {"value": "atomicStrucPeriod", "label": "Atomic Structure and Periodicity"},
+        {"value": "bonding", "label": "Bonding"},
+        {"value": "molecStructOrbit", "label": "Molecular Structure and Orbitals"},
+        {"value": "stoich", "label": "Stoichiometry"},
+        {"value": "chemReactSoln", "label": "Types of Chemical Reactions and Solution Stoichiometry"},
+        {"value": "chemEnergy", "label": "Chemical Energy"},
+        {"value": "gases", "label": "Gases"},
+        {"value": "liquidSolid", "label": "Liquids and Solids"},
+        {"value": "chemEquilib", "label": "Chemical Equilibrium"},
+        {"value": "acidBase", "label": "Acids and Bases"}
     ]
 }
 EOF;

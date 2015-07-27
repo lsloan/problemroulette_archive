@@ -4,9 +4,10 @@ var problems;
 var allTopics;
 
 
-function loadProblems(course_id) {
-    PRApi.getProblems(course_id).then(function(data) {
+function loadProblems(course_id, oldtopics) {
+    PRApi.getProblems(course_id, oldtopics).then(function(data) {
         problems = data.problems;
+        // alert('Problem count: ' + problems.length);
         showNext();
     });
 }
@@ -81,13 +82,13 @@ function logVotes(data) {
 	});
 }
 
-function selectCourse(course_id) {
+function selectCourse(course_id, oldtopics) {
     $('#select-course').addClass('hidden');
     $('#no-problems').addClass('hidden');
     $('.voting-ui').removeClass('hidden');
     course = course_id;
     loadTopics(course_id);
-    loadProblems(course_id);
+    loadProblems(course_id, oldtopics);
 }
 
 
@@ -97,10 +98,11 @@ $(document).ready(function() {
 	$('.changeTopics').click(function(evt) {
         evt.preventDefault();
 		var course_id = $(this).data('course');
+        var oldtopics = $(this).data('oldtopics');
         $li = $(this).parent('li');
         $('li', $li.parent('ul')).removeClass('active');
         $li.addClass('active');
-        selectCourse(course_id);
+        selectCourse(course_id, oldtopics);
 	});
 	
 	// On click function for Next button

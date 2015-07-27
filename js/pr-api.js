@@ -148,8 +148,8 @@ var PRApi = (function($, endpoint) {
                 return Promise.resolve($.get(endpoint + "/courses.php"));
             },
 
-            getProblems: function(course_id) {
-                return Promise.resolve($.get(endpoint + "/problems.php", { course_id: course_id }));
+            getProblems: function(course_id, oldtopics) {
+                return Promise.resolve($.get(endpoint + "/problems.php", { course_id: course_id, oldtopics: oldtopics }));
             },
 
             getTopics: function(course_id) {
