@@ -5,6 +5,7 @@ require_once(dirname(__FILE__).'/../rest.php');
 // Physics 240 = 5
 // Physics 135 = 6
 // Physics 235 = 7
+// Chemistry 130 = 10
 
 $TOPICS =<<<EOF
 {
