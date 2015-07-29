@@ -7,7 +7,6 @@ var allTopics;
 function loadProblems(course_id, oldtopics) {
     PRApi.getProblems(course_id, oldtopics).then(function(data) {
         problems = data.problems;
-        // alert('Problem count: ' + problems.length);
         showNext();
     });
 }
