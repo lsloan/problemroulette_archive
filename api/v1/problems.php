@@ -21,7 +21,7 @@ SQL;
 
         $course_id = $params['course_id'];
         $oldtopics = (array_key_exists('oldtopics', $params)) ? $params['oldtopics'] : '';
-        $oldtopics = $this->scrub_topics($params['oldtopics']);
+        $oldtopics = $this->scrub_topics($oldtopics);
 
         $query = $this->getProblemsInCourseQuery(count($oldtopics));
         $bindings = array_merge(array($course_id), $oldtopics);
