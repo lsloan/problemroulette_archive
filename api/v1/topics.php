@@ -148,7 +148,8 @@ $TOPICS =<<<EOF
         {"value": "gases", "label": "Gases"},
         {"value": "liquidSolid", "label": "Liquids and Solids"},
         {"value": "chemEquilib", "label": "Chemical Equilibrium"},
-        {"value": "acidBase", "label": "Acids and Bases"}
+        {"value": "acidBase", "label": "Acids and Bases"},
+        {"value": "flagged", "label": "Flag this"}
     ]
 }
 EOF;
