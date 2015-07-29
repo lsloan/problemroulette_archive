@@ -46,6 +46,7 @@ if (!($usrmgr->m_user->voter || $usrmgr->m_user->admin)) {
                         <li><a class="changeTopics" data-course="4" href="#">Physics 140</a></li>
                         <li><a class="changeTopics" data-course="7" href="#">Physics 235</a></li>
                         <li><a class="changeTopics" data-course="5" href="#">Physics 240</a></li>
+                        <li><a class="changeTopics" data-course="10" data-oldtopics="50,51,52,53,54,55,56,57,58,59,60,63,64" href="#">Chem 130 - non-exams</a></li>
 					  </ul>
 					</div><!-- /.navbar-collapse -->
 				  </div><!-- /.container-fluid -->
