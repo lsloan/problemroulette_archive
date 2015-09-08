@@ -1681,6 +1681,7 @@ class VTopic_Selections
 	var $v_pre_fill_topics = 0;//0 for DO NOT pre-fill. 1 for DO pre-fill
 	var $v_selected_topics_list_id;//list of topic IDs (ints)
 	var $v_show_whether_topic_inactive = 0;
+	var $topic_counts = array();
 	
 	function __construct($CTprefs,$pre_fill_topics)
 	{
@@ -1705,6 +1706,30 @@ class VTopic_Selections
 			$this->v_selected_topics_list_id = $selected_topics_list_id;
 		}
 		$this->v_pre_fill_topics = $pre_fill_topics;
+		$this->calculateTopicCounts();
+	}
+
+	function calculateTopicCounts() {
+		$course_id = $this->v_selected_course->m_id;
+		$this->topic_counts = MProblem::get_answered_and_total_counts($course_id);
+	}
+
+	function problemCount($topic_id) {
+		return isset($this->topic_counts[$topic_id]) ? $this->topic_counts[$topic_id]['total'] : '--';
+	}
+
+	function answeredCount($topic_id) {
+		return isset($this->topic_counts[$topic_id]) ? $this->topic_counts[$topic_id]['answered'] : '--';
+	}
+
+	function remainingCount($topic_id) {
+		$total    = $this->problemCount($topic_id);
+		$answered = $this->answeredCount($topic_id);
+		if (is_numeric($total) && is_numeric($answered)) {
+			return $total - $answered;
+		} else {
+			return '--';
+		}
 	}
 	
 	function Deliver()
@@ -1770,8 +1795,8 @@ class VTopic_Selections
 					".$topic->m_name."
 					</button></td>
 					
-					<td class='cell-remaining'><span class='remaining-problems-topic'>
-					".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id,1))."/".count(MProblem::get_all_problems_in_topic_with_exclusion($topic->m_id))."
+					<td class='cell-remaining'><span class='remaining-problems-topic'>"
+					. $this->remainingCount($topic->m_id)."/".$this->problemCount($topic->m_id) . "
 					<a class='link link-reset'
 					onClick='reset_topic(&quot;".$topic->m_id."&quot;);'>
 					Reset
