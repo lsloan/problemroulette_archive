@@ -821,51 +821,6 @@ Class MCourseTopicNav
 	}
 }
 
-//model containing the course and topic selection information
-//this model doesn't do anything, just stores the variables
-Class MCTSelect
-{
-	var $m_selected_course;//get from preferences
-	var $m_delay_solution; //number of attempts by student for a problem befoere they get the solution
-	var $m_selected_topics_list;//one or more topics (By ID), get from preferences
-	var $m_omitted_problems_list;//zero or more omitted problems (by prob_id), get from preferences
-								//^^^^^Associative array (omitted_problems_list[topic_id] = array of omitted problems in topic)
-	var $m_remaining_problems_in_topic_list;//how many problems are left in a given topic after leaving out omitted problems
-	var $m_total_problems_in_topic_list;//how many problems are in topic before omitting problems
-	var $m_last_activity;//get from preferences
-	
-	//read in preferences data to set vars
-	function __construct()
-	{
-		global $usrmgr;
-		$this->m_selected_course = $usrmgr->m_user->selected_course_id;
-		$this->m_delay_solution = MCourse::get_course_by_id($this->m_selected_course);
-		$this->m_selected_topics_list = $usrmgr->m_user->selected_topics_list;
-		$num_selected_topics = count($this->m_selected_topics_list);
-
-		//get user_id
-		$user_id = $usrmgr->m_user->id;
-
-		for ($i=0; $i<$num_selected_topics; $i++)
-		{
-			$topic_id = $this->m_selected_topics_list[$i];
-			$omitted_problem = new OmittedProblem($user_id, $topic_id);
-			$this->m_omitted_problems_list[$topic_id] = $omitted_problem->find();
-		}
-		//^^^taken care of above^^^//$this->m_omitted_problems_list = $usrmgr->m_user->GetPref('omitted_problems_list');
-		$this->m_last_activity = $usrmgr->m_user->last_activity;
-		
-		for ($i=0;$i<count($this->m_selected_topics_list);$i++)
-		{
-			$topic_id = $this->m_selected_topics_list[$i];
-			$remaining_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id,$this->m_omitted_problems_list[$topic_id]);
-			$total_problems = MProblem::get_all_problems_in_topic_with_exclusion($topic_id);
-			$this->m_remaining_problems_in_topic_list[$i] = count($remaining_problems);
-			$this->m_total_problems_in_topic_list[$i] = count($total_problems);
-		}
-	}
-}
-
 /*
 *****model that will determine the correct information in selections.php (course_or_topic)
 <LOGIC>
@@ -880,7 +835,7 @@ else
 */
 
 //$this->m_course_or_topic will be 0 for course selector or 1 for topic selector;
-//use this variable (along with selected course from MCTSelect if topic selector) to display the right page;
+//use this variable (along with selected course if topic selector) to display the right page;
 Class MDirector
 {
 	# redirects

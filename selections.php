@@ -8,18 +8,6 @@ $user_id = $usrmgr->m_user->id;
 // error_log("Selections");
 // error_log(print_r($_POST, true));
 
-# set flag to indicate coming from any other tab
-// $pre_fill_topics = 0;
-// if (isset($_SERVER['HTTP_REFERER']))
-// {
-// 	$ref = $_SERVER['HTTP_REFERER'];
-// 	if (strpos($ref,'problems.php') !== false || strpos($ref,'stats.php') !== false || strpos($ref,'staff.php') !== false)
-// 	{
-// 		$pre_fill_topics = 1;
-// 	}
-// }
-
-$pre_fill_topics = 1;
 $include_inactive_topics = ($usrmgr->m_user->staff == 1);
 
 if (isset($_POST['topic_checkbox_submission'])) {
@@ -52,32 +40,16 @@ if (isset($_POST['topic_checkbox_submission'])) {
 
 # choose course selector or topic selector
 $m_expiration_time = 5184000; //60 days in seconds
-$m_selected_course;//get from MCTSelect
-$m_last_activity = 0;//get from MCTSelect
+$m_selected_course;//get from user
+$m_last_activity = 0;//get from user
 $m_current_time;//current timestamp
 $course_or_topic = 0;//bool--0 for course selector, 1 for topic selector
-$CTprefs = new MCTSelect();
-$m_selected_course = $CTprefs->m_selected_course;
-$m_last_activity = $CTprefs->m_last_activity;
+$m_selected_course = $usrmgr->m_user->selected_course_id;
+$m_last_activity = $usrmgr->m_user->last_activity;
 $m_current_time = time();
 if (($m_current_time - $m_last_activity) <= $m_expiration_time && $m_selected_course != Null)
 {
     $course_or_topic = 1;
-}
-
-//set selected course if it exists
-if ($CTprefs->m_selected_course != Null)
-{
-    //this is dead logic?
-	$selected_course_id = $CTprefs->m_selected_course;
-	$selected_course = MCourse::get_course_by_id($selected_course_id);
-
-}
-//set selected topics list if it exists
-if ($CTprefs->m_selected_topics_list != Null)
-{
-    //this is dead logic?
-	$selected_topics_list = $CTprefs->m_selected_topics_list;
 }
 
 
@@ -94,7 +66,7 @@ else {
 # choose topic or course selection view
 if ($course_or_topic == 1)
 {
-	$content = new VTopic_Selections($CTprefs,$pre_fill_topics);
+	$content = new VTopic_Selections();
 }
 else
 {

@@ -18,6 +18,8 @@ require_once( $GLOBALS["DIR_LIB"]."logger.php" );
 $GLOBALS['app_log'] = new AppLogger($log_file);
 global $app_log;
 
+$GLOBALS['DEBUG'] = (isset($GLOBALS['DEBUG']) ? ((bool) $GLOBALS['DEBUG']) : false);
+
 // database
 require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
 $GLOBALS["dbmgr"] = new CDbMgr();

@@ -22,6 +22,8 @@ class CDbMgr
 	var $m_pswd;
 	var $m_db;
 	var $m_link;
+	var $queries = 0;
+	var $traces = array();
 	
 	//	Constructor
   function CDbMgr()
@@ -107,6 +109,16 @@ class CDbMgr
 
 	function fetch_assoc( $query, $bindings = null )
 	{
+		if ($GLOBALS['DEBUG']) {
+			$this->queries += 1;
+			$bt = debug_backtrace();
+			$bt = $bt[1];
+			$where = (isset($bt['class']) ? $bt['class'] . "::" : "") . $bt['function'] . " - " . $bt['file'] . ":" . $bt['line'];
+			if (!isset($this->traces[$where])) {
+				$this->traces[$where] = 0;
+			}
+			$this->traces[$where] += 1;
+		}
 		$res = $this->exec_query($query,$bindings);
 		return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
