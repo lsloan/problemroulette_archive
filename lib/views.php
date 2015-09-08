@@ -1710,10 +1710,10 @@ class VTopic_Selections
 	function Deliver()
 	{
 		$str = "<p class='half-line'>&nbsp;</p>
-		<p>The links below serve randomly-chosen questions, one at a time, from banks of multiple-choice problems derived from past exams.</p>
+		<p>The links below serve randomly-chosen questions, one at a time, from banks of multiple-choice problems used in past exams.</p>
 		<img class='logo' src='img/PR.jpg' width='200px'></img>
 		<p><span class='label label-inverse label-big'>".$this->v_selected_course->m_name."</span></p>
-		<p><strong>Please select a topic to begin:</strong></p>
+		<p><strong>Please select one or more topics to begin:</strong></p>
 		
 		<form action='' method='post'>
 	    <button type='submit' class='btn btn-courses' name='select_different_course' value='1'>
