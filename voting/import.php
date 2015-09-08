@@ -26,20 +26,6 @@ class Importer {
     var $errors = array();
     var $db = null;
 
-var $new_topic =<<<EOQ
-INSERT INTO topic (name) VALUES(?)
-EOQ;
-
-var $new_ct =<<<EOQ
-INSERT INTO 12m_class_topic (class_id, topic_id)
-VALUES(?, ?)
-EOQ;
-
-var $new_tp =<<<EOQ
-INSERT INTO 12m_topic_prob (problem_id, topic_id)
-VALUES(?, ?)
-EOQ;
-
     function __construct() {
         global $dbmgr;
         $this->db = $dbmgr;
@@ -67,6 +53,21 @@ EOQ;
             $this->cleanup();
             $this->redirect(array('bad_file' => 1));
         }
+
+$this->new_topic =<<<EOQ
+INSERT INTO topic (name) VALUES(?)
+EOQ;
+
+$this->new_ct =<<<EOQ
+INSERT INTO 12m_class_topic (class_id, topic_id)
+VALUES(?, ?)
+EOQ;
+
+$this->new_tp =<<<EOQ
+INSERT INTO 12m_topic_prob (problem_id, topic_id)
+VALUES(?, ?)
+EOQ;
+
     }
 
     function makeTopics() {
