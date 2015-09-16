@@ -296,6 +296,28 @@ Class MProblem
 		$dbmgr->exec_query($query, $bindings);
 	}
 
+	public static function get_answered_and_total_counts($course_id) {
+		global $usrmgr, $dbmgr;
+		$sql = "SELECT tp.topic_id, COUNT(tp.id) total, COUNT(op.id) answered "
+			 . "FROM 12m_topic_prob tp "
+			 . "INNER JOIN 12m_class_topic ct "
+			 . "  ON tp.topic_id = ct.topic_id "
+			 . "LEFT JOIN omitted_problems op "
+			 . "  ON tp.topic_id = op.topic_id AND tp.problem_id = op.problem_id AND op.user_id = :user_id "
+			 . "WHERE ct.class_id = :course_id "
+			 . "GROUP BY tp.topic_id";
+		$bindings = array('course_id' => $course_id, 'user_id' => $usrmgr->m_user->id);
+		$rows = $dbmgr->fetch_assoc($sql, $bindings);
+
+		$counts = array();
+		foreach ($rows as $row) {
+			$topic_id = $row['topic_id'];
+			$counts[$topic_id] = $row;
+		}
+
+		return $counts;
+	}
+
 	//for $exclusion: input 0 or nothing for no exclusion; input 1 or true for exclusion
 	//for $by_id: input 0 or nothing to return problem objects; input 1 or true to output problem ids
 	public static function get_all_problems_in_topic_with_exclusion($topic_id,$exclusion = Null,$by_id = Null)
