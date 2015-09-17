@@ -1676,36 +1676,29 @@ class VSpecialExam
 }
 class VTopic_Selections
 {
-	var $v_CTprefs;//course/topic preferences
 	var $v_selected_course;//selected course (course object)
-	var $v_pre_fill_topics = 0;//0 for DO NOT pre-fill. 1 for DO pre-fill
 	var $v_selected_topics_list_id;//list of topic IDs (ints)
 	var $v_show_whether_topic_inactive = 0;
 	var $topic_counts = array();
 	
-	function __construct($CTprefs,$pre_fill_topics)
+	function __construct()
 	{
 		global $usrmgr;
-		$staff = $usrmgr->m_user->staff;
+		$user = $usrmgr->m_user;
+		$staff = $user->staff;
 
 		$this->v_show_whether_topic_inactive = $staff;
 
-		$this->v_CTprefs = $CTprefs;
-		if ($this->v_CTprefs->m_selected_course != Null)
+		if ($user->selected_course_id != Null)
 		{
-			$selected_course_id = $this->v_CTprefs->m_selected_course;
-			$selected_course = MCourse::get_course_by_id($selected_course_id, $staff);
+			$selected_course_id = $user->selected_course_id;
+			$this->v_selected_course = MCourse::get_course_by_id($selected_course_id, $staff);
 		}
-		if ($this->v_CTprefs->m_selected_topics_list != Null)
+
+		if ($user->selected_topics_list != Null)
 		{
-			$selected_topics_list_id = $this->v_CTprefs->m_selected_topics_list;
+			$this->v_selected_topics_list_id = $user->selected_topics_list;
 		}
-		$this->v_selected_course = $selected_course;
-		if ($this->v_CTprefs->m_selected_topics_list != Null)
-		{
-			$this->v_selected_topics_list_id = $selected_topics_list_id;
-		}
-		$this->v_pre_fill_topics = $pre_fill_topics;
 		$this->calculateTopicCounts();
 	}
 
@@ -1771,19 +1764,16 @@ class VTopic_Selections
 					class = 'group checkbox'
 					name='topic_checkbox_submission[]'
 					value='".$topic->m_id."'";
-					if ($this->v_pre_fill_topics == 1)
+					if (is_array($this->v_selected_topics_list_id))
 					{
-						if (is_array($this->v_selected_topics_list_id))
-						{
-							if (in_array($topic->m_id, $this->v_selected_topics_list_id))
-							{
-								$str .= " checked='checked'";
-							}
-						}
-						elseif ($topic->m_id == $this->v_selected_topics_list_id)
+						if (in_array($topic->m_id, $this->v_selected_topics_list_id))
 						{
 							$str .= " checked='checked'";
 						}
+					}
+					elseif ($topic->m_id == $this->v_selected_topics_list_id)
+					{
+						$str .= " checked='checked'";
 					}
 					$str .= "/></td>
 					

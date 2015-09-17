@@ -44,4 +44,12 @@
 
 </body>
 <!--close body-->
+<?php if ($GLOBALS['DEBUG']): ?>
+<!--
+<?php global $dbmgr; ?>
+<?= $dbmgr->queries; ?>
+
+<?php print_r($dbmgr->traces); ?>
+-->
+<?php endif; ?>
 </html>
