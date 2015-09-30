@@ -644,3 +644,8 @@ span.clarity {
 	font-size: 1.5em;
 	font-weight: bold;
 }
+/* ------------------------------- */
+
+div#problems .topic-list-label {
+  margin-left: 92px;
+}

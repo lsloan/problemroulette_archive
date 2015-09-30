@@ -1385,6 +1385,11 @@ class VProblems
 				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
 		}
+		$str .= "<p class='topic-list-label'>This problem is in ";
+		$str .= count($this->v_picked_problem->m_prob_topic_names) > 1 ? "topics: " : "topic:&nbsp;&nbsp;";
+		$str .= " <span class='label label-inverse'>" .
+		         implode('</span>  <span class="label label-inverse">', $this->v_picked_problem->m_prob_topic_names) .
+		        "</span>";
 
 		$str .= "</p>
 			<form class='ans-form' name='ans_form' action='' method='POST'>
