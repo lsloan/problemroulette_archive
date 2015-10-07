@@ -1385,10 +1385,12 @@ class VProblems
 				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
 		}
+		//get topic names, excuding inactive topics
+		$topic_names = MProblem::get_problem_topic_names($this->v_picked_problem->m_prob_id, true);
 		$str .= "</p><p class='topic-list-label'>This problem is in ";
-		$str .= count($this->v_picked_problem->m_prob_topic_names) > 1 ? "topics: " : "topic:&nbsp;&nbsp;";
+		$str .= count($topic_names) > 1 ? "topics: " : "topic:&nbsp;&nbsp;";
 		$str .= " <span class='label label-inverse'>" .
-		         implode('</span>  <span class="label label-inverse">', $this->v_picked_problem->m_prob_topic_names) .
+		         implode('</span>  <span class="label label-inverse">', $topic_names) .
 		        "</span>";
 
 		$str .= "</p>

@@ -245,6 +245,23 @@ Class MProblem
 	{
 		#push data to database
 	}
+
+	public static function get_problem_topic_names($prob_id, $exclude_inactive_topics=false)
+	{
+		global $dbmgr, $usrmgr;
+		$query = "SELECT t.name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :prob_id AND tp.topic_id = t.id ";
+		// if excluding inactive topics, only do it for non-admins since admins see all topics
+		if ($exclude_inactive_topics && $usrmgr->m_user->admin == 0) {
+			$query .= " and t.inactive=0";
+		}
+		$bindings = array( ":prob_id"=>$prob_id);
+		$res = $dbmgr->fetch_assoc( $query , $bindings );
+		$topic_names = array();
+		foreach ($res as $val) {
+			$topic_names[] = $val['name'];
+		}
+		return $topic_names;
+	}
 	
 	public static function update_problem_name($prob_id=Null, $new_prob_name=Null)
 	{
