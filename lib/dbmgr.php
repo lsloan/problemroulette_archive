@@ -33,10 +33,11 @@ class CDbMgr
 		$this->m_user = $GLOBALS["SQL_USER"];
 		$this->m_pswd = $GLOBALS["SQL_PASSWORD"];
 		$this->m_db   = $GLOBALS["SQL_DATABASE"];
+		$this->m_port = isset($GLOBALS["SQL_PORT"]) ? $GLOBALS["SQL_PORT"] : 3306;
 		$this->m_link = false;
 
 		//	Connect to the database
-		$lnk = new PDO( "mysql:dbname={$this->m_db};host={$this->m_host}", $this->m_user, $this->m_pswd  );
+		$lnk = new PDO( "mysql:dbname={$this->m_db};host={$this->m_host};port={$this->m_port}", $this->m_user, $this->m_pswd  );
 		if ($lnk->errorCode())
 		{
 			echo "Failed to connect to MySQL: (" . $lnk->errorCode() . ") " . print_r($lnk->errorInfo(),true);

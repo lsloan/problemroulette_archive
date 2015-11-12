@@ -74,11 +74,12 @@ class Migration {
     }
     function mailLog() {
         $this->flushlog();
-        $to = 'ltig-staff@umich.edu';
+        $from = $GLOBALS["MIGRATION_EMAIL_FROM"];
+        $to   = $GLOBALS["MIGRATION_EMAIL_TO"];
         $subject = "Problem Roulette Migration Log - " . $this->name() . " - " . $GLOBALS["INSTANCE"];
         $headers =<<<EOF
-From: PR Migrations <ltig-staff@umich.edu>
-Reply-To: ltig-staff@umich.edu
+From: PR Migrations <{$from}>
+Reply-To: {$from}
 EOF;
 
         $message = file_get_contents($this->logname);

@@ -1,25 +1,46 @@
 <?php
 error_reporting(E_ALL);
 // Set display_errors in development to view them in browser
-// ini_set('display_errors','1');
+// ini_set('display_errors', '1');
 
-// all the global stuff goes hear and gets included on every page
-#$GLOBALS["SQL_SERVER"] = "localhost";
+// All the global stuff goes here and gets included on every page
+
+// Set to true for a bit more debugging info like query counts
+$GLOBALS["DEBUG"] = false;
+
+// Set MySQL server and credentials
+$GLOBALS["SQL_SERVER"]   = "localhost";
+$GLOBALS["SQL_USER"]     = "";
+$GLOBALS["SQL_PASSWORD"] = "";
+$GLOBALS["SQL_DATABASE"] = "";
+$GLOBALS["SQL_PORT"]     = 3306;
+
+// Set the URL that will be used to access PR
 $GLOBALS["DOMAIN"] = "http://pr.local/";
+
+// Set the absolute path to the application root directory; include trailing slash
+$GLOBALS["DIR"]    = "/path/to/pr/directory";
+
+// The instance is just for logging and emails, no decisions are made based on its value
+$GLOBALS["INSTANCE"] = "Dev";
+
+// Log under the application directory by default
+$GLOBALS['DIR_LOGGER'] = $GLOBALS["DIR"]."log/".$GLOBALS["INSTANCE"]."/";
+
+// Migrations can send a confirmation email if enabled
+$GLOBALS["SEND_MIGRATION_MAIL"]  = false;
+$GLOBALS["MIGRATION_EMAIL_FROM"] = "ltig-staff@umich.edu";
+$GLOBALS["MIGRATION_EMAIL_TO"]   = "ltig-staff@umich.edu";
+
+
+// These are just concatenations by default, but could be customized if
+// images and other files were stored outside the application root.
 $GLOBALS["DOMAIN_PICS"] = $DOMAIN."pics/";
 $GLOBALS["DOMAIN_JS"] = $DOMAIN."js/";
 $GLOBALS["DOMAIN_CSS"] = $DOMAIN."css/";
 $GLOBALS["DOMAIN_LIB"] = $DOMAIN."lib/";
-#$GLOBALS["DIR"] = "C:/wamp/www/roadmaps2/";
-$GLOBALS["DIR"] = "/Users/jtritz/bitbucket/problemroulette/";
 $GLOBALS["DIR_PICS"] = $GLOBALS["DIR"]."pics/";
 $GLOBALS["DIR_JS"] = $GLOBALS["DIR"]."js/";
 $GLOBALS["DIR_CSS"] = $GLOBALS["DIR"]."css/";
 $GLOBALS["DIR_LIB"] = $GLOBALS["DIR"]."lib/";
 
-$GLOBALS["SEND_MIGRATION_MAIL"] = false;
-
-$GLOBALS["INSTANCE"] = "Dev";
-$GLOBALS['DIR_LOGGER'] = $GLOBALS["DIR"]."log/".$GLOBALS["INSTANCE"]."/";
-
-?>
