@@ -33,7 +33,7 @@ class CDbMgr
 		$this->m_user = $GLOBALS["SQL_USER"];
 		$this->m_pswd = $GLOBALS["SQL_PASSWORD"];
 		$this->m_db   = $GLOBALS["SQL_DATABASE"];
-		$this->m_port = $GLOBALS["SQL_PORT"];
+		$this->m_port = isset($GLOBALS["SQL_PORT"]) ? $GLOBALS["SQL_PORT"] : 3306;
 		$this->m_link = false;
 
 		//	Connect to the database
