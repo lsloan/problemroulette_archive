@@ -649,3 +649,7 @@ span.clarity {
 div#problems .topic-list-label {
   margin-left: 92px;
 }
+
+input#delete_problem {
+  margin-right: 2em;
+}

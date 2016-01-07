@@ -1961,6 +1961,23 @@ class VProblemInfo
 	}
 }
 
+class VProblemDelete
+{
+    var $v_problem = null;
+
+    function __construct($problem) {
+        $this->v_problem = $problem;
+    }
+
+    function Deliver() {
+        $str = "<h1>Problem Deleted</h1>"
+             . "<p>The problem <strong>" . $this->v_problem->m_prob_name . "</strong> (id: " . $this->v_problem->m_prob_id . ", "
+             . "url: <a style='margin: 0' href='" . $this->v_problem->m_prob_url . "'>" . $this->v_problem->m_prob_url . "</a>) has been deleted.</p>"
+             . "<p>You will be returned to the <a style='margin: 0' href='problem_library.php'>problem library</a> in ten seconds.</p>";
+        return $str;
+    }
+}
+
 class VProblemEdit
 {
     //vars
@@ -2030,6 +2047,15 @@ class VProblemEdit
 			<p>
 			<label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
 			<input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
+            ";
+
+            if ($usrmgr->m_user->admin) {
+                $str .= "
+                <input id='delete_problem' type='submit' class='btn btn-danger pull-right' value='Delete Problem' name='delete_problem' />
+                ";
+            }
+
+            $str .= "
 			</p>
 
 			<p>
