@@ -432,6 +432,21 @@ Class MProblem
 		$pid = $res[0]['id'];
 		return $pid;
 	}
+
+    public static function delete_problem($problem_id) {
+        global $dbmgr;
+
+        $problem = new MProblem($problem_id);
+        $topic_ids = $problem->get_problem_topics($problem_id);
+
+        MTopic::remove_problem_topics($problem_id, $topic_ids);
+        MResponse::delete_problem_responses($problem_id);
+        OmittedProblem::delete_omissions_for_problem($problem_id);
+        Rating::delete_ratings($problem_id);
+
+        $sql = "DELETE FROM problems WHERE id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
 }
 
 Class MCourse
@@ -1324,6 +1339,16 @@ Class MResponse
 		}
 	}
 
+    public static function delete_problem_responses($problem_id) {
+        global $dbmgr;
+
+        $sql = "DELETE FROM responses WHERE prob_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+
+        $sql = "DELETE FROM 12m_prob_ans WHERE prob_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
+
 }
 
 Class MUserSummary
@@ -1579,6 +1604,13 @@ class OmittedProblem
 			$dbmgr->exec_query($query, $params);
 		}
 	}
+
+    public static function delete_omissions_for_problem($problem_id) {
+        global $dbmgr;
+
+        $sql = "DELETE FROM omitted_problems WHERE problem_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
 
 }
 
@@ -1900,6 +1932,13 @@ class Rating
 		}
 		return $ratings;
 	}
+
+    public static function delete_ratings($problem_id) {
+        global $dbmgr;
+
+        $sql = "DELETE FROM ratings WHERE problem_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
 }
 
 ?>
