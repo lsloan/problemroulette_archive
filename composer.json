@@ -1,0 +1,19 @@
+{
+    "name": "umich-physics/problemroulette",
+    "description": "Problem Roulette",
+    "keywords": ["ProblemRoulette"],
+    "homepage": "https://problemroulette.lsa.umich.edu/",
+    "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/tl-its-umich-edu/caliper-php-public"
+        }
+
+    ],
+    "require": {
+        "php": ">=5.4",
+        "umich-its-tl/caliper-php": "1.0.1"
+
+    }
+}

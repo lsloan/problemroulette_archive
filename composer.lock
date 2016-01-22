@@ -1,0 +1,60 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "52e9c3ac9af099827d0026c220de4062",
+    "content-hash": "00d873424a892e893cd470aee5620d4d",
+    "packages": [
+        {
+            "name": "umich-its-tl/caliper-php",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tl-its-umich-edu/caliper-php-public.git",
+                "reference": "2cd04e8d396371183eefd1af4cee3f2a1c47bfdf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tl-its-umich-edu/caliper-php-public/zipball/2cd04e8d396371183eefd1af4cee3f2a1c47bfdf",
+                "reference": "2cd04e8d396371183eefd1af4cee3f2a1c47bfdf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.6.*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/Caliper/Sensor.php"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Caliper PHP Library",
+            "homepage": "http://www.imsglobal.org",
+            "keywords": [
+                "caliper"
+            ],
+            "support": {
+                "source": "https://github.com/tl-its-umich-edu/caliper-php-public/tree/1.0.1"
+            },
+            "time": "2015-12-11 18:02:40"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.4"
+    },
+    "platform-dev": []
+}

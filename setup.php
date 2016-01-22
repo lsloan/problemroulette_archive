@@ -19,7 +19,6 @@ $GLOBALS['app_log'] = new AppLogger($log_file);
 global $app_log;
 
 $GLOBALS['DEBUG'] = (isset($GLOBALS['DEBUG']) ? ((bool) $GLOBALS['DEBUG']) : false);
-
 // database
 require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
 $GLOBALS["dbmgr"] = new CDbMgr();
@@ -32,6 +31,22 @@ $args = GrabAllArgs();
 // application objects
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
+
+//caliper setup
+require_once($GLOBALS["DIR_LIB"] . "caliper_base_service.php");
+
+$caliper_config = array(
+    "CALIPER_API_KEY"      => $GLOBALS["CALIPER_API_KEY"],
+    "CALIPER_ENDPOINT_URL" => $GLOBALS["CALIPER_ENDPOINT_URL"],
+    "CALIPER_SENSOR_ID"    => $GLOBALS["CALIPER_SENSOR_ID"],
+);
+
+if ($GLOBALS["CALIPER_ENABLED"]) {
+    require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
+    $GLOBALS["caliper"] = new CaliperService($caliper_config, $GLOBALS["DEBUG"]);
+} else {
+    $GLOBALS["caliper"] = new BaseCaliperService($caliper_config, $GLOBALS["DEBUG"]);
+}
 
 if (!extension_loaded('json')) {
     dl('json.so');
