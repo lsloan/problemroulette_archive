@@ -34,19 +34,22 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 
 //caliper setup
 require_once($GLOBALS["DIR_LIB"] . "caliper_base_service.php");
-
-$caliper_config = array(
-    "CALIPER_API_KEY"      => $GLOBALS["CALIPER_API_KEY"],
-    "CALIPER_ENDPOINT_URL" => $GLOBALS["CALIPER_ENDPOINT_URL"],
-    "CALIPER_SENSOR_ID"    => $GLOBALS["CALIPER_SENSOR_ID"],
-);
+require_once($GLOBALS["DIR_LIB"] . "caliper_config.php");
+$caliper_config=(new CaliperConfig())
+    ->setSensorId($GLOBALS["CALIPER_SENSOR_ID"])
+    ->setCaliperClient($GLOBALS["CALIPER_CLIENT"])
+    ->setCaliperHttp($GLOBALS["CALIPER_HTTP"])
+    ->setEndpointUrl($GLOBALS["CALIPER_ENDPOINT_URL"])
+    ->setApiKey($GLOBALS["CALIPER_API_KEY"])
+    ->setDebug($GLOBALS["DEBUG"]);
 
 if ($GLOBALS["CALIPER_ENABLED"]) {
     require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
-    $GLOBALS["caliper"] = new CaliperService($caliper_config, $GLOBALS["DEBUG"]);
+    $GLOBALS["caliper"] = new CaliperService($caliper_config);
 } else {
-    $GLOBALS["caliper"] = new BaseCaliperService($caliper_config, $GLOBALS["DEBUG"]);
+    $GLOBALS["caliper"] = new BaseCaliperService($caliper_config);
 }
+
 
 if (!extension_loaded('json')) {
     dl('json.so');

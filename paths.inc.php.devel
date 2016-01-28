@@ -56,10 +56,16 @@ $GLOBALS["DIR_DOWNLOADS"] = $GLOBALS["DIR"].$GLOBALS["PATH_DOWNLOADS"];
 //caliper globals
 //this property enable/disable caliper service. [False]= disable caliper service
 $GLOBALS["CALIPER_ENABLED"]       = false;
+//The below properties are required even for the null implementation of the caliper service. In case of
+disabling the caliper service assign null or empty string
 // This is the api key that is needed to send the event to the Event Store.
-$GLOBALS["CALIPER_API_KEY"]       = "apikey";
+$GLOBALS["CALIPER_API_KEY"]       = null;
 // property hold url to event store.
-$GLOBALS["CALIPER_ENDPOINT_URL"]  = "url/to/eventstore/endpoint"; // Eg, http://lti.tools/caliper/event?key=problemroulette
+$GLOBALS["CALIPER_ENDPOINT_URL"]  = null; // Eg, http://lti.tools/caliper/event?key=problemroulette
 //sensor id should be unique for application. This can be a simple string or PR URL itself
-$GLOBALS["CALIPER_SENSOR_ID"]     = "ProblemRoulette";
+$GLOBALS["CALIPER_SENSOR_ID"]     = null;
+// Protocal id of application should be unique and can be any string
+$GLOBALS["CALIPER_HTTP"] = null; //PRcaliperHttp
+//Caliper client id of application should be unique and can be any string
+$GLOBALS["CALIPER_CLIENT"] = null;//PRcaliperClient
 

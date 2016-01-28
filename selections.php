@@ -27,11 +27,20 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$current_omitted_problems_list = $omitted_problem->remove();
 } elseif (isset($_POST['course_submission'])) {
 	// user has chosen a course
-	$selected_course_id = $_POST['course_submission'];
-	$timestamp = time();
-	$usrmgr->m_user->SetSelectedCourseId($selected_course_id);
-	$usrmgr->m_user->SetLastActivity($timestamp);
-	// header('Location:selections.php');
+	$selected_course = $_POST['course_submission'];
+    $selected_course_array = explode(":", $selected_course);
+    $selected_course_id = $selected_course_array[0];
+    $selected_course_name = $selected_course_array[1];
+    $timestamp = time();
+    $usrmgr->m_user->SetSelectedCourseId($selected_course_id);
+    $usrmgr->m_user->SetLastActivity($timestamp);
+    //caliper event
+    $caliper->captureNavigationEventFromCourseToTopicView($selected_course_name,$selected_course_id);
+    //or can get it from database.
+    //$selected_course_obj = MCourse::get_course_by_id($selected_course_id);
+    //$caliper->captureNavigationEventFromCourseToTopicView($selected_course_obj->m_name,$selected_course_id);
+
+    // header('Location:selections.php');
 } elseif (isset($_POST['select_different_course'])) {
 	// user hit the 'Select Different Course' button
 	$usrmgr->m_user->SetSelectedCourseId(Null);
@@ -73,6 +82,7 @@ else
 	$all_courses_with_topics = MCourse::get_all_courses_with_topics($include_inactive_topics);
 	$content = new VCourse_Selections($all_courses_with_topics);
 }
+
 
 $page = new VPageTabs($head, $tab_nav, $content);
 
