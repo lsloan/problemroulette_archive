@@ -75,9 +75,7 @@ class CaliperService extends BaseCaliperService
             ->setHost($endpointUrl);
 
         $sensor->registerClient($caliperHttp, new Client($caliperClient, $options));
-        echo "sending...\r";
         $sensor->send($sensor, $event);
-        echo "send() done\n";
     }
 
     /* getting the application URL
