@@ -28,19 +28,14 @@ if (isset($_POST['topic_checkbox_submission'])) {
 } elseif (isset($_POST['course_submission'])) {
 	// user has chosen a course
 	$selected_course = $_POST['course_submission'];
-    $selected_course_array = explode(":", $selected_course);
-    $selected_course_id = $selected_course_array[0];
-    $selected_course_name = $selected_course_array[1];
-    $timestamp = time();
-    $usrmgr->m_user->SetSelectedCourseId($selected_course_id);
-    $usrmgr->m_user->SetLastActivity($timestamp);
-    //caliper event
-    $caliper->captureNavigationEventFromCourseToTopicView($selected_course_name,$selected_course_id);
-    //or can get it from database.
-    //$selected_course_obj = MCourse::get_course_by_id($selected_course_id);
-    //$caliper->captureNavigationEventFromCourseToTopicView($selected_course_obj->m_name,$selected_course_id);
-
-    // header('Location:selections.php');
+	$selected_course_array = explode(":", $selected_course);
+	$selected_course_id = $selected_course_array[0];
+	$selected_course_name = $selected_course_array[1];
+	$timestamp = time();
+	$usrmgr->m_user->SetSelectedCourseId($selected_course_id);
+	$usrmgr->m_user->SetLastActivity($timestamp);
+	//caliper event
+	$caliper->captureNavigationEventFromCourseToTopicView($selected_course_name,$selected_course_id);
 } elseif (isset($_POST['select_different_course'])) {
 	// user hit the 'Select Different Course' button
 	$usrmgr->m_user->SetSelectedCourseId(Null);

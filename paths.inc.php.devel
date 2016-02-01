@@ -65,7 +65,7 @@ $GLOBALS["CALIPER_ENDPOINT_URL"]  = null; // Eg, http://lti.tools/caliper/event?
 //sensor id should be unique for application. This can be a simple string or PR URL itself
 $GLOBALS["CALIPER_SENSOR_ID"]     = null;
 // Protocal id of application should be unique and can be any string
-$GLOBALS["CALIPER_HTTP"] = null; //PRcaliperHttp
+$GLOBALS["CALIPER_HTTP_ID"] = null; //PRcaliperHttp
 //Caliper client id of application should be unique and can be any string
-$GLOBALS["CALIPER_CLIENT"] = null;//PRcaliperClient
+$GLOBALS["CALIPER_CLIENT_ID"] = null;//PRcaliperClient
 

@@ -28,10 +28,10 @@
      $GLOBALS["CALIPER_SENSOR_ID"]     = "ProblemRoulette";
      
      //ProblemRoulette is sending the caliper event over the wire using the http protocol. So this id should be unique for the application.
-     $GLOBALS["CALIPER_HTTP"] = "PRCaliperHttp";
+     $GLOBALS["CALIPER_HTTP_ID"] = "PRCaliperHttp";
      
      //Caliper client id and should be unique for application. 
-     $GLOBALS["CALIPER_CLIENT"] = "PRCaliperClient";
+     $GLOBALS["CALIPER_CLIENT_ID"] = "PRCaliperClient";
   
 ### More info on caliper-php sensor go to https://github.com/IMSGlobal/caliper-php-public   
 

@@ -37,8 +37,8 @@ require_once($GLOBALS["DIR_LIB"] . "caliper_base_service.php");
 require_once($GLOBALS["DIR_LIB"] . "caliper_config.php");
 $caliper_config=(new CaliperConfig())
     ->setSensorId($GLOBALS["CALIPER_SENSOR_ID"])
-    ->setCaliperClient($GLOBALS["CALIPER_CLIENT"])
-    ->setCaliperHttp($GLOBALS["CALIPER_HTTP"])
+    ->setCaliperClientId($GLOBALS["CALIPER_CLIENT_ID"])
+    ->setCaliperHttpId($GLOBALS["CALIPER_HTTP_ID"])
     ->setEndpointUrl($GLOBALS["CALIPER_ENDPOINT_URL"])
     ->setApiKey($GLOBALS["CALIPER_API_KEY"])
     ->setDebug($GLOBALS["DEBUG"]);

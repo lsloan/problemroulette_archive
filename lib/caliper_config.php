@@ -4,8 +4,8 @@ class CaliperConfig{
     private $sensor_id;
     private $endpoint_url;
     private $debug;
-    private $caliper_http;
-    private $caliper_client;
+    private $caliper_http_id;
+    private $caliper_client_id;
 
     public function __construct(){
         $this->setDebug(false);
@@ -48,24 +48,24 @@ class CaliperConfig{
         return $this->sensor_id;
     }
 
-    public function getCaliperHttp()
+    public function getCaliperHttpId()
     {
-        return $this->caliper_http;
+        return $this->caliper_http_id;
     }
-    public function setCaliperHttp($caliper_http)
+    public function setCaliperHttpId($caliper_http_id)
     {
-        $this->caliper_http = $caliper_http;
+        $this->caliper_http_id = $caliper_http_id;
         return $this;
     }
 
-    public function getCaliperClient()
+    public function getCaliperClientId()
     {
-        return $this->caliper_client;
+        return $this->caliper_client_id;
     }
 
-    public function setCaliperClient($caliper_client)
+    public function setCaliperClientId($caliper_client_id)
     {
-        $this->caliper_client = $caliper_client;
+        $this->caliper_client_id = $caliper_client_id;
         return $this;
     }
 

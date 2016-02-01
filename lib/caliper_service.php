@@ -58,14 +58,14 @@ class CaliperService extends BaseCaliperService
         $sensorId = $this->config->getSensorId();
         $endpointUrl = $this->config->getEndpointUrl();
         $apiKey = $this->config->getApiKey();
-        $caliperHttp = $this->config->getCaliperHttp();
-        $caliperClient = $this->config->getCaliperClient();
+        $caliperHttpId = $this->config->getCaliperHttpId();
+        $caliperClientId = $this->config->getCaliperClientId();
 
         // caliper variable should not be empty or null
-        if(!($sensorId && $endpointUrl && $apiKey && $caliperHttp && $caliperClient )){
+        if(!($sensorId && $endpointUrl && $apiKey && $caliperHttpId && $caliperClientId )){
             $app_log->msg("Some caliper configurations are missing, unable to send Caliper Event. " .
                 "sensorId = '$sensorId'; endpointUrl = '$endpointUrl'; apiKey = '$apiKey'
-                ; caliperHttp = '$caliperHttp'; caliperClient = '$caliperClient'");
+                ; caliperHttpId = '$caliperHttpId'; caliperClientId = '$caliperClientId'");
             return;
         }
         $sensor = new Sensor($sensorId);
@@ -74,7 +74,7 @@ class CaliperService extends BaseCaliperService
             ->setDebug($this->config->getDebug())
             ->setHost($endpointUrl);
 
-        $sensor->registerClient($caliperHttp, new Client($caliperClient, $options));
+        $sensor->registerClient($caliperHttpId, new Client($caliperClientId, $options));
         $sensor->send($sensor, $event);
     }
 
