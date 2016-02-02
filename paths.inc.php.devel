@@ -56,8 +56,6 @@ $GLOBALS["DIR_DOWNLOADS"] = $GLOBALS["DIR"].$GLOBALS["PATH_DOWNLOADS"];
 //caliper globals
 //this property enable/disable caliper service. [False]= disable caliper service
 $GLOBALS["CALIPER_ENABLED"]       = false;
-//The below properties are required even for the null implementation of the caliper service. In case of
-disabling the caliper service assign null or empty string
 // This is the api key that is needed to send the event to the Event Store.
 $GLOBALS["CALIPER_API_KEY"]       = null;
 // property hold url to event store.

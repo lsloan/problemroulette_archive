@@ -6,10 +6,8 @@
  */
 class BaseCaliperService {
 
-    var $config;
 
-    public function __construct(CaliperConfig $config) {
-        $this->config =$config;
+    public function __construct($config) {
     }
 
     public function captureNavigationEventFromCourseToTopicView($course_name, $course_id)

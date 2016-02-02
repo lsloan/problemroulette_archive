@@ -1,47 +1,13 @@
 <?php
-class CaliperConfig{
-    private $api_key;
+// vendor is the directory where the caliper library is placed. Refer to README.md on importance of the vendor/
+require_once 'vendor/autoload.php';
+require_once 'Caliper/Options.php';
+
+class CaliperConfig extends Options{
     private $sensor_id;
-    private $endpoint_url;
-    private $debug;
     private $caliper_http_id;
     private $caliper_client_id;
 
-    public function __construct(){
-        $this->setDebug(false);
-    }
-
-    public function getEndpointUrl()
-    {
-        return $this->endpoint_url;
-    }
-
-    public function setEndpointUrl($endpoint_url)
-    {
-        $this->endpoint_url = $endpoint_url;
-        return $this;
-    }
-
-    public function getDebug()
-    {
-        return $this->debug;
-    }
-
-    public function setDebug($debug)
-    {
-        $this->debug = $debug;
-        return $this;
-    }
-    public function getApiKey()
-    {
-        return $this->api_key;
-    }
-
-    public function setApiKey($api_key)
-    {
-        $this->api_key = $api_key;
-        return $this;
-    }
 
     public function getSensorId()
     {

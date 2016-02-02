@@ -1,6 +1,6 @@
 ## Dependency Management via Composer for managing the external libraries like Caliper.
 
-1. Download Composer and install it. For installation details, see: `https://getcomposer.org/download/`. 
+1. Download Composer and install it. For installation details, see: https://getcomposer.org/download/. 
    The instructions specifies to install locally as part of your project, or globally as a system wide executable. 
    This Document gives instruction with Global.
 2. Run `composer install`. This will download the libraries that are mentioned in the composer.json(located at

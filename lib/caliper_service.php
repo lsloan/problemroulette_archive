@@ -5,8 +5,7 @@
  * particular caliper event and will log the call to the event store where all the event are captured.
  */
 
-// vendor is the directory where the caliper library is placed. Refer to README.md on importance of the vendor/
-require_once 'vendor/autoload.php';
+
 require_once 'Caliper/Options.php';
 require_once 'Caliper/actions/Action.php';
 require_once 'Caliper/entities/session/Session.php';
@@ -20,6 +19,16 @@ require_once 'Caliper/entities/lis/CourseOffering.php';
 
 class CaliperService extends BaseCaliperService
 {
+    var $config;
+    public function __construct($config)
+    {
+        parent::__construct($config);
+        if(!($config instanceof CaliperConfig)){
+            throw new InvalidArgumentException('Object expected was "CaliperConfig" but got '.get_class($config) );
+        }
+        $this->config=$config;
+    }
+
     const BLANK_NODE = '_:';
 
     public function captureNavigationEventFromCourseToTopicView($course_name, $course_id){
@@ -56,7 +65,7 @@ class CaliperService extends BaseCaliperService
     private function sendEvent($event){
         global $app_log;
         $sensorId = $this->config->getSensorId();
-        $endpointUrl = $this->config->getEndpointUrl();
+        $endpointUrl = $this->config->getHost();
         $apiKey = $this->config->getApiKey();
         $caliperHttpId = $this->config->getCaliperHttpId();
         $caliperClientId = $this->config->getCaliperClientId();
@@ -71,7 +80,7 @@ class CaliperService extends BaseCaliperService
         $sensor = new Sensor($sensorId);
         $options = (new Options())
             ->setApiKey($apiKey)
-            ->setDebug($this->config->getDebug())
+            ->setDebug($this->config->isDebug())
             ->setHost($endpointUrl);
 
         $sensor->registerClient($caliperHttpId, new Client($caliperClientId, $options));
