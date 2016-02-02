@@ -24,37 +24,30 @@ class CaliperService extends BaseCaliperService
     {
         parent::__construct($config);
         if(!($config instanceof CaliperConfig)){
+            global $app_log;
+            $app_log->msg("In the class \"".__CLASS__."\" constructor, object expected was \"CaliperConfig\" but got: ".get_class($config));
             throw new InvalidArgumentException('Object expected was "CaliperConfig" but got '.get_class($config) );
+
+
         }
         $this->config=$config;
     }
 
+    /* we are using the blank node notation instead of unique identifier sometimes since we don't have a
+       unique url associated with the views. More info on blank node refer https://www.w3.org/TR/json-ld/#identifying-blank-nodes */
+
     const BLANK_NODE = '_:';
 
-    public function captureNavigationEventFromCourseToTopicView($course_name, $course_id){
-        global $usrmgr;
-        $person = new Person('https://mcommunity.umich.edu/#profile:' . $usrmgr->m_user->username);
-        $person->setName($usrmgr->m_user->username);
-
-         /* we are using the blank node notation instead of unique identifier navigating from Course view -> Topic view since we don't have a
-         unique url associated with the views. More info on blank node refer https://www.w3.org/TR/json-ld/#identifying-blank-nodes */
-
-        $eventObj = new WebPage(self::BLANK_NODE.'problemroulette/views/selections/courses/'.$course_id.'/topics');
-        $eventObj->setName("Selections: $course_name Topics");
-
-        $navigatedFrom = new WebPage(self::BLANK_NODE .'problemroulette/views/selections/courses');
-        $navigatedFrom->setName('Selections: Course List');
-
-        $group = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/'.$course_id);
-        $group->setName($course_name);
-
+    public function sendNavigationEvent($course_name, $course_id){
+        $course_name_val=strval($course_name);
+        $course_id_val=strval($course_id);
         $navigationEvent=new NavigationEvent();
-        $navigationEvent->setActor($person)
-            ->setObject($eventObj)
-            ->setNavigatedFrom($navigatedFrom)
+        $navigationEvent->setActor($this->getPerson())
+            ->setObject($this->webPage($course_name_val, $course_id_val))
+            ->setNavigatedFrom($this->webPage())
             ->setEventTime(new DateTime())
             ->setEdApp(new SoftwareApplication($this->getUrl()))
-            ->setGroup($group);
+            ->setGroup($this->courseOffering($course_name_val, $course_id_val));
 
         $this->sendEvent($navigationEvent);
 
@@ -94,6 +87,49 @@ class CaliperService extends BaseCaliperService
     {
         $protocol=stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
         return $protocol . $_SERVER['HTTP_HOST'];
+    }
+
+    /**
+     * @param $usrmgr
+     * @return Person
+     */
+    private function getPerson()
+    {
+        global $usrmgr;
+        $userName = strval($usrmgr->m_user->username);
+        $person = new Person('https://mcommunity.umich.edu/#profile:' . urlencode($userName));
+        $person->setName($userName);
+        return $person;
+    }
+
+    /**
+     * @param $course_name
+     * @param $course_id
+     * @return WebPage
+     */
+    private function webPage($course_name=null, $course_id=null)
+    {
+        $webPage=null;
+        if(($course_name && $course_id)) {
+            $webPage = new WebPage(self::BLANK_NODE . 'problemroulette/views/selections/courses/' . urlencode($course_id). '/topics');
+            $webPage->setName("Selections: $course_name Topics");
+        }else{
+            $webPage=new WebPage(self::BLANK_NODE .'problemroulette/views/selections/courses');
+            $webPage->setName('Selections: Course List');
+        }
+        return $webPage;
+    }
+
+    /**
+     * @param $course_name
+     * @param $course_id
+     * @return CourseOffering
+     */
+    private function courseOffering($course_name, $course_id)
+    {
+        $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . urlencode($course_id));
+        $courseOffering->setName($course_name);
+        return $courseOffering;
     }
 
 }

@@ -10,7 +10,7 @@ class BaseCaliperService {
     public function __construct($config) {
     }
 
-    public function captureNavigationEventFromCourseToTopicView($course_name, $course_id)
+    public function sendNavigationEvent($course_name, $course_id)
     {
 
     }
