@@ -39,8 +39,8 @@ class CaliperService extends BaseCaliperService
     const BLANK_NODE = '_:';
 
     public function sendNavigationEvent($course_name, $course_id){
-        $course_name_val=strval($course_name);
-        $course_id_val=strval($course_id);
+        $course_name_val=urlencode(strval($course_name));
+        $course_id_val=urlencode(strval($course_id));
         $navigationEvent=new NavigationEvent();
         $navigationEvent->setActor($this->getPerson())
             ->setObject($this->webPage($course_name_val, $course_id_val))
@@ -86,7 +86,7 @@ class CaliperService extends BaseCaliperService
     private function getUrl()
     {
         $protocol=stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
-        return $protocol . $_SERVER['HTTP_HOST'];
+        return $protocol . urlencode($_SERVER['HTTP_HOST']);
     }
 
     /**
@@ -96,8 +96,8 @@ class CaliperService extends BaseCaliperService
     private function getPerson()
     {
         global $usrmgr;
-        $userName = strval($usrmgr->m_user->username);
-        $person = new Person('https://mcommunity.umich.edu/#profile:' . urlencode($userName));
+        $userName = urlencode(strval($usrmgr->m_user->username));
+        $person = new Person('https://mcommunity.umich.edu/#profile:' . $userName);
         $person->setName($userName);
         return $person;
     }
@@ -111,7 +111,7 @@ class CaliperService extends BaseCaliperService
     {
         $webPage=null;
         if(($course_name && $course_id)) {
-            $webPage = new WebPage(self::BLANK_NODE . 'problemroulette/views/selections/courses/' . urlencode($course_id). '/topics');
+            $webPage = new WebPage(self::BLANK_NODE . 'problemroulette/views/selections/courses/' . $course_id. '/topics');
             $webPage->setName("Selections: $course_name Topics");
         }else{
             $webPage=new WebPage(self::BLANK_NODE .'problemroulette/views/selections/courses');
@@ -127,7 +127,7 @@ class CaliperService extends BaseCaliperService
      */
     private function courseOffering($course_name, $course_id)
     {
-        $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . urlencode($course_id));
+        $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . $course_id);
         $courseOffering->setName($course_name);
         return $courseOffering;
     }
