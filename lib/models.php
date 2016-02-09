@@ -552,7 +552,12 @@ Class MCourse
 	public static function get_courses_and_response_counts()
 	{
 		global $dbmgr;
-		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id join 12m_topic_prob t3 on t2.topic_id=t3.topic_id join responses t4 on t3.problem_id=t4.prob_id where t4.answer > 0 group by t1.id";
+
+		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 ".
+		         "join 12m_class_topic t2  on t1.id=t2.class_id ".
+		         "join 12m_topic_prob t3 on t2.topic_id=t3.topic_id ".
+		         "join responses t4 on t3.problem_id=t4.prob_id ".
+		         "where t4.answer > 0 and t4.topic_id = t3.topic_id group by t1.id";
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_courses = array();
@@ -1633,7 +1638,6 @@ Class MStatsFile
 		$params = array();
 		$filename = $GLOBALS['DIR_STATS']."problem_roulette_".date('\_Ymd\_His');
 
-		
 		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, ".
 			"t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, ".
 			"count(t1.id) response_count, sum(t1.ans_correct) correct_count, ".
@@ -1644,7 +1648,8 @@ Class MStatsFile
 			"left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id ".
 			"left join 12m_class_topic t5 on t4.topic_id=t5.topic_id ".
 			"left join class t6 on t5.class_id=t6.id ".
-			"where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null ";
+			"where t1.answer > 0 and t2.name is not null and t3.username is not null ".
+			"and t6.name is not null and t1.topic_id=t4.topic_id";
 		if (isset($semester_ids)) {
 			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
 			$query .= ' and t2.id in ('.$bindString.')';
