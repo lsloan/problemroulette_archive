@@ -1,9 +1,4 @@
 {
-    "name": "umich-physics/problemroulette",
-    "description": "Problem Roulette",
-    "keywords": ["ProblemRoulette"],
-    "homepage": "https://problemroulette.lsa.umich.edu/",
-    "license": "proprietary",
     "repositories": [
         {
             "type": "vcs",

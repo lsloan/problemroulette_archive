@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "52e9c3ac9af099827d0026c220de4062",
-    "content-hash": "00d873424a892e893cd470aee5620d4d",
+    "hash": "58efdd1d2066d7cf5dd8a07dd8948748",
+    "content-hash": "1a2d1bb70356e5851cac95c2139f3509",
     "packages": [
         {
             "name": "umich-its-tl/caliper-php",
