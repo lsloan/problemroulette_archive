@@ -28,6 +28,7 @@ $migrations = array(
     array('name' => 'SetTopicIdInOldResponses', 'file' => 'set_topic_id_in_old_responses.php'),
     array('name' => 'AddVotesTable', 'file' => 'add_votes_table.php'),
     array('name' => 'AddVoterToUser', 'file' => 'add_voter_to_user.php'),
+    array('name' => 'AddWi2016TermToSemesters', 'file' => 'add_wi2016_term_to_semesters.php'),
 );
 require_once("setup.php");
 require_once($GLOBALS["DIR_LIB"]."migration.php");
