@@ -553,18 +553,21 @@ Class MCourse
 	{
 		global $dbmgr;
 
-		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 ".
-		         "join 12m_class_topic t2  on t1.id=t2.class_id ".
-		         "join 12m_topic_prob t3 on t2.topic_id=t3.topic_id ".
-		         "join responses t4 on t3.problem_id=t4.prob_id ".
-		         "where t4.answer > 0 and t4.topic_id = t3.topic_id group by t1.id";
+		$query = "SELECT c.*, COUNT(tp.id) AS response_count " .
+			 "FROM class c " .
+			 "  INNER JOIN 12m_class_topic ct ON c.id = ct.class_id " .
+			 "  INNER JOIN 12m_topic_prob tp ON ct.topic_id = tp.topic_id " .
+			 "  INNER JOIN responses r ON tp.problem_id = r.prob_id AND r.topic_id = tp.topic_id " .
+			 "WHERE r.answer > 0 " .
+			 "GROUP BY c.id";
+
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_courses[$i] = array(
-				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating'],$res[$i]['delay_solution']),
+				'course' => new MCourse($res[$i]['id'], $res[$i]['name'], $res[$i]['disable_rating'], $res[$i]['delay_solution']),
 				'response_count' => $res[$i]['response_count']
 			);
 		}
@@ -1634,54 +1637,59 @@ Class MStatsFile
 	public static function start_export($semester_ids, $course_ids, $format = 'sql')
 	{
 		global $dbmgr;
-		$tablename = "stats_".date('Ymd\_His');
+		$tablename = "stats_" . date('Ymd\_His');
 		$params = array();
-		$filename = $GLOBALS['DIR_STATS']."problem_roulette_".date('\_Ymd\_His');
+		$filename = $GLOBALS['DIR_STATS'] . "problem_roulette_" . date('\_Ymd\_His');
 
-		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, ".
-			"t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, ".
-			"count(t1.id) response_count, sum(t1.ans_correct) correct_count, ".
-			"sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site ".
-			"from responses t1 ".
-			"left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) ".
-			"left join user t3 on t1.user_id=t3.id ".
-			"left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id ".
-			"left join 12m_class_topic t5 on t4.topic_id=t5.topic_id ".
-			"left join class t6 on t5.class_id=t6.id ".
-			"where t1.answer > 0 and t2.name is not null and t3.username is not null ".
-			"and t6.name is not null and t1.topic_id=t4.topic_id";
+		$query = "CREATE TABLE " . $tablename . " " .
+			"SELECT s.id term_id, s.name term_name, " .
+			"  ct.class_id class_id, c.name class_name, r.user_id user_id, u.username username, " .
+			"  COUNT(r.id) response_count, SUM(r.ans_correct) correct_count, " .
+			"  SUM(TIME_TO_SEC(TIMEDIFF(r.end_time, r.start_time))) time_on_site " .
+			"FROM responses r " .
+			"  LEFT JOIN semesters s ON (r.start_time > s.start_time AND r.start_time < s.end_time) " .
+			"  LEFT JOIN user u on r.user_id = u.id " .
+			"  LEFT JOIN 12m_topic_prob tp ON r.prob_id = tp.problem_id AND r.topic_id = tp.topic_id " .
+			"  LEFT JOIN 12m_class_topic ct ON tp.topic_id = ct.topic_id " .
+			"  LEFT JOIN class c ON ct.class_id = c.id " .
+			"WHERE r.answer > 0 " .
+			" AND s.name IS NOT NULL " .
+			" AND u.username IS NOT NULL " .
+			" AND c.name IS NOT NULL";
+
 		if (isset($semester_ids)) {
 			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
-			$query .= ' and t2.id in ('.$bindString.')';
+			$query .= ' AND s.id in (' . $bindString . ')';
 
 			$terms = MSemester::get_semesters($semester_ids);
 			foreach ($terms as $key => $value) {
-				$filename .= '_'.$value->m_abbreviation;
+				$filename .= '_' . $value->m_abbreviation;
 			}
 		}
+
 		if (isset($course_ids)) {
 			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
-			$query .= ' and t5.class_id in ('.$bindString.')';
+			$query .= ' AND ct.class_id in (' . $bindString . ')';
 
 			$classes = MCourse::get_courses($course_ids);
 			foreach ($classes as $key => $value) {
-				$filename .= '_'.strtolower(str_replace(' ','_',$value->m_name));
+				$filename .= '_' . strtolower(str_replace(' ', '_', $value->m_name));
 			}
 		}
-		$query .= " group by t1.user_id, t2.id, t5.class_id order by t1.user_id, t2.id, t5.class_id";
-		$filename .= '.'.$format;
+		$query .= " GROUP BY r.user_id, s.id, ct.class_id ORDER BY r.user_id, s.id, ct.class_id";
+		$filename .= '.' . $format;
 
 		$dbmgr->exec_query($query, $params);
 
-		if($format == 'csv') {
-			$column_names = array('term_id','term_name','class_id','class_name','user_id','username','response_count', 'correct_count','time_on_site');
+		if ($format == 'csv') {
+			$column_names = array('term_id', 'term_name', 'class_id', 'class_name', 'user_id', 'username', 'response_count',  'correct_count', 'time_on_site');
 			$dbmgr->dump_csv_file($tablename, $filename, $column_names);
 		} else {
 			$dbmgr->dump_stats_table($tablename, $filename);
 		}
 		
 
-		$query = "drop table ".$tablename;
+		$query = "DROP TABLE " . $tablename;
 		$dbmgr->exec_query($query, array());
 
 	}
