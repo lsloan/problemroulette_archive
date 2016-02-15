@@ -38,7 +38,8 @@ $caliper_config=null;
 
 if ($GLOBALS["CALIPER_ENABLED"]) {
     require_once($GLOBALS["DIR_LIB"] . "caliper_config.php");
-    $caliper_config=(new CaliperConfig())
+    $caliper_config = new CaliperConfig();
+    $caliper_config
         ->setSensorId($GLOBALS["CALIPER_SENSOR_ID"])
         ->setCaliperClientId($GLOBALS["CALIPER_CLIENT_ID"])
         ->setCaliperHttpId($GLOBALS["CALIPER_HTTP_ID"])
