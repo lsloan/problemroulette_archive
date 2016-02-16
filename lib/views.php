@@ -32,13 +32,13 @@ class CHeadCSSJavascript{
 		<?php if($this->m_cssfile != NULL): ?>
 			<?php foreach((array)$this->m_cssfile as $css): ?>
 				<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
-			<?php endforeach ?>
-		<?php endif ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
 		<?php if($this->m_javafile != NULL): ?>
 			<?php foreach((array)$this->m_javafile as $java): ?>
 				<script type='text/JavaScript' src='<?= $java ?>'></script>
-			<?php endforeach ?>
-		<?php endif ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
 		<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
 		<?php return ob_get_clean();
 	}
@@ -149,7 +149,7 @@ class VStaff
 		<p>
 			hi, this is the staff page... this well soon be more then one page
 		</p>
-		<? return ob_get_clean();
+		<?php return ob_get_clean();
 	}
 }
 
@@ -1106,9 +1106,9 @@ class VStatsExport
 												<img src="img/delete_16.png"></img>
 											</a>
 										</li>
-									<?php endforeach ?>
+									<?php endforeach; ?>
 								</ul>
-				      <?php endif ?>
+				      <?php endif; ?>
 				      <h5>Generate a new export file</h5>
 				      <form action='' method='post'>
 					      <h6>Specify filters (if any)</h6>
@@ -1132,8 +1132,8 @@ class VStatsExport
 											<?php if(($index + 1) % 4 == 0): ?>
 												</div>
 												<div class="row-fluid">
-											<?php endif ?>
-										<?php endforeach ?>
+											<?php endif; ?>
+										<?php endforeach; ?>
 									</div>
 								</fieldset>
 								<fieldset>
@@ -1156,8 +1156,8 @@ class VStatsExport
 											<?php if(($index + 1) % 4 == 0): ?>
 												</div>
 												<div class="row-fluid">
-											<?php endif ?>
-										<?php endforeach ?>
+											<?php endif; ?>
+										<?php endforeach; ?>
 									</div>
 								</fieldset>
 								<fieldset>
@@ -1245,9 +1245,9 @@ class VProblemsExport
 												<img src="img/delete_16.png"></img>
 											</a>
 										</li>
-									<?php endforeach ?>
+									<?php endforeach; ?>
 								</ul>
-				      <?php endif ?>
+				      <?php endif; ?>
 				      <h5>Generate a new export file</h5>
 				      <form action='' method='post'>
 					      <h6>Specify filters (if any)</h6>
@@ -1271,8 +1271,8 @@ class VProblemsExport
 											<?php if(($index + 1) % 4 == 0): ?>
 												</div>
 												<div class="row-fluid">
-											<?php endif ?>
-										<?php endforeach ?>
+											<?php endif; ?>
+										<?php endforeach; ?>
 									</div>
 								</fieldset>
 								<fieldset>
@@ -2318,18 +2318,18 @@ class VGlobalAlertsAdmin
 											</form>
 										<?php else: ?>
 											&nbsp;
-										<?php endif ?>
+										<?php endif; ?>
 									</td>
 								</tr>
-							<?php endforeach ?>
+							<?php endforeach; ?>
 						</tbody>
 					</table>
 				<?php else: ?>
 					<p>No previous alerts found</p>
-				<?php endif ?>
+				<?php endif; ?>
 			</div>
 		</div>
-		<? return ob_get_clean();
+		<?php return ob_get_clean();
 	}
 }
 
