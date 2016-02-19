@@ -6,12 +6,17 @@
  */
 class BaseCaliperService {
 
+    var $STARTED;
+    var $ENDED;
 
     public function __construct($config) {
     }
 
-    public function sendNavigationEvent($course_name, $course_id)
-    {
+    public function sendNavigationEvent($course_name, $course_id){
+
+    }
+
+    public function sendAssessmentEvent($action,$selected_topic_list){
 
     }
 

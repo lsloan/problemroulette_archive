@@ -14,12 +14,18 @@ require_once 'Caliper/entities/agent/Person.php';
 require_once 'Caliper/events/SessionEvent.php';
 require_once 'Caliper/entities/reading/WebPage.php';
 require_once 'Caliper/events/NavigationEvent.php';
+require_once 'Caliper/events/AssessmentEvent.php';
 require_once 'Caliper/entities/lis/Group.php';
 require_once 'Caliper/entities/lis/CourseOffering.php';
+require_once 'Caliper/entities/assessment/Assessment.php';
+
 
 class CaliperService extends BaseCaliperService
 {
     var $config;
+    var $STARTED = Action::STARTED;
+    var $ENDED = Action::ENDED;
+
     public function __construct($config)
     {
         parent::__construct($config);
@@ -51,6 +57,25 @@ class CaliperService extends BaseCaliperService
 
         $this->sendEvent($navigationEvent);
 
+    }
+
+
+    public function sendAssessmentEvent($action,$selected_topic_list)
+    {
+        $selected_topics = urlencode(implode(",", $selected_topic_list));
+
+        $assessment = new Assessment(self::BLANK_NODE . "problemroulette/courses/" . $this->getCourseId() . "/topics?id=" . $selected_topics);
+        $assessment->setName("Selections: Topics View for " . $this->getCourseName($this->getCourseId()));
+
+        $assessmentEvent = new AssessmentEvent();
+        $assessmentEvent->setActor($this->getPerson())
+            ->setEventTime(new DateTime())
+            ->setAction(new Action($action))
+            ->setEdApp(new SoftwareApplication($this->getUrl()))
+            ->setGroup($this->courseOffering())
+            ->setObject($assessment);
+
+        $this->sendEvent($assessmentEvent);
     }
     /*
      * sending the caliper event to the eventstore
@@ -125,11 +150,32 @@ class CaliperService extends BaseCaliperService
      * @param $course_id
      * @return CourseOffering
      */
-    private function courseOffering($course_name, $course_id)
+    private function courseOffering($course_name=null, $course_id=null)
+
     {
-        $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . $course_id);
-        $courseOffering->setName($course_name);
+        if($course_name && $course_id){
+            $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . $course_id);
+            $courseOffering->setName($course_name);
+        }else {
+            $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . $this->getCourseId());
+            $courseOffering->setName($this->getCourseName($this->getCourseId()));
+        }
         return $courseOffering;
+    }
+
+    /*
+     *Get's the selected course_id for staring the Quiz engine on a particular course topics. This information is from Database
+     */
+    private function getCourseId()
+    {
+        global $usrmgr;
+        $course_id = $usrmgr->m_user->selected_course_id;
+        return $course_id;
+    }
+
+    private function getCourseName($course_id){
+        $course=  MCourse::get_course_by_id($course_id);
+        return $course->m_name;
     }
 
 }
