@@ -27,15 +27,12 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$current_omitted_problems_list = $omitted_problem->remove();
 } elseif (isset($_POST['course_submission'])) {
 	// user has chosen a course
-	$selected_course = $_POST['course_submission'];
-	$selected_course_array = explode(":", $selected_course);
-	$selected_course_id = $selected_course_array[0];
-	$selected_course_name = $selected_course_array[1];
+	$selected_course_id = $_POST['course_submission'];
 	$timestamp = time();
 	$usrmgr->m_user->SetSelectedCourseId($selected_course_id);
 	$usrmgr->m_user->SetLastActivity($timestamp);
 	//caliper event
-	$caliper->sendNavigationEvent($selected_course_name,$selected_course_id);
+	$caliper->sendNavigationEvent();
 } elseif (isset($_POST['select_different_course'])) {
 	// user hit the 'Select Different Course' button
 	$usrmgr->m_user->SetSelectedCourseId(Null);
