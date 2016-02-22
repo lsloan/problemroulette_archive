@@ -16,7 +16,7 @@ class BaseCaliperService {
 
     }
 
-    public function sendAssessmentEvent($action,$selected_topic_list){
+    public function sendAssessmentEvent($action, $selectedTopicList){
 
     }
 

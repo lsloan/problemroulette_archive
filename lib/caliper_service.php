@@ -44,35 +44,35 @@ class CaliperService extends BaseCaliperService
 
     const BLANK_NODE = '_:';
 
-    public function sendNavigationEvent(){
+    public function sendNavigationEvent() {
         //getting the couse_id from MUser object
-        $course_id = $this->getCourseId();
+        $courseId = $this->getCourseId();
         $navigationEvent=new NavigationEvent();
         $navigationEvent->setActor($this->getPerson())
-            ->setObject($this->webPage($this->getCourseName($course_id), $course_id))
-            ->setNavigatedFrom($this->webPage())
+            ->setObject($this->getWebPage($this->getCourseName($courseId), $courseId))
+            ->setNavigatedFrom($this->getWebPage())
             ->setEventTime(new DateTime())
             ->setEdApp(new SoftwareApplication($this->getUrl()))
-            ->setGroup($this->courseOffering());
+            ->setGroup($this->getCourseOffering());
 
         $this->sendEvent($navigationEvent);
 
     }
 
 
-    public function sendAssessmentEvent($action,$selected_topic_list)
-    {
-        $selected_topics = urlencode(implode(",", $selected_topic_list));
+    public function sendAssessmentEvent($action, $selectedTopicList) {
+        $selected_topics = urlencode (implode(",", $selectedTopicList));
 
-        $assessment = new Assessment(self::BLANK_NODE . "problemroulette/courses/" . $this->getCourseId() . "/topics?id=" . $selected_topics);
-        $assessment->setName("Selections: Topics View for " . $this->getCourseName($this->getCourseId()));
+        $courseId = $this->getCourseId();
+        $assessment = new Assessment(self::BLANK_NODE . "problemroulette/courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics);
+        $assessment->setName("Selections: Topics View for " . $this->getCourseName($courseId));
 
         $assessmentEvent = new AssessmentEvent();
         $assessmentEvent->setActor($this->getPerson())
             ->setEventTime(new DateTime())
             ->setAction(new Action($action))
             ->setEdApp(new SoftwareApplication($this->getUrl()))
-            ->setGroup($this->courseOffering())
+            ->setGroup($this->getCourseOffering())
             ->setObject($assessment);
 
         $this->sendEvent($assessmentEvent);
@@ -80,7 +80,7 @@ class CaliperService extends BaseCaliperService
     /*
      * sending the caliper event to the eventstore
      */
-    private function sendEvent($event){
+    private function sendEvent($event) {
         global $app_log;
         $sensorId = $this->config->getSensorId();
         $endpointUrl = $this->config->getHost();
@@ -108,16 +108,15 @@ class CaliperService extends BaseCaliperService
     /* getting the application URL
      * @return string
      */
-    private function getUrl(){
-        $protocol=stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
-        return $protocol . urlencode($_SERVER['HTTP_HOST']);
+    private function getUrl() {
+        return $GLOBALS["DOMAIN"];
     }
 
     /**
      * @param $usrmgr
      * @return Person
      */
-    private function getPerson(){
+    private function getPerson() {
         global $usrmgr;
         $userName = urlencode(strval($usrmgr->m_user->username));
         $person = new Person('https://mcommunity.umich.edu/#profile:' . $userName);
@@ -126,15 +125,15 @@ class CaliperService extends BaseCaliperService
     }
 
     /**
-     * @param $course_name
-     * @param $course_id
+     * @param $courseName
+     * @param $courseId
      * @return WebPage
      */
-    private function webPage($course_name=null, $course_id=null){
+    private function getWebPage($courseName=null, $courseId=null) {
         $webPage=null;
-        if(($course_name && $course_id)) {
-            $webPage = new WebPage(self::BLANK_NODE . 'problemroulette/views/selections/courses/' .urlencode($course_id). '/topics');
-            $webPage->setName("Selections: $course_name Topics");
+        if(($courseName && $courseId)) {
+            $webPage = new WebPage(self::BLANK_NODE . 'problemroulette/views/selections/courses/' .urlencode($courseId). '/topics');
+            $webPage->setName("Selections: $courseName Topics");
         }else{
             $webPage=new WebPage(self::BLANK_NODE .'problemroulette/views/selections/courses');
             $webPage->setName('Selections: Course List');
@@ -147,23 +146,24 @@ class CaliperService extends BaseCaliperService
      * @param $course_id
      * @return CourseOffering
      */
-    private function courseOffering(){
-        $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . $this->getCourseId());
-        $courseOffering->setName($this->getCourseName($this->getCourseId()));
+    private function getCourseOffering() {
+        $courseId = $this->getCourseId();
+        $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . urlencode($courseId));
+        $courseOffering->setName($this->getCourseName($courseId));
         return $courseOffering;
     }
 
     /*
-     *Get's the selected course_id for staring the Quiz engine on a particular course topics. This information is from Database
+     *Get the selected course_id for staring the Quiz engine on a particular course topics. This information is from Database
      */
-    private function getCourseId(){
+    private function getCourseId() {
         global $usrmgr;
         $course_id = $usrmgr->m_user->selected_course_id;
         return $course_id;
     }
 
-    private function getCourseName($course_id){
-        $course=  MCourse::get_course_by_id($course_id);
+    private function getCourseName($courseId) {
+        $course=  MCourse::get_course_by_id($courseId);
         return $course->m_name;
     }
 
