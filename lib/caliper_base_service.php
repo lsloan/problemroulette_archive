@@ -6,8 +6,6 @@
  */
 class BaseCaliperService {
 
-    var $STARTED;
-    var $ENDED;
 
     public function __construct($config) {
     }
@@ -16,7 +14,7 @@ class BaseCaliperService {
 
     }
 
-    public function sendAssessmentEvent($action, $selectedTopicList){
+    public function assessmentStart($selectedTopicList){
 
     }
 

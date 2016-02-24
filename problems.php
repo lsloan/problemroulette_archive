@@ -26,7 +26,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	
 	$usrmgr->m_user->SetSelectedTopicsForClass($usrmgr->m_user->selected_course_id, $selected_topics_list_id);
 	//caliper event
-	$caliper->sendAssessmentEvent($caliper->STARTED, $selected_topics_list_id);
+	$caliper->assessmentStart($selected_topics_list_id);
 	header('Location:problems.php');
 } elseif (isset($_POST['topic_link_submission'])) {
 	//check to see if new topic was selected

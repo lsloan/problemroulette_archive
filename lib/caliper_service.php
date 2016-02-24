@@ -23,11 +23,12 @@ require_once 'Caliper/entities/assessment/Assessment.php';
 class CaliperService extends BaseCaliperService
 {
     var $config;
-    var $STARTED = Action::STARTED;
-    var $ENDED = Action::ENDED;
 
-    public function __construct($config)
-    {
+    const TO = "To";
+
+    const FROM = "From";
+
+    public function __construct($config) {
         parent::__construct($config);
         if(!($config instanceof CaliperConfig)){
             global $app_log;
@@ -39,18 +40,11 @@ class CaliperService extends BaseCaliperService
         $this->config=$config;
     }
 
-    /* we are using the blank node notation instead of unique identifier sometimes since we don't have a
-       unique url associated with the views. More info on blank node refer https://www.w3.org/TR/json-ld/#identifying-blank-nodes */
-
-    const BLANK_NODE = '_:';
-
     public function sendNavigationEvent() {
-        //getting the couse_id from MUser object
-        $courseId = $this->getCourseId();
         $navigationEvent=new NavigationEvent();
         $navigationEvent->setActor($this->getPerson())
-            ->setObject($this->getWebPage($this->getCourseName($courseId), $courseId))
-            ->setNavigatedFrom($this->getWebPage())
+            ->setObject($this->getWebPage(self::TO))
+            ->setNavigatedFrom($this->getWebPage(self::FROM))
             ->setEventTime(new DateTime())
             ->setEdApp(new SoftwareApplication($this->getUrl()))
             ->setGroup($this->getCourseOffering());
@@ -60,12 +54,16 @@ class CaliperService extends BaseCaliperService
     }
 
 
-    public function sendAssessmentEvent($action, $selectedTopicList) {
+    public function assessmentStart($selectedTopicList) {
+        $this->sendAssessmentEvent(Action::STARTED, $selectedTopicList);
+    }
+
+    private function sendAssessmentEvent($action, $selectedTopicList) {
         $selected_topics = urlencode (implode(",", $selectedTopicList));
 
-        $courseId = $this->getCourseId();
-        $assessment = new Assessment(self::BLANK_NODE . "problemroulette/courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics);
-        $assessment->setName("Selections: Topics View for " . $this->getCourseName($courseId));
+        $courseId = getCourseId();
+        $assessment = new Assessment($this->getUrl() . "courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics);
+        $assessment->setName("Selections: Topics View for " . getCourseName($courseId));
 
         $assessmentEvent = new AssessmentEvent();
         $assessmentEvent->setActor($this->getPerson())
@@ -77,6 +75,7 @@ class CaliperService extends BaseCaliperService
 
         $this->sendEvent($assessmentEvent);
     }
+
     /*
      * sending the caliper event to the eventstore
      */
@@ -105,7 +104,7 @@ class CaliperService extends BaseCaliperService
         $sensor->send($sensor, $event);
     }
 
-    /* getting the application URL
+    /* getting the application URL. eg., http://pr.local/
      * @return string
      */
     private function getUrl() {
@@ -113,7 +112,6 @@ class CaliperService extends BaseCaliperService
     }
 
     /**
-     * @param $usrmgr
      * @return Person
      */
     private function getPerson() {
@@ -125,46 +123,33 @@ class CaliperService extends BaseCaliperService
     }
 
     /**
-     * @param $courseName
-     * @param $courseId
+     * $nav Navigation state
      * @return WebPage
      */
-    private function getWebPage($courseName=null, $courseId=null) {
+    private function getWebPage($nav) {
         $webPage=null;
-        if(($courseName && $courseId)) {
-            $webPage = new WebPage(self::BLANK_NODE . 'problemroulette/views/selections/courses/' .urlencode($courseId). '/topics');
-            $webPage->setName("Selections: $courseName Topics");
-        }else{
-            $webPage=new WebPage(self::BLANK_NODE .'problemroulette/views/selections/courses');
-            $webPage->setName('Selections: Course List');
+        if(isInTopicsView()){
+            if($nav == self::TO) {
+                $webPage = new WebPage($this->getUrl() . 'views/selections/courses/' . urlencode(getCourseId()) . '/topics');
+                $webPage->setName("Selections: ".getCourseName(getCourseId())." Topics");
+            }
+            if($nav == self::FROM) {
+                $webPage=new WebPage($this->getUrl() . 'views/selections/courses');
+                $webPage->setName('Selections: Course List');
+
+            }
         }
         return $webPage;
     }
 
     /**
-     * @param $course_name
-     * @param $course_id
      * @return CourseOffering
      */
     private function getCourseOffering() {
-        $courseId = $this->getCourseId();
-        $courseOffering = new CourseOffering(self::BLANK_NODE . 'problemroulette/courses/' . urlencode($courseId));
-        $courseOffering->setName($this->getCourseName($courseId));
+        $courseId = getCourseId();
+        $courseOffering = new CourseOffering($this->getUrl() . 'courses/' . urlencode($courseId));
+        $courseOffering->setName(getCourseName($courseId));
         return $courseOffering;
-    }
-
-    /*
-     *Get the selected course_id for staring the Quiz engine on a particular course topics. This information is from Database
-     */
-    private function getCourseId() {
-        global $usrmgr;
-        $course_id = $usrmgr->m_user->selected_course_id;
-        return $course_id;
-    }
-
-    private function getCourseName($courseId) {
-        $course=  MCourse::get_course_by_id($courseId);
-        return $course->m_name;
     }
 
 }
