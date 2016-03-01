@@ -53,4 +53,11 @@ $(document).ready(function()
 
     return del;
   });
+
+  // One hour timeout
+  setTimeout(function() {
+    if (!window.location.pathname.match(/timeout\.php/)) {
+      window.location = 'timeout.php';
+    }
+  }, (1000 * 3600));
 });

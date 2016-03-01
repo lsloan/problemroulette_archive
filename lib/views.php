@@ -2333,6 +2333,20 @@ class VGlobalAlertsAdmin
 	}
 }
 
+class VTimeout
+{
+    function Deliver()
+    {
+        ob_start(); ?>
+            <div class='error-page'>
+                <img class='logo' src='img/PR.jpg' width='200px' alt='Problem Roulette'/>
+                <h1>Session Timeout</h1>
+                <p>We're sorry, but your session has timed out because of inactivity. You may resume your work when you choose.</p>
+            </div>
+        <?php return ob_get_clean();
+    }
+}
+
 class VErrorPage
 {
 	function __construct()
