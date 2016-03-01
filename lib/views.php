@@ -1856,7 +1856,7 @@ class VCourse_Selections
 					class='btn btn-inverse btn-course' 
 					type='submit' 
 					name='course_submission' 
-					value='".$this->v_all_courses_with_topics[$i]->m_id.":".$this->v_all_courses_with_topics[$i]->m_name."'>
+					value='" . $this->v_all_courses_with_topics[$i]->m_id . "'>
 					".$this->v_all_courses_with_topics[$i]->m_name."
 					</button><br/>";
 				}

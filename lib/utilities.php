@@ -148,4 +148,23 @@ function prob_list_sorter($a,$b) {
   return strcasecmp($a->m_prob_name, $b->m_prob_name);
 }
 
+ function getCourseId() {
+  global $usrmgr;
+  $course_id = $usrmgr->m_user->selected_course_id;
+  return $course_id;
+}
+
+ function getCourseName($courseId) {
+  $course=  MCourse::get_course_by_id($courseId);
+  return $course->m_name;
+}
+
+function isInTopicsView(){
+  $isInTopicsView=false;
+ if(isset($_POST['course_submission'])){
+   $isInTopicsView= true;
+ }
+  return $isInTopicsView;
+}
+
 ?>
