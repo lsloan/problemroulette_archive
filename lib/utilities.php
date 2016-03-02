@@ -159,6 +159,11 @@ function prob_list_sorter($a,$b) {
   return $course->m_name;
 }
 
+function getTopicName($topicId) {
+  $topic = MTopic::get_topic_by_id($topicId);
+  return $topic->m_name;
+}
+
 function isInTopicsView(){
   $isInTopicsView=false;
  if(isset($_POST['course_submission'])){
@@ -166,5 +171,22 @@ function isInTopicsView(){
  }
   return $isInTopicsView;
 }
+
+function getUserName() {
+  global $usrmgr;
+  return $usrmgr->m_user->username;
+}
+
+function getUserId() {
+  global $usrmgr;
+  return $usrmgr->m_user->id;
+}
+
+function getAttemptCount($problem_id) {
+  global $usrmgr;
+  $count=intval(MResponse::get_total_attempts_for_user_for_problem($usrmgr->m_user->id, $problem_id));
+  return $count;
+}
+
 
 ?>

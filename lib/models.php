@@ -1357,6 +1357,18 @@ Class MResponse
         $dbmgr->exec_query($sql, array($problem_id));
     }
 
+	public static function get_total_attempts_for_user_for_problem($user_id, $problem_id){
+		global $dbmgr;
+		$query = "SELECT  count(*) attempts FROM responses where prob_id=:prob_id and user_id=:user_id";
+		$bindings = array(
+				":user_id"    => $user_id,
+				":prob_id"    => $problem_id
+		);
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$count = $res[0]["attempts"];
+		return $count;
+	}
+
 }
 
 Class MUserSummary

@@ -18,6 +18,10 @@ require_once 'Caliper/events/AssessmentEvent.php';
 require_once 'Caliper/entities/lis/Group.php';
 require_once 'Caliper/entities/lis/CourseOffering.php';
 require_once 'Caliper/entities/assessment/Assessment.php';
+require_once 'Caliper/entities/assessment/AssessmentItem.php';
+require_once 'Caliper/entities/assignable/Attempt.php';
+require_once 'Caliper/entities/response/MultipleChoiceResponse.php';
+require_once 'Caliper/events/AssessmentItemEvent.php';
 
 
 class CaliperService extends BaseCaliperService
@@ -62,7 +66,7 @@ class CaliperService extends BaseCaliperService
         $selected_topics = urlencode (implode(",", $selectedTopicList));
 
         $courseId = getCourseId();
-        $assessment = new Assessment($this->getUrl() . "courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics);
+        $assessment = $this->getAssessment($this->getUrl() . "courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics);
         $assessment->setName("Selections: Topics View for " . getCourseName($courseId));
 
         $assessmentEvent = new AssessmentEvent();
@@ -75,6 +79,56 @@ class CaliperService extends BaseCaliperService
 
         $this->sendEvent($assessmentEvent);
     }
+
+    public function assessmentItemStart(MProblem $problem, $topicId) {
+
+        $this->sendAssessmentItemEvent(Action::STARTED, new DateTime(), $problem, $topicId);
+    }
+
+    public function assessmentItemComplete(MResponse $response, MProblem $problem) {
+
+        $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
+
+        $isStudentAnswerCorrect = ($response->m_student_answer_correct) ? "true" : "false";
+        $extensions = array("isStudentAnswerCorrect"=>$isStudentAnswerCorrect);
+        if($problem->get_ok_to_show_soln(getUserId())){
+           $extensions+=array("correctAnswer" => strval($problem->m_prob_correct));
+        }
+
+        $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
+        $mcResponse->setAttempt($attempt)
+            ->setExtensions($extensions)
+            ->setValue($response->m_student_answer);
+
+        $this->sendAssessmentItemEvent(Action::COMPLETED, $attempt->getEndedAtTime(), $problem, $response->m_topic_id, $mcResponse);
+    }
+
+    public function assessmentItemSkip(MResponse $response, MProblem $problem) {
+
+        $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
+
+        $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
+        $mcResponse->setAttempt($attempt);
+
+        $this->sendAssessmentItemEvent(Action::SKIPPED, $attempt->getEndedAtTime(), $problem, $response->m_topic_id, $mcResponse);
+
+    }
+
+    private function sendAssessmentItemEvent($action, $eventTime, $problem, $topicId, $response=null) {
+        $assessmentItemEvent = $this->getAssessmentItemEvent();
+        $assessmentItemEvent->setEventTime($eventTime)
+            ->setAction(new Action($action))
+            ->setEdApp(new SoftwareApplication($this->getUrl()))
+            ->setGroup($this->getCourseOffering())
+            ->setActor($this->getPerson())
+            ->setObject($this->getAssessmentItem($problem, $topicId));
+        if (!is_null($response)) {
+            $assessmentItemEvent->setGenerated($response);
+                }
+
+        $this->sendEvent($assessmentItemEvent);
+    }
+
 
     /*
      * sending the caliper event to the eventstore
@@ -115,8 +169,7 @@ class CaliperService extends BaseCaliperService
      * @return Person
      */
     private function getPerson() {
-        global $usrmgr;
-        $userName = urlencode(strval($usrmgr->m_user->username));
+        $userName = urlencode(getUserName());
         $person = new Person('https://mcommunity.umich.edu/#profile:' . $userName);
         $person->setName($userName);
         return $person;
@@ -150,6 +203,43 @@ class CaliperService extends BaseCaliperService
         $courseOffering = new CourseOffering($this->getUrl() . 'courses/' . urlencode($courseId));
         $courseOffering->setName(getCourseName($courseId));
         return $courseOffering;
+    }
+
+    private function getAssessment($id) {
+        return new Assessment($id);
+    }
+
+    private function getAssessmentItemEvent () {
+        return new AssessmentItemEvent();
+    }
+
+    private function getIsPartOf($topicId) {
+        $isPartOf = $this->getAssessment($this->getUrl() . "courses/" . urlencode(getCourseId()) . "/topics/" . urlencode($topicId));
+        $isPartOf->setName(getTopicName($topicId));
+        return $isPartOf;
+    }
+
+    private function getAssessmentItem(MProblem $problem, $topicId) {
+        $assessmentItem = new AssessmentItem($problem->m_prob_url);
+        $assessmentItem->setName($problem->m_prob_name)
+            ->setIsPartOf($this->getIsPartOf($topicId));
+        return $assessmentItem;
+    }
+
+    private function getAttempt(MProblem $problem, $startTime, $endTime) {
+        //need to do some extra conversions as attempt start time is captured as string of Unix Epoch time eg.,"1456837032" when user completes a problem
+        if(is_string($startTime)){
+            $strToTime = strtotime(date('Y-m-d H:i:s',$startTime));
+            $startTime = new DateTime("@$strToTime");
+        }
+        $endTime = new DateTime("@$endTime");
+        $durationSeconds = strval($endTime->getTimestamp() - $startTime->getTimestamp());
+        $attempt = (new Attempt($problem->m_prob_url ."/attempt"))
+            ->setCount(getAttemptCount($problem->m_prob_id))
+            ->setStartedAtTime($startTime)
+            ->setEndedAtTime($endTime)
+            ->setDuration($durationSeconds);
+        return $attempt;
     }
 
 }

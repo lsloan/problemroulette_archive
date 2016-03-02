@@ -18,4 +18,16 @@ class BaseCaliperService {
 
     }
 
+    public function assessmentItemStart(MProblem $problem, $topicId) {
+
+    }
+
+    public function assessmentItemComplete(MResponse $response, MProblem $problem) {
+
+    }
+
+    public function assessmentItemSkip(MResponse $response, MProblem $problem) {
+
+    }
+
 }
