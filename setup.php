@@ -61,6 +61,30 @@ global $dbmgr;
 global $usrmgr;
 
 session_start();
+
+// Handle session timeouts
+if (isset($GLOBALS['timeout']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 3600))) {
+    session_unset();
+    session_destroy();
+
+    // When loading anything other than timeout.php, redirect there.
+    if (!isset($GLOBALS['timeout'])) {
+        header('Location: ' . $GLOBALS["DOMAIN"] . 'timeout.php');
+        exit;
+    }
+}
+$_SESSION['LAST_ACTIVITY'] = time();
+
+// Only let a session ID last two hours
+if (!isset($_SESSION['CREATED'])) {
+    $_SESSION['CREATED'] = time();
+} else if (time() - $_SESSION['CREATED'] > 7200) {
+    session_regenerate_id(true);
+    $_SESSION['CREATED'] = time();
+}
+
+
+
 $_SESSION['sesstest'] = 1;
 
 ?>
