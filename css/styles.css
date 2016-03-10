@@ -653,3 +653,9 @@ div#problems .topic-list-label {
 input#delete_problem {
   margin-right: 2em;
 }
+
+.tab-pane.active a.export-info-link {
+	position: absolute;
+	left: 400px;
+	margin-top: .25em;
+}

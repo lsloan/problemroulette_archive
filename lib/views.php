@@ -1063,7 +1063,7 @@ class VStatsExport
 
 		$researcher = $usrmgr->m_user->researcher;
 
-		if ($researcher == 1)//if user has staff permissions
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
 		{	
 			// show sql dumps available to download (by date, description).
 			// show choices of semesters and classes and enable start of an sql dump.
@@ -1329,7 +1329,7 @@ class VResponsesExport
 
 		$researcher = $usrmgr->m_user->researcher;
 
-		if ($researcher == 1)//if user has staff permissions
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
 		{
 			// show sql dumps available to download (by date, description).
 			// show choices of semesters and classes and enable start of an sql dump.
@@ -1461,6 +1461,73 @@ class VResponsesExport
 	}
 
 }
+
+class VExport
+{
+	function __construct()
+	{
+	}
+
+	function Deliver()
+	{
+		global $usrmgr;
+
+		$researcher = $usrmgr->m_user->researcher;
+
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
+		{
+			ob_start(); ?>
+			<div class='tab-pane active' id='export-stats'>
+				<div class="export_stats_page">
+					<div class="row-fluid">
+						<div class="span12">
+							<p class='half-line'>&nbsp;</p>
+							<h4 class='summary-header'>Export summary data</h4>
+							<div class="row-fluid">
+								<div class="span8">
+									<div class="well well-large">
+										<strong>
+											Export files are for research purposes only.
+											Disclosure to other people or any other use besides the intended
+											purpose may violate policies of The University of Michigan and
+											federal or state laws.
+										</strong>
+									</div>
+								</div>
+							</div>
+				      <h5>
+				      	Click an export type to further specify export options
+				      </h5>
+
+							<p>
+								<form name='export_user_stats' action='stats_export.php' method='POST' >
+									<button class='btn btn-primary' type='submit'>Export User Stats</button>
+									<a class='export-info-link'  href="https://docs.google.com/a/umich.edu/document/d/1an___FgYKRLgGvozu0jZV1pmcYe6TbpmdFdrcYwGje8/view?usp=sharing">User stats info</a>
+								</form>
+							</p>
+
+							<p>
+								<form name='export_problem_stats' action='problems_export.php' method='POST' >
+									<button class='btn btn-primary' type='submit'>Export Problem Stats</button>
+									<a class='export-info-link' href="https://docs.google.com/a/umich.edu/document/d/1uxT_irF_w6aX8-bhXHBUGjkSeDOfWXUDxKMy9Lkc_5s/view?usp=sharing">Problem stats info</a>
+								</form>
+							</p>
+							<p>
+								<form name='export_response_stats' action='responses_export.php' method='POST' >
+									<button class='btn btn-primary' type='submit'>Export Response Stats</button>
+									<a class='export-info-link' href="https://docs.google.com/document/d/1ImQrvuti61Nk0_Al4PxIGG6NwSOTAAYtS4H-AlpcjfE/edit?usp=sharing">Response stats info</a>
+								</form>
+							</p>
+
+					</div>
+
+				</div>
+			</div>
+			<?php return ob_get_clean();
+		}
+	}
+}
+
 
 class VProblems_no_topics
 {
