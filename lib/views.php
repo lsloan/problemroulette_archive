@@ -1092,7 +1092,7 @@ class VStatsExport
 				      <ul>
 				      	<li>Download an existing export file</li>
 				      	<li>Generate a new export file of all data</li>
-				      	<li>Generate a new export file filtered by selester and/or class</li>
+				      	<li>Generate a new export file filtered by semester and/or class</li>
 				      </ul>
 				      <h5>Download existing export file</h5>
 				      <?php if($this->v_files == NULL): ?>
@@ -1308,6 +1308,158 @@ class VProblemsExport
 		}
 	}
 		
+}
+
+class VResponsesExport
+{
+	var $v_semesters;
+	var $v_courses;
+	var $v_files;
+
+	function __construct($semesters, $courses, $files)
+	{
+		$this->v_semesters = $semesters;
+		$this->v_courses   = $courses;
+		$this->v_files     = $files;
+	}
+
+	function Deliver()
+	{
+		global $usrmgr;
+
+		$researcher = $usrmgr->m_user->researcher;
+
+		if ($researcher == 1)//if user has staff permissions
+		{
+			// show sql dumps available to download (by date, description).
+			// show choices of semesters and classes and enable start of an sql dump.
+			ob_start(); ?>
+			<div class='tab-pane active' id='export-responses'>
+				<div class="export_stats_page">
+					<div class="row-fluid">
+						<div class="span12">
+							<p class='half-line'>&nbsp;</p>
+							<h4 class='summary-header'>Export summary data about responses</h4>
+							<div class="row-fluid">
+								<div class="span8">
+									<div class="well well-large">
+										<strong>
+											Files downloaded from this page are for research purposes only.
+											Disclosure to other people or any other use besides the intended
+											purpose may violate policies of The University of Michigan and
+											federal or state laws.
+										</strong>
+									</div>
+								</div>
+							</div>
+				      <h5>
+				      	Options in this page:
+				      </h5>
+				      <ul>
+				      	<li>Download an existing export file</li>
+				      	<li>Generate a new export file of all responses (including skips)</li>
+				      	<li>Generate a new export file filtered by semester and/or class</li>
+				      </ul>
+				      <h5>Download existing export file</h5>
+				      <?php if($this->v_files == NULL): ?>
+				      	<p>No files to download</p>
+				      <?php else: ?>
+				      	<ul>
+									<?php foreach((array)$this->v_files as $file): ?>
+										<li class="export_file_for_download">
+											<a href='<?= $GLOBALS["DOMAIN"] . 'responses_export.php?download='.$file ?>' class="stats_file" title="Download the file (<?= $file ?>)"><?= $file ?></a>
+											<a href='#' class="delete_stats_file" data-url="<?= $GLOBALS["DOMAIN"] . 'responses_export.php' ?>" data-filename="<?= $file ?>" title="Permanently delete the file (<?= $file ?>)">
+												<img src="img/delete_16.png"></img>
+											</a>
+										</li>
+									<?php endforeach; ?>
+								</ul>
+				      <?php endif; ?>
+				      <h5>Generate a new export file</h5>
+				      <form action='' method='post'>
+					      <h6>Specify filters (if any)</h6>
+					      <fieldset>
+						      <legend>Semester(s)</legend>
+						      <div class="row-fluid">
+						      	<p class="span8">
+							      	Checking one or more semesters will filter the responses (including skips) included in the export,
+							      	eliminating any responses that did not occur during the selected semesters.  To
+							      	export data about all semesters, leave all semesters unchecked.
+							      </p>
+							    </div>
+					      	<div class="row-fluid">
+										<?php foreach((array)$this->v_semesters as $index => $item): ?>
+											<div class="span3">
+												<label class="checkbox" for="semester-<?= $item['semester']->m_id ?>">
+													<input type="checkbox" name="semester[]" value="<?= $item['semester']->m_id ?>" id="semester-<?= $item['semester']->m_id ?>" class="semester-filter" />
+													<strong><?= $item['semester']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses)</small>
+												</label>
+											</div>
+											<?php if(($index + 1) % 4 == 0): ?>
+												</div>
+												<div class="row-fluid">
+											<?php endif; ?>
+										<?php endforeach; ?>
+									</div>
+								</fieldset>
+								<fieldset>
+						      <legend>Course(s)</legend>
+						      <div class="row-fluid">
+						      	<p class="span8">
+							      	Checking one or more courses will filter the responses included in the export,
+							      	eliminating any responses (including skips) that do not relate to the selected courses.  To
+							      	export data about all courses, leave all courses unchecked.
+							      </p>
+							    </div>
+						      <div class="row-fluid">
+										<?php foreach((array)$this->v_courses as $index => $item): ?>
+											<div class="span3">
+												<label class="checkbox" for="course-<?= $item['course']->m_id ?>">
+													<input type="checkbox" name="course[]" value="<?= $item['course']->m_id ?>" id="course-<?= $item['course']->m_id ?>" class="course-filter" />
+													<strong><?= $item['course']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses) </small>
+												</label>
+											</div>
+											<?php if(($index + 1) % 4 == 0): ?>
+												</div>
+												<div class="row-fluid">
+											<?php endif; ?>
+										<?php endforeach; ?>
+									</div>
+								</fieldset>
+								<fieldset>
+									<legend>File Format</legend>
+									<div class="row-fluid">
+										<div class="span3">
+											<label class="checkbox" for="format-sql">
+												<input type="radio" name="format" value="sql" id="format-sql" class="format-choice" checked='checked' />
+												<strong>SQL</strong>
+											</label>
+										</div>
+										<div class="span3">
+											<label class="checkbox" for="format-csv">
+												<input type="radio" name="format" value="csv" id="format-csv" class="format-choice" />
+												<strong>CSV</strong>
+											</label>
+										</div>
+									</div>
+								</fieldset>
+
+								<h5>Start exporting data to file</h5>
+								<p>
+									<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
+										Start Export
+									</button>
+									<a href="https://docs.google.com/document/d/1ImQrvuti61Nk0_Al4PxIGG6NwSOTAAYtS4H-AlpcjfE/edit?usp=sharing">Information about the Export</a>
+								</p>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php return ob_get_clean();
+		}
+	}
+
 }
 
 class VProblems_no_topics
