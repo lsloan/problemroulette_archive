@@ -1499,24 +1499,18 @@ class VExport
 				      	Click an export type to further specify export options
 				      </h5>
 
-							<p>
-								<form name='export_user_stats' action='stats_export.php' method='POST' >
-									<button class='btn btn-primary' type='submit'>Export User Stats</button>
-									<a class='export-info-link'  href="https://docs.google.com/a/umich.edu/document/d/1an___FgYKRLgGvozu0jZV1pmcYe6TbpmdFdrcYwGje8/view?usp=sharing">User stats info</a>
-								</form>
+							<p class="row">
+								<a class="btn btn-primary span3" href="stats_export.php">Export User Stats</a>
+								<a class="export-info-link"      href="https://docs.google.com/a/umich.edu/document/d/1an___FgYKRLgGvozu0jZV1pmcYe6TbpmdFdrcYwGje8/view?usp=sharing">User stats info</a>
 							</p>
 
-							<p>
-								<form name='export_problem_stats' action='problems_export.php' method='POST' >
-									<button class='btn btn-primary' type='submit'>Export Problem Stats</button>
-									<a class='export-info-link' href="https://docs.google.com/a/umich.edu/document/d/1uxT_irF_w6aX8-bhXHBUGjkSeDOfWXUDxKMy9Lkc_5s/view?usp=sharing">Problem stats info</a>
-								</form>
+							<p class="row">
+								<a class="btn btn-primary span3" href="problems_export.php">Export Problem Stats</a>
+								<a class="export-info-link"      href="https://docs.google.com/a/umich.edu/document/d/1uxT_irF_w6aX8-bhXHBUGjkSeDOfWXUDxKMy9Lkc_5s/view?usp=sharing">Problem stats info</a>
 							</p>
-							<p>
-								<form name='export_response_stats' action='responses_export.php' method='POST' >
-									<button class='btn btn-primary' type='submit'>Export Response Stats</button>
-									<a class='export-info-link' href="https://docs.google.com/document/d/1ImQrvuti61Nk0_Al4PxIGG6NwSOTAAYtS4H-AlpcjfE/edit?usp=sharing">Response stats info</a>
-								</form>
+							<p class="row">
+								<a class="btn btn-primary span3" href="responses_export.php">Export Response Stats</a>
+								<a class="export-info-link"      href="https://docs.google.com/document/d/1ImQrvuti61Nk0_Al4PxIGG6NwSOTAAYtS4H-AlpcjfE/edit?usp=sharing">Response stats info</a>
 							</p>
 
 					</div>

@@ -654,8 +654,7 @@ input#delete_problem {
   margin-right: 2em;
 }
 
-.tab-pane.active a.export-info-link {
-	position: absolute;
-	left: 400px;
-	margin-top: .25em;
+a.export-info-link.export-info-link {
+    display: inline-block;
+    margin: .25em 1em;
 }
