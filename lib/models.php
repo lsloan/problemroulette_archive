@@ -774,8 +774,8 @@ Class MSemester
 	{
 		global $dbmgr;
 		$query = "SELECT distinct t1.*, count(t2.id) as response_count ".
-						 "FROM semesters t1 join responses t2 on t2.start_time > t1.start_time ".
-						 "AND t2.end_time < t1.end_time ";
+						 "FROM semesters t1 join responses t2 on (t2.end_time > t1.start_time ".
+						 "AND t2.end_time < t1.end_time) ";
 		if (! $skips) {
 			$query .= "WHERE t2.answer > 0 ";
 		}
@@ -841,15 +841,7 @@ Class MTabNav
 		}
 		if($usrmgr->m_user->researcher == 1 || $usrmgr->m_user->staff == 1)
 		{
-			$this->m_pages['Export User Stats'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
-		}
-		if($usrmgr->m_user->researcher == 1 || $usrmgr->m_user->staff == 1)
-		{
-			$this->m_pages['Export Problem Stats'] = $GLOBALS["DOMAIN"] . 'problems_export.php';
-		}
-		if($usrmgr->m_user->researcher == 1 || $usrmgr->m_user->staff == 1)
-		{
-			$this->m_pages['Export Response Stats'] = $GLOBALS["DOMAIN"] . 'responses_export.php';
+			$this->m_pages['Export Stats'] = $GLOBALS["DOMAIN"] . 'export.php';
 		}
 		if($usrmgr->m_user->admin == 1)
 		{
@@ -1659,7 +1651,7 @@ Class MStatsFile
 			"  COUNT(r.id) response_count, SUM(r.ans_correct) correct_count, " .
 			"  SUM(TIME_TO_SEC(TIMEDIFF(r.end_time, r.start_time))) time_on_site " .
 			"FROM responses r " .
-			"  LEFT JOIN semesters s ON (r.start_time > s.start_time AND r.start_time < s.end_time) " .
+			"  LEFT JOIN semesters s ON (r.end_time > s.start_time AND r.end_time < s.end_time) " .
 			"  LEFT JOIN user u on r.user_id = u.id " .
 			"  LEFT JOIN 12m_topic_prob tp ON r.prob_id = tp.problem_id AND r.topic_id = tp.topic_id " .
 			"  LEFT JOIN 12m_class_topic ct ON tp.topic_id = ct.topic_id " .
@@ -1700,7 +1692,6 @@ Class MStatsFile
 			$dbmgr->dump_stats_table($tablename, $filename);
 		}
 		
-
 		$query = "DROP TABLE " . $tablename;
 		$dbmgr->exec_query($query, array());
 
@@ -1713,7 +1704,6 @@ Class MStatsFile
 		$params = array();
 		$filename = $GLOBALS['DIR_STATS']."problems_".date('\_Ymd\_His');
 
-		
 		$query = "create table ".$tablename." select t1.id problem_id, ".
 				"t1.name, t1.url, t1.correct, t1.ans_count, t1.tot_tries, ".
 				"t1.tot_correct, t1.tot_time, t1.solution, ".
@@ -1723,7 +1713,6 @@ Class MStatsFile
 				"join 12m_topic_prob t2 on t1.id=t2.problem_id ".
 				"join 12m_class_topic t3 on t2.topic_id=t3.topic_id ".
 				"join class t4 on t3.class_id=t4.id";
-
 
 		if (isset($course_ids)) {
 			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
@@ -1783,8 +1772,8 @@ public static function export_responses($semester_ids, $course_ids, $format = 's
     "FROM responses r ".
     "INNER JOIN problems p ON r.prob_id = p.id ".
     "INNER JOIN user u ON r.user_id = u.id ".
-    "inner JOIN 12m_class_topic ct ON r.topic_id = ct.topic_id ".
-    "LEFT JOIN semesters s ON (r.start_time > s.start_time AND r.start_time < s.end_time) ";
+    "LEFT JOIN 12m_class_topic ct ON r.topic_id = ct.topic_id ".
+    "LEFT JOIN semesters s ON (r.end_time > s.start_time AND r.end_time < s.end_time) ";
 
 		if (isset($semester_ids)) {
 			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);

@@ -653,3 +653,8 @@ div#problems .topic-list-label {
 input#delete_problem {
   margin-right: 2em;
 }
+
+a.export-info-link.export-info-link {
+    display: inline-block;
+    margin: .25em 1em;
+}
