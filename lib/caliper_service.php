@@ -209,7 +209,7 @@ class CaliperService extends BaseCaliperService
         return new Assessment($id);
     }
 
-    private function getAssessmentItemEvent () {
+    private function getAssessmentItemEvent() {
         return new AssessmentItemEvent();
     }
 
@@ -227,19 +227,20 @@ class CaliperService extends BaseCaliperService
     }
 
     private function getAttempt(MProblem $problem, $startTime, $endTime) {
-        //need to do some extra conversions as attempt start time is captured as string of Unix Epoch time eg.,"1456837032" when user completes a problem
-        if(is_string($startTime)){
-            $strToTime = strtotime(date('Y-m-d H:i:s',$startTime));
-            $startTime = new DateTime("@$strToTime");
-        }
-        $endTime = new DateTime("@$endTime");
-        $durationSeconds = strval($endTime->getTimestamp() - $startTime->getTimestamp());
+        $startDataTime = $this->timeConvert($startTime);
+        $endDataTime = $this->timeConvert($endTime);
+        $durationSeconds = strval($endDataTime->getTimestamp() - $startDataTime->getTimestamp());
         $attempt = (new Attempt($problem->m_prob_url ."/attempt"))
             ->setCount(getAttemptCount($problem->m_prob_id))
-            ->setStartedAtTime($startTime)
-            ->setEndedAtTime($endTime)
+            ->setStartedAtTime($startDataTime)
+            ->setEndedAtTime($endDataTime)
             ->setDuration($durationSeconds);
         return $attempt;
     }
+
+    private function timeConvert($time){
+         return date_create((is_numeric($time) ? '@' : null) . strval($time));
+    }
+
 
 }
