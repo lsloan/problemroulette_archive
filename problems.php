@@ -68,6 +68,9 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$response = new MResponse($start_time,$end_time,$user_id,$current_problem_id,Null,false,$current_topic_id);
 	
 	$response->update_skips();
+
+	//caliper event
+	$caliper->assessmentItemSkip($response, $current_problem);
 	
 	header('Location:problems.php');
 } elseif (isset($_POST['submit_answer'])) {
@@ -117,7 +120,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		} else {
 			$c_student_answered_correctly = false;
 		}
-		
+
 		//update tables upon response
 		$response = new MResponse($c_start_time,$c_end_time,$user_id,$c_problem_id,$c_answer,$c_student_answered_correctly,$current_topic_id);
 		
@@ -125,6 +128,8 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		// $response->update_stats();
 		$response->update_problems();
 		$response->update_12m_prob_ans();
+		//caliper event
+		$caliper->assessmentItemComplete($response, $current_problem);
 		
 		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time."&tp=".$current_topic_id);
 	}
@@ -178,7 +183,11 @@ if($c_problem_id == null || $c_problem_id < 1) {
 }
 
 $picked_problem = new MProblem($picked_problem_id);
-	
+//caliper event.
+if ( (empty($_GET) && empty($_POST)) || (isset($_GET['pretry']) && (empty($_POST))) ) {
+	$caliper->assessmentItemStart($picked_problem, $topic);
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // page construction
 ///////////////////////////////////////////////////////////////////////////
@@ -208,4 +217,5 @@ $page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html
 echo $page->Deliver();
+
 ?>
