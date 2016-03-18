@@ -18,6 +18,10 @@ class BaseCaliperService {
 
     }
 
+    public function assessmentSubmit(){
+
+    }
+
     public function assessmentItemStart(MProblem $problem, $topicId) {
 
     }

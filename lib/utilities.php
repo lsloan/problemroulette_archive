@@ -177,6 +177,11 @@ function getUserName() {
   return $usrmgr->m_user->username;
 }
 
+function getSelectedTopicList() {
+  global $usrmgr;
+  return $usrmgr->m_user->selected_topics_list;
+}
+
 function getUserId() {
   global $usrmgr;
   return $usrmgr->m_user->id;
