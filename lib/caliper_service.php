@@ -62,6 +62,11 @@ class CaliperService extends BaseCaliperService
         $this->sendAssessmentEvent(Action::STARTED, $selectedTopicList);
     }
 
+    public function assessmentSubmit() {
+        $this->sendAssessmentEvent(Action::SUBMITTED, getSelectedTopicList());
+    }
+
+
     private function sendAssessmentEvent($action, $selectedTopicList) {
         $selected_topics = urlencode (implode(",", $selectedTopicList));
 

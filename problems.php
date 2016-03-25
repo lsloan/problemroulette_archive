@@ -185,7 +185,13 @@ if($c_problem_id == null || $c_problem_id < 1) {
 $picked_problem = new MProblem($picked_problem_id);
 //caliper event.
 if ( (empty($_GET) && empty($_POST)) || (isset($_GET['pretry']) && (empty($_POST))) ) {
-	$caliper->assessmentItemStart($picked_problem, $topic);
+	//when picked_problem_id is 0 then the student has answered all the questions correctly and this denotes the end of the problem set student chosen.
+	if ( $picked_problem_id === 0 ) {
+		$caliper->assessmentSubmit();
+	} else {
+		//we send an assessmentItem#start event when a new problem is displayed to the user, skip is the use case where new problem is shown, retrying a problem too.
+		$caliper->assessmentItemStart($picked_problem, $topic);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
