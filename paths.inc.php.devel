@@ -66,4 +66,10 @@ $GLOBALS["CALIPER_SENSOR_ID"]     = null;
 $GLOBALS["CALIPER_HTTP_ID"] = null; //PRcaliperHttp
 //Caliper client id of application should be unique and can be any string
 $GLOBALS["CALIPER_CLIENT_ID"] = null;//PRcaliperClient
+// This property controls if viadutoo should be used to send caliper events.
+$GLOBALS["CALIPER_PROXY_ENABLED"] = false;
+// this is the loop back url that is looking back to the local machine the application is hosted
+$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"]=null; //eg, "http://127.0.0.1:8888/problemroulette/caliper_proxy.php/";
+// this is the directory to the CA certificate to send the events to the OpenLRS event store. for development purposes this can be any string.
+$GLOBALS["CA_CERTS_PATH"]=null; // eg: "/path/to/CA/Cert/directory";
 
