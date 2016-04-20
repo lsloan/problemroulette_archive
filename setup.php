@@ -45,6 +45,9 @@ if ($GLOBALS["CALIPER_ENABLED"]) {
         ->setCaliperHttpId($GLOBALS["CALIPER_HTTP_ID"])
         ->setHost($GLOBALS["CALIPER_ENDPOINT_URL"])
         ->setApiKey($GLOBALS["CALIPER_API_KEY"])
+        ->setCaliperProxyEnabled($GLOBALS["CALIPER_PROXY_ENABLED"])
+        ->setCaliperProxyUrl($GLOBALS["CALIPER_PROXY_ENDPOINT_URL"])
+        ->setCaCertsPath($GLOBALS["CA_CERTS_PATH"])
         ->setDebug($GLOBALS["DEBUG"]);
     require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
     $GLOBALS["caliper"] = new CaliperService($caliper_config);

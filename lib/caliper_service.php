@@ -145,9 +145,11 @@ class CaliperService extends BaseCaliperService
         $apiKey = $this->config->getApiKey();
         $caliperHttpId = $this->config->getCaliperHttpId();
         $caliperClientId = $this->config->getCaliperClientId();
+        $caliperProxyUrl = $this->config->getCaliperProxyUrl();
+        $caliperProxyEnabled = $this->config->getCaliperProxyEnabled();
 
         // caliper variable should not be empty or null
-        if(!($sensorId && $endpointUrl && $apiKey && $caliperHttpId && $caliperClientId )){
+        if((empty($sensorId) || empty($endpointUrl) || empty($apiKey) || empty($caliperHttpId) || empty($caliperClientId))){
             $app_log->msg("Some caliper configurations are missing, unable to send Caliper Event. " .
                 "sensorId = '$sensorId'; endpointUrl = '$endpointUrl'; apiKey = '$apiKey'
                 ; caliperHttpId = '$caliperHttpId'; caliperClientId = '$caliperClientId'");
@@ -156,8 +158,17 @@ class CaliperService extends BaseCaliperService
         $sensor = new Sensor($sensorId);
         $options = (new Options())
             ->setApiKey($apiKey)
-            ->setDebug($this->config->isDebug())
-            ->setHost($endpointUrl);
+            ->setDebug($this->config->isDebug());
+
+        if ( $caliperProxyEnabled === true ) {
+            if(empty($caliperProxyUrl)){
+                $app_log->msg("Caliper proxy URL is missing.");
+                return;
+            }
+            $options->setHost($caliperProxyUrl);
+        } else {
+            $options->setHost($endpointUrl);
+        }
 
         $sensor->registerClient($caliperHttpId, new Client($caliperClientId, $options));
         $sensor->send($sensor, $event);

@@ -11,10 +11,19 @@
 
 ##  Enable caliper service in the application.
 
-4.  If you want to enable caliper, then set the 
+4.  Caliper capture and measure the learning activity. In PR caliper captures the information like a new problemSet#Start, problem#Start, problem#Complete by a student and more converts it to a  json object and send 
+    it to an Event store. More information on Caliper goto http://www.imsglobal.org/activity/caliperram.    
+    To enable caliper in PR, 
    `$GLOBALS["CALIPER_ENABLED"] = true;` in the `paths.inc.php` file in the project
+   
+##  Enable Viadutoo in the application.
 
-5. Give the below 5 global variable appropriate value in the 'path.inc.php' file in project for configuring caliper.
+5.  Viadutoo is a proxy caliper endpoint which quickly accepts the events and close the connection from the request and after try to send the events to the
+    final Caliper End point. In case of any network issues to the Caliper event store it will store the information to the local database. The advantage of using the Viadutoo 
+    in case of network slow down/ or error at event store 1) users won't be effected by this, 2) events won't be lost and stored locally. More info on viadutoo https://github.com/tl-its-umich-edu/viadutoo
+    To enable viadutoo `$GLOBALS["CALIPER_PROXY_ENABLED"] = true;` 
+
+### Give the below variables appropriate value in the 'path.inc.php' file in project for configuring caliper and viadutoo.
 
 
      /*caliper needs to send event data to a Event store, for development purposes you can use Requestb.in or 
@@ -32,6 +41,15 @@
      
      //Caliper client id and should be unique for application. 
      $GLOBALS["CALIPER_CLIENT_ID"] = "PRCaliperClient";
+     
+     // This property controls if viadutoo should be used to send caliper events.
+     $GLOBALS["CALIPER_PROXY_ENABLED"] = true;
+     
+     // this is the loop back url that is looking back to the local machine the application is hosted
+     $GLOBALS["CALIPER_PROXY_ENDPOINT_URL"]=null; //eg, "http://127.0.0.1:8888/problemroulette/caliper_proxy.php/";
+     
+     // this is the directory to the CA certificate to send the events to the OpenLRS event store. for development purposes this can be any string. 
+     $GLOBALS["CA_CERTS_PATH"]=null; // eg: "/etc/pki/tls/certs/";
   
 ### More info on caliper-php sensor go to https://github.com/IMSGlobal/caliper-php-public   
 
