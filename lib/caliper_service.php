@@ -22,6 +22,8 @@ require_once 'Caliper/entities/assessment/AssessmentItem.php';
 require_once 'Caliper/entities/assignable/Attempt.php';
 require_once 'Caliper/entities/response/MultipleChoiceResponse.php';
 require_once 'Caliper/events/AssessmentItemEvent.php';
+require_once 'Caliper/events/SessionEvent.php';
+require_once 'Caliper/entities/session/Session.php';
 
 
 class CaliperService extends BaseCaliperService
@@ -132,6 +134,49 @@ class CaliperService extends BaseCaliperService
                 }
 
         $this->sendEvent($assessmentItemEvent);
+    }
+
+    public function sessionStart() {
+        $this->sendSessionEvent(Action::LOGGED_IN, $_SESSION['START_TIME']);
+    }
+
+    public function sessionTimeout() {
+        $startedDateTime = $this->timeConvert($_SESSION['START_TIME']);
+        $endedDateTime = new DateTime();
+        $duration = strval($endedDateTime->getTimestamp() - $startedDateTime->getTimestamp());
+        $this->sendSessionEvent(Action::TIMED_OUT, $_SESSION['START_TIME'], $endedDateTime, $duration);
+    }
+
+    private function sendSessionEvent($action, $startTime, $endTime = null, $duration = null) {
+
+        $startedDateTime = $this->timeConvert($_SESSION['START_TIME']);
+
+        $session = new Session($this->getUrl() . "session/" . urlencode($startTime));
+        $session->setName("session - " . $startTime)
+            ->setStartedAtTime($startedDateTime);
+        if ($action === Action::TIMED_OUT) {
+            $session->setEndedAtTime($endTime)
+                ->setActor($this->getPerson())
+                ->setDuration($duration);
+        }
+
+        $sessionEvent = new SessionEvent();
+        $sessionEvent->setGroup($this->getCourseOffering())
+            ->setEdApp(new SoftwareApplication($this->getUrl()))
+            ->setAction(new Action($action));
+        if ($action === Action::LOGGED_IN) {
+            $sessionEvent->setEventTime($session->getStartedAtTime());
+            $sessionEvent->setGenerated($session);
+            $sessionEvent->setObject(new SoftwareApplication($this->getUrl()));
+            $sessionEvent->setActor($this->getPerson());
+        }
+        if ($action === Action::TIMED_OUT) {
+            $sessionEvent->setEventTime($session->getEndedAtTime());
+            $sessionEvent->setObject($session);
+            $sessionEvent->setActor(new SoftwareApplication($this->getUrl()));
+        }
+
+        $this->sendEvent($sessionEvent);
     }
 
 

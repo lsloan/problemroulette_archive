@@ -10,15 +10,15 @@ class BaseCaliperService {
     public function __construct($config) {
     }
 
-    public function sendNavigationEvent(){
+    public function sendNavigationEvent() {
 
     }
 
-    public function assessmentStart($selectedTopicList){
+    public function assessmentStart($selectedTopicList) {
 
     }
 
-    public function assessmentSubmit(){
+    public function assessmentSubmit() {
 
     }
 
@@ -31,6 +31,14 @@ class BaseCaliperService {
     }
 
     public function assessmentItemSkip(MResponse $response, MProblem $problem) {
+
+    }
+
+    public function sessionStart() {
+
+    }
+
+    public function sessionTimeout() {
 
     }
 
