@@ -209,11 +209,12 @@ class CDbMgr
 			fputcsv($handle, $column_names);
 		}
 		$query = "select * from ".$tablename;
-		$res = $this->fetch_num($query, array());
+		$stmt = $this->exec_query($query);
 
-		foreach ($res as $key => $value) { 
-			fputcsv($handle, $value);
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			fputcsv($handle, $row);
 		}
+
 		fclose($handle);
 	}
 
