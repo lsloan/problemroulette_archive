@@ -161,9 +161,11 @@ class CaliperService extends BaseCaliperService
         }
 
         $sessionEvent = new SessionEvent();
-        $sessionEvent->setGroup($this->getCourseOffering())
-            ->setEdApp(new SoftwareApplication($this->getUrl()))
+        $sessionEvent->setEdApp(new SoftwareApplication($this->getUrl()))
             ->setAction(new Action($action));
+        if (!is_null(getCourseId())) {
+            $sessionEvent->setGroup($this->getCourseOffering());
+        }
         if ($action === Action::LOGGED_IN) {
             $sessionEvent->setEventTime($session->getStartedAtTime());
             $sessionEvent->setGenerated($session);
