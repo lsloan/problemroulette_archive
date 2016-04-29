@@ -24,6 +24,7 @@ require_once 'Caliper/entities/response/MultipleChoiceResponse.php';
 require_once 'Caliper/events/AssessmentItemEvent.php';
 require_once 'Caliper/events/SessionEvent.php';
 require_once 'Caliper/entities/session/Session.php';
+require_once 'Caliper/events/AnnotationEvent.php';
 
 
 class CaliperService extends BaseCaliperService
@@ -134,6 +135,23 @@ class CaliperService extends BaseCaliperService
                 }
 
         $this->sendEvent($assessmentItemEvent);
+    }
+
+    public function rateProblem($problemId, $rating) {
+        $problem = getProblem($problemId);
+        $response = new MultipleChoiceResponse($problem->m_prob_url . "/response");
+        $response->setValue($rating);
+        $annotationEvent = new AnnotationEvent();
+        $annotationEvent->setEventTime(new DateTime())
+                ->setActor($this->getPerson())
+                ->setAction(new Action(Action::RANKED))
+                ->setEdApp(new SoftwareApplication($this->getUrl()))
+                ->setGroup($this->getCourseOffering())
+                ->setGenerated($response)
+                ->setObject($this->getAssessmentItem($problem));
+
+        $this->sendEvent($annotationEvent);
+
     }
 
     public function sessionStart() {
@@ -282,10 +300,12 @@ class CaliperService extends BaseCaliperService
         return $isPartOf;
     }
 
-    private function getAssessmentItem(MProblem $problem, $topicId) {
+    private function getAssessmentItem(MProblem $problem, $topicId=null) {
         $assessmentItem = new AssessmentItem($problem->m_prob_url);
-        $assessmentItem->setName($problem->m_prob_name)
-            ->setIsPartOf($this->getIsPartOf($topicId));
+        $assessmentItem->setName($problem->m_prob_name);
+        if (!is_null($topicId)) {
+            $assessmentItem->setIsPartOf($this->getIsPartOf($topicId));
+        }
         return $assessmentItem;
     }
 

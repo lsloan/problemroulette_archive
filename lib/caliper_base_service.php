@@ -42,4 +42,8 @@ class BaseCaliperService {
 
     }
 
+    public function rateProblem($problemId, $rating) {
+
+    }
+
 }

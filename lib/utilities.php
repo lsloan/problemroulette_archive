@@ -172,6 +172,10 @@ function isInTopicsView(){
   return $isInTopicsView;
 }
 
+function getProblem($problemId) {
+  return new MProblem($problemId);
+}
+
 function getUserName() {
   global $usrmgr;
   return $usrmgr->m_user->username;

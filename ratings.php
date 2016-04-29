@@ -20,6 +20,7 @@ if (isset($_POST['problem_id']) && isset($_POST['course_id'])) {
           if (isset($_POST['rating-'.$scale->m_name])) {
               $rating = new Rating(null, $problem_id, $scale->m_id, $user_id, $_POST['rating-'.$scale->m_name]);
               $rating->save();
+              $caliper->rateProblem($problem_id, $_POST['rating-'.$scale->m_name]);
 
               header('Content-type: application/json');
               echo json_encode($rating);
