@@ -42,7 +42,7 @@ class BaseCaliperService {
 
     }
 
-    public function annotateRating($problemId, $rating) {
+    public function rateProblem($problemId, $rating) {
 
     }
 

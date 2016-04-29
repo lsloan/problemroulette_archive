@@ -137,7 +137,7 @@ class CaliperService extends BaseCaliperService
         $this->sendEvent($assessmentItemEvent);
     }
 
-    public function annotateRating($problemId, $rating) {
+    public function rateProblem($problemId, $rating) {
         $problem = getProblem($problemId);
         $response = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $response->setValue($rating);
@@ -179,9 +179,11 @@ class CaliperService extends BaseCaliperService
         }
 
         $sessionEvent = new SessionEvent();
-        $sessionEvent->setGroup($this->getCourseOffering())
-            ->setEdApp(new SoftwareApplication($this->getUrl()))
+        $sessionEvent->setEdApp(new SoftwareApplication($this->getUrl()))
             ->setAction(new Action($action));
+        if (!is_null(getCourseId())) {
+            $sessionEvent->setGroup($this->getCourseOffering());
+        }
         if ($action === Action::LOGGED_IN) {
             $sessionEvent->setEventTime($session->getStartedAtTime());
             $sessionEvent->setGenerated($session);
