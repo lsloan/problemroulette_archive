@@ -10,7 +10,7 @@ class BaseCaliperService {
     public function __construct($config) {
     }
 
-    public function sendNavigationEvent() {
+    public function navigateToSelections() {
 
     }
 
