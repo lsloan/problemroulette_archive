@@ -37,6 +37,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$array = array();
 		$array[] = $selected_topics_list_id;
 		$usrmgr->m_user->SetSelectedTopicsForClass($usrmgr->m_user->selected_course_id,$array);
+		$caliper->assessmentStart($array);
 	}
 	header('Location:problems.php');
 } elseif (count($usrmgr->m_user->GetSelectedTopics()) < 1) {
