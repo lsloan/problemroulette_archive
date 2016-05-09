@@ -47,14 +47,20 @@ class CaliperService extends BaseCaliperService
         $this->config=$config;
     }
 
-    public function sendNavigationEvent() {
-        $navigationEvent=new NavigationEvent();
-        $navigationEvent->setActor($this->getPerson())
-            ->setObject($this->getWebPage(self::TO))
-            ->setNavigatedFrom($this->getWebPage(self::FROM))
-            ->setEventTime(new DateTime())
-            ->setEdApp(new SoftwareApplication($this->getUrl()))
-            ->setGroup($this->getCourseOffering());
+    public function navigateToSelections() {
+        $navigationEvent = (new NavigationEvent())
+                ->setActor($this->getPerson())
+                ->setEventTime(new DateTime())
+                ->setEdApp(new SoftwareApplication($this->getUrl()));
+        if (!is_null(getCourseId())) {
+            $navigationEvent->setGroup(($this->getCourseOffering()))
+                    ->setObject($this->getWebPageWithACourse());
+        } else {
+            $navigationEvent->setObject($this->getWebPageWithCourses());
+        }
+        if (isInTopicsView()) {
+            $navigationEvent->setNavigatedFrom($this->getWebPageWithCourses());
+        }
 
         $this->sendEvent($navigationEvent);
 
@@ -256,26 +262,7 @@ class CaliperService extends BaseCaliperService
         return $person;
     }
 
-    /**
-     * $nav Navigation state
-     * @return WebPage
-     */
-    private function getWebPage($nav) {
-        $webPage=null;
-        if(isInTopicsView()){
-            if($nav == self::TO) {
-                $webPage = new WebPage($this->getUrl() . 'views/selections/courses/' . urlencode(getCourseId()) . '/topics');
-                $webPage->setName("Selections: ".getCourseName(getCourseId())." Topics");
-            }
-            if($nav == self::FROM) {
-                $webPage=new WebPage($this->getUrl() . 'views/selections/courses');
-                $webPage->setName('Selections: Course List');
-
-            }
-        }
-        return $webPage;
-    }
-
+   
     /**
      * @return CourseOffering
      */
@@ -325,5 +312,16 @@ class CaliperService extends BaseCaliperService
          return date_create((is_numeric($time) ? '@' : null) . strval($time));
     }
 
+    private function getWebPageWithACourse() {
+        $webPage = new WebPage($this->getUrl() . 'views/selections/courses/' . urlencode(getCourseId()) . '/topics');
+        $webPage->setName("Selections: " . getCourseName(getCourseId()) . " Topics");
+        return $webPage;
+    }
+
+    private function getWebPageWithCourses() {
+        $webPage = new WebPage($this->getUrl() . 'views/selections/courses');
+        $webPage->setName('Selections: Course List');
+        return $webPage;
+    }
 
 }
