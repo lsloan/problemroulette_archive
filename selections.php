@@ -14,17 +14,32 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	// user reset topics
 	$reset_topics_list_id = $_POST['topic_checkbox_submission'];
 	$length = count($reset_topics_list_id);
+       $correct_attempt = array();
 	for ($i=0; $i<$length; $i++)
 	{
 		$topic_id = $reset_topics_list_id[$i];
 		$omitted_problem = new OmittedProblem($user_id, $topic_id);
+        $correctAttemptCount = $omitted_problem->count();
+        if ($correctAttemptCount > 0) {
+            $correct_attempt[$topic_id] = $correctAttemptCount;
+        }
 		$current_omitted_problems_list = $omitted_problem->remove();
 	}
+    if (count($correct_attempt) > 0) {
+        // Send a reset event when user attempted correct answers and not when they click the 'Reset Selected Topics' button
+        $topic_id_list = array_keys($correct_attempt);
+        $caliper->assessmentReset($topic_id_list);
+    }
 } elseif (isset($_POST['topic_link_submission'])) {
 	# direct topic link
 	$topic_id = $_POST['topic_link_submission'];
 	$omitted_problem = new OmittedProblem($user_id, $topic_id);
+       $correct_attempt_count = $omitted_problem->count();
 	$current_omitted_problems_list = $omitted_problem->remove();
+    if ($correct_attempt_count > 0) {
+        // only send a reset event when user attempted correct answers and not when they click the 'reset' button
+        $caliper->assessmentReset((array) $topic_id);
+    }
 	//this session variable will be removed by end of the reset action.
 	// Due to redirects it is difficult to distinguish between a navigation state and a reset topic state hence setting this variable
 	$_SESSION['caliper_topic_link_submission']=true;

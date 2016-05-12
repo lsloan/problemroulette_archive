@@ -35,6 +35,8 @@ class CaliperService extends BaseCaliperService
 
     const FROM = "From";
 
+    const LOCAL_ACTION_RESET = "http://purl.imsglobal.org/vocab/caliper/v1/action#Reset";
+
     public function __construct($config) {
         parent::__construct($config);
         if(!($config instanceof CaliperConfig)){
@@ -75,6 +77,12 @@ class CaliperService extends BaseCaliperService
         $this->sendAssessmentEvent(Action::SUBMITTED, getSelectedTopicList());
     }
 
+    public function assessmentReset($selectedTopicList) {
+        //Current caliper version reset is not defined, reset action will be
+        //added to the future version caliper 1.1 until then reset action will be referenced locally
+        $action = (defined('Action::RESET') ? Action::RESET : self::LOCAL_ACTION_RESET);
+        $this->sendAssessmentEvent($action, $selectedTopicList);
+    }
 
     private function sendAssessmentEvent($action, $selectedTopicList) {
         $selected_topics = urlencode (implode(",", $selectedTopicList));
