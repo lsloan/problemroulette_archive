@@ -37,6 +37,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		$array = array();
 		$array[] = $selected_topics_list_id;
 		$usrmgr->m_user->SetSelectedTopicsForClass($usrmgr->m_user->selected_course_id,$array);
+		$caliper->assessmentStart($array);
 	}
 	header('Location:problems.php');
 } elseif (count($usrmgr->m_user->GetSelectedTopics()) < 1) {
@@ -128,7 +129,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		// $response->update_stats();
 		$response->update_problems();
 		$response->update_12m_prob_ans();
-        //caliper event
+		//caliper event
 		$caliper->assessmentItemComplete($response, $current_problem);
 		
 		header('Location:problems.php?ps=1&pr='.$c_problem_id.'&an='.$c_answer.'&st='.$c_start_time.'&et='.$c_end_time."&tp=".$current_topic_id);
@@ -184,10 +185,14 @@ if($c_problem_id == null || $c_problem_id < 1) {
 
 $picked_problem = new MProblem($picked_problem_id);
 //caliper event.
-if((empty($_GET) && empty($_POST))) {
-	$caliper->assessmentItemStart($picked_problem, $topic);
-}else if(isset($_GET['pretry']) && (!isset($_POST['skip']))){
-	$caliper->assessmentItemStart($picked_problem, $topic);
+if ( (empty($_GET) && empty($_POST)) || (isset($_GET['pretry']) && (empty($_POST))) ) {
+	//when picked_problem_id is 0 then the student has answered all the questions correctly and this denotes the end of the problem set student chosen.
+	if ( $picked_problem_id === 0 ) {
+		$caliper->assessmentSubmit();
+	} else {
+		//we send an assessmentItem#start event when a new problem is displayed to the user, skip is the use case where new problem is shown, retrying a problem too.
+		$caliper->assessmentItemStart($picked_problem, $topic);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////

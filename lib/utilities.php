@@ -172,9 +172,18 @@ function isInTopicsView(){
   return $isInTopicsView;
 }
 
+function getProblem($problemId) {
+  return new MProblem($problemId);
+}
+
 function getUserName() {
   global $usrmgr;
   return $usrmgr->m_user->username;
+}
+
+function getSelectedTopicList() {
+  global $usrmgr;
+  return $usrmgr->m_user->selected_topics_list;
 }
 
 function getUserId() {

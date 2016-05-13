@@ -549,17 +549,19 @@ Class MCourse
 		return $all_courses;
 	}
 
-	public static function get_courses_and_response_counts()
+	public static function get_courses_and_response_counts($skips=false)
 	{
 		global $dbmgr;
 
 		$query = "SELECT c.*, COUNT(tp.id) AS response_count " .
-			 "FROM class c " .
-			 "  INNER JOIN 12m_class_topic ct ON c.id = ct.class_id " .
-			 "  INNER JOIN 12m_topic_prob tp ON ct.topic_id = tp.topic_id " .
-			 "  INNER JOIN responses r ON tp.problem_id = r.prob_id AND r.topic_id = tp.topic_id " .
-			 "WHERE r.answer > 0 " .
-			 "GROUP BY c.id";
+			"FROM class c " .
+			"  INNER JOIN 12m_class_topic ct ON c.id = ct.class_id " .
+			"  INNER JOIN 12m_topic_prob tp ON ct.topic_id = tp.topic_id " .
+			"  INNER JOIN responses r ON tp.problem_id = r.prob_id AND r.topic_id = tp.topic_id ";
+			if (! $skips) {
+				$query .= "WHERE r.answer > 0 ";
+			}
+		$query .= "GROUP BY c.id";
 
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
@@ -768,10 +770,16 @@ Class MSemester
 		return $all_semesters;
 	}
 
-	public static function get_semesters_and_response_counts()
+	public static function get_semesters_and_response_counts($skips=false)
 	{
 		global $dbmgr;
-		$query = "SELECT distinct t1.*, count(t2.id) as response_count FROM semesters t1 join responses t2 on t2.start_time > t1.start_time and t2.end_time < t1.end_time where t2.answer > 0 group by t1.id";
+		$query = "SELECT distinct t1.*, count(t2.id) as response_count ".
+						 "FROM semesters t1 join responses t2 on (t2.end_time > t1.start_time ".
+						 "AND t2.end_time < t1.end_time) ";
+		if (! $skips) {
+			$query .= "WHERE t2.answer > 0 ";
+		}
+		$query .= "GROUP by t1.id";
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_semesters = array();
@@ -831,13 +839,9 @@ Class MTabNav
 			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php' 
 			);
 		}
-		if($usrmgr->m_user->researcher == 1)
-		{
-			$this->m_pages['Export User Stats'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
-		}
 		if($usrmgr->m_user->researcher == 1 || $usrmgr->m_user->staff == 1)
 		{
-			$this->m_pages['Export Problem Stats'] = $GLOBALS["DOMAIN"] . 'problems_export.php';
+			$this->m_pages['Export Stats'] = $GLOBALS["DOMAIN"] . 'export.php';
 		}
 		if($usrmgr->m_user->admin == 1)
 		{
@@ -1659,7 +1663,7 @@ Class MStatsFile
 			"  COUNT(r.id) response_count, SUM(r.ans_correct) correct_count, " .
 			"  SUM(TIME_TO_SEC(TIMEDIFF(r.end_time, r.start_time))) time_on_site " .
 			"FROM responses r " .
-			"  LEFT JOIN semesters s ON (r.start_time > s.start_time AND r.start_time < s.end_time) " .
+			"  LEFT JOIN semesters s ON (r.end_time > s.start_time AND r.end_time < s.end_time) " .
 			"  LEFT JOIN user u on r.user_id = u.id " .
 			"  LEFT JOIN 12m_topic_prob tp ON r.prob_id = tp.problem_id AND r.topic_id = tp.topic_id " .
 			"  LEFT JOIN 12m_class_topic ct ON tp.topic_id = ct.topic_id " .
@@ -1700,7 +1704,6 @@ Class MStatsFile
 			$dbmgr->dump_stats_table($tablename, $filename);
 		}
 		
-
 		$query = "DROP TABLE " . $tablename;
 		$dbmgr->exec_query($query, array());
 
@@ -1713,7 +1716,6 @@ Class MStatsFile
 		$params = array();
 		$filename = $GLOBALS['DIR_STATS']."problems_".date('\_Ymd\_His');
 
-		
 		$query = "create table ".$tablename." select t1.id problem_id, ".
 				"t1.name, t1.url, t1.correct, t1.ans_count, t1.tot_tries, ".
 				"t1.tot_correct, t1.tot_time, t1.solution, ".
@@ -1723,7 +1725,6 @@ Class MStatsFile
 				"join 12m_topic_prob t2 on t1.id=t2.problem_id ".
 				"join 12m_class_topic t3 on t2.topic_id=t3.topic_id ".
 				"join class t4 on t3.class_id=t4.id";
-
 
 		if (isset($course_ids)) {
 			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
@@ -1768,6 +1769,61 @@ Class MStatsFile
 		$query = "drop table ".$tablename;
 		$dbmgr->exec_query($query, array());
 
+	}
+
+public static function export_responses($semester_ids, $course_ids, $format = 'sql')
+	{
+		global $dbmgr;
+		$tablename = "responses_".date('Ymd\_His');
+		$params = array();
+		$filename = $GLOBALS['DIR_STATS']."responses_".date('\_Ymd\_His');
+
+		$query = "create table ".$tablename.
+		" SELECT ct.class_id course_id, p.id problem_id, u.id user_id, r.answer, ".
+    "r.start_time, r.end_time, r.ans_correct, ct.topic_id, u.username ".
+    "FROM responses r ".
+    "INNER JOIN problems p ON r.prob_id = p.id ".
+    "INNER JOIN user u ON r.user_id = u.id ".
+    "LEFT JOIN 12m_class_topic ct ON r.topic_id = ct.topic_id ".
+    "LEFT JOIN semesters s ON (r.end_time > s.start_time AND r.end_time < s.end_time) ";
+
+		if (isset($semester_ids)) {
+			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
+			$query .= ' where s.id in (' . $bindString . ')';
+
+			$terms = MSemester::get_semesters($semester_ids);
+			foreach ($terms as $key => $value) {
+				$filename .= '_' . $value->m_abbreviation;
+			}
+		}
+
+		if (isset($course_ids)) {
+			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+			if (isset($semester_ids)) {
+				$query .= ' and ';
+			} else {
+				$query .= ' where ';
+			}
+			$query .= ' ct.class_id in (' . $bindString . ')';
+
+			$classes = MCourse::get_courses($course_ids);
+			foreach ($classes as $key => $value) {
+				$filename .= '_' . strtolower(str_replace(' ', '_', $value->m_name));
+			}
+		}
+
+		$filename .= '.'.$format;
+		$dbmgr->exec_query($query, $params);
+
+		if ($format == 'csv') {
+			$column_names = array('course_id', 'problem_id', 'user_id', 'answer', 'start_time', 'end_time', 'ans_correct',  'topic_id', 'username');
+			$dbmgr->dump_csv_file($tablename, $filename, $column_names);
+		} else {
+			$dbmgr->dump_stats_table($tablename, $filename);
+		}
+
+		$query = "DROP TABLE " . $tablename;
+		$dbmgr->exec_query($query, array());
 	}
 
 	static function column_prefix($name) {

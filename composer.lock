@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "58efdd1d2066d7cf5dd8a07dd8948748",
-    "content-hash": "1a2d1bb70356e5851cac95c2139f3509",
+    "hash": "e8fc9426e9212f396cf9f075aba05656",
+    "content-hash": "e64005f67fe00ef57953f863453556b3",
     "packages": [
         {
             "name": "umich-its-tl/caliper-php",
@@ -17,7 +17,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tl-its-umich-edu/caliper-php-public/zipball/2cd04e8d396371183eefd1af4cee3f2a1c47bfdf",
+                "url": "https://api.github.com/repos/tl-its-umich-edu/caliper-php-public/zipball/e35b0eceaf3c0919c075955a7a97743d2aa41327",
                 "reference": "2cd04e8d396371183eefd1af4cee3f2a1c47bfdf",
                 "shasum": ""
             },
@@ -45,6 +45,46 @@
                 "source": "https://github.com/tl-its-umich-edu/caliper-php-public/tree/1.0.1"
             },
             "time": "2015-12-11 18:02:40"
+        },
+        {
+            "name": "umich-its-tl/viadutoo",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tl-its-umich-edu/viadutoo.git",
+                "reference": "f38e6cd1e381650873733c53832ed72cb9743327"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tl-its-umich-edu/viadutoo/zipball/f38e6cd1e381650873733c53832ed72cb9743327",
+                "reference": "f38e6cd1e381650873733c53832ed72cb9743327",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/Viadutoo/MessageProxy.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Lance E Sloan",
+                    "email": "lsloan-viadutoo-composer@umich.edu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Viadutoo: caching proxy endpoint for Caliper event data",
+            "keywords": [
+                "viadutoo"
+            ],
+            "time": "2016-01-21 23:41:39"
         }
     ],
     "packages-dev": [],

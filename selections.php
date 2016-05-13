@@ -25,6 +25,9 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$topic_id = $_POST['topic_link_submission'];
 	$omitted_problem = new OmittedProblem($user_id, $topic_id);
 	$current_omitted_problems_list = $omitted_problem->remove();
+	//this session variable will be removed by end of the reset action.
+	// Due to redirects it is difficult to distinguish between a navigation state and a reset topic state hence setting this variable
+	$_SESSION['caliper_topic_link_submission']=true;
 } elseif (isset($_POST['course_submission'])) {
 	// user has chosen a course
 	$selected_course_id = $_POST['course_submission'];
@@ -32,7 +35,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	$usrmgr->m_user->SetSelectedCourseId($selected_course_id);
 	$usrmgr->m_user->SetLastActivity($timestamp);
 	//caliper event
-	$caliper->sendNavigationEvent();
+	$caliper->navigateToSelections();
 } elseif (isset($_POST['select_different_course'])) {
 	// user hit the 'Select Different Course' button
 	$usrmgr->m_user->SetSelectedCourseId(Null);
@@ -62,6 +65,13 @@ if (isset($_POST['course_submission'])) {
 else {
 	$head = new CHeadCSSJavascript("Selections", array(), array());
 	$tab_nav = new VTabNav(new MTabNav('Selections'));
+	//we don't want to send a navigation event when we reset the topic hence the logic added.
+	if (empty($_POST) && isset($_SESSION['caliper_topic_link_submission'])) {
+		unset($_SESSION['caliper_topic_link_submission']);
+	} else if (empty($_POST)) {
+		//sending the nav event when user hit the 'Select Different Course' button and when user navigate to selections tab from any other Tab
+		$caliper->navigateToSelections();
+	}
  }
 
 # choose topic or course selection view
