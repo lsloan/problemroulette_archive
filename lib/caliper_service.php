@@ -105,9 +105,7 @@ class CaliperService extends BaseCaliperService
 
         $isStudentAnswerCorrect = ($response->m_student_answer_correct) ? "true" : "false";
         $extensions = array("isStudentAnswerCorrect"=>$isStudentAnswerCorrect);
-        if($problem->get_ok_to_show_soln(getUserId())){
-           $extensions+=array("correctAnswer" => strval($problem->m_prob_correct));
-        }
+        $extensions += array("correctAnswer" => strval($problem->m_prob_correct));
 
         $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $mcResponse->setAttempt($attempt)
