@@ -56,7 +56,7 @@ class CaliperService extends BaseCaliperService
     public function navigateToSelections() {
         $navigationEvent = (new NavigationEvent())
                 ->setActor($this->getPerson())
-                ->setEventTime(new DateTime())
+                ->setEventTime($this->getEventTime())
                 ->setEdApp(new SoftwareApplication($this->getUrl()));
         if (!is_null(getCourseId())) {
             $navigationEvent->setGroup(($this->getCourseOffering()))
@@ -94,7 +94,7 @@ class CaliperService extends BaseCaliperService
 
         $assessmentEvent = new AssessmentEvent();
         $assessmentEvent->setActor($this->getPerson())
-            ->setEventTime(new DateTime())
+            ->setEventTime($this->getEventTime())
             ->setAction(new Action($action))
             ->setEdApp(new SoftwareApplication($this->getUrl()))
             ->setGroup($this->getCourseOffering())
@@ -105,7 +105,7 @@ class CaliperService extends BaseCaliperService
 
     public function assessmentItemStart(MProblem $problem, $topicId) {
 
-        $this->sendAssessmentItemEvent(Action::STARTED, new DateTime(), $problem, $topicId);
+        $this->sendAssessmentItemEvent(Action::STARTED, $problem, $topicId);
     }
 
     public function assessmentItemComplete(MResponse $response, MProblem $problem) {
@@ -121,7 +121,7 @@ class CaliperService extends BaseCaliperService
             ->setExtensions($extensions)
             ->setValue($response->m_student_answer);
 
-        $this->sendAssessmentItemEvent(Action::COMPLETED, $attempt->getEndedAtTime(), $problem, $response->m_topic_id, $mcResponse);
+        $this->sendAssessmentItemEvent(Action::COMPLETED, $problem, $response->m_topic_id, $mcResponse);
     }
 
     public function assessmentItemSkip(MResponse $response, MProblem $problem) {
@@ -131,13 +131,13 @@ class CaliperService extends BaseCaliperService
         $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $mcResponse->setAttempt($attempt);
 
-        $this->sendAssessmentItemEvent(Action::SKIPPED, $attempt->getEndedAtTime(), $problem, $response->m_topic_id, $mcResponse);
+        $this->sendAssessmentItemEvent(Action::SKIPPED, $problem, $response->m_topic_id, $mcResponse);
 
     }
 
-    private function sendAssessmentItemEvent($action, $eventTime, $problem, $topicId, $response=null) {
+    private function sendAssessmentItemEvent($action, $problem, $topicId, $response = null) {
         $assessmentItemEvent = $this->getAssessmentItemEvent();
-        $assessmentItemEvent->setEventTime($eventTime)
+        $assessmentItemEvent->setEventTime($this->getEventTime())
             ->setAction(new Action($action))
             ->setEdApp(new SoftwareApplication($this->getUrl()))
             ->setGroup($this->getCourseOffering())
@@ -155,7 +155,7 @@ class CaliperService extends BaseCaliperService
         $response = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $response->setValue($rating);
         $annotationEvent = new AnnotationEvent();
-        $annotationEvent->setEventTime(new DateTime())
+        $annotationEvent->setEventTime($this->getEventTime())
                 ->setActor($this->getPerson())
                 ->setAction(new Action(Action::RANKED))
                 ->setEdApp(new SoftwareApplication($this->getUrl()))
@@ -193,18 +193,17 @@ class CaliperService extends BaseCaliperService
 
         $sessionEvent = new SessionEvent();
         $sessionEvent->setEdApp(new SoftwareApplication($this->getUrl()))
-            ->setAction(new Action($action));
+                ->setEventTime($this->getEventTime())
+                ->setAction(new Action($action));
         if (!is_null(getCourseId())) {
             $sessionEvent->setGroup($this->getCourseOffering());
         }
         if ($action === Action::LOGGED_IN) {
-            $sessionEvent->setEventTime($session->getStartedAtTime());
             $sessionEvent->setGenerated($session);
             $sessionEvent->setObject(new SoftwareApplication($this->getUrl()));
             $sessionEvent->setActor($this->getPerson());
         }
         if ($action === Action::TIMED_OUT) {
-            $sessionEvent->setEventTime($session->getEndedAtTime());
             $sessionEvent->setObject($session);
             $sessionEvent->setActor(new SoftwareApplication($this->getUrl()));
         }
@@ -329,6 +328,12 @@ class CaliperService extends BaseCaliperService
         $webPage = new WebPage($this->getUrl() . 'views/selections/courses');
         $webPage->setName('Selections: Course List');
         return $webPage;
+    }
+
+    private function getEventTime() {
+        $timeWithMicroSec = microtime(true);
+        $microTime = sprintf("%06d", ($timeWithMicroSec - floor($timeWithMicroSec)) * 1000000);
+        return new DateTime(date('Y-m-d H:i:s.' . $microTime, $timeWithMicroSec));
     }
 
 }
