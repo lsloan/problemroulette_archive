@@ -22,6 +22,10 @@ class BaseCaliperService {
 
     }
 
+    public function assessmentReset($selectedTopicList) {
+
+    }
+
     public function assessmentItemStart(MProblem $problem, $topicId) {
 
     }
