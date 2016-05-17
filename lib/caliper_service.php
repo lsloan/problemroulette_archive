@@ -35,7 +35,7 @@ class CaliperService extends BaseCaliperService
 
     const FROM = "From";
 
-    const LOCAL_ACTION_RESET = "http://purl.imsglobal.org/vocab/caliper/v1/action#Reset";
+    var $actionReset;
 
     public function __construct($config) {
         parent::__construct($config);
@@ -47,6 +47,10 @@ class CaliperService extends BaseCaliperService
 
         }
         $this->config=$config;
+        //Current caliper version reset is not defined, reset action will be
+        //added to the future version caliper 1.1 until then reset action will be referenced locally
+        $this->actionReset= defined('Action::RESET') ? Action::RESET : "http://purl.imsglobal.org/vocab/caliper/v1/action#Reset";
+
     }
 
     public function navigateToSelections() {
@@ -78,10 +82,7 @@ class CaliperService extends BaseCaliperService
     }
 
     public function assessmentReset($selectedTopicList) {
-        //Current caliper version reset is not defined, reset action will be
-        //added to the future version caliper 1.1 until then reset action will be referenced locally
-        $action = (defined('Action::RESET') ? Action::RESET : self::LOCAL_ACTION_RESET);
-        $this->sendAssessmentEvent($action, $selectedTopicList);
+        $this->sendAssessmentEvent($this->actionReset, $selectedTopicList);
     }
 
     private function sendAssessmentEvent($action, $selectedTopicList) {
@@ -113,9 +114,7 @@ class CaliperService extends BaseCaliperService
 
         $isStudentAnswerCorrect = ($response->m_student_answer_correct) ? "true" : "false";
         $extensions = array("isStudentAnswerCorrect"=>$isStudentAnswerCorrect);
-        if($problem->get_ok_to_show_soln(getUserId())){
-           $extensions+=array("correctAnswer" => strval($problem->m_prob_correct));
-        }
+        $extensions += array("correctAnswer" => strval($problem->m_prob_correct));
 
         $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $mcResponse->setAttempt($attempt)
