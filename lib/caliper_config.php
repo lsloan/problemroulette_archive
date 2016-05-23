@@ -1,6 +1,6 @@
 <?php
 // vendor is the directory where the caliper library is placed. Refer to README.md on importance of the vendor/
-require_once 'vendor/autoload.php';
+require_once realpath(dirname(__FILE__) . '/../vendor/autoload.php');
 require_once 'Caliper/Options.php';
 
 class CaliperConfig extends Options{
