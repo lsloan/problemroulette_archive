@@ -56,7 +56,6 @@ class CaliperService extends BaseCaliperService
     public function navigateToSelections() {
         $navigationEvent = (new NavigationEvent())
                 ->setActor($this->getPerson())
-                ->setEventTime($this->getEventTime())
                 ->setEdApp(new SoftwareApplication($this->getUrl()));
         if (!is_null(getCourseId())) {
             $navigationEvent->setGroup(($this->getCourseOffering()))
@@ -94,7 +93,6 @@ class CaliperService extends BaseCaliperService
 
         $assessmentEvent = new AssessmentEvent();
         $assessmentEvent->setActor($this->getPerson())
-            ->setEventTime($this->getEventTime())
             ->setAction(new Action($action))
             ->setEdApp(new SoftwareApplication($this->getUrl()))
             ->setGroup($this->getCourseOffering())
@@ -137,8 +135,7 @@ class CaliperService extends BaseCaliperService
 
     private function sendAssessmentItemEvent($action, $problem, $topicId, $response = null) {
         $assessmentItemEvent = $this->getAssessmentItemEvent();
-        $assessmentItemEvent->setEventTime($this->getEventTime())
-            ->setAction(new Action($action))
+        $assessmentItemEvent->setAction(new Action($action))
             ->setEdApp(new SoftwareApplication($this->getUrl()))
             ->setGroup($this->getCourseOffering())
             ->setActor($this->getPerson())
@@ -155,8 +152,7 @@ class CaliperService extends BaseCaliperService
         $response = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $response->setValue($rating);
         $annotationEvent = new AnnotationEvent();
-        $annotationEvent->setEventTime($this->getEventTime())
-                ->setActor($this->getPerson())
+        $annotationEvent->setActor($this->getPerson())
                 ->setAction(new Action(Action::RANKED))
                 ->setEdApp(new SoftwareApplication($this->getUrl()))
                 ->setGroup($this->getCourseOffering())
@@ -193,7 +189,6 @@ class CaliperService extends BaseCaliperService
 
         $sessionEvent = new SessionEvent();
         $sessionEvent->setEdApp(new SoftwareApplication($this->getUrl()))
-                ->setEventTime($this->getEventTime())
                 ->setAction(new Action($action));
         if (!is_null(getCourseId())) {
             $sessionEvent->setGroup($this->getCourseOffering());
@@ -215,7 +210,7 @@ class CaliperService extends BaseCaliperService
     /*
      * sending the caliper event to the eventstore
      */
-    private function sendEvent($event) {
+    private function sendEvent(Event $event) {
         global $app_log;
         $sensorId = $this->config->getSensorId();
         $endpointUrl = $this->config->getHost();
@@ -248,6 +243,7 @@ class CaliperService extends BaseCaliperService
         }
 
         $sensor->registerClient($caliperHttpId, new Client($caliperClientId, $options));
+        $event->setEventTime($this->getEventTime());
         $sensor->send($sensor, $event);
     }
 
@@ -268,7 +264,7 @@ class CaliperService extends BaseCaliperService
         return $person;
     }
 
-   
+
     /**
      * @return CourseOffering
      */
@@ -331,9 +327,7 @@ class CaliperService extends BaseCaliperService
     }
 
     private function getEventTime() {
-        $timeWithMicroSec = microtime(true);
-        $microTime = sprintf("%06d", ($timeWithMicroSec - floor($timeWithMicroSec)) * 1000000);
-        return new DateTime(date('Y-m-d H:i:s.' . $microTime, $timeWithMicroSec));
+        return DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''));
     }
 
 }
