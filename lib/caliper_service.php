@@ -54,14 +54,11 @@ class CaliperService extends BaseCaliperService
     }
 
     public function navigateToSelections() {
-        $navigationEvent = (new NavigationEvent())
-                ->setActor($this->getPerson())
-                ->setEdApp(new SoftwareApplication($this->getUrl()));
-        if (!is_null(getCourseId())) {
-            $navigationEvent->setGroup(($this->getCourseOffering()))
-                    ->setObject($this->getWebPageWithACourse());
-        } else {
+        $navigationEvent = new NavigationEvent();
+        if (is_null(getCourseId())) {
             $navigationEvent->setObject($this->getWebPageWithCourses());
+        } else {
+            $navigationEvent->setObject($this->getWebPageWithACourse());
         }
         if (isInTopicsView()) {
             $navigationEvent->setNavigatedFrom($this->getWebPageWithCourses());
@@ -92,10 +89,7 @@ class CaliperService extends BaseCaliperService
         $assessment->setName("Selections: Topics View for " . getCourseName($courseId));
 
         $assessmentEvent = new AssessmentEvent();
-        $assessmentEvent->setActor($this->getPerson())
-            ->setAction(new Action($action))
-            ->setEdApp(new SoftwareApplication($this->getUrl()))
-            ->setGroup($this->getCourseOffering())
+        $assessmentEvent->setAction(new Action($action))
             ->setObject($assessment);
 
         $this->sendEvent($assessmentEvent);
@@ -136,9 +130,6 @@ class CaliperService extends BaseCaliperService
     private function sendAssessmentItemEvent($action, $problem, $topicId, $response = null) {
         $assessmentItemEvent = $this->getAssessmentItemEvent();
         $assessmentItemEvent->setAction(new Action($action))
-            ->setEdApp(new SoftwareApplication($this->getUrl()))
-            ->setGroup($this->getCourseOffering())
-            ->setActor($this->getPerson())
             ->setObject($this->getAssessmentItem($problem, $topicId));
         if (!is_null($response)) {
             $assessmentItemEvent->setGenerated($response);
@@ -152,10 +143,7 @@ class CaliperService extends BaseCaliperService
         $response = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $response->setValue($rating);
         $annotationEvent = new AnnotationEvent();
-        $annotationEvent->setActor($this->getPerson())
-                ->setAction(new Action(Action::RANKED))
-                ->setEdApp(new SoftwareApplication($this->getUrl()))
-                ->setGroup($this->getCourseOffering())
+        $annotationEvent->setAction(new Action(Action::RANKED))
                 ->setGenerated($response)
                 ->setObject($this->getAssessmentItem($problem));
 
@@ -183,20 +171,14 @@ class CaliperService extends BaseCaliperService
             ->setStartedAtTime($startedDateTime);
         if ($action === Action::TIMED_OUT) {
             $session->setEndedAtTime($endTime)
-                ->setActor($this->getPerson())
                 ->setDuration($duration);
         }
 
         $sessionEvent = new SessionEvent();
-        $sessionEvent->setEdApp(new SoftwareApplication($this->getUrl()))
-                ->setAction(new Action($action));
-        if (!is_null(getCourseId())) {
-            $sessionEvent->setGroup($this->getCourseOffering());
-        }
+        $sessionEvent->setAction(new Action($action));
         if ($action === Action::LOGGED_IN) {
             $sessionEvent->setGenerated($session);
             $sessionEvent->setObject(new SoftwareApplication($this->getUrl()));
-            $sessionEvent->setActor($this->getPerson());
         }
         if ($action === Action::TIMED_OUT) {
             $sessionEvent->setObject($session);
@@ -243,7 +225,14 @@ class CaliperService extends BaseCaliperService
         }
 
         $sensor->registerClient($caliperHttpId, new Client($caliperClientId, $options));
-        $event->setEventTime($this->getEventTime());
+        $event->setEventTime($this->getEventTime())
+                ->setEdApp(new SoftwareApplication($this->getUrl()));
+        if (!is_null(getCourseId())) {
+            $event->setGroup($this->getCourseOffering());
+        }
+        if(is_null($event->getActor())){
+            $event->setActor($this->getPerson());
+        }
         $sensor->send($sensor, $event);
     }
 
