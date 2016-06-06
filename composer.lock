@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5295387f143d4c10f91f11db15603f55",
-    "content-hash": "de35ffc91ded32d1febd8764a8a29ee6",
+    "hash": "469cefdfac81dd483986229800c8622d",
+    "content-hash": "ed7a24407d5a153def8ec7b28b0872fb",
     "packages": [
         {
             "name": "eher/oauth",
@@ -81,16 +81,16 @@
         },
         {
             "name": "umich-its-tl/viadutoo",
-            "version": "dev-master",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tl-its-umich-edu/viadutoo.git",
-                "reference": "3146549748dfb379ab7fb8e09229761bf1d07533"
+                "reference": "e2c0dc4593ad5e88d154e208f6cc2bb01adfd073"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tl-its-umich-edu/viadutoo/zipball/3146549748dfb379ab7fb8e09229761bf1d07533",
-                "reference": "3146549748dfb379ab7fb8e09229761bf1d07533",
+                "url": "https://api.github.com/repos/tl-its-umich-edu/viadutoo/zipball/e2c0dc4593ad5e88d154e208f6cc2bb01adfd073",
+                "reference": "e2c0dc4593ad5e88d154e208f6cc2bb01adfd073",
                 "shasum": ""
             },
             "require": {
@@ -103,6 +103,7 @@
                     "lib/Viadutoo/MessageProxy.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "proprietary"
             ],
@@ -117,19 +118,13 @@
             "keywords": [
                 "viadutoo"
             ],
-            "support": {
-                "source": "https://github.com/tl-its-umich-edu/viadutoo/tree/master",
-                "issues": "https://github.com/tl-its-umich-edu/viadutoo/issues"
-            },
-            "time": "2016-06-02 20:17:00"
+            "time": "2016-06-13 17:17:11"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "umich-its-tl/viadutoo": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

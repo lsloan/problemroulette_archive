@@ -52,10 +52,10 @@
      $GLOBALS["CA_CERTS_PATH"]=null; // eg: "/etc/pki/tls/certs/";
      
      //OAuth key that an event store uses to allow caliper event. This must be a string
-     $GLOBALS["CALIPER_OAUTH_KEY"]=null 
+     $GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"]=null;
      
      //OAuth secret that an event store uses to allow caliper event. This must be a string
-     $GLOBALS["CALIPER_OAUTH_SECRET"]=null 
+     $GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"]=null;
   
 ### More info on caliper-php sensor go to https://github.com/IMSGlobal/caliper-php-public   
 
