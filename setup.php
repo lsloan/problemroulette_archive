@@ -48,6 +48,8 @@ if ($GLOBALS["CALIPER_ENABLED"]) {
         ->setCaliperProxyEnabled($GLOBALS["CALIPER_PROXY_ENABLED"])
         ->setCaliperProxyUrl($GLOBALS["CALIPER_PROXY_ENDPOINT_URL"])
         ->setCaCertsPath($GLOBALS["CA_CERTS_PATH"])
+        ->setOauthKey($GLOBALS["CALIPER_OAUTH_KEY"])
+        ->setOauthSecret($GLOBALS["CALIPER_OAUTH_SECRET"])
         ->setDebug($GLOBALS["DEBUG"]);
     require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
     $GLOBALS["caliper"] = new CaliperService($caliper_config);

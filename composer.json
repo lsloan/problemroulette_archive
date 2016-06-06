@@ -3,13 +3,17 @@
         {
             "type": "vcs",
             "url": "https://github.com/tl-its-umich-edu/caliper-php-public"
+        },
+        {
+        "type":"vcs",
+        "url": "https://github.com/tl-its-umich-edu/viadutoo"
         }
 
     ],
     "require": {
         "php": ">=5.4",
         "umich-its-tl/caliper-php": "1.0.1",
-        "umich-its-tl/viadutoo": "1.0.2"
+        "umich-its-tl/viadutoo": "dev-master"
 
     }
 }

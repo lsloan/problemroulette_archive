@@ -10,7 +10,32 @@ class CaliperConfig extends Options{
     private $caliper_proxy_url=false;
     private $caliper_proxy_enabled=false;
     private $ca_certs_path=false;
+    private $oauth_key=false;
+    private $oauth_secret=false;
 
+    public function getOauthKey() {
+        return $this->oauth_key;
+    }
+
+    public function setOauthKey($oauth_key) {
+        if (!is_string($oauth_key)) {
+            $oauth_key = strval($oauth_key);
+        }
+        $this->oauth_key = $oauth_key;
+        return $this;
+    }
+
+    public function getOauthSecret() {
+        return $this->oauth_secret;
+    }
+
+    public function setOauthSecret($oauth_secret) {
+        if (!is_string($oauth_secret)) {
+            $oauth_secret = strval($oauth_secret);
+        }
+        $this->oauth_secret = $oauth_secret;
+        return $this;
+    }
 
     public function getSensorId()
     {

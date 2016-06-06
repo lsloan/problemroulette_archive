@@ -68,16 +68,18 @@ global $app_log;
 
 $caCertPath = $caliper_config->getCaCertsPath();
 $endpointUrl = $caliper_config->getHost();
+$oauthKey = $caliper_config->getOauthKey();
+$oauthSecret = $caliper_config->getOauthSecret();
 
-if ((empty($caCertPath) || empty($endpointUrl))) {
+if ((empty($caCertPath) || empty($endpointUrl)|| empty($oauthKey) || empty($oauthKey))) {
     $app_log->msg("Some viadutoo configurations are missing, unable to send Caliper Event. " .
-        "caCertPath = '$caCertPath'; endpointUrl = '$endpointUrl'");
+        "caCertPath = '$caCertPath'; endpointUrl = '$endpointUrl'; oauthkey = '$oauthKey'; oauthSecret");
     exit;
 }
 $proxy = (new MessageProxy())
     ->setTransportInterface((new CurlTransport())
-        ->setCACertPath($caCertPath)
-    )
+            ->setCACertPath($caCertPath)
+            ->setAuthZType(CurlTransport::AUTHZ_TYPE_OAUTH1, $oauthKey, $oauthSecret))
     ->setEndpointUrl($endpointUrl)
     ->setTimeoutSeconds(10)
     ->setAutostoreOnSendFailure(true)
