@@ -4,21 +4,54 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e8fc9426e9212f396cf9f075aba05656",
-    "content-hash": "e64005f67fe00ef57953f863453556b3",
+    "hash": "469cefdfac81dd483986229800c8622d",
+    "content-hash": "ed7a24407d5a153def8ec7b28b0872fb",
     "packages": [
+        {
+            "name": "eher/oauth",
+            "version": "1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/EHER/OAuth.git",
+                "reference": "935c1f7709d1c1457de9e250d0e5f29cac06e507"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/EHER/OAuth/zipball/935c1f7709d1c1457de9e250d0e5f29cac06e507",
+                "reference": "935c1f7709d1c1457de9e250d0e5f29cac06e507",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "eher/phpunit": "1.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Eher\\OAuth": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "OAuth 1 PHP Library",
+            "time": "2012-12-13 23:48:10"
+        },
         {
             "name": "umich-its-tl/caliper-php",
             "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tl-its-umich-edu/caliper-php-public.git",
-                "reference": "2cd04e8d396371183eefd1af4cee3f2a1c47bfdf"
+                "reference": "e35b0eceaf3c0919c075955a7a97743d2aa41327"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/tl-its-umich-edu/caliper-php-public/zipball/e35b0eceaf3c0919c075955a7a97743d2aa41327",
-                "reference": "2cd04e8d396371183eefd1af4cee3f2a1c47bfdf",
+                "reference": "e35b0eceaf3c0919c075955a7a97743d2aa41327",
                 "shasum": ""
             },
             "require": {
@@ -42,25 +75,26 @@
                 "caliper"
             ],
             "support": {
-                "source": "https://github.com/tl-its-umich-edu/caliper-php-public/tree/1.0.1"
+                "source": "https://github.com/tl-its-umich-edu/caliper-php-public/tree/LC_Caliper-1.0.1"
             },
-            "time": "2015-12-11 18:02:40"
+            "time": "2016-01-27 19:20:14"
         },
         {
             "name": "umich-its-tl/viadutoo",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tl-its-umich-edu/viadutoo.git",
-                "reference": "f38e6cd1e381650873733c53832ed72cb9743327"
+                "reference": "e2c0dc4593ad5e88d154e208f6cc2bb01adfd073"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tl-its-umich-edu/viadutoo/zipball/f38e6cd1e381650873733c53832ed72cb9743327",
-                "reference": "f38e6cd1e381650873733c53832ed72cb9743327",
+                "url": "https://api.github.com/repos/tl-its-umich-edu/viadutoo/zipball/e2c0dc4593ad5e88d154e208f6cc2bb01adfd073",
+                "reference": "e2c0dc4593ad5e88d154e208f6cc2bb01adfd073",
                 "shasum": ""
             },
             "require": {
+                "eher/oauth": "1.0.7",
                 "php": ">=5.4"
             },
             "type": "library",
@@ -84,7 +118,7 @@
             "keywords": [
                 "viadutoo"
             ],
-            "time": "2016-01-21 23:41:39"
+            "time": "2016-06-13 17:17:11"
         }
     ],
     "packages-dev": [],

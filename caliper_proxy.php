@@ -26,16 +26,20 @@ function respondAndCloseConnection(){
 
     $validRequestHost = (@$_SERVER['SERVER_NAME'] === @$_SERVER['REMOTE_ADDR']) &&
         (@$_SERVER['SERVER_NAME'] === '127.0.0.1');
-    $validRequestMethod = (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST');
+    $validRequestMethod = (strtoupper(@$_SERVER['REQUEST_METHOD']) === 'POST');
 
     $validRequest = false;
 
     if ( $validRequestHost !== true ) {
         http_response_code(403);
-        $app_log->msg("Request is 403 Forbidden");
+        $app_log->msg(sprintf('Error in %s (line %d): ' .
+                'Request to Viadutoo with invalid source address ("%s", required "127.0.0.1").',
+                __METHOD__, __LINE__, @$_SERVER['REMOTE_ADDR']));
     } elseif ( $validRequestMethod !== true ) {
         http_response_code(405);
-        $app_log->msg("405 Method not allowed");
+        $app_log->msg(sprintf('Error in %s (line %d): ' .
+                'Request to Viadutoo with invalid method ("%s", required "POST").',
+                __METHOD__, __LINE__, @$_SERVER['REQUEST_METHOD']));
     } else {
         http_response_code(200); //OK
         $validRequest = true;
@@ -68,19 +72,21 @@ global $app_log;
 
 $caCertPath = $caliper_config->getCaCertsPath();
 $endpointUrl = $caliper_config->getHost();
+$oauthKey = $caliper_config->getOauthKey();
+$oauthSecret = $caliper_config->getOauthSecret();
 
-if ((empty($caCertPath) || empty($endpointUrl))) {
+if ((empty($caCertPath) || empty($endpointUrl)|| empty($oauthKey) || empty($oauthSecret))) {
     $app_log->msg("Some viadutoo configurations are missing, unable to send Caliper Event. " .
-        "caCertPath = '$caCertPath'; endpointUrl = '$endpointUrl'");
+        "caCertPath = '$caCertPath'; endpointUrl = '$endpointUrl'; oauthkey = '$oauthKey'; oauthSecret =" . (empty($oauthSecret) ? "'$oauthSecret'" : 'NOT_SHOWN'));
     exit;
 }
 $proxy = (new MessageProxy())
     ->setTransportInterface((new CurlTransport())
-        ->setCACertPath($caCertPath)
-    )
+            ->setCACertPath($caCertPath)
+            ->setAuthZType(CurlTransport::AUTHZ_TYPE_OAUTH1, $oauthKey, $oauthSecret))
     ->setEndpointUrl($endpointUrl)
     ->setTimeoutSeconds(10)
-    ->setAutostoreOnSendFailure(true)
+    ->setAutostoreOnSendFailure(false)
     ->setStorageInterface(new MysqlStorage($dbmgr->m_host, $dbmgr->m_user, $dbmgr->m_pswd, $dbmgr->m_db, 'caliper_events'));
 
 $success = null;
@@ -90,10 +96,13 @@ try {
         ->setBody($body)
         ->send();
 } catch ( Exception $exception ) {
-    $app_log->msg($exception->getMessage());
+    $app_log->msg(sprintf('Exception in %s (line %d): %s',
+            __METHOD__, __LINE__, $exception->getMessage()));
 }
 
-if ( ($success !== true) && !$proxy->isAutostoreOnSendFailure() ) {
-    $app_log->msg("Send not successful, storing data");
+if (($success !== true)) {
     $proxy->store();
+    $app_log->msg(sprintf('Warning in %s (line %d): Failed to send message.  Storage in DB: %s',
+            __METHOD__, __LINE__,
+            (($proxy->getStorageInterface()->getLastSuccessFromStore() === true) ? 'success' : 'fail')));
 }

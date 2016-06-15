@@ -50,6 +50,12 @@
      
      // this is the directory to the CA certificate to send the events to the OpenLRS event store. for development purposes this can be any string. 
      $GLOBALS["CA_CERTS_PATH"]=null; // eg: "/etc/pki/tls/certs/";
+     
+     //OAuth key that an event store uses to allow caliper event. This must be a string
+     $GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"]=null;
+     
+     //OAuth secret that an event store uses to allow caliper event. This must be a string
+     $GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"]=null;
   
 ### More info on caliper-php sensor go to https://github.com/IMSGlobal/caliper-php-public   
 
