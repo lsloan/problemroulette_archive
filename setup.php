@@ -40,16 +40,16 @@ if (@$GLOBALS["CALIPER_ENABLED"] && $GLOBALS["CALIPER_ENABLED"] === true) {
     require_once($GLOBALS["DIR_LIB"] . "caliper_config.php");
     $caliper_config = new CaliperConfig();
     $caliper_config
-        ->setSensorId(@$GLOBALS["CALIPER_SENSOR_ID"] ? : '')
-        ->setCaliperClientId(@$GLOBALS["CALIPER_CLIENT_ID"] ? : '')
-        ->setCaliperHttpId(@$GLOBALS["CALIPER_HTTP_ID"] ? : '')
-        ->setHost(@$GLOBALS["CALIPER_ENDPOINT_URL"] ? : '')
-        ->setApiKey(@$GLOBALS["CALIPER_API_KEY"] ? : '')
-        ->setCaliperProxyEnabled(@$GLOBALS["CALIPER_PROXY_ENABLED"] ? : true)
-        ->setCaliperProxyUrl(@$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"] ? : '')
-        ->setCaCertsPath(@$GLOBALS["CA_CERTS_PATH"] ? : '')
-        ->setOauthKey(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"] ? : '')
-        ->setOauthSecret(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"] ? : '')
+        ->setSensorId(@$GLOBALS["CALIPER_SENSOR_ID"] ? @$GLOBALS["CALIPER_SENSOR_ID"] : '')
+        ->setCaliperClientId(@$GLOBALS["CALIPER_CLIENT_ID"] ? @$GLOBALS["CALIPER_CLIENT_ID"] : '')
+        ->setCaliperHttpId(@$GLOBALS["CALIPER_HTTP_ID"] ? @$GLOBALS["CALIPER_HTTP_ID"] : '')
+        ->setHost(@$GLOBALS["CALIPER_ENDPOINT_URL"] ? @$GLOBALS["CALIPER_ENDPOINT_URL"] : '')
+        ->setApiKey(@$GLOBALS["CALIPER_API_KEY"] ? @$GLOBALS["CALIPER_API_KEY"] : '')
+        ->setCaliperProxyEnabled(@$GLOBALS["CALIPER_PROXY_ENABLED"] ? @$GLOBALS["CALIPER_PROXY_ENABLED"] : true)
+        ->setCaliperProxyUrl(@$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"] ? @$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"] : '')
+        ->setCaCertsPath(@$GLOBALS["CA_CERTS_PATH"] ? @$GLOBALS["CA_CERTS_PATH"] : '')
+        ->setOauthKey(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"] ? @$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"] : '')
+        ->setOauthSecret(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"] ? @$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"] : '')
         ->setDebug($GLOBALS["DEBUG"]);
     require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
     $GLOBALS["caliper"] = new CaliperService($caliper_config);
