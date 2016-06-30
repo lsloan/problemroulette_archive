@@ -388,7 +388,16 @@ Class MProblem
 
 		if (isset($topic_id))
 		{
-			$selectquery = "SELECT * FROM 12m_topic_prob WHERE topic_id = :topic_id ";
+			if ($by_id == true || $by_id == 1) {
+				$cols = "p.id";
+			} else {
+				$cols = "p.*";
+			}
+			$selectquery = "SELECT " . $cols . " "
+				. "FROM 12m_topic_prob tp "
+				. "INNER JOIN problems p "
+				. "ON tp.problem_id = p.id "
+				. "WHERE tp.topic_id = :topic_id ";
 			$bindings[":topic_id"]= $topic_id;
 
 			if ($exclusion == true || $exclusion == 1)
@@ -397,12 +406,13 @@ Class MProblem
 				$user_id = $usrmgr->m_user->id;
 
 				$selectquery .=
-					" AND problem_id NOT IN ".
+					" AND p.id NOT IN ".
 					"(SELECT problem_id from omitted_problems ".
 					"where user_id=:user_id and topic_id=:topic_id)";
 				$bindings[":user_id"] = $user_id;
 			}
 			$res = $dbmgr->fetch_assoc($selectquery,$bindings);
+
 			$numrows = count($res);
 			
 			//return problem ids
@@ -411,9 +421,8 @@ Class MProblem
 				$all_problem_ids_in_topic = array();
 				for ($i=0; $i<$numrows; $i++)
 				{
-					$all_problem_ids_in_topic[$i] = $res[$i]['problem_id'];
+					$all_problem_ids_in_topic[$i] = $res[$i]['id'];
 				}
-				//$all_problem_ids_in_topic = pg_fetch_all($res)['problem_id'];
 				return $all_problem_ids_in_topic;
 			}
 			
@@ -421,7 +430,7 @@ Class MProblem
 			$all_problems_in_topic = array();
 			for ($i=0; $i<$numrows; $i++)
 			{
-				$all_problems_in_topic[$i] = MProblem::find($res[$i]['problem_id']);
+				$all_problems_in_topic[$i] = self::fromRow($res[$i]);
 			}
 			usort($all_problems_in_topic, "prob_list_sorter");
 			return $all_problems_in_topic;
