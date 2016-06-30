@@ -54,7 +54,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 	
 	//get current problem
 	$current_problem_id = $_POST['problem'];
-	$current_problem = new MProblem($current_problem_id);
+	$current_problem = MProblem::find($current_problem_id);
 	$start_time = $_POST['started'];	
 
 	//get user_id
@@ -100,7 +100,7 @@ if (isset($_POST['topic_checkbox_submission'])) {
 		
 		//get current problem and correct answer
 		$c_problem_id = $_POST['problem'];
-		$current_problem = new MProblem($c_problem_id);
+		$current_problem = MProblem::find($c_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 
 		//get current topic_id and omitted problems list for given topic
@@ -183,7 +183,7 @@ if($c_problem_id == null || $c_problem_id < 1) {
 	$topic = $c_topic_id;
 }
 
-$picked_problem = new MProblem($picked_problem_id);
+$picked_problem = MProblem::find($picked_problem_id);
 //caliper event.
 if ( (empty($_GET) && empty($_POST)) || (isset($_GET['pretry']) && (empty($_POST))) ) {
 	//when picked_problem_id is 0 then the student has answered all the questions correctly and this denotes the end of the problem set student chosen.

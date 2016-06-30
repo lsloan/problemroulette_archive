@@ -5,7 +5,7 @@ require_once("setup.php");
 if (isset($_POST['problem_info']))
 {
 	$problem_id = $_POST['problem_info'];
-	$problem = new MProblem($problem_id);
+	$problem = MProblem::find($problem_id);
 }
 else
 {

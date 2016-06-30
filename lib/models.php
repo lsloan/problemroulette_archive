@@ -15,12 +15,40 @@ Class MProblem
 	var $m_prob_topic_names;	#topic names the problem is in (NOTE: could be multiple names)
 	var $m_ok_to_show_soln; #whether it's ok to show the solution after an incorrect submission
 
-	function __construct($prob_id = Null)
+	function __construct()
 	{
-		if ($prob_id == Null)
-		{
-			return;
-		}
+		// These are really calculations and should never be used directly from the outside since they
+		// are not state information of the problem. They should be read through the accessors, after
+		// which the result will be cached.
+		$this->m_prob_topic_names= null;
+		$this->m_ok_to_show_soln = null;
+	}
+
+	static function find($id) {
+		$problem = new self();
+		$problem->load($id);
+		return $problem;
+	}
+
+	static function fromRow($row) {
+		$problem = new self();
+		$problem->fill($row);
+		return $problem;
+	}
+
+	protected function fill($row) {
+		$this->m_prob_id = $row['id'];
+		$this->m_prob_name = $row['name'];
+		$this->m_prob_url = $row['url'];
+		$this->m_prob_ans_count = $row['ans_count'];
+		$this->m_prob_correct = $row['correct'];
+		$this->m_prob_tot_tries = $row['tot_tries'];
+		$this->m_prob_tot_correct = $row['tot_correct'];
+		$this->m_prob_tot_time = $row['tot_time'];
+		$this->m_prob_solution = $row['solution'];
+	}
+
+	protected function load($prob_id) {
 		global $dbmgr;
 		global $usrmgr;
 		$query = "SELECT * FROM problems WHERE id = :id";
@@ -28,44 +56,54 @@ Class MProblem
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
 		if (! empty($res[0]))
 		{
-			$this->m_prob_id = $prob_id;
-			$this->m_prob_name = $res[0]['name'];
-			$this->m_prob_url = $res[0]['url'];
-			$this->m_prob_ans_count = $res[0]['ans_count'];
-			$this->m_prob_correct = $res[0]['correct'];
-			$this->m_prob_tot_tries = $res[0]['tot_tries'];
-			$this->m_prob_tot_correct = $res[0]['tot_correct'];
-			$this->m_prob_tot_time = $res[0]['tot_time'];
-			$this->m_prob_solution = $res[0]['solution'];
+			$this->fill($res[0]);
 		}
-		$query = "SELECT name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
-		$bindings = array(":pid"=>$prob_id);
-		$res = $dbmgr->fetch_assoc($query, $bindings);
-		$topics = array();
-		if (! empty($res[0] )) {
-			foreach ($res as $val) {
-				$topics[] = $val['name'];
-			}
-		}
-		$this->m_prob_topic_names = $topics;
-		$this->m_ok_to_show_soln = $this->get_ok_to_show_soln($usrmgr->m_user->id);
 	}
 
-	function get_ok_to_show_soln($user_id)
+	function get_topic_names() {
+		if ($this->m_prob_topic_names == null) {
+			$query = "SELECT name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
+			$bindings = array(":pid"=>$prob_id);
+			$res = $dbmgr->fetch_assoc($query, $bindings);
+			$topics = array();
+			if (! empty($res[0] )) {
+				foreach ($res as $val) {
+					$topics[] = $val['name'];
+				}
+			}
+			$this->m_prob_topic_names = $topics;
+		}
+		return $this->m_prob_topic_names;
+	}
+
+	// Note: this is only ever calculated for the current user
+	function get_ok_to_show_soln()
 	{
-		global $dbmgr;
-		$course_id = MProblem::get_prob_class_id($this->m_prob_id);
-		$delay_solution = MCourse::get_delay_solution($course_id);
-		if ($delay_solution == 0) return true;  //this class isn't participating in delaying the solution, no further check needed
-		$query = "SELECT sum(ans_correct) num_correct, count(*) tries FROM responses where prob_id=:prob_id and user_id=:user_id ";
-		$bindings = array(
-			":user_id"    => $user_id,
-			":prob_id"    => $this->m_prob_id
-		);
-		$res = $dbmgr->fetch_assoc( $query, $bindings );
-		if ($res[0]["num_correct"] > 0) return true; //they've answered correctly at some point - ok to show
-		if ($res[0]["tries"] >= $delay_solution) { return true; }
-		else return false; //havent tried enough times, havent answered correctly - dont show
+		global $dbmgr, $usrmgr;
+		if ($this->m_ok_to_show_soln == null) {
+			$this->m_ok_to_show_soln = false;
+			$user_id = $usrmgr->m_user->id;
+			$course_id = MProblem::get_prob_class_id($this->m_prob_id);
+			$delay_solution = MCourse::get_delay_solution($course_id);
+
+			if ($delay_solution == 0) {
+				//this class isn't participating in delaying the solution, no further check needed
+				$this->m_ok_to_show_soln = true;
+			} else {
+				$query = "SELECT SUM(ans_correct) num_correct, COUNT(*) tries FROM responses WHERE prob_id = :prob_id AND user_id = :user_id";
+				$bindings = array(
+						":user_id"    => $user_id,
+						":prob_id"    => $this->m_prob_id
+						);
+				$res = $dbmgr->fetch_assoc( $query, $bindings );
+
+				if ($res[0]["num_correct"] > 0 || $res[0]["tries"] >= $delay_solution) {
+					//they've answered correctly at some point, or attempted enough times
+					$this->m_ok_to_show_soln = true;
+				}
+			}
+		}
+		return $this->m_ok_to_show_soln;
 	}
 
 	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')
@@ -383,7 +421,7 @@ Class MProblem
 			$all_problems_in_topic = array();
 			for ($i=0; $i<$numrows; $i++)
 			{
-				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
+				$all_problems_in_topic[$i] = MProblem::find($res[$i]['problem_id']);
 			}
 			usort($all_problems_in_topic, "prob_list_sorter");
 			return $all_problems_in_topic;
@@ -411,7 +449,7 @@ Class MProblem
 			$all_problems_in_topic = array();
 			for ($i=0; $i<$numrows; $i++)
 			{
-				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
+				$all_problems_in_topic[$i] = MProblem::find($res[$i]['problem_id']);
 			}
 			usort($all_problems_in_topic, "prob_list_sorter");
 			return $all_problems_in_topic;
@@ -436,7 +474,7 @@ Class MProblem
     public static function delete_problem($problem_id) {
         global $dbmgr;
 
-        $problem = new MProblem($problem_id);
+        $problem = MProblem::find($problem_id);
         $topic_ids = $problem->get_problem_topics($problem_id);
 
         MTopic::remove_problem_topics($problem_id, $topic_ids);
@@ -1258,7 +1296,7 @@ Class MResponse
 		$solve_time = $this->m_end_time - $this->m_start_time;
 		
 		//determine if student answer is correct
-		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem = MProblem::find($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
 		//update stats table
@@ -1285,7 +1323,7 @@ Class MResponse
 		$solve_time = $this->m_end_time - $this->m_start_time;
 		
 		//determine if student answer is correct
-		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem = MProblem::find($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
 		//update stats table
@@ -1510,7 +1548,7 @@ Class MUserSummary
 			
 			for ($i=0;$i<$num_res;$i++)
 			{
-				$this->m_problem_list[$i] = new MProblem($res[$i]['prob_id']);
+				$this->m_problem_list[$i] = MProblem::find($res[$i]['prob_id']);
 				$this->m_student_answer_list[$i] = $res[$i]['answer'];
 				$this->m_start_time_list[$i] = $res[$i]['start_time'];
 				$this->m_end_time_list[$i] = $res[$i]['end_time'];
