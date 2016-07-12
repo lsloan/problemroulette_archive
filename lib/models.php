@@ -20,8 +20,8 @@ Class MProblem
 		// These are really calculations and should never be used directly from the outside since they
 		// are not state information of the problem. They should be read through the accessors, after
 		// which the result will be cached.
-		$this->m_prob_topic_names= null;
-		$this->m_ok_to_show_soln = null;
+		$this->m_prob_topic_names = null;
+		$this->m_ok_to_show_soln  = null;
 	}
 
 	static function find($id) {
@@ -30,10 +30,57 @@ Class MProblem
 		return $problem;
 	}
 
+	static function findAllWithTopics($ids) {
+		if (empty($ids)) {
+			return array();
+		}
+		$count = count($ids);
+
+		$sql = "SELECT p.*, t.id topic_id, t.name topic_name " .
+			   "FROM problems p " .
+			   "INNER JOIN 12m_topic_prob tp ON p.id = tp.problem_id " .
+			   "INNER JOIN topic t ON t.id = tp.topic_id " .
+			   "WHERE p.id IN (?" . str_repeat(",?", $count - 1) . ")";
+
+		return self::fromQueryWithTopics($sql, $ids);
+	}
+
 	static function fromRow($row) {
 		$problem = new self();
 		$problem->fill($row);
 		return $problem;
+	}
+
+	static function fromQuery($selectQuery, $bindings) {
+		global $dbmgr;
+		$res = $dbmgr->fetch_assoc($selectQuery, $bindings);
+		$problems = array();
+		foreach ($res as $row) {
+			$problems[] = self::fromRow($row);
+		}
+		return $problems;
+	}
+
+	static function fromQueryWithTopics($selectQuery, $bindings) {
+		global $dbmgr;
+		$res = $dbmgr->fetch_assoc($selectQuery, $bindings);
+		$problems = array();
+		foreach ($res as $row) {
+			$id = $row['id'];
+			if (isset($problems[$id])) {
+				$problem = $problems[$id];
+			} else {
+				$problem = self::fromRow($row);
+				$problem->m_prob_topic_names = array();
+			}
+
+			if (!empty($row['topic_id'])) {
+				$problem->m_prob_topic_names[$row['topic_id']] = $row['topic_name'];
+			}
+
+			$problems[$id] = $problem;
+		}
+		return array_values($problems);
 	}
 
 	protected function fill($row) {
@@ -61,14 +108,15 @@ Class MProblem
 	}
 
 	function get_topic_names() {
-		if ($this->m_prob_topic_names == null) {
-			$query = "SELECT name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
-			$bindings = array(":pid"=>$prob_id);
+		global $dbmgr;
+		if (is_null($this->m_prob_topic_names == null)) {
+			$query = "SELECT t.id, name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
+			$bindings = array(":pid"=>$this->m_prob_id);
 			$res = $dbmgr->fetch_assoc($query, $bindings);
 			$topics = array();
 			if (! empty($res[0] )) {
 				foreach ($res as $val) {
-					$topics[] = $val['name'];
+					$topics[$val['id']] = $val['name'];
 				}
 			}
 			$this->m_prob_topic_names = $topics;
@@ -441,27 +489,44 @@ Class MProblem
 		}
 	}
 
+	public static function get_problems_answered_by($user_id) {
+		global $dbmgr;
+
+		$sql = "SELECT DISTINCT p.*, t.id topic_id, t.name topic_name " .
+			   "FROM problems p " .
+			   "INNER JOIN responses r ON p.id = r.prob_id " .
+			   "LEFT JOIN topic t ON t.id = r.topic_id " .
+			   "WHERE user_id = :user_id AND answer <> 0";
+		$bindings = array("user_id" => $user_id);
+
+		return self::fromQueryWithTopics($sql, $bindings);
+	}
+
+	// This includes inactive topics because the original method did
 	public static function get_unique_problems_in_course($class_id)
+	{
+		return self::get_problems_in_course($class_id, true, true);
+	}
+
+	public static function get_problems_in_course($class_id, $include_inactive_topics = false)
 	{
 		global $usrmgr;
 		global $dbmgr;
 		$bindings = array();
 		if (isset($class_id))
 		{
-			$selectquery = "SELECT distinct problem_id ".
-						   "FROM 12m_topic_prob tp, 12m_class_topic ct ".
- 						   "WHERE ct.class_id = :class_id and ct.topic_id = tp.topic_id ";
-			$bindings[":class_id"]= $class_id;
-			$res = $dbmgr->fetch_assoc($selectquery,$bindings);
-			$numrows = count($res);
+			$inactive = $include_inactive_topics ? "" : "AND t.inactive = 0";
+			$selectquery = "SELECT p.*, t.id topic_name, t.name topic_name ".
+						   "FROM problems p ".
+						   "INNER JOIN 12m_topic_prob tp ON p.id = tp.problem_id ".
+						   "INNER JOIN 12m_class_topic ct ON ct.topic_id = tp.topic_id ".
+						   "INNER JOIN topic t ON ct.topic_id = t.id ".
+						   "WHERE ct.class_id = :class_id " . $inactive;
+			$bindings[":class_id"] = $class_id;
+			$problems = self::fromQueryWithTopics($selectquery, $bindings);
 
-			$all_problems_in_topic = array();
-			for ($i=0; $i<$numrows; $i++)
-			{
-				$all_problems_in_topic[$i] = MProblem::find($res[$i]['problem_id']);
-			}
-			usort($all_problems_in_topic, "prob_list_sorter");
-			return $all_problems_in_topic;
+			usort($problems, "prob_list_sorter");
+			return $problems;
 		}
 		else
 		{
@@ -1441,24 +1506,27 @@ Class MUserSummary
 	var $m_topic_id_list = Array(); //list of the problem's topic
 	//</HISTORY>
 	
-	var $m_problems_list_id;//array of problem IDs (only use these IDs)
+	var $m_problems_list_id = array(); //array of problem IDs (only use these IDs)
 	
-	function __construct($problems_list_id = Null, $all_users = 0)
+	function __construct($problems = Null, $all_users = 0)
 	{
 		global $usrmgr;
 		global $dbmgr;
 		
-		$this->m_problems_list_id = $problems_list_id;
+		$problem_index = array();
+		if (is_array($problems)) {
+			foreach($problems as $problem) {
+				$id = $problem->m_prob_id;
+				$this->m_problems_list_id[] = $id;
+				$problem_index[$id] = $problem;
+			}
+		}
 		$num_problems_in_selection = count($this->m_problems_list_id);
 
 		$user_id = $usrmgr->m_user->id;
 
 		//<GET RESPONSES>
-		if ($this->m_problems_list_id == 'blank')
-		{
-			$num_responses = 0;
-		}
-		else
+		if ($problems == null || !empty($this->m_problems_list_id))
 		{
 			$bindings=array();
 			$whole_thing=array(
@@ -1542,11 +1610,10 @@ Class MUserSummary
 					return;
 				}
 			}
-			$res = $dbmgr->fetch_num($whole_thing["select"][$type].$additional_clause,$bindings);
-			$num_res = count($res);
-		// }
 
 			$res = $dbmgr->fetch_assoc($whole_thing["select"][$type].$additional_clause,$bindings);
+			$num_res = count($res);
+
 
 			if ($num_res < 1)
 			{
@@ -1554,10 +1621,29 @@ Class MUserSummary
 				$this->m_tot_time = 0;
 				$this->m_tot_correct = 0;
 			}
+
+			if (empty($problem_index)) {
+				if ($type == 'user') {
+					$all_problems = MProblem::get_problems_answered_by($user_id);
+				} else {
+					$ids = array();
+					foreach ($res as $row) {
+						$ids[] = $row['prob_id'];
+					}
+
+					$all_problems = MProblem::findAllWithTopics($ids);
+				}
+
+				foreach ($all_problems as $problem) {
+					$id = $problem->m_prob_id;
+					$problem_index[$id] = $problem;
+				}
+			}
 			
 			for ($i=0;$i<$num_res;$i++)
 			{
-				$this->m_problem_list[$i] = MProblem::find($res[$i]['prob_id']);
+				$problem = $problem_index[$res[$i]['prob_id']];
+				$this->m_problem_list[$i] = $problem;
 				$this->m_student_answer_list[$i] = $res[$i]['answer'];
 				$this->m_start_time_list[$i] = $res[$i]['start_time'];
 				$this->m_end_time_list[$i] = $res[$i]['end_time'];
@@ -1566,11 +1652,12 @@ Class MUserSummary
 				$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
 				// topic_id_list stores topic_id and name. Some responses might not have associated topic though
 				$topic_name = '';
-				if (property_exists(MTopic::get_topic_by_id($res[$i]['topic_id']), 'm_name'))
-				{
-					$topic_name =  MTopic::get_topic_by_id($res[$i]['topic_id'])->m_name;
+				$topic_id = $res[$i]['topic_id'];
+				$topics = $problem->get_topic_names();
+				if (isset($topics[$topic_id])) {
+					$topic_name = $topics[$topic_id];
 				}
-				$this->m_topic_id_list[$i] = array($res[$i]['topic_id'], $topic_name);
+				$this->m_topic_id_list[$i] = array($topic_id, $topic_name);
 
 				//$this->m_tot_tries += 1;
 				$this->m_tot_time += $this->m_solve_time_list[$i];
