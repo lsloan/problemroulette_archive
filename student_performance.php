@@ -112,7 +112,7 @@ else
 	{
 	//<DISPLAY ALL PROBLEMS IN SELECTED TOPIC>
 		$problems_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id);
-		$summary = new MUserSummary($problem_id_list, $search_username);
+		$summary = new MUserSummary($problems_list, $search_username);
 	//</DISPLAY ALL PROBLEMS IN SELECTED TOPIC>
 	}
 }

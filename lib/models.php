@@ -45,9 +45,9 @@ Class MProblem
 		return self::fromQueryWithTopics($sql, $ids);
 	}
 
-	static function fromRow($row) {
+	static function fromRow($row, $with_topic = false) {
 		$problem = new self();
-		$problem->fill($row);
+		$problem->fill($row, $with_topic);
 		return $problem;
 	}
 
@@ -83,7 +83,7 @@ Class MProblem
 		return array_values($problems);
 	}
 
-	protected function fill($row) {
+	protected function fill($row, $with_topic = false) {
 		$this->m_prob_id = $row['id'];
 		$this->m_prob_name = $row['name'];
 		$this->m_prob_url = $row['url'];
@@ -93,6 +93,11 @@ Class MProblem
 		$this->m_prob_tot_correct = $row['tot_correct'];
 		$this->m_prob_tot_time = $row['tot_time'];
 		$this->m_prob_solution = $row['solution'];
+		// Note that this is only intended for a single topic to be included.
+		// Use fromQueryWithTopics if there are to be multiple topics attached to one MProblem.
+		if ($with_topic) {
+			$this->m_prob_topic_names = array($row['topic_id'] => $row['topic_name']);
+		}
 	}
 
 	protected function load($prob_id) {
@@ -439,13 +444,13 @@ Class MProblem
 			if ($by_id == true || $by_id == 1) {
 				$cols = "p.id";
 			} else {
-				$cols = "p.*";
+				$cols = "p.*, t.id topic_id, t.name topic_name";
 			}
 			$selectquery = "SELECT " . $cols . " "
-				. "FROM 12m_topic_prob tp "
-				. "INNER JOIN problems p "
-				. "ON tp.problem_id = p.id "
-				. "WHERE tp.topic_id = :topic_id ";
+				. "FROM problems p "
+				. "INNER JOIN 12m_topic_prob tp ON p.id = tp.problem_id "
+				. "INNER JOIN topic t ON t.id = tp.topic_id "
+				. "WHERE t.id = :topic_id";
 			$bindings[":topic_id"]= $topic_id;
 
 			if ($exclusion == true || $exclusion == 1)
@@ -478,7 +483,7 @@ Class MProblem
 			$all_problems_in_topic = array();
 			for ($i=0; $i<$numrows; $i++)
 			{
-				$all_problems_in_topic[$i] = self::fromRow($res[$i]);
+				$all_problems_in_topic[$i] = self::fromRow($res[$i], true);
 			}
 			usort($all_problems_in_topic, "prob_list_sorter");
 			return $all_problems_in_topic;
@@ -516,7 +521,7 @@ Class MProblem
 		if (isset($class_id))
 		{
 			$inactive = $include_inactive_topics ? "" : "AND t.inactive = 0";
-			$selectquery = "SELECT p.*, t.id topic_name, t.name topic_name ".
+			$selectquery = "SELECT p.*, t.id topic_id, t.name topic_name ".
 						   "FROM problems p ".
 						   "INNER JOIN 12m_topic_prob tp ON p.id = tp.problem_id ".
 						   "INNER JOIN 12m_class_topic ct ON ct.topic_id = tp.topic_id ".
