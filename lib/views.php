@@ -860,6 +860,13 @@ class VStats
 		$all_courses_with_topics = MCourse::get_all_courses_with_topics($include_inactive_topics);
 		usort($all_courses_with_topics, array('MCourse','alphabetize'));
 		$num_courses = count($all_courses_with_topics);
+
+		$all_topics = array();
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics[$i] = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
+		}
+
 		
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		
@@ -882,9 +889,8 @@ class VStats
 
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
+			$all_topics_in_course = $all_topics[$i];
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -916,9 +922,8 @@ class VStats
 		
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
+			$all_topics_in_course = $all_topics[$i];
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -940,8 +945,7 @@ class VStats
 		<option value='all' selected='selected'>All Topics</option>";
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
+			$all_topics_in_course = $all_topics[$i];
 			$num_topics = count($all_topics_in_course);
 			for ($j=0; $j<$num_topics; $j++)
 			{
