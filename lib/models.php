@@ -1624,7 +1624,7 @@ Class MUserSummary
 
 			if (empty($problem_index)) {
 				if ($type == 'user') {
-					$all_problems = MProblem::get_problems_answered_by($user_id);
+					$all_problems = MProblem::get_problems_answered_by($bindings[":user_id"]);
 				} else {
 					$ids = array();
 					foreach ($res as $row) {
