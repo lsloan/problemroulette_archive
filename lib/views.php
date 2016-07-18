@@ -860,6 +860,13 @@ class VStats
 		$all_courses_with_topics = MCourse::get_all_courses_with_topics($include_inactive_topics);
 		usort($all_courses_with_topics, array('MCourse','alphabetize'));
 		$num_courses = count($all_courses_with_topics);
+
+		$all_topics = array();
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics[$i] = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
+		}
+
 		
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		
@@ -882,9 +889,8 @@ class VStats
 
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
+			$all_topics_in_course = $all_topics[$i];
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -916,9 +922,8 @@ class VStats
 		
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
+			$all_topics_in_course = $all_topics[$i];
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -940,8 +945,7 @@ class VStats
 		<option value='all' selected='selected'>All Topics</option>";
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
+			$all_topics_in_course = $all_topics[$i];
 			$num_topics = count($all_topics_in_course);
 			for ($j=0; $j<$num_topics; $j++)
 			{
@@ -1671,7 +1675,9 @@ class VProblems_submitted
 		$this->v_topic_name = MTopic::get_topic_by_id($this->v_topic)->m_name;
 
 		global $usrmgr;
-		$this->v_course = MCourse::get_course_by_id($usrmgr->m_user->selected_course_id, $usrmgr->m_user->staff);
+		$user = $usrmgr->m_user;
+		$this->v_display_solution = $picked_problem->get_ok_to_show_soln();
+		$this->v_course = MCourse::get_course_by_id($user->selected_course_id, $user->staff);
 	}
 	
 	function Deliver()
@@ -1803,7 +1809,6 @@ class VProblems_submitted
 				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
 		}
-		$soln_ok = $this->v_picked_problem->m_ok_to_show_soln;
 
 		$str .= "</p>
 			<form class='form-next' action='' method='post'>
@@ -1811,7 +1816,7 @@ class VProblems_submitted
 			Next
 			</button>
 			";
-			if (! $soln_ok) {
+			if (!$this->v_display_solution) {
 				$str .= "
 				<input type='hidden' name='topic'  value='" . $this->v_topic. "'>
 				<button class='btn btn-next' type='submit' name='retry' value='".$this->v_picked_problem->m_prob_id."'>
@@ -1834,7 +1839,8 @@ class VProblems_submitted
 			<span class='span2 label ".$label_class." student-answer'>
 			Your answer:&nbsp;".$alphabet[$this->v_student_answer-1]."</span>
 		";
-		if ($soln_ok) { // show the correct answer, solution url, histogram
+		if ($this->v_display_solution) {
+			// show the correct answer, solution url, histogram
 			$str .= "Correct answer: ".$alphabet[$correct_answer-1]."</p>";
 			if ($this->v_picked_problem->m_prob_solution !== '')
 			{
@@ -2164,7 +2170,7 @@ class VProblemInfo
             $this->v_problem->m_prob_url
             ."'></iframe>
             <div class='problem-footer-bar'>
-            Problem: <strong>".$this->v_problem->m_prob_name." </strong>in topic(s): <strong> ".implode(';  ', $this->v_problem->m_prob_topic_names) ."</strong></div>
+            Problem: <strong>".$this->v_problem->m_prob_name." </strong>in topic(s): <strong> ".implode(';  ', $this->v_problem->get_topic_names()) ."</strong></div>
             <p align='center'>
             <font color='blue'>".$this->v_problem->m_prob_url."</font>
             </p>
@@ -2276,7 +2282,7 @@ class VProblemEdit
 			<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' >
 			";
 
-			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_names);
+			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->get_topic_names());
 			$str .= "</select></p>
 
             <p>

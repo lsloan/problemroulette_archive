@@ -173,7 +173,7 @@ function isInTopicsView(){
 }
 
 function getProblem($problemId) {
-  return new MProblem($problemId);
+  return MProblem::find($problemId);
 }
 
 function getUserName() {

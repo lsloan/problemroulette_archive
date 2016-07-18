@@ -57,58 +57,15 @@ else
     if ($selected_topic_id == 'all')
     {
         //<DISPLAY ALL PROBLEMS IN GIVEN COURSE>
-        $problems_list = Array();
-        $all_topics_in_course = MTopic::get_all_topics_in_course($selected_course_id, $include_inactive_topics);//topic objects
-        $num_topics = count($all_topics_in_course);
-        
-        for ($i=0; $i<$num_topics; $i++)
-        {
-            $problems_list_in_topic = MProblem::get_all_problems_in_topic_with_exclusion($all_topics_in_course[$i]->m_id);
-            for ($j=0; $j<count($problems_list_in_topic); $j++)
-            {
-                array_push($problems_list,$problems_list_in_topic[$j]);
-            }
-        }
-            
-        $num_problems = count($problems_list);
-        
-        $problems_list_id = Array();
-        for ($i=0; $i<$num_problems; $i++)
-        {
-            array_push($problems_list_id, $problems_list[$i]->m_prob_id);
-        }
-        
-        if ($num_problems > 0)
-        {
-            $summary = new MUserSummary($problems_list_id);
-        }
-        else
-        {
-            $summary = new MUserSummary('blank');
-        }
+        $problems_list = MProblem::get_problems_in_course($selected_course_id, $include_inactive_topics);
+        $summary = new MUserSummary($problems_list);
     //</DISPLAY ALL PROBLEMS IN GIVEN COURSE>
     }
     else
     {
     //<DISPLAY ALL PROBLEMS IN SELECTED TOPIC>
         $problems_list = MProblem::get_all_problems_in_topic_with_exclusion($selected_topic_id);
-        
-        $num_problems = count($problems_list);
-        
-        $problems_list_id = Array();
-        for ($i=0; $i<$num_problems; $i++)
-        {
-            array_push($problems_list_id, $problems_list[$i]->m_prob_id);
-        }
-        
-        if ($num_problems > 0)
-        {
-            $summary = new MUserSummary($problems_list_id);
-        }
-        else
-        {
-            $summary = new MUserSummary('blank');
-        }
+        $summary = new MUserSummary($problems_list);
     //</DISPLAY ALL PROBLEMS IN SELECTED TOPIC>
     }
 }
