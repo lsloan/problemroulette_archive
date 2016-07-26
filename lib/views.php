@@ -1205,8 +1205,10 @@ class VProblemsExport
 	var $v_courses;
 	var $v_files;
 	
-	function __construct($courses, $files)
+	function __construct($semesters, $courses, $files)
 	{
+		// We accept and discard the semesters so the export classes share a constructor signature
+		$semesters = null;
 		$this->v_courses   = $courses;
 		$this->v_files     = $files;
 	}

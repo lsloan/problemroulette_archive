@@ -1785,7 +1785,15 @@ Class MStatsFile
 
 	public static function delete_file($filename)
 	{
-		return unlink($GLOBALS["DIR_STATS"].$filename);
+		$base = realpath($GLOBALS["DIR_STATS"]);
+		$path = realpath($base . '/' . $filename);
+		if (strpos($path, $base) === 0) {
+			return unlink($path);
+		} else {
+			global $usrmgr;
+			error_log("WARNING: Bad filename supplied for deletion by '" . $usrmgr->GetUserId() . "': " . $filename);
+			return false;
+		}
 	}
 
 
@@ -1848,9 +1856,12 @@ Class MStatsFile
 
 	}
 
-	public static function export_problems($course_ids, $format = 'sql')
+	public static function export_problems($semester_ids, $course_ids, $format = 'sql')
 	{
 		global $dbmgr;
+		// We accept and discard the semesters to have the export functions share a signature
+		// and simplify dispatching.
+		$semester_ids = null;
 		$tablename = "problems_".date('Ymd\_His');
 		$params = array();
 		$filename = $GLOBALS['DIR_STATS']."problems_".date('\_Ymd\_His');
