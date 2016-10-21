@@ -19,7 +19,6 @@ $GLOBALS['app_log'] = new AppLogger($log_file);
 global $app_log;
 
 $GLOBALS['DEBUG'] = (isset($GLOBALS['DEBUG']) ? ((bool) $GLOBALS['DEBUG']) : false);
-
 // database
 require_once( $GLOBALS["DIR_LIB"]."dbmgr.php" );
 $GLOBALS["dbmgr"] = new CDbMgr();
@@ -33,6 +32,32 @@ $args = GrabAllArgs();
 require_once($GLOBALS["DIR_LIB"]."models.php");
 require_once($GLOBALS["DIR_LIB"]."views.php");
 
+//caliper setup
+require_once($GLOBALS["DIR_LIB"] . "caliper_base_service.php");
+$caliper_config=null;
+
+if (@$GLOBALS["CALIPER_ENABLED"] && $GLOBALS["CALIPER_ENABLED"] === true) {
+    require_once($GLOBALS["DIR_LIB"] . "caliper_config.php");
+    $caliper_config = new CaliperConfig();
+    $caliper_config
+        ->setSensorId(@$GLOBALS["CALIPER_SENSOR_ID"] ? @$GLOBALS["CALIPER_SENSOR_ID"] : '')
+        ->setCaliperClientId(@$GLOBALS["CALIPER_CLIENT_ID"] ? @$GLOBALS["CALIPER_CLIENT_ID"] : '')
+        ->setCaliperHttpId(@$GLOBALS["CALIPER_HTTP_ID"] ? @$GLOBALS["CALIPER_HTTP_ID"] : '')
+        ->setHost(@$GLOBALS["CALIPER_ENDPOINT_URL"] ? @$GLOBALS["CALIPER_ENDPOINT_URL"] : '')
+        ->setApiKey(@$GLOBALS["CALIPER_API_KEY"] ? @$GLOBALS["CALIPER_API_KEY"] : '')
+        ->setCaliperProxyEnabled(@$GLOBALS["CALIPER_PROXY_ENABLED"] ? @$GLOBALS["CALIPER_PROXY_ENABLED"] : true)
+        ->setCaliperProxyUrl(@$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"] ? @$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"] : '')
+        ->setCaCertsPath(@$GLOBALS["CA_CERTS_PATH"] ? @$GLOBALS["CA_CERTS_PATH"] : '')
+        ->setOauthKey(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"] ? @$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"] : '')
+        ->setOauthSecret(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"] ? @$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"] : '')
+        ->setDebug($GLOBALS["DEBUG"]);
+    require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
+    $GLOBALS["caliper"] = new CaliperService($caliper_config);
+} else {
+    $GLOBALS["caliper"] = new BaseCaliperService($caliper_config);
+}
+
+
 if (!extension_loaded('json')) {
     dl('json.so');
 }
@@ -41,6 +66,51 @@ global $dbmgr;
 global $usrmgr;
 
 session_start();
+
+// Handle session timeouts
+if (isset($GLOBALS['timeout']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 3600))) {
+    if (isset($_SESSION['START_TIME'])) {
+        $caliper->sessionTimeout();
+    }
+    session_unset();
+    session_destroy();
+
+    // When loading anything other than timeout.php, redirect there.
+    if (!isset($GLOBALS['timeout'])) {
+        header('Location: ' . $GLOBALS["DOMAIN"] . "timeout.php");
+        exit;
+    }
+}
+$_SESSION['LAST_ACTIVITY'] = time();
+// Only let a session ID last two hours
+if (!isset($_SESSION['SID_TIME'])) {
+    $_SESSION['START_TIME'] = time();
+    $_SESSION['SID_TIME'] = time();
+
+    //In case of loopback call to the server when viadutoo enabled this call may create a brand new session but we don't
+    //want to send the caliper session#loggedIN events during that time and once the loopback call is complete the session
+    //created will not be used and the previous session that triggered the loopback call resumes.In case when timeout page
+    //is called the previous session variables are unset we don't want session#loggedIN events sent.
+    if (!(checkForLoopBackCall() || checkIfTimeOutCall())) {
+        $caliper->sessionStart();
+    }
+} else if (time() - $_SESSION['SID_TIME'] > 7200) {
+    session_regenerate_id(true);
+    $_SESSION['SID_TIME'] = time();
+}
+
+function checkForLoopBackCall() {
+    return isStringInURI('caliper_proxy.php');
+}
+
+function checkIfTimeOutCall() {
+    return isStringInURI('timeout.php');
+}
+
+function isStringInURI($chunk) {
+    return (basename($_SERVER['REQUEST_URI'], $chunk) === $chunk);
+}
+
 $_SESSION['sesstest'] = 1;
 
 ?>

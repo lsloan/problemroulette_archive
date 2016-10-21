@@ -4,9 +4,13 @@ paths.inc.php
 PRdev/
 jpgraph-3.5.0b1/
 jpgraph/
+log/
 oldPR/
 problemroulette/
 test/
 testStaff/
+vendor/
+stats/*.csv
+stats/*.sql
 
 downloads/down.sql

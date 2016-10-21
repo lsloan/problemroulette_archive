@@ -43,4 +43,21 @@ $(document).ready(function()
     });
 
   });
+
+  $('#delete_problem').click(function(evt) {
+    var del = confirm("Deletion is permanent, removes all responses, and will affect statistics. Are you sure?");
+
+    if (!del) {
+      evt.preventDefault();
+    }
+
+    return del;
+  });
+
+  // One hour timeout
+  setTimeout(function() {
+    if (!window.location.pathname.match(/timeout\.php/)) {
+      window.location = 'timeout.php';
+    }
+  }, (1000 * 3600));
 });

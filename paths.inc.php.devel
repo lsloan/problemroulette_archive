@@ -1,25 +1,79 @@
 <?php
 error_reporting(E_ALL);
 // Set display_errors in development to view them in browser
-// ini_set('display_errors','1');
+// ini_set('display_errors', '1');
 
-// all the global stuff goes hear and gets included on every page
-#$GLOBALS["SQL_SERVER"] = "localhost";
-$GLOBALS["DOMAIN"] = "http://pr.local/";
-$GLOBALS["DOMAIN_PICS"] = $DOMAIN."pics/";
-$GLOBALS["DOMAIN_JS"] = $DOMAIN."js/";
-$GLOBALS["DOMAIN_CSS"] = $DOMAIN."css/";
-$GLOBALS["DOMAIN_LIB"] = $DOMAIN."lib/";
-#$GLOBALS["DIR"] = "C:/wamp/www/roadmaps2/";
-$GLOBALS["DIR"] = "/Users/jtritz/bitbucket/problemroulette/";
-$GLOBALS["DIR_PICS"] = $GLOBALS["DIR"]."pics/";
-$GLOBALS["DIR_JS"] = $GLOBALS["DIR"]."js/";
-$GLOBALS["DIR_CSS"] = $GLOBALS["DIR"]."css/";
-$GLOBALS["DIR_LIB"] = $GLOBALS["DIR"]."lib/";
+// All the global stuff goes here and gets included on every page
 
-$GLOBALS["SEND_MIGRATION_MAIL"] = false;
+// Set to true for a bit more debugging info like query counts
+$GLOBALS["DEBUG"] = false;
 
-$GLOBALS["INSTANCE"] = "Dev";
-$GLOBALS['DIR_LOGGER'] = $GLOBALS["DIR"]."log/".$GLOBALS["INSTANCE"]."/";
+// Set MySQL server and credentials
+$GLOBALS["SQL_SERVER"]   = "localhost";
+$GLOBALS["SQL_USER"]     = "";
+$GLOBALS["SQL_PASSWORD"] = "";
+$GLOBALS["SQL_DATABASE"] = "";
+$GLOBALS["SQL_PORT"]     = 3306;
 
-?>
+// Set the URL that will be used to access PR
+$GLOBALS["DOMAIN"]       = "http://pr.local/";
+
+// Set the absolute path to the application root directory; include trailing slash
+$GLOBALS["DIR"]          = "/path/to/pr/directory";
+
+// The instance is just for logging and emails, no decisions are made based on its value
+$GLOBALS["INSTANCE"]     = "Dev";
+
+// Path to downloads directory; the default "downloads" exists
+$GLOBALS["PATH_DOWNLOADS"] = "downloads/";
+
+// Path to stats export directory; this should not be public so the app can protect access
+// The default "stats" directory has an .htaccess file denying all direct access
+$GLOBALS["DIR_STATS"]      = "stats/";
+
+// Log under the application directory by default; ensure that it exists and has appropriate permissions
+// The default "log/Dev" directory has an .htaccess file denying all direct accesss
+$GLOBALS['DIR_LOGGER']     = $GLOBALS["DIR"]."log/".$GLOBALS["INSTANCE"]."/";
+
+// Migrations can send a confirmation email if enabled
+$GLOBALS["SEND_MIGRATION_MAIL"]  = false;
+$GLOBALS["MIGRATION_EMAIL_FROM"] = "ltig-staff@umich.edu";
+$GLOBALS["MIGRATION_EMAIL_TO"]   = "ltig-staff@umich.edu";
+
+
+// These are just concatenations by default, but could be customized if
+// images and other files were stored outside the application root.
+$GLOBALS["DOMAIN_PICS"]   = $DOMAIN."pics/";
+$GLOBALS["DOMAIN_JS"]     = $DOMAIN."js/";
+$GLOBALS["DOMAIN_CSS"]    = $DOMAIN."css/";
+$GLOBALS["DOMAIN_LIB"]    = $DOMAIN."lib/";
+$GLOBALS["DIR_PICS"]      = $GLOBALS["DIR"]."pics/";
+$GLOBALS["DIR_JS"]        = $GLOBALS["DIR"]."js/";
+$GLOBALS["DIR_CSS"]       = $GLOBALS["DIR"]."css/";
+$GLOBALS["DIR_LIB"]       = $GLOBALS["DIR"]."lib/";
+$GLOBALS["DIR_DOWNLOADS"] = $GLOBALS["DIR"].$GLOBALS["PATH_DOWNLOADS"];
+
+//caliper globals
+//this property enable/disable caliper service. [False]= disable caliper service
+$GLOBALS["CALIPER_ENABLED"]       = false;
+// This is the api key that is needed to send the event to the Event Store.
+$GLOBALS["CALIPER_API_KEY"]       = null;
+// property hold url to event store.
+$GLOBALS["CALIPER_ENDPOINT_URL"]  = null; // Eg, http://lti.tools/caliper/event?key=problemroulette
+//sensor id should be unique for application. This can be a simple string or PR URL itself
+$GLOBALS["CALIPER_SENSOR_ID"]     = null;
+// Protocal id of application should be unique and can be any string
+$GLOBALS["CALIPER_HTTP_ID"] = null; //PRcaliperHttp
+//Caliper client id of application should be unique and can be any string
+$GLOBALS["CALIPER_CLIENT_ID"] = null;//PRcaliperClient
+// This property controls if viadutoo should be used to send caliper events.
+$GLOBALS["CALIPER_PROXY_ENABLED"] = false;
+// this is the loop back url that is looking back to the local machine the application is hosted
+$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"]=null; //eg, "http://127.0.0.1:8888/problemroulette/caliper_proxy.php/";
+// this is the directory to the CA certificate to send the events to the OpenLRS event store. for development purposes this can be any string.
+$GLOBALS["CA_CERTS_PATH"]=null; // eg: "/path/to/CA/Cert/directory";
+//OAuth key that an event store uses to allow caliper event. This must be a string
+$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"]=null;
+//OAuth secret that an event store uses to allow caliper event. This must be a string
+$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"]=null;
+

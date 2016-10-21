@@ -6,17 +6,19 @@ require_once("setup.php");
 if (isset($_POST['problem_info']))
 {
 	$problem_id = $_POST['problem_info'];
-	$problem = new MProblem($problem_id);
+	$problem = MProblem::find($problem_id);
 }
 elseif (isset($_GET['p_id']))
 {
     $problem_id = $_GET['p_id'];
-    $problem = new MProblem($problem_id);
+    $problem = MProblem::find($problem_id);
 }
 else
 {
 	$problem = Null;
 }
+
+$show_delete_confirmation = false;
 
 // //Update problem name in database if requested
 // if (isset($_POST['edit_problem_name']))
@@ -57,7 +59,17 @@ else
 //     MProblem::update_problem_sol_url($problem_id,$new_problem_sol_url);
 //     header('Location:problem_edit.php?p_id='.$problem_id);
 // }
-if (isset($_POST['edit_problem_name']))
+if (isset($_POST['delete_problem']))
+{
+    if (!$usrmgr->m_user->admin) {
+        http_response_code(403);
+        die('Permission Denied.');
+    }
+
+    MProblem::delete_problem($problem_id);
+    $show_delete_confirmation = true;
+}
+else if (isset($_POST['edit_problem_name']))
 {
     $old_ans_count = MProblem::get_ans_count($problem_id);
     $new_problem_name = $_POST['edit_problem_name'];
@@ -92,7 +104,14 @@ if (isset($_POST['edit_problem_name']))
 // page construction
 $head = new CHeadCSSJavascript("Edit Problem", array(), array());
 $tab_nav = new VNoTabNav(new MTabNav('My Summary'));
-$content = new VProblemEdit($problem);
+
+if ($show_delete_confirmation) {
+    $content = new VProblemDelete($problem);
+    header('Refresh: 10; url=problem_library.php');
+} else {
+    $content = new VProblemEdit($problem);
+}
+
 $page = new VPageTabs($head, $tab_nav, $content);
 
 # delivery the html

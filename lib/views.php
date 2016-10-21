@@ -32,13 +32,13 @@ class CHeadCSSJavascript{
 		<?php if($this->m_cssfile != NULL): ?>
 			<?php foreach((array)$this->m_cssfile as $css): ?>
 				<link rel='stylesheet' href='<?= $css ?>' type='text/css' media='screen'></link>
-			<?php endforeach ?>
-		<?php endif ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
 		<?php if($this->m_javafile != NULL): ?>
 			<?php foreach((array)$this->m_javafile as $java): ?>
 				<script type='text/JavaScript' src='<?= $java ?>'></script>
-			<?php endforeach ?>
-		<?php endif ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
 		<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
 		<?php return ob_get_clean();
 	}
@@ -149,7 +149,7 @@ class VStaff
 		<p>
 			hi, this is the staff page... this well soon be more then one page
 		</p>
-		<? return ob_get_clean();
+		<?php return ob_get_clean();
 	}
 }
 
@@ -860,6 +860,13 @@ class VStats
 		$all_courses_with_topics = MCourse::get_all_courses_with_topics($include_inactive_topics);
 		usort($all_courses_with_topics, array('MCourse','alphabetize'));
 		$num_courses = count($all_courses_with_topics);
+
+		$all_topics = array();
+		for ($i=0; $i<$num_courses; $i++)
+		{
+			$all_topics[$i] = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
+		}
+
 		
 		$alphabet = Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		
@@ -882,9 +889,8 @@ class VStats
 
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
+			$all_topics_in_course = $all_topics[$i];
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -916,9 +922,8 @@ class VStats
 		
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
+			$all_topics_in_course = $all_topics[$i];
 			$all_topics_in_course_id = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
 			$topic_count = count($all_topics_in_course);
 			for($j=0; $j<$topic_count; $j++)
 			{
@@ -940,8 +945,7 @@ class VStats
 		<option value='all' selected='selected'>All Topics</option>";
 		for ($i=0; $i<$num_courses; $i++)
 		{
-			$all_topics_in_course = Array();
-			$all_topics_in_course = MTopic::get_all_topics_in_course($all_courses_with_topics[$i]->m_id, $include_inactive_topics);
+			$all_topics_in_course = $all_topics[$i];
 			$num_topics = count($all_topics_in_course);
 			for ($j=0; $j<$num_topics; $j++)
 			{
@@ -1063,7 +1067,7 @@ class VStatsExport
 
 		$researcher = $usrmgr->m_user->researcher;
 
-		if ($researcher == 1)//if user has staff permissions
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
 		{	
 			// show sql dumps available to download (by date, description).
 			// show choices of semesters and classes and enable start of an sql dump.
@@ -1092,7 +1096,7 @@ class VStatsExport
 				      <ul>
 				      	<li>Download an existing export file</li>
 				      	<li>Generate a new export file of all data</li>
-				      	<li>Generate a new export file filtered by selester and/or class</li>
+				      	<li>Generate a new export file filtered by semester and/or class</li>
 				      </ul>
 				      <h5>Download existing export file</h5>
 				      <?php if($this->v_files == NULL): ?>
@@ -1106,9 +1110,9 @@ class VStatsExport
 												<img src="img/delete_16.png"></img>
 											</a>
 										</li>
-									<?php endforeach ?>
+									<?php endforeach; ?>
 								</ul>
-				      <?php endif ?>
+				      <?php endif; ?>
 				      <h5>Generate a new export file</h5>
 				      <form action='' method='post'>
 					      <h6>Specify filters (if any)</h6>
@@ -1132,8 +1136,8 @@ class VStatsExport
 											<?php if(($index + 1) % 4 == 0): ?>
 												</div>
 												<div class="row-fluid">
-											<?php endif ?>
-										<?php endforeach ?>
+											<?php endif; ?>
+										<?php endforeach; ?>
 									</div>
 								</fieldset>
 								<fieldset>
@@ -1156,8 +1160,8 @@ class VStatsExport
 											<?php if(($index + 1) % 4 == 0): ?>
 												</div>
 												<div class="row-fluid">
-											<?php endif ?>
-										<?php endforeach ?>
+											<?php endif; ?>
+										<?php endforeach; ?>
 									</div>
 								</fieldset>
 								<fieldset>
@@ -1201,8 +1205,10 @@ class VProblemsExport
 	var $v_courses;
 	var $v_files;
 	
-	function __construct($courses, $files)
+	function __construct($semesters, $courses, $files)
 	{
+		// We accept and discard the semesters so the export classes share a constructor signature
+		$semesters = null;
 		$this->v_courses   = $courses;
 		$this->v_files     = $files;
 	}
@@ -1245,9 +1251,9 @@ class VProblemsExport
 												<img src="img/delete_16.png"></img>
 											</a>
 										</li>
-									<?php endforeach ?>
+									<?php endforeach; ?>
 								</ul>
-				      <?php endif ?>
+				      <?php endif; ?>
 				      <h5>Generate a new export file</h5>
 				      <form action='' method='post'>
 					      <h6>Specify filters (if any)</h6>
@@ -1271,8 +1277,8 @@ class VProblemsExport
 											<?php if(($index + 1) % 4 == 0): ?>
 												</div>
 												<div class="row-fluid">
-											<?php endif ?>
-										<?php endforeach ?>
+											<?php endif; ?>
+										<?php endforeach; ?>
 									</div>
 								</fieldset>
 								<fieldset>
@@ -1309,6 +1315,219 @@ class VProblemsExport
 	}
 		
 }
+
+class VResponsesExport
+{
+	var $v_semesters;
+	var $v_courses;
+	var $v_files;
+
+	function __construct($semesters, $courses, $files)
+	{
+		$this->v_semesters = $semesters;
+		$this->v_courses   = $courses;
+		$this->v_files     = $files;
+	}
+
+	function Deliver()
+	{
+		global $usrmgr;
+
+		$researcher = $usrmgr->m_user->researcher;
+
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
+		{
+			// show sql dumps available to download (by date, description).
+			// show choices of semesters and classes and enable start of an sql dump.
+			ob_start(); ?>
+			<div class='tab-pane active' id='export-responses'>
+				<div class="export_stats_page">
+					<div class="row-fluid">
+						<div class="span12">
+							<p class='half-line'>&nbsp;</p>
+							<h4 class='summary-header'>Export summary data about responses</h4>
+							<div class="row-fluid">
+								<div class="span8">
+									<div class="well well-large">
+										<strong>
+											Files downloaded from this page are for research purposes only.
+											Disclosure to other people or any other use besides the intended
+											purpose may violate policies of The University of Michigan and
+											federal or state laws.
+										</strong>
+									</div>
+								</div>
+							</div>
+				      <h5>
+				      	Options in this page:
+				      </h5>
+				      <ul>
+				      	<li>Download an existing export file</li>
+				      	<li>Generate a new export file of all responses (including skips)</li>
+				      	<li>Generate a new export file filtered by semester and/or class</li>
+				      </ul>
+				      <h5>Download existing export file</h5>
+				      <?php if($this->v_files == NULL): ?>
+				      	<p>No files to download</p>
+				      <?php else: ?>
+				      	<ul>
+									<?php foreach((array)$this->v_files as $file): ?>
+										<li class="export_file_for_download">
+											<a href='<?= $GLOBALS["DOMAIN"] . 'responses_export.php?download='.$file ?>' class="stats_file" title="Download the file (<?= $file ?>)"><?= $file ?></a>
+											<a href='#' class="delete_stats_file" data-url="<?= $GLOBALS["DOMAIN"] . 'responses_export.php' ?>" data-filename="<?= $file ?>" title="Permanently delete the file (<?= $file ?>)">
+												<img src="img/delete_16.png"></img>
+											</a>
+										</li>
+									<?php endforeach; ?>
+								</ul>
+				      <?php endif; ?>
+				      <h5>Generate a new export file</h5>
+				      <form action='' method='post'>
+					      <h6>Specify filters (if any)</h6>
+					      <fieldset>
+						      <legend>Semester(s)</legend>
+						      <div class="row-fluid">
+						      	<p class="span8">
+							      	Checking one or more semesters will filter the responses (including skips) included in the export,
+							      	eliminating any responses that did not occur during the selected semesters.  To
+							      	export data about all semesters, leave all semesters unchecked.
+							      </p>
+							    </div>
+					      	<div class="row-fluid">
+										<?php foreach((array)$this->v_semesters as $index => $item): ?>
+											<div class="span3">
+												<label class="checkbox" for="semester-<?= $item['semester']->m_id ?>">
+													<input type="checkbox" name="semester[]" value="<?= $item['semester']->m_id ?>" id="semester-<?= $item['semester']->m_id ?>" class="semester-filter" />
+													<strong><?= $item['semester']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses)</small>
+												</label>
+											</div>
+											<?php if(($index + 1) % 4 == 0): ?>
+												</div>
+												<div class="row-fluid">
+											<?php endif; ?>
+										<?php endforeach; ?>
+									</div>
+								</fieldset>
+								<fieldset>
+						      <legend>Course(s)</legend>
+						      <div class="row-fluid">
+						      	<p class="span8">
+							      	Checking one or more courses will filter the responses included in the export,
+							      	eliminating any responses (including skips) that do not relate to the selected courses.  To
+							      	export data about all courses, leave all courses unchecked.
+							      </p>
+							    </div>
+						      <div class="row-fluid">
+										<?php foreach((array)$this->v_courses as $index => $item): ?>
+											<div class="span3">
+												<label class="checkbox" for="course-<?= $item['course']->m_id ?>">
+													<input type="checkbox" name="course[]" value="<?= $item['course']->m_id ?>" id="course-<?= $item['course']->m_id ?>" class="course-filter" />
+													<strong><?= $item['course']->m_name ?></strong> <small>(<?= number_format($item['response_count']) ?> responses) </small>
+												</label>
+											</div>
+											<?php if(($index + 1) % 4 == 0): ?>
+												</div>
+												<div class="row-fluid">
+											<?php endif; ?>
+										<?php endforeach; ?>
+									</div>
+								</fieldset>
+								<fieldset>
+									<legend>File Format</legend>
+									<div class="row-fluid">
+										<div class="span3">
+											<label class="checkbox" for="format-sql">
+												<input type="radio" name="format" value="sql" id="format-sql" class="format-choice" checked='checked' />
+												<strong>SQL</strong>
+											</label>
+										</div>
+										<div class="span3">
+											<label class="checkbox" for="format-csv">
+												<input type="radio" name="format" value="csv" id="format-csv" class="format-choice" />
+												<strong>CSV</strong>
+											</label>
+										</div>
+									</div>
+								</fieldset>
+
+								<h5>Start exporting data to file</h5>
+								<p>
+									<button type='submit' class='btn btn-submit' name='start_export' value='1' id='start_export'>
+										Start Export
+									</button>
+									<a href="https://docs.google.com/document/d/1ImQrvuti61Nk0_Al4PxIGG6NwSOTAAYtS4H-AlpcjfE/edit?usp=sharing">Information about the Export</a>
+								</p>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php return ob_get_clean();
+		}
+	}
+
+}
+
+class VExport
+{
+	function __construct()
+	{
+	}
+
+	function Deliver()
+	{
+		global $usrmgr;
+
+		$researcher = $usrmgr->m_user->researcher;
+
+		if ($researcher == 1 || $staff == 1)//if user has staff permissions
+		{
+			ob_start(); ?>
+			<div class='tab-pane active' id='export-stats'>
+				<div class="export_stats_page">
+					<div class="row-fluid">
+						<div class="span12">
+							<p class='half-line'>&nbsp;</p>
+							<h4 class='summary-header'>Export summary data</h4>
+							<div class="row-fluid">
+								<div class="span8">
+									<div class="well well-large">
+										<strong>
+											Export files are for research purposes only.
+											Disclosure to other people or any other use besides the intended
+											purpose may violate policies of The University of Michigan and
+											federal or state laws.
+										</strong>
+									</div>
+								</div>
+							</div>
+				      <h5>
+				      	Click an export type to further specify export options
+				      </h5>
+
+							<p class="row">
+								<a class="btn btn-primary span3" href="stats_export.php">Export User Stats</a>
+								<a class="export-info-link"      href="https://docs.google.com/a/umich.edu/document/d/1an___FgYKRLgGvozu0jZV1pmcYe6TbpmdFdrcYwGje8/view?usp=sharing">User stats info</a>
+							</p>
+
+							<p class="row">
+								<a class="btn btn-primary span3" href="problems_export.php">Export Problem Stats</a>
+								<a class="export-info-link"      href="https://docs.google.com/a/umich.edu/document/d/1uxT_irF_w6aX8-bhXHBUGjkSeDOfWXUDxKMy9Lkc_5s/view?usp=sharing">Problem stats info</a>
+							</p>
+							<p class="row">
+								<a class="btn btn-primary span3" href="responses_export.php">Export Response Stats</a>
+								<a class="export-info-link"      href="https://docs.google.com/document/d/1ImQrvuti61Nk0_Al4PxIGG6NwSOTAAYtS4H-AlpcjfE/edit?usp=sharing">Response stats info</a>
+							</p>
+
+					</div>
+
+				</div>
+			</div>
+			<?php return ob_get_clean();
+		}
+	}
+}
+
 
 class VProblems_no_topics
 {
@@ -1458,7 +1677,9 @@ class VProblems_submitted
 		$this->v_topic_name = MTopic::get_topic_by_id($this->v_topic)->m_name;
 
 		global $usrmgr;
-		$this->v_course = MCourse::get_course_by_id($usrmgr->m_user->selected_course_id, $usrmgr->m_user->staff);
+		$user = $usrmgr->m_user;
+		$this->v_display_solution = $picked_problem->get_ok_to_show_soln();
+		$this->v_course = MCourse::get_course_by_id($user->selected_course_id, $user->staff);
 	}
 	
 	function Deliver()
@@ -1590,7 +1811,6 @@ class VProblems_submitted
 				$str .= "<span class='label'>".$value['name'].":&nbsp;".$value['remaining']."&nbsp;/&nbsp;".$value['total']."</span>&nbsp;";
 			}
 		}
-		$soln_ok = $this->v_picked_problem->m_ok_to_show_soln;
 
 		$str .= "</p>
 			<form class='form-next' action='' method='post'>
@@ -1598,7 +1818,7 @@ class VProblems_submitted
 			Next
 			</button>
 			";
-			if (! $soln_ok) {
+			if (!$this->v_display_solution) {
 				$str .= "
 				<input type='hidden' name='topic'  value='" . $this->v_topic. "'>
 				<button class='btn btn-next' type='submit' name='retry' value='".$this->v_picked_problem->m_prob_id."'>
@@ -1621,7 +1841,8 @@ class VProblems_submitted
 			<span class='span2 label ".$label_class." student-answer'>
 			Your answer:&nbsp;".$alphabet[$this->v_student_answer-1]."</span>
 		";
-		if ($soln_ok) { // show the correct answer, solution url, histogram
+		if ($this->v_display_solution) {
+			// show the correct answer, solution url, histogram
 			$str .= "Correct answer: ".$alphabet[$correct_answer-1]."</p>";
 			if ($this->v_picked_problem->m_prob_solution !== '')
 			{
@@ -1856,7 +2077,7 @@ class VCourse_Selections
 					class='btn btn-inverse btn-course' 
 					type='submit' 
 					name='course_submission' 
-					value='".$this->v_all_courses_with_topics[$i]->m_id."'>
+					value='" . $this->v_all_courses_with_topics[$i]->m_id . "'>
 					".$this->v_all_courses_with_topics[$i]->m_name."
 					</button><br/>";
 				}
@@ -1951,7 +2172,7 @@ class VProblemInfo
             $this->v_problem->m_prob_url
             ."'></iframe>
             <div class='problem-footer-bar'>
-            Problem: <strong>".$this->v_problem->m_prob_name." </strong>in topic(s): <strong> ".implode(';  ', $this->v_problem->m_prob_topic_names) ."</strong></div>
+            Problem: <strong>".$this->v_problem->m_prob_name." </strong>in topic(s): <strong> ".implode(';  ', $this->v_problem->get_topic_names()) ."</strong></div>
             <p align='center'>
             <font color='blue'>".$this->v_problem->m_prob_url."</font>
             </p>
@@ -1959,6 +2180,23 @@ class VProblemInfo
 		}
 		return $str;
 	}
+}
+
+class VProblemDelete
+{
+    var $v_problem = null;
+
+    function __construct($problem) {
+        $this->v_problem = $problem;
+    }
+
+    function Deliver() {
+        $str = "<h1>Problem Deleted</h1>"
+             . "<p>The problem <strong>" . $this->v_problem->m_prob_name . "</strong> (id: " . $this->v_problem->m_prob_id . ", "
+             . "url: <a style='margin: 0' href='" . $this->v_problem->m_prob_url . "'>" . $this->v_problem->m_prob_url . "</a>) has been deleted.</p>"
+             . "<p>You will be returned to the <a style='margin: 0' href='problem_library.php'>problem library</a> in ten seconds.</p>";
+        return $str;
+    }
 }
 
 class VProblemEdit
@@ -2030,6 +2268,15 @@ class VProblemEdit
 			<p>
 			<label for='edit_problem_name' class='span2 text-right' >Problem Name</label>
 			<input type='text' required id='edit_problem_name' name='edit_problem_name' value='".$this->v_problem->m_prob_name."' maxlength='200' class='span4 left'/>
+            ";
+
+            if ($usrmgr->m_user->admin) {
+                $str .= "
+                <input id='delete_problem' type='submit' class='btn btn-danger pull-right' value='Delete Problem' name='delete_problem' />
+                ";
+            }
+
+            $str .= "
 			</p>
 
 			<p>
@@ -2037,7 +2284,7 @@ class VProblemEdit
 			<select  size=". $num_topics ." multiple class='span4' required name='topic_for_new_problem[]' id='topic_for_new_problem' >
 			";
 
-			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->m_prob_topic_names);
+			$str .= MakeSelectTopicOptions($topic_choices, $this->v_problem->get_topic_names());
 			$str .= "</select></p>
 
             <p>
@@ -2292,19 +2539,33 @@ class VGlobalAlertsAdmin
 											</form>
 										<?php else: ?>
 											&nbsp;
-										<?php endif ?>
+										<?php endif; ?>
 									</td>
 								</tr>
-							<?php endforeach ?>
+							<?php endforeach; ?>
 						</tbody>
 					</table>
 				<?php else: ?>
 					<p>No previous alerts found</p>
-				<?php endif ?>
+				<?php endif; ?>
 			</div>
 		</div>
-		<? return ob_get_clean();
+		<?php return ob_get_clean();
 	}
+}
+
+class VTimeout
+{
+    function Deliver()
+    {
+        ob_start(); ?>
+            <div class='error-page'>
+                <img class='logo' src='img/PR.jpg' width='200px' alt='Problem Roulette'/>
+                <h1>Session Timeout</h1>
+                <p>We're sorry, but your session has timed out because of inactivity. You may resume your work when you choose.</p>
+            </div>
+        <?php return ob_get_clean();
+    }
 }
 
 class VErrorPage

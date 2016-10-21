@@ -15,12 +15,92 @@ Class MProblem
 	var $m_prob_topic_names;	#topic names the problem is in (NOTE: could be multiple names)
 	var $m_ok_to_show_soln; #whether it's ok to show the solution after an incorrect submission
 
-	function __construct($prob_id = Null)
+	function __construct()
 	{
-		if ($prob_id == Null)
-		{
-			return;
+		// These are really calculations and should never be used directly from the outside since they
+		// are not state information of the problem. They should be read through the accessors, after
+		// which the result will be cached.
+		$this->m_prob_topic_names = null;
+		$this->m_ok_to_show_soln  = null;
+	}
+
+	static function find($id) {
+		$problem = new self();
+		$problem->load($id);
+		return $problem;
+	}
+
+	static function findAllWithTopics($ids) {
+		if (empty($ids)) {
+			return array();
 		}
+		$count = count($ids);
+
+		$sql = "SELECT p.*, t.id topic_id, t.name topic_name " .
+			   "FROM problems p " .
+			   "INNER JOIN 12m_topic_prob tp ON p.id = tp.problem_id " .
+			   "INNER JOIN topic t ON t.id = tp.topic_id " .
+			   "WHERE p.id IN (?" . str_repeat(",?", $count - 1) . ")";
+
+		return self::fromQueryWithTopics($sql, $ids);
+	}
+
+	static function fromRow($row, $with_topic = false) {
+		$problem = new self();
+		$problem->fill($row, $with_topic);
+		return $problem;
+	}
+
+	static function fromQuery($selectQuery, $bindings) {
+		global $dbmgr;
+		$res = $dbmgr->fetch_assoc($selectQuery, $bindings);
+		$problems = array();
+		foreach ($res as $row) {
+			$problems[] = self::fromRow($row);
+		}
+		return $problems;
+	}
+
+	static function fromQueryWithTopics($selectQuery, $bindings) {
+		global $dbmgr;
+		$res = $dbmgr->fetch_assoc($selectQuery, $bindings);
+		$problems = array();
+		foreach ($res as $row) {
+			$id = $row['id'];
+			if (isset($problems[$id])) {
+				$problem = $problems[$id];
+			} else {
+				$problem = self::fromRow($row);
+				$problem->m_prob_topic_names = array();
+			}
+
+			if (!empty($row['topic_id'])) {
+				$problem->m_prob_topic_names[$row['topic_id']] = $row['topic_name'];
+			}
+
+			$problems[$id] = $problem;
+		}
+		return array_values($problems);
+	}
+
+	protected function fill($row, $with_topic = false) {
+		$this->m_prob_id = $row['id'];
+		$this->m_prob_name = $row['name'];
+		$this->m_prob_url = $row['url'];
+		$this->m_prob_ans_count = $row['ans_count'];
+		$this->m_prob_correct = $row['correct'];
+		$this->m_prob_tot_tries = $row['tot_tries'];
+		$this->m_prob_tot_correct = $row['tot_correct'];
+		$this->m_prob_tot_time = $row['tot_time'];
+		$this->m_prob_solution = $row['solution'];
+		// Note that this is only intended for a single topic to be included.
+		// Use fromQueryWithTopics if there are to be multiple topics attached to one MProblem.
+		if ($with_topic) {
+			$this->m_prob_topic_names = array($row['topic_id'] => $row['topic_name']);
+		}
+	}
+
+	protected function load($prob_id) {
 		global $dbmgr;
 		global $usrmgr;
 		$query = "SELECT * FROM problems WHERE id = :id";
@@ -28,44 +108,55 @@ Class MProblem
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
 		if (! empty($res[0]))
 		{
-			$this->m_prob_id = $prob_id;
-			$this->m_prob_name = $res[0]['name'];
-			$this->m_prob_url = $res[0]['url'];
-			$this->m_prob_ans_count = $res[0]['ans_count'];
-			$this->m_prob_correct = $res[0]['correct'];
-			$this->m_prob_tot_tries = $res[0]['tot_tries'];
-			$this->m_prob_tot_correct = $res[0]['tot_correct'];
-			$this->m_prob_tot_time = $res[0]['tot_time'];
-			$this->m_prob_solution = $res[0]['solution'];
+			$this->fill($res[0]);
 		}
-		$query = "SELECT name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
-		$bindings = array(":pid"=>$prob_id);
-		$res = $dbmgr->fetch_assoc($query, $bindings);
-		$topics = array();
-		if (! empty($res[0] )) {
-			foreach ($res as $val) {
-				$topics[] = $val['name'];
-			}
-		}
-		$this->m_prob_topic_names = $topics;
-		$this->m_ok_to_show_soln = $this->get_ok_to_show_soln($usrmgr->m_user->id);
 	}
 
-	function get_ok_to_show_soln($user_id)
-	{
+	function get_topic_names() {
 		global $dbmgr;
-		$course_id = MProblem::get_prob_class_id($this->m_prob_id);
-		$delay_solution = MCourse::get_delay_solution($course_id);
-		if ($delay_solution == 0) return true;  //this class isn't participating in delaying the solution, no further check needed
-		$query = "SELECT sum(ans_correct) num_correct, count(*) tries FROM responses where prob_id=:prob_id and user_id=:user_id ";
-		$bindings = array(
-			":user_id"    => $user_id,
-			":prob_id"    => $this->m_prob_id
-		);
-		$res = $dbmgr->fetch_assoc( $query, $bindings );
-		if ($res[0]["num_correct"] > 0) return true; //they've answered correctly at some point - ok to show
-		if ($res[0]["tries"] >= $delay_solution) { return true; }
-		else return false; //havent tried enough times, havent answered correctly - dont show
+		if (is_null($this->m_prob_topic_names == null)) {
+			$query = "SELECT t.id, name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
+			$bindings = array(":pid"=>$this->m_prob_id);
+			$res = $dbmgr->fetch_assoc($query, $bindings);
+			$topics = array();
+			if (! empty($res[0] )) {
+				foreach ($res as $val) {
+					$topics[$val['id']] = $val['name'];
+				}
+			}
+			$this->m_prob_topic_names = $topics;
+		}
+		return $this->m_prob_topic_names;
+	}
+
+	// Note: this is only ever calculated for the current user
+	function get_ok_to_show_soln()
+	{
+		global $dbmgr, $usrmgr;
+		if ($this->m_ok_to_show_soln == null) {
+			$this->m_ok_to_show_soln = false;
+			$user_id = $usrmgr->m_user->id;
+			$course_id = MProblem::get_prob_class_id($this->m_prob_id);
+			$delay_solution = MCourse::get_delay_solution($course_id);
+
+			if ($delay_solution == 0) {
+				//this class isn't participating in delaying the solution, no further check needed
+				$this->m_ok_to_show_soln = true;
+			} else {
+				$query = "SELECT SUM(ans_correct) num_correct, COUNT(*) tries FROM responses WHERE prob_id = :prob_id AND user_id = :user_id";
+				$bindings = array(
+						":user_id"    => $user_id,
+						":prob_id"    => $this->m_prob_id
+						);
+				$res = $dbmgr->fetch_assoc( $query, $bindings );
+
+				if ($res[0]["num_correct"] > 0 || $res[0]["tries"] >= $delay_solution) {
+					//they've answered correctly at some point, or attempted enough times
+					$this->m_ok_to_show_soln = true;
+				}
+			}
+		}
+		return $this->m_ok_to_show_soln;
 	}
 
 	function create($prob_name, $prob_url, $prob_ans_count, $prob_correct, $prob_solution='')
@@ -350,7 +441,16 @@ Class MProblem
 
 		if (isset($topic_id))
 		{
-			$selectquery = "SELECT * FROM 12m_topic_prob WHERE topic_id = :topic_id ";
+			if ($by_id == true || $by_id == 1) {
+				$cols = "p.id";
+			} else {
+				$cols = "p.*, t.id topic_id, t.name topic_name";
+			}
+			$selectquery = "SELECT " . $cols . " "
+				. "FROM problems p "
+				. "INNER JOIN 12m_topic_prob tp ON p.id = tp.problem_id "
+				. "INNER JOIN topic t ON t.id = tp.topic_id "
+				. "WHERE t.id = :topic_id";
 			$bindings[":topic_id"]= $topic_id;
 
 			if ($exclusion == true || $exclusion == 1)
@@ -359,12 +459,13 @@ Class MProblem
 				$user_id = $usrmgr->m_user->id;
 
 				$selectquery .=
-					" AND problem_id NOT IN ".
+					" AND p.id NOT IN ".
 					"(SELECT problem_id from omitted_problems ".
 					"where user_id=:user_id and topic_id=:topic_id)";
 				$bindings[":user_id"] = $user_id;
 			}
 			$res = $dbmgr->fetch_assoc($selectquery,$bindings);
+
 			$numrows = count($res);
 			
 			//return problem ids
@@ -373,9 +474,8 @@ Class MProblem
 				$all_problem_ids_in_topic = array();
 				for ($i=0; $i<$numrows; $i++)
 				{
-					$all_problem_ids_in_topic[$i] = $res[$i]['problem_id'];
+					$all_problem_ids_in_topic[$i] = $res[$i]['id'];
 				}
-				//$all_problem_ids_in_topic = pg_fetch_all($res)['problem_id'];
 				return $all_problem_ids_in_topic;
 			}
 			
@@ -383,7 +483,7 @@ Class MProblem
 			$all_problems_in_topic = array();
 			for ($i=0; $i<$numrows; $i++)
 			{
-				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
+				$all_problems_in_topic[$i] = self::fromRow($res[$i], true);
 			}
 			usort($all_problems_in_topic, "prob_list_sorter");
 			return $all_problems_in_topic;
@@ -394,27 +494,44 @@ Class MProblem
 		}
 	}
 
+	public static function get_problems_answered_by($user_id) {
+		global $dbmgr;
+
+		$sql = "SELECT DISTINCT p.*, t.id topic_id, t.name topic_name " .
+			   "FROM problems p " .
+			   "INNER JOIN responses r ON p.id = r.prob_id " .
+			   "LEFT JOIN topic t ON t.id = r.topic_id " .
+			   "WHERE user_id = :user_id AND answer <> 0";
+		$bindings = array("user_id" => $user_id);
+
+		return self::fromQueryWithTopics($sql, $bindings);
+	}
+
+	// This includes inactive topics because the original method did
 	public static function get_unique_problems_in_course($class_id)
+	{
+		return self::get_problems_in_course($class_id, true, true);
+	}
+
+	public static function get_problems_in_course($class_id, $include_inactive_topics = false)
 	{
 		global $usrmgr;
 		global $dbmgr;
 		$bindings = array();
 		if (isset($class_id))
 		{
-			$selectquery = "SELECT distinct problem_id ".
-						   "FROM 12m_topic_prob tp, 12m_class_topic ct ".
- 						   "WHERE ct.class_id = :class_id and ct.topic_id = tp.topic_id ";
-			$bindings[":class_id"]= $class_id;
-			$res = $dbmgr->fetch_assoc($selectquery,$bindings);
-			$numrows = count($res);
+			$inactive = $include_inactive_topics ? "" : "AND t.inactive = 0";
+			$selectquery = "SELECT p.*, t.id topic_id, t.name topic_name ".
+						   "FROM problems p ".
+						   "INNER JOIN 12m_topic_prob tp ON p.id = tp.problem_id ".
+						   "INNER JOIN 12m_class_topic ct ON ct.topic_id = tp.topic_id ".
+						   "INNER JOIN topic t ON ct.topic_id = t.id ".
+						   "WHERE ct.class_id = :class_id " . $inactive;
+			$bindings[":class_id"] = $class_id;
+			$problems = self::fromQueryWithTopics($selectquery, $bindings);
 
-			$all_problems_in_topic = array();
-			for ($i=0; $i<$numrows; $i++)
-			{
-				$all_problems_in_topic[$i] = new MProblem($res[$i]['problem_id']);
-			}
-			usort($all_problems_in_topic, "prob_list_sorter");
-			return $all_problems_in_topic;
+			usort($problems, "prob_list_sorter");
+			return $problems;
 		}
 		else
 		{
@@ -432,6 +549,21 @@ Class MProblem
 		$pid = $res[0]['id'];
 		return $pid;
 	}
+
+    public static function delete_problem($problem_id) {
+        global $dbmgr;
+
+        $problem = MProblem::find($problem_id);
+        $topic_ids = $problem->get_problem_topics($problem_id);
+
+        MTopic::remove_problem_topics($problem_id, $topic_ids);
+        MResponse::delete_problem_responses($problem_id);
+        OmittedProblem::delete_omissions_for_problem($problem_id);
+        Rating::delete_ratings($problem_id);
+
+        $sql = "DELETE FROM problems WHERE id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
 }
 
 Class MCourse
@@ -534,17 +666,27 @@ Class MCourse
 		return $all_courses;
 	}
 
-	public static function get_courses_and_response_counts()
+	public static function get_courses_and_response_counts($skips=false)
 	{
 		global $dbmgr;
-		$query = "SELECT t1.*, count(t3.id) as response_count FROM class t1 join 12m_class_topic t2 on t1.id=t2.class_id join 12m_topic_prob t3 on t2.topic_id=t3.topic_id join responses t4 on t3.problem_id=t4.prob_id where t4.answer > 0 group by t1.id";
+
+		$query = "SELECT c.*, COUNT(tp.id) AS response_count " .
+			"FROM class c " .
+			"  INNER JOIN 12m_class_topic ct ON c.id = ct.class_id " .
+			"  INNER JOIN 12m_topic_prob tp ON ct.topic_id = tp.topic_id " .
+			"  INNER JOIN responses r ON tp.problem_id = r.prob_id AND r.topic_id = tp.topic_id ";
+			if (! $skips) {
+				$query .= "WHERE r.answer > 0 ";
+			}
+		$query .= "GROUP BY c.id";
+
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_courses = array();
 		for ($i=0; $i<$numrows; $i++)
 		{
 			$all_courses[$i] = array(
-				'course' => new MCourse($res[$i]['id'],$res[$i]['name'],$res[$i]['disable_rating'],$res[$i]['delay_solution']),
+				'course' => new MCourse($res[$i]['id'], $res[$i]['name'], $res[$i]['disable_rating'], $res[$i]['delay_solution']),
 				'response_count' => $res[$i]['response_count']
 			);
 		}
@@ -745,10 +887,16 @@ Class MSemester
 		return $all_semesters;
 	}
 
-	public static function get_semesters_and_response_counts()
+	public static function get_semesters_and_response_counts($skips=false)
 	{
 		global $dbmgr;
-		$query = "SELECT distinct t1.*, count(t2.id) as response_count FROM semesters t1 join responses t2 on t2.start_time > t1.start_time and t2.end_time < t1.end_time where t2.answer > 0 group by t1.id";
+		$query = "SELECT distinct t1.*, count(t2.id) as response_count ".
+						 "FROM semesters t1 join responses t2 on (t2.end_time > t1.start_time ".
+						 "AND t2.end_time < t1.end_time) ";
+		if (! $skips) {
+			$query .= "WHERE t2.answer > 0 ";
+		}
+		$query .= "GROUP by t1.id";
 		$res = $dbmgr->fetch_assoc( $query );
 		$numrows = count($res);
 		$all_semesters = array();
@@ -808,13 +956,9 @@ Class MTabNav
 			'My Summary' => $GLOBALS["DOMAIN"] . 'stats.php' 
 			);
 		}
-		if($usrmgr->m_user->researcher == 1)
-		{
-			$this->m_pages['Export User Stats'] = $GLOBALS["DOMAIN"] . 'stats_export.php';
-		}
 		if($usrmgr->m_user->researcher == 1 || $usrmgr->m_user->staff == 1)
 		{
-			$this->m_pages['Export Problem Stats'] = $GLOBALS["DOMAIN"] . 'problems_export.php';
+			$this->m_pages['Export Stats'] = $GLOBALS["DOMAIN"] . 'export.php';
 		}
 		if($usrmgr->m_user->admin == 1)
 		{
@@ -1231,7 +1375,7 @@ Class MResponse
 		$solve_time = $this->m_end_time - $this->m_start_time;
 		
 		//determine if student answer is correct
-		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem = MProblem::find($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
 		//update stats table
@@ -1258,7 +1402,7 @@ Class MResponse
 		$solve_time = $this->m_end_time - $this->m_start_time;
 		
 		//determine if student answer is correct
-		$current_problem = new MProblem($this->m_problem_id);
+		$current_problem = MProblem::find($this->m_problem_id);
 		$current_problem_answer = $current_problem->m_prob_correct;
 		
 		//update stats table
@@ -1324,6 +1468,28 @@ Class MResponse
 		}
 	}
 
+    public static function delete_problem_responses($problem_id) {
+        global $dbmgr;
+
+        $sql = "DELETE FROM responses WHERE prob_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+
+        $sql = "DELETE FROM 12m_prob_ans WHERE prob_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
+
+	public static function get_total_attempts_for_user_for_problem($user_id, $problem_id){
+		global $dbmgr;
+		$query = "SELECT  count(*) attempts FROM responses where prob_id=:prob_id and user_id=:user_id";
+		$bindings = array(
+				":user_id"    => $user_id,
+				":prob_id"    => $problem_id
+		);
+		$res = $dbmgr->fetch_assoc( $query, $bindings );
+		$count = $res[0]["attempts"];
+		return $count;
+	}
+
 }
 
 Class MUserSummary
@@ -1345,24 +1511,27 @@ Class MUserSummary
 	var $m_topic_id_list = Array(); //list of the problem's topic
 	//</HISTORY>
 	
-	var $m_problems_list_id;//array of problem IDs (only use these IDs)
+	var $m_problems_list_id = array(); //array of problem IDs (only use these IDs)
 	
-	function __construct($problems_list_id = Null, $all_users = 0)
+	function __construct($problems = Null, $all_users = 0)
 	{
 		global $usrmgr;
 		global $dbmgr;
 		
-		$this->m_problems_list_id = $problems_list_id;
+		$problem_index = array();
+		if (is_array($problems)) {
+			foreach($problems as $problem) {
+				$id = $problem->m_prob_id;
+				$this->m_problems_list_id[] = $id;
+				$problem_index[$id] = $problem;
+			}
+		}
 		$num_problems_in_selection = count($this->m_problems_list_id);
 
 		$user_id = $usrmgr->m_user->id;
 
 		//<GET RESPONSES>
-		if ($this->m_problems_list_id == 'blank')
-		{
-			$num_responses = 0;
-		}
-		else
+		if ($problems == null || !empty($this->m_problems_list_id))
 		{
 			$bindings=array();
 			$whole_thing=array(
@@ -1446,11 +1615,10 @@ Class MUserSummary
 					return;
 				}
 			}
-			$res = $dbmgr->fetch_num($whole_thing["select"][$type].$additional_clause,$bindings);
-			$num_res = count($res);
-		// }
 
 			$res = $dbmgr->fetch_assoc($whole_thing["select"][$type].$additional_clause,$bindings);
+			$num_res = count($res);
+
 
 			if ($num_res < 1)
 			{
@@ -1458,10 +1626,29 @@ Class MUserSummary
 				$this->m_tot_time = 0;
 				$this->m_tot_correct = 0;
 			}
+
+			if (empty($problem_index)) {
+				if ($type == 'user') {
+					$all_problems = MProblem::get_problems_answered_by($bindings[":user_id"]);
+				} else {
+					$ids = array();
+					foreach ($res as $row) {
+						$ids[] = $row['prob_id'];
+					}
+
+					$all_problems = MProblem::findAllWithTopics($ids);
+				}
+
+				foreach ($all_problems as $problem) {
+					$id = $problem->m_prob_id;
+					$problem_index[$id] = $problem;
+				}
+			}
 			
 			for ($i=0;$i<$num_res;$i++)
 			{
-				$this->m_problem_list[$i] = new MProblem($res[$i]['prob_id']);
+				$problem = $problem_index[$res[$i]['prob_id']];
+				$this->m_problem_list[$i] = $problem;
 				$this->m_student_answer_list[$i] = $res[$i]['answer'];
 				$this->m_start_time_list[$i] = $res[$i]['start_time'];
 				$this->m_end_time_list[$i] = $res[$i]['end_time'];
@@ -1470,11 +1657,12 @@ Class MUserSummary
 				$this->m_solve_time_list[$i] = strtotime($this->m_end_time_list[$i]) - strtotime($this->m_start_time_list[$i]);
 				// topic_id_list stores topic_id and name. Some responses might not have associated topic though
 				$topic_name = '';
-				if (property_exists(MTopic::get_topic_by_id($res[$i]['topic_id']), 'm_name'))
-				{
-					$topic_name =  MTopic::get_topic_by_id($res[$i]['topic_id'])->m_name;
+				$topic_id = $res[$i]['topic_id'];
+				$topics = $problem->get_topic_names();
+				if (isset($topics[$topic_id])) {
+					$topic_name = $topics[$topic_id];
 				}
-				$this->m_topic_id_list[$i] = array($res[$i]['topic_id'], $topic_name);
+				$this->m_topic_id_list[$i] = array($topic_id, $topic_name);
 
 				//$this->m_tot_tries += 1;
 				$this->m_tot_time += $this->m_solve_time_list[$i];
@@ -1580,6 +1768,13 @@ class OmittedProblem
 		}
 	}
 
+    public static function delete_omissions_for_problem($problem_id) {
+        global $dbmgr;
+
+        $sql = "DELETE FROM omitted_problems WHERE problem_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
+
 }
 
 Class MStatsFile
@@ -1590,73 +1785,87 @@ Class MStatsFile
 
 	public static function delete_file($filename)
 	{
-		return unlink($GLOBALS["DIR_STATS"].$filename);
+		$base = realpath($GLOBALS["DIR_STATS"]);
+		$path = realpath($base . '/' . $filename);
+		if (strpos($path, $base) === 0) {
+			return unlink($path);
+		} else {
+			global $usrmgr;
+			error_log("WARNING: Bad filename supplied for deletion by '" . $usrmgr->GetUserId() . "': " . $filename);
+			return false;
+		}
 	}
 
 
 	public static function start_export($semester_ids, $course_ids, $format = 'sql')
 	{
 		global $dbmgr;
-		$tablename = "stats_".date('Ymd\_His');
+		$tablename = "stats_" . date('Ymd\_His');
 		$params = array();
-		$filename = $GLOBALS['DIR_STATS']."problem_roulette_".date('\_Ymd\_His');
+		$filename = $GLOBALS['DIR_STATS'] . "problem_roulette_" . date('\_Ymd\_His');
 
-		
-		$query = "create table ".$tablename." select t2.id term_id, t2.name term_name, ".
-			"t5.class_id class_id, t6.name class_name, t1.user_id user_id, t3.username username, ".
-			"count(t1.id) response_count, sum(t1.ans_correct) correct_count, ".
-			"sum(TIME_TO_SEC(TIMEDIFF(t1.end_time,t1.start_time))) time_on_site ".
-			"from responses t1 ".
-			"left join semesters t2 on (t1.start_time > t2.start_time AND t1.start_time < t2.end_time) ".
-			"left join user t3 on t1.user_id=t3.id ".
-			"left join 12m_topic_prob t4 on t1.prob_id=t4.problem_id ".
-			"left join 12m_class_topic t5 on t4.topic_id=t5.topic_id ".
-			"left join class t6 on t5.class_id=t6.id ".
-			"where t1.answer > 0 and t2.name is not null and t3.username is not null and t6.name is not null ";
+		$query = "CREATE TABLE " . $tablename . " " .
+			"SELECT s.id term_id, s.name term_name, " .
+			"  ct.class_id class_id, c.name class_name, r.user_id user_id, u.username username, " .
+			"  COUNT(r.id) response_count, SUM(r.ans_correct) correct_count, " .
+			"  SUM(TIME_TO_SEC(TIMEDIFF(r.end_time, r.start_time))) time_on_site " .
+			"FROM responses r " .
+			"  LEFT JOIN semesters s ON (r.end_time > s.start_time AND r.end_time < s.end_time) " .
+			"  LEFT JOIN user u on r.user_id = u.id " .
+			"  LEFT JOIN 12m_topic_prob tp ON r.prob_id = tp.problem_id AND r.topic_id = tp.topic_id " .
+			"  LEFT JOIN 12m_class_topic ct ON tp.topic_id = ct.topic_id " .
+			"  LEFT JOIN class c ON ct.class_id = c.id " .
+			"WHERE r.answer > 0 " .
+			" AND s.name IS NOT NULL " .
+			" AND u.username IS NOT NULL " .
+			" AND c.name IS NOT NULL";
+
 		if (isset($semester_ids)) {
 			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
-			$query .= ' and t2.id in ('.$bindString.')';
+			$query .= ' AND s.id in (' . $bindString . ')';
 
 			$terms = MSemester::get_semesters($semester_ids);
 			foreach ($terms as $key => $value) {
-				$filename .= '_'.$value->m_abbreviation;
+				$filename .= '_' . $value->m_abbreviation;
 			}
 		}
+
 		if (isset($course_ids)) {
 			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
-			$query .= ' and t5.class_id in ('.$bindString.')';
+			$query .= ' AND ct.class_id in (' . $bindString . ')';
 
 			$classes = MCourse::get_courses($course_ids);
 			foreach ($classes as $key => $value) {
-				$filename .= '_'.strtolower(str_replace(' ','_',$value->m_name));
+				$filename .= '_' . strtolower(str_replace(' ', '_', $value->m_name));
 			}
 		}
-		$query .= " group by t1.user_id, t2.id, t5.class_id order by t1.user_id, t2.id, t5.class_id";
-		$filename .= '.'.$format;
+		$query .= " GROUP BY r.user_id, s.id, ct.class_id ORDER BY r.user_id, s.id, ct.class_id";
+		$filename .= '.' . $format;
 
 		$dbmgr->exec_query($query, $params);
 
-		if($format == 'csv') {
-			$column_names = array('term_id','term_name','class_id','class_name','user_id','username','response_count', 'correct_count','time_on_site');
+		if ($format == 'csv') {
+			$column_names = array('term_id', 'term_name', 'class_id', 'class_name', 'user_id', 'username', 'response_count',  'correct_count', 'time_on_site');
 			$dbmgr->dump_csv_file($tablename, $filename, $column_names);
 		} else {
 			$dbmgr->dump_stats_table($tablename, $filename);
 		}
 		
-
-		$query = "drop table ".$tablename;
+		$query = "DROP TABLE " . $tablename;
 		$dbmgr->exec_query($query, array());
 
 	}
 
-	public static function export_problems($course_ids, $format = 'sql')
+	public static function export_problems($semester_ids, $course_ids, $format = 'sql')
 	{
 		global $dbmgr;
+		// We accept and discard the semesters to have the export functions share a signature
+		// and simplify dispatching.
+		$semester_ids = null;
 		$tablename = "problems_".date('Ymd\_His');
 		$params = array();
 		$filename = $GLOBALS['DIR_STATS']."problems_".date('\_Ymd\_His');
 
-		
 		$query = "create table ".$tablename." select t1.id problem_id, ".
 				"t1.name, t1.url, t1.correct, t1.ans_count, t1.tot_tries, ".
 				"t1.tot_correct, t1.tot_time, t1.solution, ".
@@ -1666,7 +1875,6 @@ Class MStatsFile
 				"join 12m_topic_prob t2 on t1.id=t2.problem_id ".
 				"join 12m_class_topic t3 on t2.topic_id=t3.topic_id ".
 				"join class t4 on t3.class_id=t4.id";
-
 
 		if (isset($course_ids)) {
 			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
@@ -1711,6 +1919,61 @@ Class MStatsFile
 		$query = "drop table ".$tablename;
 		$dbmgr->exec_query($query, array());
 
+	}
+
+public static function export_responses($semester_ids, $course_ids, $format = 'sql')
+	{
+		global $dbmgr;
+		$tablename = "responses_".date('Ymd\_His');
+		$params = array();
+		$filename = $GLOBALS['DIR_STATS']."responses_".date('\_Ymd\_His');
+
+		$query = "create table ".$tablename.
+		" SELECT ct.class_id course_id, p.id problem_id, u.id user_id, r.answer, ".
+    "r.start_time, r.end_time, r.ans_correct, ct.topic_id, u.username ".
+    "FROM responses r ".
+    "INNER JOIN problems p ON r.prob_id = p.id ".
+    "INNER JOIN user u ON r.user_id = u.id ".
+    "LEFT JOIN 12m_class_topic ct ON r.topic_id = ct.topic_id ".
+    "LEFT JOIN semesters s ON (r.end_time > s.start_time AND r.end_time < s.end_time) ";
+
+		if (isset($semester_ids)) {
+			$bindString = $dbmgr->bindParamArray("semester", $semester_ids, $params);
+			$query .= ' where s.id in (' . $bindString . ')';
+
+			$terms = MSemester::get_semesters($semester_ids);
+			foreach ($terms as $key => $value) {
+				$filename .= '_' . $value->m_abbreviation;
+			}
+		}
+
+		if (isset($course_ids)) {
+			$bindString = $dbmgr->bindParamArray("course", $course_ids, $params);
+			if (isset($semester_ids)) {
+				$query .= ' and ';
+			} else {
+				$query .= ' where ';
+			}
+			$query .= ' ct.class_id in (' . $bindString . ')';
+
+			$classes = MCourse::get_courses($course_ids);
+			foreach ($classes as $key => $value) {
+				$filename .= '_' . strtolower(str_replace(' ', '_', $value->m_name));
+			}
+		}
+
+		$filename .= '.'.$format;
+		$dbmgr->exec_query($query, $params);
+
+		if ($format == 'csv') {
+			$column_names = array('course_id', 'problem_id', 'user_id', 'answer', 'start_time', 'end_time', 'ans_correct',  'topic_id', 'username');
+			$dbmgr->dump_csv_file($tablename, $filename, $column_names);
+		} else {
+			$dbmgr->dump_stats_table($tablename, $filename);
+		}
+
+		$query = "DROP TABLE " . $tablename;
+		$dbmgr->exec_query($query, array());
 	}
 
 	static function column_prefix($name) {
@@ -1900,6 +2163,13 @@ class Rating
 		}
 		return $ratings;
 	}
+
+    public static function delete_ratings($problem_id) {
+        global $dbmgr;
+
+        $sql = "DELETE FROM ratings WHERE problem_id = ?";
+        $dbmgr->exec_query($sql, array($problem_id));
+    }
 }
 
 ?>

@@ -148,4 +148,54 @@ function prob_list_sorter($a,$b) {
   return strcasecmp($a->m_prob_name, $b->m_prob_name);
 }
 
+ function getCourseId() {
+  global $usrmgr;
+  $course_id = $usrmgr->m_user->selected_course_id;
+  return $course_id;
+}
+
+ function getCourseName($courseId) {
+  $course=  MCourse::get_course_by_id($courseId);
+  return $course->m_name;
+}
+
+function getTopicName($topicId) {
+  $topic = MTopic::get_topic_by_id($topicId);
+  return $topic->m_name;
+}
+
+function isInTopicsView(){
+  $isInTopicsView=false;
+ if(isset($_POST['course_submission'])){
+   $isInTopicsView= true;
+ }
+  return $isInTopicsView;
+}
+
+function getProblem($problemId) {
+  return MProblem::find($problemId);
+}
+
+function getUserName() {
+  global $usrmgr;
+  return $usrmgr->m_user->username;
+}
+
+function getSelectedTopicList() {
+  global $usrmgr;
+  return $usrmgr->m_user->selected_topics_list;
+}
+
+function getUserId() {
+  global $usrmgr;
+  return $usrmgr->m_user->id;
+}
+
+function getAttemptCount($problem_id) {
+  global $usrmgr;
+  $count=intval(MResponse::get_total_attempts_for_user_for_problem($usrmgr->m_user->id, $problem_id));
+  return $count;
+}
+
+
 ?>

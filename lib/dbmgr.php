@@ -33,10 +33,11 @@ class CDbMgr
 		$this->m_user = $GLOBALS["SQL_USER"];
 		$this->m_pswd = $GLOBALS["SQL_PASSWORD"];
 		$this->m_db   = $GLOBALS["SQL_DATABASE"];
+		$this->m_port = isset($GLOBALS["SQL_PORT"]) ? $GLOBALS["SQL_PORT"] : 3306;
 		$this->m_link = false;
 
 		//	Connect to the database
-		$lnk = new PDO( "mysql:dbname={$this->m_db};host={$this->m_host}", $this->m_user, $this->m_pswd  );
+		$lnk = new PDO( "mysql:dbname={$this->m_db};host={$this->m_host};port={$this->m_port}", $this->m_user, $this->m_pswd  );
 		if ($lnk->errorCode())
 		{
 			echo "Failed to connect to MySQL: (" . $lnk->errorCode() . ") " . print_r($lnk->errorInfo(),true);
@@ -208,11 +209,12 @@ class CDbMgr
 			fputcsv($handle, $column_names);
 		}
 		$query = "select * from ".$tablename;
-		$res = $this->fetch_num($query, array());
+		$stmt = $this->exec_query($query);
 
-		foreach ($res as $key => $value) { 
-			fputcsv($handle, $value);
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			fputcsv($handle, $row);
 		}
+
 		fclose($handle);
 	}
 
