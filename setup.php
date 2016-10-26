@@ -36,21 +36,36 @@ require_once($GLOBALS["DIR_LIB"]."views.php");
 require_once($GLOBALS["DIR_LIB"] . "caliper_base_service.php");
 $caliper_config=null;
 
-if (@$GLOBALS["CALIPER_ENABLED"] && $GLOBALS["CALIPER_ENABLED"] === true) {
+$caliper_defaults = array(
+        'CALIPER_SENSOR_ID' => '',
+        'CALIPER_CLIENT_ID' => '',
+        'CALIPER_HTTP_ID' => '',
+        'CALIPER_ENDPOINT_URL' => '',
+        'CALIPER_API_KEY' => '',
+        'CALIPER_PROXY_ENABLED' => true,
+        'CALIPER_PROXY_ENDPOINT_URL' => '',
+        'CA_CERTS_PATH' => '',
+        'VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY' => '',
+        'VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET' => '',
+        'DEBUG' => false,
+);
+$caliper_options = array_merge($caliper_defaults, $GLOBALS);
+
+if (isset($GLOBALS["CALIPER_ENABLED"]) && $GLOBALS["CALIPER_ENABLED"] === true) {
     require_once($GLOBALS["DIR_LIB"] . "caliper_config.php");
     $caliper_config = new CaliperConfig();
     $caliper_config
-        ->setSensorId(@$GLOBALS["CALIPER_SENSOR_ID"] ? @$GLOBALS["CALIPER_SENSOR_ID"] : '')
-        ->setCaliperClientId(@$GLOBALS["CALIPER_CLIENT_ID"] ? @$GLOBALS["CALIPER_CLIENT_ID"] : '')
-        ->setCaliperHttpId(@$GLOBALS["CALIPER_HTTP_ID"] ? @$GLOBALS["CALIPER_HTTP_ID"] : '')
-        ->setHost(@$GLOBALS["CALIPER_ENDPOINT_URL"] ? @$GLOBALS["CALIPER_ENDPOINT_URL"] : '')
-        ->setApiKey(@$GLOBALS["CALIPER_API_KEY"] ? @$GLOBALS["CALIPER_API_KEY"] : '')
-        ->setCaliperProxyEnabled(@$GLOBALS["CALIPER_PROXY_ENABLED"] ? @$GLOBALS["CALIPER_PROXY_ENABLED"] : true)
-        ->setCaliperProxyUrl(@$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"] ? @$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"] : '')
-        ->setCaCertsPath(@$GLOBALS["CA_CERTS_PATH"] ? @$GLOBALS["CA_CERTS_PATH"] : '')
-        ->setOauthKey(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"] ? @$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"] : '')
-        ->setOauthSecret(@$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"] ? @$GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"] : '')
-        ->setDebug($GLOBALS["DEBUG"]);
+        ->setSensorId($caliper_options['CALIPER_SENSOR_ID'])
+        ->setCaliperClientId($caliper_options['CALIPER_CLIENT_ID'])
+        ->setCaliperHttpId($caliper_options['CALIPER_HTTP_ID'])
+        ->setHost($caliper_options['CALIPER_ENDPOINT_URL'])
+        ->setApiKey($caliper_options['CALIPER_API_KEY'])
+        ->setCaliperProxyEnabled($caliper_options['CALIPER_PROXY_ENABLED'])
+        ->setCaliperProxyUrl($caliper_options['CALIPER_PROXY_ENDPOINT_URL'])
+        ->setCaCertsPath($caliper_options['CA_CERTS_PATH'])
+        ->setOauthKey($caliper_options['VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY'])
+        ->setOauthSecret($caliper_options['VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET'])
+        ->setDebug($caliper_options['DEBUG']);
     require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
     $GLOBALS["caliper"] = new CaliperService($caliper_config);
 } else {
