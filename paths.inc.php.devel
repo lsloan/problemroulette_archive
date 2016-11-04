@@ -12,7 +12,7 @@ $GLOBALS["DEBUG"] = false;
 $GLOBALS["SQL_SERVER"]   = "localhost";
 $GLOBALS["SQL_USER"]     = "";
 $GLOBALS["SQL_PASSWORD"] = "";
-$GLOBALS["SQL_DATABASE"] = "";
+$GLOBALS["SQL_DATABASE"] = 'pr';
 $GLOBALS["SQL_PORT"]     = 3306;
 
 // Set the URL that will be used to access PR
