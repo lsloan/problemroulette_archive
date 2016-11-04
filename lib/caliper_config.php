@@ -5,8 +5,8 @@ require_once 'Caliper/Options.php';
 
 class CaliperConfig extends Options{
     private $sensor_id=false;
-    private $caliper_http_id=false;
-    private $caliper_client_id=false;
+    private $caliperHttpId='caliperHttpId';
+    private $caliperClientId='caliperClientId';
     private $caliper_proxy_url=false;
     private $caliper_proxy_enabled=false;
     private $ca_certs_path=false;
@@ -52,29 +52,29 @@ class CaliperConfig extends Options{
 
     public function getCaliperHttpId()
     {
-        return $this->caliper_http_id;
+        return $this->caliperHttpId;
     }
 
-    public function setCaliperHttpId($caliper_http_id)
+    public function setCaliperHttpId($caliperHttpId)
     {
-        if(!is_string($caliper_http_id)){
-            $caliper_http_id=strval($caliper_http_id);
+        if(!is_string($caliperHttpId)){
+            $caliperHttpId=strval($caliperHttpId);
         }
-        $this->caliper_http_id = $caliper_http_id;
+        $this->caliperHttpId = $caliperHttpId;
         return $this;
     }
 
     public function getCaliperClientId()
     {
-        return $this->caliper_client_id;
+        return $this->caliperClientId;
     }
 
-    public function setCaliperClientId($caliper_client_id)
+    public function setCaliperClientId($caliperClientId)
     {
-        if(!is_string($caliper_client_id)){
-            $caliper_client_id=strval($caliper_client_id);
+        if(!is_string($caliperClientId)){
+            $caliperClientId=strval($caliperClientId);
         }
-        $this->caliper_client_id = $caliper_client_id;
+        $this->caliperClientId = $caliperClientId;
         return $this;
     }
 

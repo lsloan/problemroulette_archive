@@ -36,12 +36,6 @@
      //Sensor id unique to application this. For development purposes this can be any string.
      $GLOBALS["CALIPER_SENSOR_ID"]     = "ProblemRoulette";
      
-     //ProblemRoulette is sending the caliper event over the wire using the http protocol. So this id should be unique for the application.
-     $GLOBALS["CALIPER_HTTP_ID"] = "PRCaliperHttp";
-     
-     //Caliper client id and should be unique for application. 
-     $GLOBALS["CALIPER_CLIENT_ID"] = "PRCaliperClient";
-     
      // This property controls if viadutoo should be used to send caliper events.
      $GLOBALS["CALIPER_PROXY_ENABLED"] = true;
      
