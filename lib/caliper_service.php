@@ -197,43 +197,52 @@ class CaliperService extends BaseCaliperService
         $sensorId = $this->config->getSensorId();
         $endpointUrl = $this->config->getHost();
         $apiKey = $this->config->getApiKey();
-        $caliperHttpId = $this->config->getCaliperHttpId();
-        $caliperClientId = $this->config->getCaliperClientId();
         $caliperProxyUrl = $this->config->getCaliperProxyUrl();
         $caliperProxyEnabled = $this->config->getCaliperProxyEnabled();
 
-        // caliper variable should not be empty or null
-        if((empty($sensorId) || empty($endpointUrl) || empty($apiKey) || empty($caliperHttpId) || empty($caliperClientId))){
-            $app_log->msg("Some caliper configurations are missing, unable to send Caliper Event. " .
-                "sensorId = '$sensorId'; endpointUrl = '$endpointUrl'; apiKey = '$apiKey'
-                ; caliperHttpId = '$caliperHttpId'; caliperClientId = '$caliperClientId'");
+        // Caliper configuration values must not be empty or null
+        if((empty($sensorId) || empty($endpointUrl) || empty($apiKey))){
+            $app_log->msg('Unable to send Caliper event: Some Caliper configuration values are missing. ' .
+                "sensorId = '$sensorId'; endpointUrl = '$endpointUrl'; apiKey = '$apiKey'");
             return;
         }
-        $sensor = new Sensor($sensorId);
-        $options = (new Options())
-            ->setApiKey($apiKey)
-            ->setDebug($this->config->isDebug());
+
 
         if ( $caliperProxyEnabled === true ) {
             if(empty($caliperProxyUrl)){
                 $app_log->msg("Caliper proxy URL is missing.");
                 return;
             }
-            $options->setHost($caliperProxyUrl);
+            $this->config->setHost($caliperProxyUrl);
         } else {
-            $options->setHost($endpointUrl);
+            $this->config->setHost($endpointUrl);
         }
 
-        $sensor->registerClient($caliperHttpId, new Client($caliperClientId, $options));
-        $event->setEventTime($this->getEventTime())
-                ->setEdApp(new SoftwareApplication($this->getUrl()));
+        $sensor = (new Sensor($sensorId))
+            ->registerClient('caliperHttpId', new Client('caliperClientId', $this->config));
+
+        $event
+            ->setEventTime($this->getEventTime())
+            ->setEdApp(new SoftwareApplication($this->getUrl()));
+
         if (!is_null(getCourseId())) {
             $event->setGroup($this->getCourseOffering());
         }
+
         if(is_null($event->getActor())){
             $event->setActor($this->getPerson());
         }
         $sensor->send($sensor, $event);
+
+        Resque::enqueue('default', 'MyJob', [
+            'options' => json_encode($this->config),
+            'eventJSON' => json_encode(
+                (new Envelope())
+                    ->setSensorId($sensor)
+                    ->setData($event),
+                $this->config->getJsonEncodeOptions()
+            ),
+        ]);
     }
 
     /* getting the application URL. eg., http://pr.local/
