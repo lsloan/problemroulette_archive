@@ -4,9 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "469cefdfac81dd483986229800c8622d",
-    "content-hash": "ed7a24407d5a153def8ec7b28b0872fb",
+    "hash": "4dfd61044607cfaef71f5765678ad74b",
+    "content-hash": "33327fef9f140affde5a6dda8124b12a",
     "packages": [
+        {
+            "name": "chrisboulton/php-resque",
+            "version": "1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/chrisboulton/php-resque.git",
+                "reference": "0549d6c88a4aed934655b7c03b6153349d6c3ad0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chrisboulton/php-resque/zipball/0549d6c88a4aed934655b7c03b6153349d6c3ad0",
+                "reference": "0549d6c88a4aed934655b7c03b6153349d6c3ad0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Resque": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Boulton",
+                    "email": "chris@bigcommerce.com"
+                }
+            ],
+            "description": "Redis backed library for creating background jobs and processing them later. Based on resque for Ruby.",
+            "homepage": "http://www.github.com/chrisboulton/php-resque/",
+            "keywords": [
+                "background",
+                "job",
+                "redis",
+                "resque"
+            ],
+            "time": "2012-10-13 07:28:16"
+        },
         {
             "name": "eher/oauth",
             "version": "1.0.7",
