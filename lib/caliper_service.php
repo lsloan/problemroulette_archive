@@ -1,11 +1,8 @@
 <?php
-
 /*
  * Using the Dependency injection pattern we enable/disable the Caliper feature to Problem Roulette. This class provide the actual implementation for a
  * particular caliper event and will log the call to the event store where all the event are captured.
  */
-
-
 require_once 'Caliper/Options.php';
 require_once 'Caliper/actions/Action.php';
 require_once 'Caliper/entities/session/Session.php';
@@ -25,32 +22,26 @@ require_once 'Caliper/events/AssessmentItemEvent.php';
 require_once 'Caliper/events/SessionEvent.php';
 require_once 'Caliper/entities/session/Session.php';
 require_once 'Caliper/events/AnnotationEvent.php';
+require_once 'ViadutooJob.php';
 
-
-class CaliperService extends BaseCaliperService
-{
-    var $config;
-
-    const TO = "To";
-
-    const FROM = "From";
-
+class CaliperService extends BaseCaliperService {
+    const RESQUE_ENABLED = true;
+    const RESQUE_QUEUE_NAME = 'default';
     var $actionReset;
+    var $config;
 
     public function __construct($config) {
         parent::__construct($config);
-        if(!($config instanceof CaliperConfig)){
+        if (!($config instanceof CaliperConfig)) {
             global $app_log;
-            $app_log->msg("In the class \"".__CLASS__."\" constructor, object expected was \"CaliperConfig\" but got: ".get_class($config));
-            throw new InvalidArgumentException('Object expected was "CaliperConfig" but got '.get_class($config) );
-
-
+            $app_log->msg("In the class \"" . __CLASS__ . "\" constructor, object expected was \"CaliperConfig\" but got: " . get_class($config));
+            throw new InvalidArgumentException('Object expected was "CaliperConfig" but got ' . get_class($config));
         }
-        $this->config=$config;
-        //Current caliper version reset is not defined, reset action will be
-        //added to the future version caliper 1.1 until then reset action will be referenced locally
-        $this->actionReset= defined('Action::RESET') ? Action::RESET : "http://purl.imsglobal.org/vocab/caliper/v1/action#Reset";
+        $this->config = $config;
 
+        // Caliper 1.0 doesn't define the reset action.  It will be added in release 1.1.
+        // If it's not defined, do it locally.
+        $this->actionReset = defined('Action::RESET') ? Action::RESET : 'http://purl.imsglobal.org/vocab/caliper/v1/action#Reset';
     }
 
     public function navigateToSelections() {
@@ -63,11 +54,8 @@ class CaliperService extends BaseCaliperService
         if (isInTopicsView()) {
             $navigationEvent->setNavigatedFrom($this->getWebPageWithCourses());
         }
-
         $this->sendEvent($navigationEvent);
-
     }
-
 
     public function assessmentStart($selectedTopicList) {
         $this->sendAssessmentEvent(Action::STARTED, $selectedTopicList);
@@ -82,7 +70,7 @@ class CaliperService extends BaseCaliperService
     }
 
     private function sendAssessmentEvent($action, $selectedTopicList) {
-        $selected_topics = urlencode (implode(",", $selectedTopicList));
+        $selected_topics = urlencode(implode(",", $selectedTopicList));
 
         $courseId = getCourseId();
         $assessment = $this->getAssessment($this->getUrl() . "courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics);
@@ -96,16 +84,14 @@ class CaliperService extends BaseCaliperService
     }
 
     public function assessmentItemStart(MProblem $problem, $topicId) {
-
         $this->sendAssessmentItemEvent(Action::STARTED, $problem, $topicId);
     }
 
     public function assessmentItemComplete(MResponse $response, MProblem $problem) {
-
         $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
 
         $isStudentAnswerCorrect = ($response->m_student_answer_correct) ? "true" : "false";
-        $extensions = array("isStudentAnswerCorrect"=>$isStudentAnswerCorrect);
+        $extensions = array("isStudentAnswerCorrect" => $isStudentAnswerCorrect);
         $extensions += array("correctAnswer" => strval($problem->m_prob_correct));
 
         $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
@@ -117,14 +103,12 @@ class CaliperService extends BaseCaliperService
     }
 
     public function assessmentItemSkip(MResponse $response, MProblem $problem) {
-
         $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
 
         $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
         $mcResponse->setAttempt($attempt);
 
         $this->sendAssessmentItemEvent(Action::SKIPPED, $problem, $response->m_topic_id, $mcResponse);
-
     }
 
     private function sendAssessmentItemEvent($action, $problem, $topicId, $response = null) {
@@ -133,7 +117,7 @@ class CaliperService extends BaseCaliperService
             ->setObject($this->getAssessmentItem($problem, $topicId));
         if (!is_null($response)) {
             $assessmentItemEvent->setGenerated($response);
-                }
+        }
 
         $this->sendEvent($assessmentItemEvent);
     }
@@ -144,11 +128,10 @@ class CaliperService extends BaseCaliperService
         $response->setValue($rating);
         $annotationEvent = new AnnotationEvent();
         $annotationEvent->setAction(new Action(Action::RANKED))
-                ->setGenerated($response)
-                ->setObject($this->getAssessmentItem($problem));
+            ->setGenerated($response)
+            ->setObject($this->getAssessmentItem($problem));
 
         $this->sendEvent($annotationEvent);
-
     }
 
     public function sessionStart() {
@@ -163,7 +146,6 @@ class CaliperService extends BaseCaliperService
     }
 
     private function sendSessionEvent($action, $startTime, $endTime = null, $duration = null) {
-
         $startedDateTime = $this->timeConvert($_SESSION['START_TIME']);
 
         $session = new Session($this->getUrl() . "session/" . urlencode($startTime));
@@ -188,7 +170,6 @@ class CaliperService extends BaseCaliperService
         $this->sendEvent($sessionEvent);
     }
 
-
     /*
      * sending the caliper event to the eventstore
      */
@@ -201,15 +182,14 @@ class CaliperService extends BaseCaliperService
         $caliperProxyEnabled = $this->config->getCaliperProxyEnabled();
 
         // Caliper configuration values must not be empty or null
-        if((empty($sensorId) || empty($endpointUrl) || empty($apiKey))){
+        if ((empty($sensorId) || empty($endpointUrl) || empty($apiKey))) {
             $app_log->msg('Unable to send Caliper event: Some Caliper configuration values are missing. ' .
                 "sensorId = '$sensorId'; endpointUrl = '$endpointUrl'; apiKey = '$apiKey'");
             return;
         }
 
-
-        if ( $caliperProxyEnabled === true ) {
-            if(empty($caliperProxyUrl)){
+        if ($caliperProxyEnabled === true) {
+            if (empty($caliperProxyUrl)) {
                 $app_log->msg("Caliper proxy URL is missing.");
                 return;
             }
@@ -218,34 +198,44 @@ class CaliperService extends BaseCaliperService
             $this->config->setHost($endpointUrl);
         }
 
-        $sensor = (new Sensor($sensorId))
-            ->registerClient('caliperHttpId', new Client('caliperClientId', $this->config));
-
         $event
-            ->setEventTime($this->getEventTime())
+            ->setEventTime($this->getDateTimeWithMicroseconds())
             ->setEdApp(new SoftwareApplication($this->getUrl()));
 
         if (!is_null(getCourseId())) {
             $event->setGroup($this->getCourseOffering());
         }
 
-        if(is_null($event->getActor())){
+        if (is_null($event->getActor())) {
             $event->setActor($this->getPerson());
         }
-        $sensor->send($sensor, $event);
 
-        Resque::enqueue('default', 'MyJob', [
-            'options' => json_encode($this->config),
-            'eventJSON' => json_encode(
-                (new Envelope())
-                    ->setSensorId($sensor)
-                    ->setData($event),
-                $this->config->getJsonEncodeOptions()
-            ),
-        ]);
+        $sensor = (new Sensor($sensorId));
+
+        if (self::RESQUE_ENABLED) {
+            Resque::enqueue(
+                self::RESQUE_QUEUE_NAME,
+                ViadutooJob::class,
+                [
+                    'options' => json_encode($this->config),
+                    'eventJSON' => json_encode(
+                        (new Envelope())
+                            // With Sensor::send(), HttpRequestor creates Envelope
+                            ->setSensorId($sensor)
+                            ->setSendTime($this->getDateTimeWithMicroseconds())
+                            ->setData($event),
+                        $this->config->getJsonEncodeOptions()
+                    ),
+                ]);
+        } else {
+            $sensor
+                ->registerClient('caliperHttpId', new Client('caliperClientId', $this->config))
+                ->send($sensor, $event);
+        }
     }
 
-    /* getting the application URL. eg., http://pr.local/
+    /*
+     * getting the application URL. eg., http://pr.local/
      * @return string
      */
     private function getUrl() {
@@ -261,7 +251,6 @@ class CaliperService extends BaseCaliperService
         $person->setName($userName);
         return $person;
     }
-
 
     /**
      * @return CourseOffering
@@ -287,7 +276,7 @@ class CaliperService extends BaseCaliperService
         return $isPartOf;
     }
 
-    private function getAssessmentItem(MProblem $problem, $topicId=null) {
+    private function getAssessmentItem(MProblem $problem, $topicId = null) {
         $assessmentItem = new AssessmentItem($problem->m_prob_url);
         $assessmentItem->setName($problem->m_prob_name);
         if (!is_null($topicId)) {
@@ -300,7 +289,7 @@ class CaliperService extends BaseCaliperService
         $startDataTime = $this->timeConvert($startTime);
         $endDataTime = $this->timeConvert($endTime);
         $durationSeconds = strval($endDataTime->getTimestamp() - $startDataTime->getTimestamp());
-        $attempt = (new Attempt($problem->m_prob_url ."/attempt"))
+        $attempt = (new Attempt($problem->m_prob_url . "/attempt"))
             ->setCount(getAttemptCount($problem->m_prob_id))
             ->setStartedAtTime($startDataTime)
             ->setEndedAtTime($endDataTime)
@@ -308,8 +297,8 @@ class CaliperService extends BaseCaliperService
         return $attempt;
     }
 
-    private function timeConvert($time){
-         return date_create((is_numeric($time) ? '@' : null) . strval($time));
+    private function timeConvert($time) {
+        return date_create((is_numeric($time) ? '@' : null) . strval($time));
     }
 
     private function getWebPageWithACourse() {
@@ -324,8 +313,7 @@ class CaliperService extends BaseCaliperService
         return $webPage;
     }
 
-    private function getEventTime() {
+    private function getDateTimeWithMicroseconds() {
         return DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''));
     }
-
 }
