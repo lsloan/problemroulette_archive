@@ -8,5 +8,22 @@
  */
 
 class ViadutooJob {
+    /** @var array */
+    private $config;
+    /** @var array */
+    private $event;
 
+    public function setUp() {
+        $this->config = $this->args['config'];
+        $this->event = $this->args['event'];
+    }
+
+    public function perform() {
+        echo 'sensorId: ' . $this->config['sensorId'];
+        echo "\n\n";
+    }
+
+//    public function tearDown() {
+//        // ... Remove environment for this job
+//    }
 }

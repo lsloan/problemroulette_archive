@@ -217,8 +217,8 @@ class CaliperService extends BaseCaliperService {
                 self::RESQUE_QUEUE_NAME,
                 ViadutooJob::class,
                 [
-                    'options' => json_encode($this->config),
-                    'eventJSON' => json_encode(
+                    'config' => $this->config,
+                    'event' => json_encode(
                         (new Envelope())
                             // With Sensor::send(), HttpRequestor creates Envelope
                             ->setSensorId($sensor)

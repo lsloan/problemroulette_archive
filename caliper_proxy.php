@@ -1,9 +1,9 @@
 <?php
 /*
- * The code is acting like a proxy that receives Json payload to send to the caliper end point, in case for some reason
- * it is taking time/or failure to send events to the caliper end point then it will store the Json to the local database.
+ * A proxy that receives a Caliper event (a JSON payload) to be sent to an endpoint.
+ * If the sending fails, the event is stored in the local database.
  */
-require_once("setup.php");
+require_once 'setup.php';
 
 require_once 'vendor/autoload.php';
 require_once 'Viadutoo/MessageProxy.php';

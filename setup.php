@@ -61,6 +61,7 @@ if (isset($GLOBALS["CALIPER_ENABLED"]) && $GLOBALS["CALIPER_ENABLED"] === true) 
         ->setCaCertsPath($caliper_options['CA_CERTS_PATH'])
         ->setOauthKey($caliper_options['VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY'])
         ->setOauthSecret($caliper_options['VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET'])
+        ->setJsonEncodeOptions(JSON_UNESCAPED_SLASHES) // Unset formatted output option
         ->setDebug($caliper_options['DEBUG']);
     require_once( $GLOBALS["DIR_LIB"]."caliper_service.php" );
     $GLOBALS["caliper"] = new CaliperService($caliper_config);
