@@ -77,38 +77,43 @@ if (!extension_loaded('json')) {
 global $dbmgr;
 global $usrmgr;
 
-session_start();
+// Manage session only if this is not a CLI request (E.g., Resque worker).
+if (php_sapi_name() !== 'cli') {
+    session_start();
 
-// Handle session timeouts
-if (isset($GLOBALS['timeout']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 3600))) {
-    if (isset($_SESSION['START_TIME'])) {
-        $caliper->sessionTimeout();
-    }
-    session_unset();
-    session_destroy();
+    // Handle session timeouts
+    if (isset($GLOBALS['timeout']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 3600))) {
+        if (isset($_SESSION['START_TIME'])) {
+            $caliper->sessionTimeout();
+        }
+        session_unset();
+        session_destroy();
 
-    // When loading anything other than timeout.php, redirect there.
-    if (!isset($GLOBALS['timeout'])) {
-        header('Location: ' . $GLOBALS["DOMAIN"] . "timeout.php");
-        exit;
+        // When loading anything other than timeout.php, redirect there.
+        if (!isset($GLOBALS['timeout'])) {
+            header('Location: ' . $GLOBALS["DOMAIN"] . "timeout.php");
+            exit;
+        }
     }
-}
-$_SESSION['LAST_ACTIVITY'] = time();
-// Only let a session ID last two hours
-if (!isset($_SESSION['SID_TIME'])) {
-    $_SESSION['START_TIME'] = time();
-    $_SESSION['SID_TIME'] = time();
 
-    //In case of loopback call to the server when viadutoo enabled this call may create a brand new session but we don't
-    //want to send the caliper session#loggedIN events during that time and once the loopback call is complete the session
-    //created will not be used and the previous session that triggered the loopback call resumes.In case when timeout page
-    //is called the previous session variables are unset we don't want session#loggedIN events sent.
-    if (!(checkForLoopBackCall() || checkIfTimeOutCall())) {
-        $caliper->sessionStart();
+    $_SESSION['LAST_ACTIVITY'] = time();
+
+    // Only let a session ID last two hours
+    if (!isset($_SESSION['SID_TIME'])) {
+        $_SESSION['START_TIME'] = time();
+        $_SESSION['SID_TIME'] = time();
+
+        //In case of loopback call to the server when viadutoo enabled this call may create a brand new session but we don't
+        //want to send the caliper session#loggedIN events during that time and once the loopback call is complete the session
+        //created will not be used and the previous session that triggered the loopback call resumes.In case when timeout page
+        //is called the previous session variables are unset we don't want session#loggedIN events sent.
+        if (!(checkForLoopBackCall() || checkIfTimeOutCall())) {
+            $caliper->sessionStart();
+        }
+    } else if (time() - $_SESSION['SID_TIME'] > 7200) {
+        session_regenerate_id(true);
+        $_SESSION['SID_TIME'] = time();
     }
-} else if (time() - $_SESSION['SID_TIME'] > 7200) {
-    session_regenerate_id(true);
-    $_SESSION['SID_TIME'] = time();
 }
 
 function checkForLoopBackCall() {

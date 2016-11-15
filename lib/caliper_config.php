@@ -28,6 +28,55 @@ class CaliperConfig extends Options implements JsonSerializable {
         return $propertiesToSerialize;
     }
 
+    public static function fromArray($configValues) {
+        $caliperConfig = new CaliperConfig();
+
+        if (array_key_exists('apiKey', $configValues)) {
+            $caliperConfig->setApiKey($configValues['apiKey']);
+        }
+        if (array_key_exists('caCertsPath', $configValues)) {
+            $caliperConfig->setCaCertsPath($configValues['caCertsPath']);
+        }
+        if (array_key_exists('caliperProxyEnabled', $configValues)) {
+            $caliperConfig->setCaliperProxyEnabled($configValues['caliperProxyEnabled']);
+        }
+        if (array_key_exists('caliperProxyUrl', $configValues)) {
+            $caliperConfig->setCaliperProxyUrl($configValues['caliperProxyUrl']);
+        }
+        if (array_key_exists('connectionRequestTimeout', $configValues)) {
+            $caliperConfig->setConnectionRequestTimeout(intval($configValues['connectionRequestTimeout']));
+        }
+        if (array_key_exists('connectionTimeout', $configValues)) {
+            $caliperConfig->setConnectionTimeout($configValues['connectionTimeout']);
+        }
+        if (array_key_exists('debug', $configValues)) {
+            $caliperConfig->setDebug($configValues['debug']);
+        }
+        if (array_key_exists('host', $configValues)) {
+            $caliperConfig->setHost($configValues['host']);
+        }
+        if (array_key_exists('httpHeaders', $configValues)) {
+            $caliperConfig->setHttpHeaders($configValues['httpHeaders']);
+        }
+        if (array_key_exists('jsonEncodeOptions', $configValues)) {
+            $caliperConfig->setJsonEncodeOptions($configValues['jsonEncodeOptions']);
+        }
+        if (array_key_exists('oauthKey', $configValues)) {
+            $caliperConfig->setOauthKey($configValues['oauthKey']);
+        }
+        if (array_key_exists('oauthSecret', $configValues)) {
+            $caliperConfig->setOauthSecret($configValues['oauthSecret']);
+        }
+        if (array_key_exists('sensorId', $configValues)) {
+            $caliperConfig->setSensorId($configValues['sensorId']);
+        }
+        if (array_key_exists('socketTimeout', $configValues)) {
+            $caliperConfig->setSocketTimeout(intval($configValues['socketTimeout']));
+        }
+
+        return $caliperConfig;
+    }
+
     public function getOauthKey() {
         return $this->oauthKey;
     }
