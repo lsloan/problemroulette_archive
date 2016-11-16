@@ -4,19 +4,19 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f0f04436c7fec419c66ba9306d5bbbb4",
+    "content-hash": "ca574064d95765e58a9ac5fe7b0d848d",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
-            "version": "dev-master",
+            "version": "1.2.9999",
             "source": {
                 "type": "git",
-                "url": "https://github.com/chrisboulton/php-resque.git",
+                "url": "https://github.com/tl-its-umich-edu/php-resque.git",
                 "reference": "cf187fae522df085f79837d3763645da066194d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chrisboulton/php-resque/zipball/cf187fae522df085f79837d3763645da066194d6",
+                "url": "https://api.github.com/repos/tl-its-umich-edu/php-resque/zipball/cf187fae522df085f79837d3763645da066194d6",
                 "reference": "cf187fae522df085f79837d3763645da066194d6",
                 "shasum": ""
             },
@@ -42,7 +42,6 @@
                     "Resque": "lib"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -60,7 +59,10 @@
                 "redis",
                 "resque"
             ],
-            "time": "2016-11-03 21:56:00"
+            "support": {
+                "source": "https://github.com/tl-its-umich-edu/php-resque/tree/1.2.9999"
+            },
+            "time": "2016-11-03T21:56:00+00:00"
         },
         {
             "name": "colinmollenhour/credis",
@@ -256,9 +258,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "chrisboulton/php-resque": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

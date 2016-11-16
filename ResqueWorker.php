@@ -1,7 +1,7 @@
 <?php
 require_once 'setup.php';
 require_once 'vendor/autoload.php';
-require_once 'lib/ViadutooJob.php';
+require_once 'ViadutooJob.php';
 
 /**
  * Set up the environment and run Resque worker(s).

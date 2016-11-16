@@ -27,18 +27,19 @@ class ViadutooController {
         $headers = getallheaders();
         $body = file_get_contents('php://input');
 
-        $dbmgr = $this->dbMgr;
         $app_log = $this->appLogger;
 
-        $caCertPath = $this->config->getCaCertsPath();
-        $endpointUrl = $this->config->getHost();
-        $oauthKey = $this->config->getOauthKey();
-        $oauthSecret = $this->config->getOauthSecret();
-
-        if ((empty($caCertPath) || empty($endpointUrl) || empty($oauthKey) || empty($oauthSecret))) {
-            $app_log->msg("Some viadutoo configurations are missing, unable to send Caliper Event. " .
-                "caCertPath = '$caCertPath'; endpointUrl = '$endpointUrl'; " .
-                "oauthkey = '$oauthKey'; oauthSecret =" . (empty($oauthSecret) ? "'$oauthSecret'" : 'NOT_SHOWN'));
+        if (
+            empty($this->config->getCaCertsPath()) ||
+            empty($this->config->getHost()) ||
+            empty($this->config->getOauthKey()) ||
+            empty($this->config->getOauthSecret())
+        ) {
+            $app_log->msg("Some Viadutoo configuration values are missing.  Unable to send Caliper Event. " .
+                "caCertPath = '$this->config->getCaCertsPath()'; " .
+                "endpointUrl = '$this->config->getHost()'; " .
+                "oauthkey = '$this->config->getOauthKey()'; " .
+                "oauthSecret = " . (empty($this->config->getOauthSecret()) ? 'NOT_SET' : 'SET_BUT_NOT_SHOWN'));
             exit;
         }
 
@@ -49,16 +50,14 @@ class ViadutooController {
         $dbmgr = $this->dbMgr;
         $app_log = $this->appLogger;
 
-        $caCertPath = $this->config->getCaCertsPath();
-        $endpointUrl = $this->config->getHost();
-        $oauthKey = $this->config->getOauthKey();
-        $oauthSecret = $this->config->getOauthSecret();
-
         $proxy = (new MessageProxy())
             ->setTransportInterface((new CurlTransport())
-                ->setCACertPath($caCertPath)
-                ->setAuthZType(CurlTransport::AUTHZ_TYPE_OAUTH1, $oauthKey, $oauthSecret))
-            ->setEndpointUrl($endpointUrl)
+                ->setCACertPath($this->config->getCaCertsPath())
+                ->setAuthZType(
+                    CurlTransport::AUTHZ_TYPE_OAUTH1,
+                    $this->config->getOauthKey(),
+                    $this->config->getOauthSecret()))
+            ->setEndpointUrl($this->config->getHost())
             ->setTimeoutSeconds(10)
             ->setAutostoreOnSendFailure(false)
             ->setStorageInterface(

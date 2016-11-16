@@ -1,14 +1,22 @@
 {
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/tl-its-umich-edu/caliper-php-public"
-        }
-    ],
-    "require": {
-        "php": ">=5.4",
-        "umich-its-tl/caliper-php": "1.0.1",
-        "umich-its-tl/viadutoo": "1.1.0",
-        "chrisboulton/php-resque": "dev-master"
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/tl-its-umich-edu/caliper-php-public"
+    },
+    {
+      "comments": [
+        "TL fork of chrisboulton/php-resque to tag specific non-release revision",
+        "TL's 1.2.9999 -> chrisboulton's dev-master#cf187fa"
+      ],
+      "type": "vcs",
+      "url": "https://github.com/tl-its-umich-edu/php-resque"
     }
+  ],
+  "require": {
+    "chrisboulton/php-resque": "1.2.9999",
+    "php": ">=5.4",
+    "umich-its-tl/caliper-php": "1.0.1",
+    "umich-its-tl/viadutoo": "1.1.0"
+  }
 }

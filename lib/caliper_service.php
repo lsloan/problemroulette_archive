@@ -22,7 +22,7 @@ require_once 'Caliper/events/AssessmentItemEvent.php';
 require_once 'Caliper/events/SessionEvent.php';
 require_once 'Caliper/entities/session/Session.php';
 require_once 'Caliper/events/AnnotationEvent.php';
-require_once 'ViadutooJob.php';
+require_once realpath(__DIR__ . '/../ViadutooJob.php');
 
 class CaliperService extends BaseCaliperService {
     const RESQUE_ENABLED = true;

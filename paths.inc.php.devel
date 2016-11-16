@@ -15,11 +15,21 @@ $GLOBALS["SQL_PASSWORD"] = "";
 $GLOBALS["SQL_DATABASE"] = 'pr';
 $GLOBALS["SQL_PORT"]     = 3306;
 
-// Set the URL that will be used to access PR
-$GLOBALS["DOMAIN"]       = "http://pr.local/";
+// Set the URL that will be used to access PR, when not called from CLI
+if (php_sapi_name() !== 'cli') {
+    // Recommended setting:
+    //$GLOBALS['DOMAIN'] = sprintf(
+    //    '%s://%s/',
+    //    isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+    //    $_SERVER['SERVER_NAME']
+    //);
+    $GLOBALS["DOMAIN"]       = "http://pr.local/";
+}
 
-// Set the absolute path to the application root directory; include trailing slash
-$GLOBALS["DIR"]          = "/path/to/pr/directory";
+// Set the absolute path to the application root directory; include trailing slash.
+// Recommended setting:
+//$GLOBALS["DIR"]          = __DIR__ . DIRECTORY_SEPARATOR;
+$GLOBALS["DIR"]          = "/path/to/pr/directory/";
 
 // The instance is just for logging and emails, no decisions are made based on its value
 $GLOBALS["INSTANCE"]     = "Dev";
@@ -43,10 +53,12 @@ $GLOBALS["MIGRATION_EMAIL_TO"]   = "ltig-staff@umich.edu";
 
 // These are just concatenations by default, but could be customized if
 // images and other files were stored outside the application root.
-$GLOBALS["DOMAIN_PICS"]   = $DOMAIN."pics/";
-$GLOBALS["DOMAIN_JS"]     = $DOMAIN."js/";
-$GLOBALS["DOMAIN_CSS"]    = $DOMAIN."css/";
-$GLOBALS["DOMAIN_LIB"]    = $DOMAIN."lib/";
+if (php_sapi_name() !== 'cli') {
+    $GLOBALS["DOMAIN_PICS"] = $DOMAIN . "pics/";
+    $GLOBALS["DOMAIN_JS"] = $DOMAIN . "js/";
+    $GLOBALS["DOMAIN_CSS"] = $DOMAIN . "css/";
+    $GLOBALS["DOMAIN_LIB"] = $DOMAIN . "lib/";
+}
 $GLOBALS["DIR_PICS"]      = $GLOBALS["DIR"]."pics/";
 $GLOBALS["DIR_JS"]        = $GLOBALS["DIR"]."js/";
 $GLOBALS["DIR_CSS"]       = $GLOBALS["DIR"]."css/";

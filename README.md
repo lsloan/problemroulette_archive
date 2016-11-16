@@ -27,6 +27,32 @@ For development purposes, follow these steps to easily set up a virtual machine
     would like to change it, you may edit `Vagrantfile` and enter a different 
     address. 
 
+## Redis
+
+To require PHP Resque with Composer, a very specific reference string must be used with the package name:
+
+```json
+"chrisboulton/php-resque": "dev-master#cf187fae522df085f79837d3763645da066194d6"
+```
+
+This is because PHP Resque doesn't have a release that includes the features needed by Problem Roulette.  However, 
+requiring `dev-master` alone would allow Composer to accept any future changes from PHP Resque, even those that
+could break Problem Roulette.  The hash sign and MD5 checksum of a specific commit ensure that Problem
+Roulette gets exactly the code it needs.
+
+> **_Note_**: A lot of time was spent (wasted?) trying to set up a TL fork of PHP Resque 
+> that would have a release named "problemroulette-2.3.0".  The hope was to reference it as
+> `"tl-its-umich-edu/php-resque": "problemroulette-2.3.0"`.  However, several problems occurred:
+> 
+> * Composer didn't consider that release's tag name to be a valid version string.
+> * Using the ZIP file URL of the TL release to refer to the package as an archive 
+>   would get the master branch of the original package if not referenced in a very
+>   specific, complicated way.
+> * When Composer did get the package from the TL release, it wouldn't interpret the
+>   package's `composer.json` file and install its dependencies, resulting in an 
+>   incomplete installation.
+> 
+> Although ugly, it seems best to refer to a specific commit of the original package instead.
 
 ## Dependency Management via Composer for managing the external libraries like Caliper.
 
