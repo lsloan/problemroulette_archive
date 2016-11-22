@@ -14,3 +14,6 @@ stats/*.csv
 stats/*.sql
 
 downloads/down.sql
+
+.vagrant/
+sql/pr.sql
