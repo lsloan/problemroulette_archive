@@ -1,3 +1,33 @@
+Problem Roulette
+================
+
+## Installation (For Development)
+
+For development purposes, follow these steps to easily set up a virtual machine
+(requires [Vagrant](https://www.vagrantup.com/)) running Problem Roulette:
+
+0. If you need sample data to work with, get `pr.sql` and install it in the `sql` directory.
+0. `vagrant up`
+0. `vagrant ssh`
+0. `cd /var/www/public`
+0. `source provision.sh`
+
+    * Ideally, this should be done automatically as part of `vagrant up`.  However, when the provisioning
+      commands were added to `Vagrantfile`, they didn't work correctly.  That needs to be fixed at some
+      point, but for now, this workaround is sufficient.
+    * This script sets the `REMOTE_USER` to `jtritz`.  If you need to set it to some other user, edit
+      the name shown in the definition of `REMOTE_USER_STATEMENT`.
+
+0. `sudo apache2ctl graceful`
+0. In a web browser, connect to http://192.168.33.10/.
+
+    This IP address is in a range reserved for local use and 
+    doesn't require you to have an Internet connection.  Most likely it 
+    will not conflict with other IP addresses on your network, but if you 
+    would like to change it, you may edit `Vagrantfile` and enter a different 
+    address. 
+
+
 ## Dependency Management via Composer for managing the external libraries like Caliper.
 
 1. Download Composer and install it. For installation details, see: https://getcomposer.org/download/. 
@@ -5,9 +35,13 @@
    This Document gives instruction with Global.
 2. Run `composer install`. This will download the libraries that are mentioned in the composer.json(located at
    the project root directory) to  `vendor` directory( generated as part of composer).
-3. Use `composer update ` to add new dependencies to the project. `composer update` should only be used when it's important to make changes to the `composer.lock` file. 
-   Once the project's dependencies are settled, `composer.json` has not been changed, and `composer.lock` has been committed, it's important to not use the `composer update` command. 
-   In that case, use the `composer install` command instead.
+3. **_Only_** use `composer update` to add new dependencies to the project.
+
+    🚨 The `composer update` command must **_only_** be used when it's **_necessary_** to make changes to the `composer.lock` file. 
+    
+    After the project's dependencies are settled, `composer.json` has not been changed, 
+    and `composer.lock` has been committed, it's important to not use the `composer update` command. 
+    In that case, use the `composer install` command instead.
 
 ##  Enable caliper service in the application.
 
@@ -35,12 +69,6 @@
         
      //Sensor id unique to application this. For development purposes this can be any string.
      $GLOBALS["CALIPER_SENSOR_ID"]     = "ProblemRoulette";
-     
-     //ProblemRoulette is sending the caliper event over the wire using the http protocol. So this id should be unique for the application.
-     $GLOBALS["CALIPER_HTTP_ID"] = "PRCaliperHttp";
-     
-     //Caliper client id and should be unique for application. 
-     $GLOBALS["CALIPER_CLIENT_ID"] = "PRCaliperClient";
      
      // This property controls if viadutoo should be used to send caliper events.
      $GLOBALS["CALIPER_PROXY_ENABLED"] = true;

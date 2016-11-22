@@ -38,8 +38,6 @@ $caliper_config=null;
 
 $caliper_defaults = array(
         'CALIPER_SENSOR_ID' => '',
-        'CALIPER_CLIENT_ID' => '',
-        'CALIPER_HTTP_ID' => '',
         'CALIPER_ENDPOINT_URL' => '',
         'CALIPER_API_KEY' => '',
         'CALIPER_PROXY_ENABLED' => true,
@@ -56,8 +54,6 @@ if (isset($GLOBALS["CALIPER_ENABLED"]) && $GLOBALS["CALIPER_ENABLED"] === true) 
     $caliper_config = new CaliperConfig();
     $caliper_config
         ->setSensorId($caliper_options['CALIPER_SENSOR_ID'])
-        ->setCaliperClientId($caliper_options['CALIPER_CLIENT_ID'])
-        ->setCaliperHttpId($caliper_options['CALIPER_HTTP_ID'])
         ->setHost($caliper_options['CALIPER_ENDPOINT_URL'])
         ->setApiKey($caliper_options['CALIPER_API_KEY'])
         ->setCaliperProxyEnabled($caliper_options['CALIPER_PROXY_ENABLED'])

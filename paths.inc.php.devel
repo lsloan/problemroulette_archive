@@ -12,7 +12,7 @@ $GLOBALS["DEBUG"] = false;
 $GLOBALS["SQL_SERVER"]   = "localhost";
 $GLOBALS["SQL_USER"]     = "";
 $GLOBALS["SQL_PASSWORD"] = "";
-$GLOBALS["SQL_DATABASE"] = "";
+$GLOBALS["SQL_DATABASE"] = 'pr';
 $GLOBALS["SQL_PORT"]     = 3306;
 
 // Set the URL that will be used to access PR
@@ -62,10 +62,6 @@ $GLOBALS["CALIPER_API_KEY"]       = null;
 $GLOBALS["CALIPER_ENDPOINT_URL"]  = null; // Eg, http://lti.tools/caliper/event?key=problemroulette
 //sensor id should be unique for application. This can be a simple string or PR URL itself
 $GLOBALS["CALIPER_SENSOR_ID"]     = null;
-// Protocal id of application should be unique and can be any string
-$GLOBALS["CALIPER_HTTP_ID"] = null; //PRcaliperHttp
-//Caliper client id of application should be unique and can be any string
-$GLOBALS["CALIPER_CLIENT_ID"] = null;//PRcaliperClient
 // This property controls if viadutoo should be used to send caliper events.
 $GLOBALS["CALIPER_PROXY_ENABLED"] = false;
 // this is the loop back url that is looking back to the local machine the application is hosted
