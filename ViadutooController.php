@@ -35,10 +35,10 @@ class ViadutooController {
             empty($this->config->getOauthKey()) ||
             empty($this->config->getOauthSecret())
         ) {
-            $app_log->msg("Some Viadutoo configuration values are missing.  Unable to send Caliper Event. " .
-                "caCertPath = '$this->config->getCaCertsPath()'; " .
-                "endpointUrl = '$this->config->getHost()'; " .
-                "oauthkey = '$this->config->getOauthKey()'; " .
+            $app_log->msg("Some Viadutoo configuration values are missing.  Unable to send Caliper event. " .
+                "caCertsPath = '$this->config->getCaCertsPath()'; " .
+                "host = '$this->config->getHost()'; " .
+                "oauthKey = '$this->config->getOauthKey()'; " .
                 "oauthSecret = " . (empty($this->config->getOauthSecret()) ? 'NOT_SET' : 'SET_BUT_NOT_SHOWN'));
             exit;
         }

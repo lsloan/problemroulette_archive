@@ -81,6 +81,10 @@ class CaliperConfig extends Options implements JsonSerializable {
         return $this->oauthKey;
     }
 
+    /**
+     * @param $oauthKey
+     * @return $this|CaliperConfig
+     */
     public function setOauthKey($oauthKey) {
         $this->oauthKey = strval($oauthKey);
         return $this;
@@ -90,6 +94,10 @@ class CaliperConfig extends Options implements JsonSerializable {
         return $this->oauthSecret;
     }
 
+    /**
+     * @param $oauthSecret
+     * @return $this|CaliperConfig
+     */
     public function setOauthSecret($oauthSecret) {
         $this->oauthSecret = strval($oauthSecret);
         return $this;
@@ -99,6 +107,10 @@ class CaliperConfig extends Options implements JsonSerializable {
         return $this->sensorId;
     }
 
+    /**
+     * @param $sensorId
+     * @return $this|CaliperConfig
+     */
     public function setSensorId($sensorId) {
         $this->sensorId = strval($sensorId);
         return $this;
@@ -108,6 +120,10 @@ class CaliperConfig extends Options implements JsonSerializable {
         return $this->caliperProxyUrl;
     }
 
+    /**
+     * @param $caliperProxyUrl
+     * @return $this|CaliperConfig
+     */
     public function setCaliperProxyUrl($caliperProxyUrl) {
         $this->caliperProxyUrl = strval($caliperProxyUrl);
         return $this;
@@ -117,6 +133,10 @@ class CaliperConfig extends Options implements JsonSerializable {
         return $this->caliperProxyEnabled;
     }
 
+    /**
+     * @param $caliperProxyEnabled
+     * @return $this|CaliperConfig
+     */
     public function setCaliperProxyEnabled($caliperProxyEnabled) {
         $this->caliperProxyEnabled = boolval($caliperProxyEnabled);
         return $this;
@@ -126,6 +146,10 @@ class CaliperConfig extends Options implements JsonSerializable {
         return $this->caCertsPath;
     }
 
+    /**
+     * @param $caCertsPath
+     * @return $this|CaliperConfig
+     */
     public function setCaCertsPath($caCertsPath) {
         $this->caCertsPath = strval($caCertsPath);
         return $this;

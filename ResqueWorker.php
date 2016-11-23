@@ -31,7 +31,27 @@ require_once 'ViadutooJob.php';
  */
 class ResqueWorker {
     public static function run() {
-        putenv('QUEUE=' . (getenv('QUEUE') ?: 'default'));
+        /** @var $VIADUTOO_REDIS_ENABLED bool */
+        global $VIADUTOO_REDIS_ENABLED;
+        /** @var $VIADUTOO_REDIS_QUEUE_NAME string */
+        global $VIADUTOO_REDIS_QUEUE_NAME;
+
+        if (!isset($VIADUTOO_REDIS_ENABLED) ||
+            $VIADUTOO_REDIS_ENABLED !== true
+        ) {
+            die('Configuration setting "VIADUTOO_REDIS_ENABLED" must be set to "true".' . "\n");
+        }
+
+        // Set the QUEUE environment variable to the queue name if not already set
+        if (empty(getenv('QUEUE'))) {
+            if (!isset($VIADUTOO_REDIS_QUEUE_NAME) ||
+                empty($VIADUTOO_REDIS_QUEUE_NAME)
+            ) {
+                die('Configuration setting "VIADUTOO_REDIS_QUEUE_NAME" or environment variable "QUEUE" must be set to name of Redis queue.' . "\n");
+            }
+
+            putenv('QUEUE=' . $VIADUTOO_REDIS_QUEUE_NAME);
+        }
 
         // Since this PHP file has executable code at its root, it runs immediately.
         include_once 'vendor/bin/resque';

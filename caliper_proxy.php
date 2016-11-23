@@ -9,6 +9,9 @@ require_once 'setup.php';
 require_once 'vendor/autoload.php';
 require_once 'ViadutooController.php';
 
-global $app_log, $dbmgr;
+/** @global $app_log AppLogger */
+global $app_log;
+/** @global $dbmgr CDbMgr */
+global $dbmgr;
 
 (new ViadutooController($caliper_config, $app_log, $dbmgr))->run();
