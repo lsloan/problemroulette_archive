@@ -22,11 +22,9 @@ require_once 'Caliper/events/AssessmentItemEvent.php';
 require_once 'Caliper/events/SessionEvent.php';
 require_once 'Caliper/entities/session/Session.php';
 require_once 'Caliper/events/AnnotationEvent.php';
-require_once 'ViadutooJob.php';
+require_once realpath(__DIR__ . '/../ViadutooJob.php');
 
 class CaliperService extends BaseCaliperService {
-    const RESQUE_ENABLED = true;
-    const RESQUE_QUEUE_NAME = 'default';
     var $actionReset;
     var $config;
 
@@ -212,13 +210,30 @@ class CaliperService extends BaseCaliperService {
 
         $sensor = (new Sensor($sensorId));
 
-        if (self::RESQUE_ENABLED) {
+        /** @global $VIADUTOO_REDIS_ENABLED bool */
+        global $VIADUTOO_REDIS_ENABLED;
+        /** @global $VIADUTOO_REDIS_HOST_PORT string */
+        global $VIADUTOO_REDIS_HOST_PORT;
+        /** @global $VIADUTOO_REDIS_QUEUE_NAME string */
+        global $VIADUTOO_REDIS_QUEUE_NAME;
+
+        if (isset($VIADUTOO_REDIS_ENABLED) && $VIADUTOO_REDIS_ENABLED === true) {
+            // If optional config. value VIADUTOO_REDIS_HOST_PORT is set, use it
+            if (isset($VIADUTOO_REDIS_HOST_PORT) && !empty($VIADUTOO_REDIS_HOST_PORT)) {
+                Resque::setBackend($VIADUTOO_REDIS_HOST_PORT);
+            }
+
+            if (!isset($VIADUTOO_REDIS_QUEUE_NAME) || empty($VIADUTOO_REDIS_QUEUE_NAME)) {
+                $app_log->msg("Viadutoo Redis queue name configuration value is not set.  Unable to send Caliper event.");
+                exit;
+            }
+
             Resque::enqueue(
-                self::RESQUE_QUEUE_NAME,
+                $VIADUTOO_REDIS_QUEUE_NAME,
                 ViadutooJob::class,
                 [
-                    'options' => json_encode($this->config),
-                    'eventJSON' => json_encode(
+                    'config' => $this->config,
+                    'event' => json_encode(
                         (new Envelope())
                             // With Sensor::send(), HttpRequestor creates Envelope
                             ->setSensorId($sensor)

@@ -65,23 +65,31 @@ $GLOBALS["DIR_CSS"]       = $GLOBALS["DIR"]."css/";
 $GLOBALS["DIR_LIB"]       = $GLOBALS["DIR"]."lib/";
 $GLOBALS["DIR_DOWNLOADS"] = $GLOBALS["DIR"].$GLOBALS["PATH_DOWNLOADS"];
 
-//caliper globals
-//this property enable/disable caliper service. [False]= disable caliper service
+/*
+ * Caliper configuration values
+ */
+// Indicate whether Caliper support should be enabled (boolean)
 $GLOBALS["CALIPER_ENABLED"]       = false;
-// This is the api key that is needed to send the event to the Event Store.
+// The API key that may be required by the endpoint to accept Caliper events (string)
 $GLOBALS["CALIPER_API_KEY"]       = null;
-// property hold url to event store.
-$GLOBALS["CALIPER_ENDPOINT_URL"]  = null; // Eg, http://lti.tools/caliper/event?key=problemroulette
-//sensor id should be unique for application. This can be a simple string or PR URL itself
-$GLOBALS["CALIPER_SENSOR_ID"]     = null;
-// This property controls if viadutoo should be used to send caliper events.
+// URL of the endpoint (string)
+$GLOBALS["CALIPER_ENDPOINT_URL"]  = null; // E.g., 'http://lti.tools/caliper/event?key=problemroulette'
+// An ID used to distinguish this app's events in the endpoint from those of other apps (string)
+$GLOBALS["CALIPER_SENSOR_ID"]     = null; // E.g., 'problem_roulette'
+// Indicate whether Caliper should send events using a proxy, like Viadutoo (boolean)
 $GLOBALS["CALIPER_PROXY_ENABLED"] = false;
-// this is the loop back url that is looking back to the local machine the application is hosted
-$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"]=null; //eg, "http://127.0.0.1:8888/problemroulette/caliper_proxy.php/";
-// this is the directory to the CA certificate to send the events to the OpenLRS event store. for development purposes this can be any string.
-$GLOBALS["CA_CERTS_PATH"]=null; // eg: "/path/to/CA/Cert/directory";
-//OAuth key that an event store uses to allow caliper event. This must be a string
+// URL of the endpoint proxy, usually an internal web service accessed via the loopback interface (string)
+$GLOBALS["CALIPER_PROXY_ENDPOINT_URL"]=null; // E.g., 'http://127.0.0.1:8888/problemroulette/caliper_proxy.php'
+// Full pathname of directory containing CA certificates for verifying HTTPS connections (string)
+$GLOBALS["CA_CERTS_PATH"]=null; // E.g., '/path/to/CA/Cert/directory'
+// OAuth key that may be required by the endpoint to accept Caliper events (string)
 $GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_KEY"]=null;
-//OAuth secret that an event store uses to allow caliper event. This must be a string
+// OAuth secret that may be required by the endpoint to accept Caliper events (string)
 $GLOBALS["VIADUTOO_REMOTE_ENDPOINT_OAUTH_SECRET"]=null;
-
+// Indicate whether Viadutoo should use Redis support (boolean)
+// (When Redis support is enabled, CALIPER_PROXY_ENDPOINT_URL will not be used.)
+$GLOBALS['VIADUTOO_REDIS_ENABLED'] = false;
+// Redis host name/address and port number, colon-delimited (string, optional)
+$GLOBALS['VIADUTOO_REDIS_HOST_PORT'] = '127.0.0.1:6379';
+// Name of the queue in Redis to be used by Viadutoo (string)
+$GLOBALS['VIADUTOO_REDIS_QUEUE_NAME'] = 'default';
