@@ -18,7 +18,7 @@ class ViadutooController {
     }
 
     public function run() {
-        $validRequest = respondAndCloseConnection();
+        $validRequest = $this->respondAndCloseConnection();
 
         if ($validRequest !== true) {
             exit;
