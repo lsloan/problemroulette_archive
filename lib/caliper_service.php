@@ -43,76 +43,104 @@ class CaliperService extends BaseCaliperService {
     }
 
     public function navigateToSelections() {
-        $navigationEvent = new NavigationEvent();
-        if (is_null(getCourseId())) {
-            $navigationEvent->setObject($this->getWebPageWithCourses());
-        } else {
-            $navigationEvent->setObject($this->getWebPageWithACourse());
+        try {
+            $navigationEvent = new NavigationEvent();
+            if (is_null(getCourseId())) {
+                $navigationEvent->setObject($this->getWebPageWithCourses());
+            } else {
+                $navigationEvent->setObject($this->getWebPageWithACourse());
+            }
+            if (isInTopicsView()) {
+                $navigationEvent->setNavigatedFrom($this->getWebPageWithCourses());
+            }
+            $this->sendEvent($navigationEvent);
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__);
         }
-        if (isInTopicsView()) {
-            $navigationEvent->setNavigatedFrom($this->getWebPageWithCourses());
-        }
-        $this->sendEvent($navigationEvent);
     }
 
     public function assessmentStart($selectedTopicList) {
-        $this->sendAssessmentEvent(Action::STARTED, $selectedTopicList);
+        try {
+            $this->sendAssessmentEvent(Action::STARTED, $selectedTopicList);
+
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__);
+        }
     }
 
     public function assessmentSubmit() {
-        $this->sendAssessmentEvent(Action::SUBMITTED, getSelectedTopicList());
+        try {
+            $this->sendAssessmentEvent(Action::SUBMITTED, getSelectedTopicList());
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__);
+        }
     }
 
     public function assessmentReset($selectedTopicList) {
-        $this->sendAssessmentEvent($this->actionReset, $selectedTopicList);
+        try {
+            $this->sendAssessmentEvent($this->actionReset, $selectedTopicList);
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__);
+        }
     }
 
     private function sendAssessmentEvent($action, $selectedTopicList) {
         $selected_topics = urlencode(implode(",", $selectedTopicList));
 
         $courseId = getCourseId();
-        $assessment = $this->getAssessment($this->getUrl() . "courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics);
-        $assessment->setName("Selections: Topics View for " . getCourseName($courseId));
+        $assessment = $this->getAssessment($this->getUrl() . "courses/" . urlencode($courseId) . "/topics?id=" . $selected_topics)
+                ->setName("Selections: Topics View for " . getCourseName($courseId));
 
-        $assessmentEvent = new AssessmentEvent();
-        $assessmentEvent->setAction(new Action($action))
-            ->setObject($assessment);
+        $assessmentEvent = (new AssessmentEvent())
+                ->setAction(new Action($action))
+                ->setObject($assessment);
 
         $this->sendEvent($assessmentEvent);
     }
 
     public function assessmentItemStart(MProblem $problem, $topicId) {
-        $this->sendAssessmentItemEvent(Action::STARTED, $problem, $topicId);
+        try {
+            $this->sendAssessmentItemEvent(Action::STARTED, $problem, $topicId);
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__, $problem->m_prob_id);
+        }
     }
 
     public function assessmentItemComplete(MResponse $response, MProblem $problem) {
-        $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
+        try {
+            $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
 
-        $isStudentAnswerCorrect = ($response->m_student_answer_correct) ? "true" : "false";
-        $extensions = array("isStudentAnswerCorrect" => $isStudentAnswerCorrect);
-        $extensions += array("correctAnswer" => strval($problem->m_prob_correct));
+            $isStudentAnswerCorrect = ($response->m_student_answer_correct) ? "true" : "false";
+            $extensions = array("isStudentAnswerCorrect" => $isStudentAnswerCorrect);
+            $extensions += array("correctAnswer" => strval($problem->m_prob_correct));
 
-        $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
-        $mcResponse->setAttempt($attempt)
-            ->setExtensions($extensions)
-            ->setValue($response->m_student_answer);
+            $mcResponse = (new MultipleChoiceResponse($problem->m_prob_url . "/response"))
+                    ->setAttempt($attempt)
+                    ->setExtensions($extensions)
+                    ->setValue($response->m_student_answer);
 
-        $this->sendAssessmentItemEvent(Action::COMPLETED, $problem, $response->m_topic_id, $mcResponse);
+            $this->sendAssessmentItemEvent(Action::COMPLETED, $problem, $response->m_topic_id, $mcResponse);
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__, $problem->m_prob_id);
+        }
     }
 
     public function assessmentItemSkip(MResponse $response, MProblem $problem) {
-        $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
+        try {
+            $attempt = $this->getAttempt($problem, $response->m_start_time, $response->m_end_time);
+            $mcResponse = (new MultipleChoiceResponse($problem->m_prob_url . "/response"))
+                    ->setAttempt($attempt);
 
-        $mcResponse = new MultipleChoiceResponse($problem->m_prob_url . "/response");
-        $mcResponse->setAttempt($attempt);
-
-        $this->sendAssessmentItemEvent(Action::SKIPPED, $problem, $response->m_topic_id, $mcResponse);
+            $this->sendAssessmentItemEvent(Action::SKIPPED, $problem, $response->m_topic_id, $mcResponse);
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__, $problem->m_prob_id);
+        }
     }
 
     private function sendAssessmentItemEvent($action, $problem, $topicId, $response = null) {
-        $assessmentItemEvent = $this->getAssessmentItemEvent();
-        $assessmentItemEvent->setAction(new Action($action))
-            ->setObject($this->getAssessmentItem($problem, $topicId));
+        $assessmentItemEvent = $this->getAssessmentItemEvent()
+                ->setAction(new Action($action))
+                ->setObject($this->getAssessmentItem($problem, $topicId));
         if (!is_null($response)) {
             $assessmentItemEvent->setGenerated($response);
         }
@@ -121,41 +149,54 @@ class CaliperService extends BaseCaliperService {
     }
 
     public function rateProblem($problemId, $rating) {
-        $problem = getProblem($problemId);
-        $response = new MultipleChoiceResponse($problem->m_prob_url . "/response");
-        $response->setValue($rating);
-        $annotationEvent = new AnnotationEvent();
-        $annotationEvent->setAction(new Action(Action::RANKED))
-            ->setGenerated($response)
-            ->setObject($this->getAssessmentItem($problem));
+        try {
+            $problem = getProblem($problemId);
+            $response = (new MultipleChoiceResponse($problem->m_prob_url . "/response"))
+                    ->setValue($rating);
+            $annotationEvent = (new AnnotationEvent())
+                    ->setAction(new Action(Action::RANKED))
+                    ->setGenerated($response)
+                    ->setObject($this->getAssessmentItem($problem));
 
-        $this->sendEvent($annotationEvent);
+            $this->sendEvent($annotationEvent);
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__, $problemId);
+        }
     }
 
     public function sessionStart() {
-        $this->sendSessionEvent(Action::LOGGED_IN, $_SESSION['START_TIME']);
+        try {
+            $this->sendSessionEvent(Action::LOGGED_IN, $_SESSION['START_TIME']);
+
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__);
+        }
     }
 
     public function sessionTimeout() {
-        $startedDateTime = $this->timeConvert($_SESSION['START_TIME']);
-        $endedDateTime = new DateTime();
-        $duration = strval($endedDateTime->getTimestamp() - $startedDateTime->getTimestamp());
-        $this->sendSessionEvent(Action::TIMED_OUT, $_SESSION['START_TIME'], $endedDateTime, $duration);
+        try {
+            $startedDateTime = $this->timeConvert($_SESSION['START_TIME']);
+            $endedDateTime = new DateTime();
+            $duration = strval($endedDateTime->getTimestamp() - $startedDateTime->getTimestamp());
+            $this->sendSessionEvent(Action::TIMED_OUT, $_SESSION['START_TIME'], $endedDateTime, $duration);
+        } catch (Exception $e) {
+            $this->logEventException($e, __FUNCTION__);
+        }
     }
 
     private function sendSessionEvent($action, $startTime, $endTime = null, $duration = null) {
         $startedDateTime = $this->timeConvert($_SESSION['START_TIME']);
 
-        $session = new Session($this->getUrl() . "session/" . urlencode($startTime));
-        $session->setName("session - " . $startTime)
-            ->setStartedAtTime($startedDateTime);
+        $session = (new Session($this->getUrl() . "session/" . urlencode($startTime)))
+                ->setName("session - " . $startTime)
+                ->setStartedAtTime($startedDateTime);
         if ($action === Action::TIMED_OUT) {
             $session->setEndedAtTime($endTime)
-                ->setDuration($duration);
+                    ->setDuration($duration);
         }
 
-        $sessionEvent = new SessionEvent();
-        $sessionEvent->setAction(new Action($action));
+        $sessionEvent = (new SessionEvent())
+                ->setAction(new Action($action));
         if ($action === Action::LOGGED_IN) {
             $sessionEvent->setGenerated($session);
             $sessionEvent->setObject(new SoftwareApplication($this->getUrl()));
@@ -262,8 +303,8 @@ class CaliperService extends BaseCaliperService {
      */
     private function getPerson() {
         $userName = urlencode(getUserName());
-        $person = new Person('https://mcommunity.umich.edu/#profile:' . $userName);
-        $person->setName($userName);
+        $person = (new Person('https://mcommunity.umich.edu/#profile:' . $userName))
+                ->setName($userName);
         return $person;
     }
 
@@ -272,8 +313,8 @@ class CaliperService extends BaseCaliperService {
      */
     private function getCourseOffering() {
         $courseId = getCourseId();
-        $courseOffering = new CourseOffering($this->getUrl() . 'courses/' . urlencode($courseId));
-        $courseOffering->setName(getCourseName($courseId));
+        $courseOffering = (new CourseOffering($this->getUrl() . 'courses/' . urlencode($courseId)))
+                ->setName(getCourseName($courseId));
         return $courseOffering;
     }
 
@@ -286,14 +327,14 @@ class CaliperService extends BaseCaliperService {
     }
 
     private function getIsPartOf($topicId) {
-        $isPartOf = $this->getAssessment($this->getUrl() . "courses/" . urlencode(getCourseId()) . "/topics/" . urlencode($topicId));
-        $isPartOf->setName(getTopicName($topicId));
+        $isPartOf = $this->getAssessment($this->getUrl() . "courses/" . urlencode(getCourseId()) . "/topics/" . urlencode($topicId))
+                ->setName(getTopicName($topicId));
         return $isPartOf;
     }
 
     private function getAssessmentItem(MProblem $problem, $topicId = null) {
-        $assessmentItem = new AssessmentItem($problem->m_prob_url);
-        $assessmentItem->setName($problem->m_prob_name);
+        $assessmentItem = (new AssessmentItem($problem->m_prob_url))
+                ->setName($problem->m_prob_name);
         if (!is_null($topicId)) {
             $assessmentItem->setIsPartOf($this->getIsPartOf($topicId));
         }
@@ -317,18 +358,24 @@ class CaliperService extends BaseCaliperService {
     }
 
     private function getWebPageWithACourse() {
-        $webPage = new WebPage($this->getUrl() . 'views/selections/courses/' . urlencode(getCourseId()) . '/topics');
-        $webPage->setName("Selections: " . getCourseName(getCourseId()) . " Topics");
+        $webPage = (new WebPage($this->getUrl() . 'views/selections/courses/' . urlencode(getCourseId()) . '/topics'))
+                ->setName("Selections: " . getCourseName(getCourseId()) . " Topics");
         return $webPage;
     }
 
     private function getWebPageWithCourses() {
-        $webPage = new WebPage($this->getUrl() . 'views/selections/courses');
-        $webPage->setName('Selections: Course List');
+        $webPage = (new WebPage($this->getUrl() . 'views/selections/courses'))
+                ->setName('Selections: Course List');
         return $webPage;
     }
 
     private function getDateTimeWithMicroseconds() {
         return DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''));
+    }
+
+    private function logEventException($exception, $event, $problemId = null) {
+        global $app_log;
+        $app_log->msg('For User: "' . getUserName() . (!is_null($problemId) ? '" with problem id "' . $problemId : '')
+                . '" failure in sending  "' . $event . '" Caliper event due to error: ' . PHP_EOL . $exception->getTraceAsString());
     }
 }
