@@ -114,7 +114,7 @@ Class MProblem
 
 	function get_topic_names() {
 		global $dbmgr;
-		if (is_null($this->m_prob_topic_names == null)) {
+		if ($this->m_prob_topic_names == null) {
 			$query = "SELECT t.id, name from 12m_topic_prob tp, topic t WHERE tp.problem_id = :pid AND t.id = tp.topic_id";
 			$bindings = array(":pid"=>$this->m_prob_id);
 			$res = $dbmgr->fetch_assoc($query, $bindings);
@@ -748,6 +748,7 @@ Class MTopic
 		$bindings = array(":id" => $id);
 		$res = $dbmgr->fetch_assoc( $query , $bindings );
 		$topic = new stdClass();
+		$topic->m_name = '';
 		if (! empty($res[0] )) {
 			$topic = new MTopic($res[0]['id'],$res[0]['name'],$res[0]['inactive']);
 		}
